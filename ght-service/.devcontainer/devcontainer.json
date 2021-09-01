@@ -1,0 +1,13 @@
+{
+    "image": "registry.casperinc.net/dotnet/sdk:6.0",
+    "forwardPorts": [5020],
+    "extensions": [
+        "streetsidesoftware.code-spell-checker",
+        "eamodio.gitlens",
+        "codezombiech.gitignore",
+        "heaths.vscode-guid",
+        "ms-dotnettools.csharp",
+        "patcx.vscode-nuget-gallery",
+        "leo-labs.dotnet",
+    ],
+}
