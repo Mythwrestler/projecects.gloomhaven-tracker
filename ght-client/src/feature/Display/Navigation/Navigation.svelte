@@ -1,8 +1,8 @@
 <script lang="ts">
     import { Link } from "svelte-navigator";
-    import CastleIcon from "../../../common/icons/CastleIcon.svelte";
-    import CompassIcon from "../../../common/icons/CompassIcon.svelte";
-    import GroupIcon from "../../../common/icons/GroupIcon.svelte";
+    import CastleIcon from "../../../common/Icons/CastleIcon.svelte";
+    import CompassIcon from "../../../common/Icons/CompassIcon.svelte";
+    import GroupIcon from "../../../common/Icons/GroupIcon.svelte";
 </script>
 
 <aside
