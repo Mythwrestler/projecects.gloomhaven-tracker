@@ -1,0 +1,15 @@
+version: '3'
+services:
+  dbpostgres:
+    image: registry.casperinc.net/postgres:13.4-alpine3.14
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: pguser
+      POSTGRES_PASSWORD: pguser
+      POSTGRES_DB: ght-db
+volumes:
+  db-data:
+    driver: local
