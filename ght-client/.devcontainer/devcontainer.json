@@ -1,16 +1,24 @@
 {
-    "image": "registry.casperinc.net/node:14-alpine3.14",
+    "image": "registry.casperinc.net/node:14",
     "forwardPorts": [5025],
     "extensions": [
         "streetsidesoftware.code-spell-checker",
         "eamodio.gitlens",
         "codezombiech.gitignore",
         "heaths.vscode-guid",
-        "ms-vscode.vscode-typescript-tslint-plugin",
-        "esbenp.prettier-vscode",
+        "visualstudioexptteam.vscodeintellicode",
+        "dbaeumer.vscode-eslint",
         "eg2.vscode-npm-script",
         "christian-kohler.npm-intellisense",
         "svelte.svelte-vscode",
+        "spmeesseman.vscode-taskexplorer",
+        "bradlc.vscode-tailwindcss",
     ],
-    "postCreateCommand": "apk update && apk add bash git curl"
+    "settings": {
+        "editor.defaultFormatter": "svelte.svelte-vscode",
+        "editor.formatOnSave": true,
+        "editor.formatOnPaste": true,
+        "files.autoSave": "afterDelay",
+        "files.autoSaveDelay": 1000    
+    }
 }
