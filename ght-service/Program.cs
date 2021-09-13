@@ -1,4 +1,10 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using GloomhavenTracker.Service.Hubs;
+using GloomhavenTracker.Service.Models;
+using GloomhavenTracker.Service.Repos;
+using GloomhavenTracker.Service.Services;
+using Microsoft.AspNetCore.Http.Json;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,12 +12,23 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddMemoryCache();
 builder.Services.AddSignalR();
+builder.Logging.AddJsonConsole();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new() { Title = "Gloom Haven Tracker", Version = "v1" });
 });
+
+
+builder.Services.Configure<JsonOptions>(options => {
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+});
+
+builder.Services.AddScoped<IBattleRepo, BattleRepo>();
+builder.Services.AddScoped<IBattleService, BattleService>();
+
 
 var app = builder.Build();
 
@@ -39,6 +56,16 @@ app.UseAuthorization();
 app.UseSwagger();
 
 app.MapControllers();
+
+app.MapGet("battle-field", (IBattleService service) => {
+    var battle = service.GetBattle();
+    BattleDTO battleForReturn = new BattleDTO(){
+        Initiative = battle.Initiative,
+        MonsterDeck = battle.MonsterDeck,
+    };
+    battleForReturn.Actors.AddRange(battle.Actors);
+    return battleForReturn;
+});
 
 app.MapGet("hello-world", () => "Hello World");
 

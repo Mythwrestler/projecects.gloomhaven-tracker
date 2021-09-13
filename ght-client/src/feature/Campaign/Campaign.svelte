@@ -30,12 +30,24 @@
                 bind:value={messageToSend}
             />
             <button
-                on:click={() => battleHub.sendActionAsync({ action: "attack" })}
+                on:click={() =>
+                    battleHub.sendActionAsync({
+                        target: "f3a58114-6061-41f3-8e2b-58386ddabc32",
+                        damage: 2,
+                        source: "e9add3da-ea0c-46e7-864b-7c130fbad5a9",
+                        effects: [],
+                    })}
                 class="py-3 px-6 text-white rounded-lg bg-red-500 shadow-lg block md:inline-block"
                 >Attack</button
             >
             <button
-                on:click={() => battleHub.sendActionAsync({ action: "move" })}
+                on:click={() =>
+                    battleHub.sendActionAsync({
+                        target: "fbb56e73-f8af-4fda-a50f-b393c2737323",
+                        damage: 2,
+                        source: "453ce292-0127-49be-ad25-59b8e0e7f84b",
+                        effects: [],
+                    })}
                 class="py-3 px-6 text-white rounded-lg bg-red-500 shadow-lg block md:inline-block"
                 >Move</button
             >

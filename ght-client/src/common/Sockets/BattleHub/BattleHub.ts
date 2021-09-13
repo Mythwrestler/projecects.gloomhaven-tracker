@@ -1,10 +1,11 @@
 import { Writable, writable } from "svelte/store";
 import * as signalR from "@microsoft/signalr";
+import { BattleAction, BattleActionResult } from "../../../models/battle";
 
 
-export interface BattleAction {
-    action: "attack" | "move"
-}
+// export interface BattleAction {
+//     action: "attack" | "move"
+// }
 
 export interface BattleHub {
     subscribe: Writable<string[]>["subscribe"],
@@ -25,8 +26,9 @@ const getBattleHubStore = () => {
 
         connection.on(
             "battleActionReceived",
-            (battleAction: string) => {
-                update(a => [ ...a, battleAction ])
+            (actionResult: BattleActionResult) => {
+                console.log("Message Sending")
+                update((a) => [...a, `Affect: ${actionResult.affect} | Affected: ${actionResult.affected}`])
             }
         );
 
@@ -35,7 +37,7 @@ const getBattleHubStore = () => {
         battleHubStore = {
             subscribe,
             sendActionAsync: async (action:BattleAction) => { 
-                await connection.send("TakeBattleAction", action.action);
+                await connection.send("TakeBattleAction", action);
              },
             close: async () => {
                 await connection.stop()
