@@ -1,30 +1,87 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using GloomhavenTracker.Service.Hubs;
+using GloomhavenTracker.Service.Models;
+using GloomhavenTracker.Service.Repos;
+using GloomhavenTracker.Service.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Json;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Logging.AddJsonConsole();
 // Add services to the container.
 
-builder.Services.AddControllers();
-builder.Services.AddSignalR();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
+
+bool authEnabled = bool.Parse(Environment.GetEnvironmentVariable("AUTH_ENABLED") ?? "false");
+string authAuthority = Environment.GetEnvironmentVariable("AUTH_AUTHORITY") ?? String.Empty;
+string authAudience = Environment.GetEnvironmentVariable("AUTH_AUDIENCE") ?? String.Empty;
+
+var authBuilder = builder.Services.AddAuthentication(options =>
 {
-    c.SwaggerDoc("v1", new() { Title = "Gloom Haven Tracker", Version = "v1" });
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 });
 
+if (authEnabled)
+{
+    authBuilder.AddJwtBearer(options =>
+    {
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Query["access_token"];
+
+                    // If the request is for our hub...
+                    var path = context.HttpContext.Request.Path;
+                if (!string.IsNullOrEmpty(accessToken) &&
+                    (path.StartsWithSegments("/battle")))
+                {
+                        // Read the token out of the query string
+                        context.Token = accessToken;
+                }
+                return Task.CompletedTask;
+            }
+        };
+        options.Authority = authAuthority;
+        options.Audience = authAudience;
+    });
+
+    builder.Services.AddAuthorization(options =>
+    {
+        options.AddPolicy("authenticated", new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
+        options.AddPolicy("superuser", new AuthorizationPolicyBuilder().RequireRole("superuser").Build());
+    });
+
+}
+
+builder.Services.AddMemoryCache();
+builder.Services.AddSignalR();
+builder.Services.AddCors();
+
+builder.Services.Configure<JsonOptions>(options =>
+{
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+});
+
+builder.Services.AddScoped<IBattleRepo, BattleRepo>();
+builder.Services.AddScoped<IBattleService, BattleService>();
+
 var app = builder.Build();
+app.UseHttpLogging();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseHttpLogging();
     app.UseDeveloperExceptionPage();
-    // app.UseSwagger();
-    // app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ght_service v1"));
 }
 
-app.UseCors((config) => {
+app.UseCors((config) =>
+{
     config
         .AllowAnyMethod()
         .AllowAnyHeader()
@@ -32,20 +89,27 @@ app.UseCors((config) => {
         .WithOrigins("http://localhost:5025");
 });
 
-// app.UseHttpsRedirection();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseSwagger();
+var helloEndPoint = app.MapGet("hello-world", () => "Hello World");
+if (authEnabled)
+{
+    helloEndPoint.RequireAuthorization("superuser");
+}
+else
+{
+    helloEndPoint.AllowAnonymous();
+}
 
-app.MapControllers();
+var battleHub = app.MapHub<BattleHub>("battle");
+if (authEnabled)
+{
+    battleHub.RequireAuthorization("authenticated", "superuser");
+}
+else
+{
+    battleHub.AllowAnonymous();
+}
 
-app.MapGet("hello-world", () => "Hello World");
-
-app.MapGet("hello-name", (HttpContext context) => $"Hello {context.Request.Query["name"]}");
-
-app.MapHub<BattleHub>("battle");
-
-app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Gloom Haven Tracker v1"));
-
-await app.RunAsync();
+app.Run();

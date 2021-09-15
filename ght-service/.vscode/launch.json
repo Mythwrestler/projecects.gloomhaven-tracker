@@ -14,17 +14,17 @@
           "args": [],
           "cwd": "${workspaceFolder}",
           "stopAtEntry": false,
-          "serverReadyAction": {
-              "action": "openExternally",
-              "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
-          },
           "env": {
               "ASPNETCORE_URLS": "http://localhost:5020",
-              "ASPNETCORE_ENVIRONMENT": "Development"
+              "ASPNETCORE_ENVIRONMENT": "Development",
+              "AUTH_ENABLED": "false",
+              "AUTH_AUTHORITY": "http://fake-authority/",
+              "AUTH_AUDIENCE": "fake-audience"
           },
           "sourceFileMap": {
               "/Views": "${workspaceFolder}/Views"
-          }
+          },
+          "justMyCode": true
       }
     ]
 }
