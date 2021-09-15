@@ -6,8 +6,12 @@ import { terser } from 'rollup-plugin-terser';
 import sveltePreprocess from 'svelte-preprocess';
 import typescript from '@rollup/plugin-typescript';
 import css from 'rollup-plugin-css-only';
+import dotenv from 'dotenv';
+import replace from '@rollup/plugin-replace';
 
-const production = !process.env.ROLLUP_WATCH;
+dotenv.config({ path: `.env.${process.env.NODE_ENV}` })
+
+const production = (process.env.NODE_ENV ?? 'local') === 'production';
 
 function serve() {
 	let server;
@@ -44,7 +48,7 @@ export default {
 			compilerOptions: {
 				// enable run-time checks when not in production
 				dev: !production
-			}
+			},
 		}),
 		// we'll extract any component CSS out into
 		// a separate file - better for performance
@@ -63,6 +67,16 @@ export default {
 		typescript({
 			sourceMap: !production,
 			inlineSources: !production
+		}),
+		
+		replace({
+			preventAssignment: true,
+			ENV_CLIENT_BASE_URL: process.env.CLIENT_BASE_URL ?? "",
+			ENV_AUTH_ENABLED: process.env.AUTH_ENABLED ?? "false",
+			ENV_AUTH_DOMAIN: process.env.AUTH_DOMAIN ?? "",
+			ENV_AUTH_CLIENT_ID: process.env.AUTH_CLIENT_ID ?? "",
+			ENV_AUTH_API_AUDIENCE: process.env.AUTH_API_AUDIENCE ?? "",
+			ENV_API_BASE_URL: process.env.API_BASE_URL ?? ""
 		}),
 
 		// In dev mode, call `npm run start` once
