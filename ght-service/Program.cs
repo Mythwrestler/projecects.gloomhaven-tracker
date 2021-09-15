@@ -19,6 +19,7 @@ builder.Logging.AddJsonConsole();
 bool authEnabled = bool.Parse(Environment.GetEnvironmentVariable("AUTH_ENABLED") ?? "false");
 string authAuthority = Environment.GetEnvironmentVariable("AUTH_AUTHORITY") ?? String.Empty;
 string authAudience = Environment.GetEnvironmentVariable("AUTH_AUDIENCE") ?? String.Empty;
+bool httpLoggingEnabled = bool.Parse(Environment.GetEnvironmentVariable("HTTP_LOGGING_ENABLED") ?? "false");
 
 var authBuilder = builder.Services.AddAuthentication(options =>
 {
@@ -71,12 +72,16 @@ builder.Services.Configure<JsonOptions>(options =>
 builder.Services.AddScoped<IBattleRepo, BattleRepo>();
 builder.Services.AddScoped<IBattleService, BattleService>();
 
-builder.Services.AddHttpLogging(options => {
-    options.LoggingFields = Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.All;
-});
+if(httpLoggingEnabled)
+{
+    builder.Services.AddHttpLogging(options => {
+        options.LoggingFields = Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.All;
+    });
+}
 
 var app = builder.Build();
-app.UseHttpLogging();
+
+if(httpLoggingEnabled) app.UseHttpLogging();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
