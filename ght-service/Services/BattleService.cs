@@ -5,11 +5,12 @@ using GloomhavenTracker.Service.Repos;
 
 namespace GloomhavenTracker.Service.Services
 {
-    public class BattleService : IBattleService {
+    public class BattleService : IBattleService
+    {
 
         private IBattleRepo _repo;
 
-        public BattleService (IBattleRepo repo) => _repo = repo;
+        public BattleService(IBattleRepo repo) => _repo = repo;
 
         public Battle GetBattle() => _repo.GetBattle();
 

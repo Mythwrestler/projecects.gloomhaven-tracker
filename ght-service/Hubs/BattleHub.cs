@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using System.Text;
 using GloomhavenTracker.Service.Models;
 using GloomhavenTracker.Service.Services;
 using Microsoft.AspNetCore.SignalR;
@@ -16,7 +17,7 @@ namespace GloomhavenTracker.Service.Hubs
         {
             // Battle battle = _service.GetBattle();
             BattleActionResult result = new BattleActionResult(){
-                Affect = action.Damage.ToString(),
+                Affect = $"Damage done {action.Damage}. Effects Applied {action.Effects.First().Type}.",
                 Affected = action.Target.ToString()
                 };
             await Clients.All.SendAsync("battleActionReceived", result);

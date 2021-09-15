@@ -19,7 +19,8 @@
               "ASPNETCORE_ENVIRONMENT": "Development",
               "AUTH_ENABLED": "false",
               "AUTH_AUTHORITY": "http://fake-authority/",
-              "AUTH_AUDIENCE": "fake-audience"
+              "AUTH_AUDIENCE": "fake-audience",
+              "HTTP_LOGGING_ENABLED": "false"
           },
           "sourceFileMap": {
               "/Views": "${workspaceFolder}/Views"
