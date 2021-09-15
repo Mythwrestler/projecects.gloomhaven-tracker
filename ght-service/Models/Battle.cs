@@ -1,15 +1,17 @@
 using System.Runtime.Serialization;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace GloomhavenTracker.Service.Models;
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum ACTOR_EFFECT_TYPE
 {
     [EnumMember(Value = "strength")]
     Strength,
 
-    [EnumMember(Value = "poision")]
-    Poision,
+    [EnumMember(Value = "poison")]
+    Poison,
 
     [EnumMember(Value = "stun")]
     Stun,
@@ -18,6 +20,7 @@ public enum ACTOR_EFFECT_TYPE
     Shield,
 }
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum ATTACK_MODIFIER_TYPE 
 {
     [EnumMember(Value = "add")]
@@ -30,6 +33,7 @@ public enum ATTACK_MODIFIER_TYPE
     Cancel,
 }
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum PLAYER_CLASS
 {
     [EnumMember(Value = "hatchet")]
@@ -45,7 +49,7 @@ public enum PLAYER_CLASS
     RedGuard,
 }
 
-
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum MONSTER_TYPES
 {
     [EnumMember(Value = "giantViper")]

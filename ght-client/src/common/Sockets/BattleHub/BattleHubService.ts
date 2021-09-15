@@ -7,7 +7,7 @@ import { battleHubConnection, actionTracker, battleHubConnected } from "./Battle
 const createClient = (token: string):void => {
 
     const builder = new HubConnectionBuilder();
-    const url = ENV_VARS.API.BaseURL();
+    const url = `${ENV_VARS.API.BaseURL()}battle`;
 
     ENV_VARS.AUTH.Enabled() ? builder.withUrl(url, {accessTokenFactory: () => token}) : builder.withUrl(url);
 
@@ -49,6 +49,7 @@ const stopConnection = (client: HubConnection): void => {
 }
 
 const takeBattleActionAsync = async (client: HubConnection, action: BattleAction): Promise<void> => {
+    console.log(JSON.stringify(action))
     return await client.send("takeBattleAction", action)
 }
 

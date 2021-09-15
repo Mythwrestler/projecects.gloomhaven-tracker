@@ -71,6 +71,10 @@ builder.Services.Configure<JsonOptions>(options =>
 builder.Services.AddScoped<IBattleRepo, BattleRepo>();
 builder.Services.AddScoped<IBattleService, BattleService>();
 
+builder.Services.AddHttpLogging(options => {
+    options.LoggingFields = Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.All;
+});
+
 var app = builder.Build();
 app.UseHttpLogging();
 
