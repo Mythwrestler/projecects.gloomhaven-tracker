@@ -12,6 +12,7 @@ import replace from '@rollup/plugin-replace';
 dotenv.config({ path: `.env.${process.env.NODE_ENV}` })
 
 const production = (process.env.NODE_ENV ?? 'local') === 'production';
+const isBuildOnly = !process.env.ROLLUP_WATCH;
 
 function serve() {
 	let server;
@@ -81,15 +82,15 @@ export default {
 
 		// In dev mode, call `npm run start` once
 		// the bundle has been generated
-		!production && serve(),
+		!isBuildOnly && serve(),
 
 		// Watch the `public` directory and refresh the
 		// browser on changes when not in production
-		!production && livereload('public'),
+		!isBuildOnly && livereload('public'),
 
 		// If we're building for production (npm run build
 		// instead of npm run dev), minify
-		production && terser()
+		isBuildOnly && terser()
 	],
 	watch: {
 		clearScreen: false
