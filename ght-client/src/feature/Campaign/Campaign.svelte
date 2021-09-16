@@ -12,6 +12,7 @@
     import { HubConnection } from "@microsoft/signalr";
     import ENV_VARS from "../../common/Environment";
     import { ACTOR_EFFECT_TYPES } from "../../models/battle";
+    import { serverMessages } from "../../common/Sockets/BattleHub/BattleHubStore";
 
     let connected: boolean = false;
     let battleHub: HubConnection;
@@ -87,10 +88,20 @@
                 >
             </div>
         </div>
-        <div class="flex flex-col justify-center items-center max-h-screen">
+        <div
+            class="flex flex-auto flex-col justify-center items-center max-h-screen"
+        >
             <h3 class="text-2xl font-bold mb-4">Actions Recieved</h3>
             {#each $actionTracker as action}
                 <div><span>{JSON.stringify(action)}</span></div>
+            {/each}
+        </div>
+        <div
+            class="flex flex-1 flex-col justify-center items-center max-h-screen"
+        >
+            <h3 class="text-2xl font-bold mb-4">Server Messages Recieved</h3>
+            {#each $serverMessages as message}
+                <div><span>{message}</span></div>
             {/each}
         </div>
     {/if}

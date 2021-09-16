@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using GloomhavenTracker.Service.BackgroundServices;
 using GloomhavenTracker.Service.Hubs;
 using GloomhavenTracker.Service.Models;
 using GloomhavenTracker.Service.Repos;
@@ -71,6 +72,8 @@ builder.Services.Configure<JsonOptions>(options =>
 
 builder.Services.AddScoped<IBattleRepo, BattleRepo>();
 builder.Services.AddScoped<IBattleService, BattleService>();
+
+builder.Services.AddHostedService<BattleHubMonitor>();
 
 if(httpLoggingEnabled)
 {
