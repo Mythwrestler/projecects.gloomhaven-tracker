@@ -2,7 +2,7 @@
 import { HubConnection, HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 import { BattleAction, BattleActionResult } from "../../../models/battle";
 import ENV_VARS from "../../Environment";
-import { battleHubConnection, actionTracker, battleHubConnected } from "./BattleHubStore"
+import { battleHubConnection, actionTracker, battleHubConnected, serverMessages } from "./BattleHubStore"
 
 const createClient = (token: string):void => {
 
@@ -22,8 +22,18 @@ const createClient = (token: string):void => {
                 const { update: setActionTracker } = actionTracker;
                 console.log(`Message Received: ${JSON.stringify(actionResult)} `)
                 setActionTracker((at) => [...at, actionResult]);
-            }
-        );
+            });
+
+            connection.on(
+            "serverMessage",
+            (serverMessage: string) => {
+                const { update: setServerMessages } = serverMessages;
+                setServerMessages((m) => {
+                    if(m.length < 14) {
+                        return [...m, serverMessage]
+                    }
+                    return [...m.slice(1), serverMessage]})
+            });
 
     battleHubConnection.update(() => connection);
 }
