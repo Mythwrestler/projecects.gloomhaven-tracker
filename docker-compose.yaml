@@ -1,5 +1,26 @@
 version: '3'
 services:
+  ght-client:
+    build: 
+      context: ./ght-client
+      args:
+        BUILD_ENV: local
+    image: ght-client:latest
+    ports:
+      - "5025:80"
+  ght-service:
+    build:
+      context: ./ght-service
+    image: ght-service:latest
+    ports:
+      - "5020:80"
+    environment:
+    - ASPNETCORE_URLS=http://+:80
+    - ASPNETCORE_ENVIRONMENT=Development
+    - AUTH_ENABLED=false
+    - AUTH_AUTHORITY=http://fake-authority/
+    - AUTH_AUDIENCE=fake-audience
+    - HTTP_LOGGING_ENABLED=false
   dbpostgres:
     image: registry.casperinc.net/postgres:13.4-alpine3.14
     volumes:

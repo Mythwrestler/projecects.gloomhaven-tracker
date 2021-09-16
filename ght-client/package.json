@@ -5,8 +5,9 @@
   "scripts": {
     "lint": "eslint './src/**/*.{js,ts,svelte}'",
     "lint:fix": "eslint --fix './src/**/*.{js,ts,svelte}'",
-    "build:production": "NODE_ENV=production rollup -c",
-    "build:development": "NODE_ENV=development rollup -c",
+    "build:prod": "NODE_ENV=production rollup -c",
+    "build:nprd": "NODE_ENV=development rollup -c",
+    "build:local": "NODE_ENV=local rollup -c",
     "dev": "NODE_ENV=local rollup -c -w",
     "start": "sirv public --no-clear -p 5025 --single",
     "check": "svelte-check --tsconfig ./tsconfig.json"
