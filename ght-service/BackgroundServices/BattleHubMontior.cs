@@ -1,18 +1,19 @@
 using GloomhavenTracker.Service.Hubs;
+using GloomhavenTracker.Service.Services;
 using Microsoft.AspNetCore.SignalR;
 
 namespace GloomhavenTracker.Service.BackgroundServices
 {
     public class BattleHubMonitor : BackgroundService
     {
-        private readonly IHubContext<BattleHub> _context;
+        private readonly IHubContext<CombatHub> _context;
 
-        private readonly ILogger<BattleHubMonitor> _logger;
+        private readonly ICombatService _service;
 
-        public BattleHubMonitor(IHubContext<BattleHub> context, ILogger<BattleHubMonitor> logger)
+        public BattleHubMonitor(IHubContext<CombatHub> context, ICombatService service)
         {
             _context = context;
-            _logger = logger;
+            _service = service;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
