@@ -13,7 +13,7 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Logging.AddJsonConsole();
+builder.Logging.AddConsole();
 // Add services to the container.
 
 
@@ -61,8 +61,31 @@ if (authEnabled)
 
 }
 
+builder.Services.AddSwaggerGen(c => 
+        {
+            c.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Version = "v1",
+                Title = "My API",
+                Description = "My First ASP.NET Core Web API",
+                TermsOfService = new System.Uri("https://www.talkingdotnet.com"),
+                Contact = new OpenApiContact() { Name = "Talking Dotnet", Email = "contact@talkingdotnet.com" }
+            });
+ 
+            c.SwaggerDoc("v2", new OpenApiInfo
+            {
+                Version = "v2",
+                Title = "New API V2",
+                Description = "Sample Web API",
+                TermsOfService = new System.Uri("https://www.talkingdotnet.com"),
+                Contact = new OpenApiContact() { Name = "Talking Dotnet", Email = "contact@talkingdotnet.com" }
+            });
+        });
+
 builder.Services.AddMemoryCache();
 builder.Services.AddSignalR();
+builder.Services.AddControllers();
+
 builder.Services.AddCors();
 
 builder.Services.Configure<JsonOptions>(options =>
@@ -70,35 +93,56 @@ builder.Services.Configure<JsonOptions>(options =>
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
 });
 
-builder.Services.AddScoped<IBattleRepo, BattleRepo>();
-builder.Services.AddScoped<IBattleService, BattleService>();
-
+builder.Services.AddSingleton<ICombatRepo, CombatRepo>();
+builder.Services.AddSingleton<ICombatService, CombatService>();
 builder.Services.AddHostedService<BattleHubMonitor>();
 
 if(httpLoggingEnabled)
 {
     builder.Services.AddHttpLogging(options => {
         options.LoggingFields = Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.All;
+        options.RequestBodyLogLimit = 4096;
+        options.RequestBodyLogLimit = 4096;
     });
 }
 
 var app = builder.Build();
 
-if(httpLoggingEnabled) app.UseHttpLogging();
+var logger = app.Logger;
+
+if(httpLoggingEnabled) {
+    app.UseHttpLogging();
+
+        // app.Use(async (context, next) =>
+        // {
+        //     logger.LogTrace(context.Request.Body.)
+        //     // Do work that doesn't write to the Response.
+        //     await next.Invoke();
+        //     // Do logging or other work that doesn't write to the Response.
+        // });
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
+
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+        c.SwaggerEndpoint("/swagger/v2/swagger.json", "My API V2");
+    });
+        
 }
 
 app.UseCors((config) =>
 {
     config
-        .AllowAnyMethod()
+        .WithMethods("POST", "GET")
         .AllowAnyHeader()
         .AllowCredentials()
-        .WithOrigins("http://localhost:5025");
+        .WithOrigins("http://localhost:5025", "http://localhost.fiddler:5025");
 });
 
 app.UseAuthentication();
@@ -114,7 +158,7 @@ else
     helloEndPoint.AllowAnonymous();
 }
 
-var battleHub = app.MapHub<BattleHub>("battle");
+var battleHub = app.MapHub<CombatHub>("hub/combatspace");
 if (authEnabled)
 {
     battleHub.RequireAuthorization("authenticated", "superuser");
@@ -123,5 +167,13 @@ else
 {
     battleHub.AllowAnonymous();
 }
+
+app.UseRouting();
+
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
 
 app.Run();
