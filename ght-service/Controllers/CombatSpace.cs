@@ -73,7 +73,7 @@ namespace GloomhavenTracker.Service.Controllers
         public IActionResult AddActors(Guid combatId, [FromBody]ActorsDTO actors)
         {
             var combat = _service.AddActors(combatId, actors);
-            var result = new JsonResult(combat);
+            var result = new JsonResult(combat.Actors);
             result.StatusCode = 200;
             return result;
         }

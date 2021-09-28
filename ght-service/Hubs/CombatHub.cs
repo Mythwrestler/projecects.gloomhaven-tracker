@@ -17,7 +17,7 @@ namespace GloomhavenTracker.Service.Hubs
             await Clients.All.SendAsync("battleActionReceived", new CombatActionResult());
         }
 
-        public async Task JoinCombat(Guid combatId)
+        public async Task JoinCombatSpace(Guid combatId)
         {
             if(_service.CombatExists(combatId))
             {
@@ -28,7 +28,7 @@ namespace GloomhavenTracker.Service.Hubs
             await Clients.Caller.SendAsync("hubRequestFailed", $"Could Not Find Combat Id {combatId.ToString()}");
         }
 
-        public async Task LeaveCombat(Guid combatId)
+        public async Task LeaveCombatSpace(Guid combatId)
         {
             if(_service.CombatExists(combatId))
             {

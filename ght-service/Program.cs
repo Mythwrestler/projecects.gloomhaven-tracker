@@ -158,7 +158,7 @@ else
     helloEndPoint.AllowAnonymous();
 }
 
-var battleHub = app.MapHub<CombatHub>("hub/combat");
+var battleHub = app.MapHub<CombatHub>("hub/combatspace");
 if (authEnabled)
 {
     battleHub.RequireAuthorization("authenticated", "superuser");

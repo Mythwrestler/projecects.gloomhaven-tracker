@@ -75,13 +75,13 @@ public class Player : Actor
     {
         Id = Id,
         Name = Name,
-        BaseHealthStats = BaseHealthStats,
-        BaseModifierDeck = BaseModifierDeck,
+        BaseHealth = BaseHealth,
         Effects = Effects.ActiveEffects,
         Experience = Experience,
         Health = Health,
         Levels = Levels,
-        modifierDeck = ModifierDeck.DTO
+        modifierDeck = ModifierDeck.DTO,
+        flippedModifierCards = ModifierDeck.GetFlippedCards()
     };
 }
 
@@ -155,11 +155,11 @@ public class Monster : Actor
     public MonsterDTO DTO => new MonsterDTO
     {
         Id = Id,
-        BaseStats = BaseStats,
         Level = Level,
         IsElite = IsElite,
         Effects = Effects.ActiveEffects,
         MonsterId = MonsterId,
+        BaseHealth = BaseHealth,
         Health = Health,
         Attack = Attack,
         Movement = Movement,
@@ -248,13 +248,14 @@ public class ActorDTO
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public string Name { get; set; } = String.Empty;
+    public int? BaseHealth {get; set;}
     public int Health { get; set; }
     public List<ActorEffect> Effects { get; set; } = new List<ActorEffect>();
 }
 public class MonsterDTO : ActorDTO
 {
     public string Type { get; set; } = string.Empty;
-    public BaseMonsterStatSet BaseStats { get; set; } = new BaseMonsterStatSet();
+    public BaseMonsterStatSet? BaseStats { get; set; }
     public int Level { get; set; }
     public bool IsElite { get; set; }
     public int MonsterId { get; set; }
@@ -263,19 +264,20 @@ public class MonsterDTO : ActorDTO
 }
 public class ObjectiveDTO : ActorDTO
 {
-    public int BaseHealth { get; set; }
     public string ObjectiveId { get; set; } = string.Empty;
 }
 
 public class PlayerDTO : ActorDTO
 {
-    public List<AttackModifier> BaseModifierDeck { get; set; } = new List<AttackModifier>();
+    public List<AttackModifier>? BaseModifierDeck { get; set; }
 
-    public AttackModifierDeckDTO modifierDeck { get; set; } = new AttackModifierDeckDTO();
+    public AttackModifierDeckDTO? modifierDeck { get; set; }
 
-    public Dictionary<int, int> BaseHealthStats { get; set; } = new Dictionary<int, int>();
+    public List<AttackModifier>? flippedModifierCards { get; set; }
 
-    public Dictionary<int, int> Levels { get; set; } = new Dictionary<int, int>();
+    public Dictionary<int, int>? BaseHealthStats { get; set; } = new Dictionary<int, int>();
+
+    public Dictionary<int, int>? Levels { get; set; } = new Dictionary<int, int>();
 
     public int Experience { get; set; } = 0;
 }

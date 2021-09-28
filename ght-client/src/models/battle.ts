@@ -24,19 +24,29 @@ export interface AttackModifier {
     value?: number
 }
 
+export interface AttackModifierCounts {
+        drawPileCount: number,
+        discardPileCount: number
+}
+
+
 export interface Actor {
     id: string,
     name: string,
+    health: string,
+    effects: ActorEffect[]
 }
 
+
 export interface Player extends Actor {
-    currentHealth: number,
-    level: Map<number, number>,
-    baseHealth: Map<number, number>,
-    effects: ActorEffect[],
     baseModifierDeck: AttackModifier[],
-    ModifierDeck: AttackModifier[],
+    modifierDeck: AttackModifierCounts,
+    baseHealthStats?: {[key: number]: number},
+    baseHealth?: number,
+    levels?: {[key: number]: number}
+    experience: number
 }
+
 
 export interface MonsterStatSet {
     health: number
@@ -45,34 +55,28 @@ export interface MonsterStatSet {
     effects: ActorEffect[]
 }
 
-export interface ActiveMonsterStatSet extends MonsterStatSet {
-    isElite: boolean
-}
-
 export interface BaseMonsterStatSet {
     elite: MonsterStatSet,
-    standard: MonsterStatSet
+    standard: MonsterStatSet,
 }
 
 export interface Monster extends Actor {
-    baseStats: Map<number, BaseMonsterStatSet>
-    activeMonsters: Map<number, ActiveMonsterStatSet>
+    type: string,
+    baseStats?: BaseMonsterStatSet,
+    baseHealth?: number,
+    level: number,
+    isElite: boolean,
+    monsterId: number,
+    attack?: number,
+    movement?: number,
 }
 
-export interface Battle {
-    actors: Actor[],
-    monsterDeck: AttackModifier[],
-    initiative: Map<number, string>
+export interface Objective extends Actor {
+    objectiveId: string
 }
 
-export interface BattleAction {
-    source: string
-    target: string
-    damage: number
-    effects: ActorEffect[]
-}
-
-export interface BattleActionResult {
-    affect: string,
-    affected: string,
+export interface Actors {
+    players: Player[],
+    monsters: Monster[],
+    objectives: Objective[],
 }

@@ -1,5 +1,3 @@
-
-
-<section class="">
-   <span></span>
+<section>
+   <span>Party</span>
 </section>

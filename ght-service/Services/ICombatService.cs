@@ -10,8 +10,6 @@ namespace GloomhavenTracker.Service.Services
 
         public bool PlayerBelongsToCombat(Guid combatId, Guid playerId);
 
-        public void AddPlayerToCombat(Guid combatId, Guid playerId);
-
         public CombatTrackerDTO GetCombat(Guid combatId);
 
         public CombatActionResult ProcessCombatAction(Guid combatId, CombatAction action);
@@ -20,7 +18,7 @@ namespace GloomhavenTracker.Service.Services
 
         public CombatTrackerDTO NextRound(Guid combatId);
 
-        public CombatTrackerDTO NewCombat();
+        public Guid NewCombat();
 
         public CombatTrackerDTO AddActors(Guid combatId, ActorsDTO actors);
 

@@ -13,11 +13,6 @@ namespace GloomhavenTracker.Service.Services
 
         public CombatService(ICombatRepo repo) => _repo = repo;
 
-        public void AddPlayerToCombat(Guid combatId, Guid playerId)
-        {
-            throw new NotImplementedException();
-        }
-
         public List<Guid> GetCombatList()
         {
             return _repo.GetCombats();
@@ -25,20 +20,20 @@ namespace GloomhavenTracker.Service.Services
 
         public bool CombatExists(Guid combatId)
         {
-            if(_combatSpaces.ContainsKey(combatId)) return true;
-            if(_repo.CombatExists(combatId)) return true;
+            if (_combatSpaces.ContainsKey(combatId)) return true;
+            if (_repo.CombatExists(combatId)) return true;
             return false;
         }
 
         public CombatTrackerDTO GetCombat(Guid combatId)
         {
-            if(!CombatExists(combatId)) throw new ArgumentException("Invalid Combat Id");
+            if (!CombatExists(combatId)) throw new ArgumentException("Invalid Combat Id");
             return GetCombatTracker(combatId).DTO;
         }
 
         private CombatTracker GetCombatTracker(Guid combatId)
         {
-            if(!_combatSpaces.ContainsKey(combatId)) 
+            if (!_combatSpaces.ContainsKey(combatId))
             {
                 _combatSpaces.Add(combatId, new CombatTracker(_repo.GetCombat(combatId)));
             }
@@ -47,7 +42,7 @@ namespace GloomhavenTracker.Service.Services
 
         public CombatTrackerDTO NextRound(Guid combatId)
         {
-            if(!CombatExists(combatId)) throw new ArgumentException("Invalid Combat Id");
+            if (!CombatExists(combatId)) throw new ArgumentException("Invalid Combat Id");
             CombatTracker combat = GetCombatTracker(combatId);
             combat.NewRound();
 
@@ -62,10 +57,10 @@ namespace GloomhavenTracker.Service.Services
 
         public Dictionary<int, Guid>? ProcessActorInitiative(Guid combatId, CombatInitiative initiative)
         {
-            if(!CombatExists(combatId)) throw new ArgumentException("Invalid Combat Id");
+            if (!CombatExists(combatId)) throw new ArgumentException("Invalid Combat Id");
             CombatTracker combat = GetCombatTracker(combatId);
             combat.SetCombatInitiative(initiative);
-            
+
             _repo.SaveCombat(combat.State);
 
             return combat.TurnOrder;
@@ -74,7 +69,7 @@ namespace GloomhavenTracker.Service.Services
 
         public CombatActionResult ProcessCombatAction(Guid combatId, CombatAction action)
         {
-            if(!CombatExists(combatId)) throw new ArgumentException("Invalid Combat Id");
+            if (!CombatExists(combatId)) throw new ArgumentException("Invalid Combat Id");
             CombatTracker combat = GetCombatTracker(combatId);
 
             var result = combat.ProcessBattleAction(action);
@@ -87,7 +82,7 @@ namespace GloomhavenTracker.Service.Services
 
         public CombatTrackerDTO AddActors(Guid combatId, ActorsDTO actors)
         {
-            if(!CombatExists(combatId)) throw new ArgumentException("Invalid Combat Id");
+            if (!CombatExists(combatId)) throw new ArgumentException("Invalid Combat Id");
             CombatTracker combat = GetCombatTracker(combatId);
 
             AddPlayers(combat, actors.Players);
@@ -101,77 +96,83 @@ namespace GloomhavenTracker.Service.Services
 
         private void AddMonsters(CombatTracker combat, List<MonsterDTO> actors)
         {
-            actors.ForEach(monsterDTO => {
-                    Monster monster = new Monster()
-                    {
-                        Effects = new ActorEffects(monsterDTO.Effects),
-                        Health = 0,
-                        Id = monsterDTO.Id,
-                        Level = monsterDTO.Level,
-                        Name = monsterDTO.Name,
-                        BaseStats = monsterDTO.BaseStats,
-                        MonsterId = monsterDTO.MonsterId,
-                        IsElite = monsterDTO.IsElite,
-                        Type = monsterDTO.Type
-                    };
-                    monster.Health = monsterDTO.Health > 0 ? monsterDTO.Health : monster.BaseHealth;
-                    var effects = monster.IsElite ? monster.BaseStats.Elite[monster.Level].Effects : monster.BaseStats.Standard[monster.Level].Effects;
-                    monster.Effects = new ActorEffects(effects);
-                    combat.AddMonster(monster);
+            actors.ForEach(monsterDTO =>
+            {
+                var baseStats = monsterDTO.BaseStats ?? new BaseMonsterStatSet();
+                Monster monster = new Monster()
+                {
+                    Effects = new ActorEffects(monsterDTO.Effects),
+                    Health = 0,
+                    Id = monsterDTO.Id,
+                    Level = monsterDTO.Level,
+                    Name = monsterDTO.Name,
+                    BaseStats = baseStats,
+                    MonsterId = monsterDTO.MonsterId,
+                    IsElite = monsterDTO.IsElite,
+                    Type = monsterDTO.Type
+                };
+                monster.Health = monsterDTO.Health > 0 ? monsterDTO.Health : monster.BaseHealth;
+                var effects = monster.IsElite ? monster.BaseStats.Elite[monster.Level].Effects : monster.BaseStats.Standard[monster.Level].Effects;
+                monster.Effects = new ActorEffects(effects);
+                combat.AddMonster(monster);
             });
 
         }
 
-        
+
         private void AddPlayers(CombatTracker combat, List<PlayerDTO> actors)
         {
-            actors.ForEach(playerDTO => {
-                    Player player = new Player(){
-                        BaseHealthStats = playerDTO.BaseHealthStats,
-                        BaseModifierDeck = playerDTO.BaseModifierDeck,
-                        Effects = new ActorEffects(playerDTO.Effects),
-                        Experience = playerDTO.Experience,
-                        Health = 0,
-                        Id = playerDTO.Id,
-                        Levels = playerDTO.Levels,
-                        ModifierDeck = new AttackModifierDeck(playerDTO.BaseModifierDeck),
-                        Name = playerDTO.Name
-                    };
-                    player.Health = playerDTO.Health > 0 ? playerDTO.Health : player.BaseHealth;
-                    combat.AddPlayer(player);
+            actors.ForEach(playerDTO =>
+            {
+                Player player = new Player()
+                {
+                    BaseHealthStats = playerDTO.BaseHealthStats ?? new Dictionary<int, int>(),
+                    BaseModifierDeck = playerDTO.BaseModifierDeck ?? new List<AttackModifier>(),
+                    Effects = new ActorEffects(playerDTO.Effects),
+                    Experience = playerDTO.Experience,
+                    Health = 0,
+                    Id = playerDTO.Id,
+                    Levels = playerDTO.Levels ?? new Dictionary<int, int>(),
+                    ModifierDeck = new AttackModifierDeck(playerDTO.BaseModifierDeck ?? new List<AttackModifier>()),
+                    Name = playerDTO.Name
+                };
+                player.Health = playerDTO.Health > 0 ? playerDTO.Health : player.BaseHealth;
+                combat.AddPlayer(player);
             });
         }
 
         private void AddObjectives(CombatTracker combat, List<ObjectiveDTO> actors)
         {
-            actors.ForEach(objectiveDTO => {
-                    Objective objective = new Objective (objectiveDTO.BaseHealth)
-                    {
-                        Effects = new ActorEffects(objectiveDTO.Effects),
-                        Health = 0,
-                        Id = objectiveDTO.Id,
-                        Name = objectiveDTO.Name,
-                        ObjectiveId = objectiveDTO.ObjectiveId
-                    };
-                    objective.Health = objectiveDTO.Health > 0 ? objectiveDTO.Health : objective.BaseHealth;
-                    combat.AddObjective(objective);
+            actors.ForEach(objectiveDTO =>
+            {
+                if (objectiveDTO.BaseHealth == null) throw new ArgumentException("Objectvie Base Health must be provided.");
+                Objective objective = new Objective(objectiveDTO.BaseHealth ?? 1)
+                {
+                    Effects = new ActorEffects(objectiveDTO.Effects),
+                    Health = 0,
+                    Id = objectiveDTO.Id,
+                    Name = objectiveDTO.Name,
+                    ObjectiveId = objectiveDTO.ObjectiveId
+                };
+                objective.Health = objectiveDTO.Health > 0 ? objectiveDTO.Health : objective.BaseHealth;
+                combat.AddObjective(objective);
             });
         }
 
 
-        public CombatTrackerDTO NewCombat()
+        public Guid NewCombat()
         {
             CombatTracker combat = new CombatTracker(new List<Player>(), new List<Monster>(), CombatBuilder.BaseModDeck);
 
             _combatSpaces.Add(combat.CombatId, combat);
 
             _repo.SaveCombat(combat.State);
-            return combat.DTO;
+            return combat.DTO.CombatId;
         }
 
         Dictionary<Guid, int> ICombatService.ProcessActorInitiative(Guid combatId, CombatInitiative initiative)
         {
-            if(!CombatExists(combatId)) throw new ArgumentException("Invalid Combat Id");
+            if (!CombatExists(combatId)) throw new ArgumentException("Invalid Combat Id");
             CombatTracker combat = GetCombatTracker(combatId);
 
             combat.SetCombatInitiative(initiative);
@@ -182,7 +183,7 @@ namespace GloomhavenTracker.Service.Services
 
         public bool CombatRoundReady(Guid combatId)
         {
-            if(!CombatExists(combatId)) throw new ArgumentException("Invalid Combat Id");
+            if (!CombatExists(combatId)) throw new ArgumentException("Invalid Combat Id");
             CombatTracker combat = GetCombatTracker(combatId);
 
             return (combat.CurrentActor != null);
@@ -190,7 +191,7 @@ namespace GloomhavenTracker.Service.Services
 
         public Guid? CurrentTurnInCombat(Guid combatId)
         {
-            if(!CombatExists(combatId)) throw new ArgumentException("Invalid Combat Id");
+            if (!CombatExists(combatId)) throw new ArgumentException("Invalid Combat Id");
             CombatTracker combat = GetCombatTracker(combatId);
 
             return combat.CurrentActor;
@@ -198,7 +199,7 @@ namespace GloomhavenTracker.Service.Services
 
         public List<string> GetHubClients(Guid combatId)
         {
-            if(!CombatExists(combatId)) throw new ArgumentException("Invalid Combat Id");
+            if (!CombatExists(combatId)) throw new ArgumentException("Invalid Combat Id");
             CombatTracker combat = GetCombatTracker(combatId);
 
             return combat.HubClients;
@@ -206,7 +207,7 @@ namespace GloomhavenTracker.Service.Services
 
         public void RegisterHubClient(Guid combatId, string clientId)
         {
-            if(!CombatExists(combatId)) throw new ArgumentException("Invalid Combat Id");
+            if (!CombatExists(combatId)) throw new ArgumentException("Invalid Combat Id");
             CombatTracker combat = GetCombatTracker(combatId);
 
             combat.RegisterHubClient(clientId);
@@ -216,7 +217,7 @@ namespace GloomhavenTracker.Service.Services
 
         public void RemoveHubClient(Guid combatId, string clientId)
         {
-            if(!CombatExists(combatId)) throw new ArgumentException("Invalid Combat Id");
+            if (!CombatExists(combatId)) throw new ArgumentException("Invalid Combat Id");
             CombatTracker combat = GetCombatTracker(combatId);
 
             combat.RemoveHubClient(clientId);
