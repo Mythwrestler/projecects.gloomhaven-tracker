@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using GloomhavenTracker.Service.Models;
 
 namespace GloomhavenTracker.Service.Repos

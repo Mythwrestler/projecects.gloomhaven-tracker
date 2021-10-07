@@ -3,6 +3,7 @@ using GloomhavenTracker.Service.Models;
 using Microsoft.AspNetCore.Mvc;
 using GloomhavenTracker.Service.Hubs;
 using Microsoft.AspNetCore.SignalR;
+using System;
 
 namespace GloomhavenTracker.Service.Controllers
 {

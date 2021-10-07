@@ -1,6 +1,10 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using GloomhavenTracker.Service.Hubs;
 using GloomhavenTracker.Service.Services;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Hosting;
 
 namespace GloomhavenTracker.Service.BackgroundServices
 {
