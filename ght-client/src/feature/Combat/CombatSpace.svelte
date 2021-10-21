@@ -1,233 +1,158 @@
 <script lang="ts">
-    import { stringify } from "querystring";
     import { onMount } from "svelte";
-    import { authToken, isAuthenticated } from "@dopry/svelte-auth0";
+    import { isAuthenticated } from "@dopry/svelte-auth0";
     import ENV_VARS from "../../common/Environment";
-
-    // import { ACTOR_EFFECT_TYPES } from "../../models/battle";
-
-    import CombatSpace, {
-        apisReady,
+    import {
+        buildCombatHub,
         combatHubConnected,
         combatSpaceConnected,
-    } from "./CombatTracker";
-    import CombatPanel from "./CombatPanel.svelte";
-    import NewCombat from "./NewCombat.svelte";
+        combatSpaceId,
+    } from "./CombatTrackerService";
+    import CombatSpaceListing from "./CombatSpaceListing.svelte";
     import AddMonster from "./AddMonster.svelte";
     import StartCombat from "./StartCombat.svelte";
-    import type { SvelteComponent } from "svelte/internal";
-
-    let _combatId: string = "";
-
-    isAuthenticated.subscribe((isAuthenticated) => {
-        if (ENV_VARS.AUTH.Enabled() && isAuthenticated)
-            CombatSpace.BuildAPI($authToken);
-    });
-
-    apisReady.subscribe(async (apisReady) => {
-        if (apisReady) {
-            let combatId = await CombatSpace.NewCombatSpace();
-            _combatId = combatId ?? "";
-        }
-        if (_combatId != "")
-            await CombatSpace.StartHub(
-                _combatId,
-                ENV_VARS.AUTH.Enabled() ? $authToken : undefined
-            );
-    });
-
-    // interface PanelDefiniton {
-    //     position: PanelPosition;
-    //     component: typeof StartCombat | typeof NewCombat | typeof AddMonster;
-    // }
-
-    // const newCombatPanel: PanelDefiniton = {
-    //     position: "center",
-    //     component: NewCombat,
-    // };
-
-    // const addMonsterPanel: PanelDefiniton = {
-    //     position: "right",
-    //     component: AddMonster,
-    // };
-
-    // const startCombatPanel: PanelDefiniton = {
-    //     position: null,
-    //     component: StartCombat,
-    // };
-
-    // const movePanelLeft = (panelPosition: PanelPosition): PanelPosition => {
-    //     switch (panelPosition) {
-    //         case "right":
-    //             return "center";
-    //         case "center":
-    //             return "left";
-    //         case "left":
-    //             return null;
-    //         default:
-    //             return "right";
-    //     }
-    // };
-    // const movePanelRight = (panelPosition: PanelPosition): PanelPosition => {
-    //     switch (panelPosition) {
-    //         case "left":
-    //             return "center";
-    //         case "center":
-    //             return "right";
-    //         case "right":
-    //             return null;
-    //         default:
-    //             return "left";
-    //     }
-    // };
-
-    // interface CombatPanelUsage {
-    //     purpose: string;
-    // }
-
-    // interface Panels {
-    //     component: typeof StartCombat | typeof NewCombat | typeof AddMonster;
-    // }
-
-    // const panels: (
-    //     | typeof StartCombat
-    //     | typeof NewCombat
-    //     | typeof AddMonster
-    // )[] = [StartCombat, NewCombat, AddMonster];
-
-    // let currentPanel = 0;
-
-    // const leftComponent = () => {
-    //     if (currentPanel > 0) return panels[currentPanel - 1];
-    // };
-    // const centerComponent = () => panels[currentPanel];
-
-    // const rightComponent = () => {
-    //     if (currentPanel < panels.length) return panels[2];
-    // };
-
-    // const handleNextClick = () => {
-    //     if (currentPanel + 1 < panels.length) currentPanel++;
-    //     console.log(`currentPanel: ${currentPanel}`);
-    // };
-
-    // const handlePreviousClick = () => {
-    //     if (currentPanel > 0) currentPanel--;
-    //     console.log(`currentPanel: ${currentPanel}`);
-    // };
-
-    // interface PanelsOrder {
-    //     [key:number]: PanelLabel
-    // }
-    // const panelsOrder:PanelsOrder = {
-    //     [0]: "NewCombat",
-    //     [1]: "AddMonster",
-    //     [2]: "StartCombat"
-    // }
 
     type PanelPosition = "left" | "center" | "right" | null;
 
-    type PanelLabel = "NewCombat" | "AddMonster" | "StartCombat";
+    type PanelLabel = "CombatSpaceListing" | "AddMonster" | "StartCombat";
 
     interface PanelPositions {
         [key: string]: PanelPosition;
     }
     const panelPositions: PanelPositions = {
-        ["NewCombat"]: "center",
+        ["CombatSpaceListing"]: "center",
         ["AddMonster"]: "right",
         ["StartCombat"]: null,
     };
     const panelOrder: Map<number, PanelLabel> = new Map<number, PanelLabel>();
 
-    const centerIndex: number = 0
+    let leftIndex: number | null = null;
+    let centerIndex: number = 0;
+    let rightIndex: number | null = 1;
+
+    const movePanelLeft = (panelPosition: PanelPosition): PanelPosition => {
+        switch (panelPosition) {
+            case "right":
+                return "center";
+            case "center":
+                return "left";
+            case "left":
+                return null;
+            default:
+                return "right";
+        }
+    };
+    const movePanelRight = (panelPosition: PanelPosition): PanelPosition => {
+        switch (panelPosition) {
+            case "left":
+                return "center";
+            case "center":
+                return "right";
+            case "right":
+                return null;
+            default:
+                return "left";
+        }
+    };
+
     const handleNext = () => {
-        
-    }
+        if (centerIndex + 1 >= panelOrder.size) return;
+
+        let currentLeft: string = "";
+        let currentCenter: string = "";
+        let currentRight: string = "";
+        let nextRight: string = "";
+
+        currentLeft = panelOrder.get(centerIndex - 1) ?? "";
+        currentCenter = panelOrder.get(centerIndex) ?? "";
+        currentRight = panelOrder.get(centerIndex + 1) ?? "";
+        nextRight = panelOrder.get(centerIndex + 2) ?? "";
+        console.log(`${currentLeft} | ${currentCenter} | ${currentRight}`);
+        panelPositions[currentLeft] = movePanelLeft(
+            panelPositions[currentLeft]
+        );
+        panelPositions[currentCenter] = movePanelLeft(
+            panelPositions[currentCenter]
+        );
+        panelPositions[currentRight] = movePanelLeft(
+            panelPositions[currentRight]
+        );
+        panelPositions[nextRight] = movePanelLeft(panelPositions[nextRight]);
+        centerIndex++;
+    };
+
     const handlePrevious = () => {
-        
-    }
+        if (centerIndex - 1 < 0) return;
 
+        let currentLeft: string = "";
+        let currentCenter: string = "";
+        let currentRight: string = "";
+        let nextLeft: string = "";
 
+        nextLeft = panelOrder.get(centerIndex - 2) ?? "";
+        currentLeft = panelOrder.get(centerIndex - 1) ?? "";
+        currentCenter = panelOrder.get(centerIndex) ?? "";
+        currentRight = panelOrder.get(centerIndex + 1) ?? "";
+        console.log(`${currentLeft} | ${currentCenter} | ${currentRight}`);
+        panelPositions[currentLeft] = movePanelRight(
+            panelPositions[currentLeft]
+        );
+        panelPositions[currentCenter] = movePanelRight(
+            panelPositions[currentCenter]
+        );
+        panelPositions[currentRight] = movePanelRight(
+            panelPositions[currentRight]
+        );
+        panelPositions[nextLeft] = movePanelRight(panelPositions[nextLeft]);
+        centerIndex--;
+    };
+
+    isAuthenticated.subscribe((isAuthenticated) => {
+        if (ENV_VARS.AUTH.Enabled() && isAuthenticated) buildCombatHub();
+    });
 
     onMount(async () => {
-        if (!ENV_VARS.AUTH.Enabled()) CombatSpace.BuildAPI();
-        panelOrder.set(0, "NewCombat");
+        if (!ENV_VARS.AUTH.Enabled()) buildCombatHub();
+        panelOrder.set(0, "CombatSpaceListing");
         panelOrder.set(1, "AddMonster");
         panelOrder.set(2, "StartCombat");
     });
-
 </script>
 
 <section class="bg-gray-100 flex flex-col h-full">
-    <div>APIs Are Ready: {$apisReady}</div>
-    <div>Created Combat Space: {_combatId}</div>
     <div>Hub Is Connected: {$combatHubConnected}</div>
     <div>Joined Combat Space: {$combatSpaceConnected}</div>
+    <div>Combat Space Id: {$combatSpaceId}</div>
     <div class="relative grid gap-6 mt-10 lg:grid-col-3 md:grid-col-2 h-full">
-        <!-- {#if newCombatPanel.position != null}
-            <NewCombat
-                isLeft={newCombatPanel.position == "left"}
-                isCenter={newCombatPanel.position == "center"}
-                isRight={newCombatPanel.position == "right"}
-                onNext={() => {}}
-                onPrevious={() => {}}
+        {#if panelPositions["CombatSpaceListing"] !== null}
+            <CombatSpaceListing
+                isLeft={panelPositions["CombatSpaceListing"] === "left"}
+                isCenter={panelPositions["CombatSpaceListing"] === "center"}
+                isRight={panelPositions["CombatSpaceListing"] === "right"}
+                onNext={handleNext}
+                onPrevious={handlePrevious}
+                disabled={panelPositions["CombatSpaceListing"] !== "center"}
             />
         {/if}
-        {#if addMonsterPanel.position != null}
+        {#if panelPositions["AddMonster"] !== null}
             <AddMonster
-                isLeft={addMonsterPanel.position == "left"}
-                isCenter={addMonsterPanel.position == "center"}
-                isRight={addMonsterPanel.position == "right"}
-                onNext={() => {}}
-                onPrevious={() => {}}
+                isLeft={panelPositions["AddMonster"] === "left"}
+                isCenter={panelPositions["AddMonster"] === "center"}
+                isRight={panelPositions["AddMonster"] === "right"}
+                onNext={handleNext}
+                onPrevious={handlePrevious}
+                disabled={panelPositions["AddMonster"] !== "center"}
             />
         {/if}
-        {#if startCombatPanel.position != null}
+        {#if panelPositions["StartCombat"] !== null}
             <StartCombat
-                isLeft={startCombatPanel.position == "left"}
-                isCenter={startCombatPanel.position == "center"}
-                isRight={startCombatPanel.position == "right"}
-                onNext={() => {}}
-                onPrevious={() => {}}
+                isLeft={panelPositions["StartCombat"] === "left"}
+                isCenter={panelPositions["StartCombat"] === "center"}
+                isRight={panelPositions["StartCombat"] === "right"}
+                onNext={handleNext}
+                onPrevious={handlePrevious}
+                disabled={panelPositions["StartCombat"] !== "center"}
             />
-        {/if} -->
-        <!-- <svelte:component
-            this={leftComponent()}
-            isLeft={true}
-            onNext={handleNextClick}
-            onPrevious={handlePreviousClick}
-        />
-        <svelte:component
-            this={centerComponent()}
-            isCenter={true}
-            onNext={handleNextClick}
-            onPrevious={handlePreviousClick}
-            disabled={false}
-        />
-        <svelte:component
-            this={rightComponent()}
-            isRight={true}
-            onNext={handleNextClick}
-            onPrevious={handlePreviousClick}
-        /> -->
-
-        <!-- <StartCombat isLeft={true} />
-        <NewCombat isCenter={true} />
-        <AddMonster isRight={true} /> -->
-        <!-- <CombatPanel isCenter={true}>
-            <div>
-                <h3 class="font-serif font-black top">This is a content box</h3>
-            </div>
-            <div class="flex flex-row">
-                <button
-                    class="w-1/2 py-2 text-center font-sans border-2 border-black bg-red-900 text-white"
-                    >Previous</button
-                >
-                <button
-                    class="w-1/2 py-2 text-center font-sans border-2 border-black bg-red-900 text-white"
-                    >Next</button
-                >
-            </div></CombatPanel
-        > -->
+        {/if}
     </div>
 </section>

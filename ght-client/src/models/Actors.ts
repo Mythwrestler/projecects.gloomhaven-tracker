@@ -1,34 +1,5 @@
-export enum ACTOR_EFFECT_TYPES {
-    Strength = "strength",
-    Poison = "poison",
-    Stun = "stun",
-    Shield = "shield"
-}
-
-export interface ActorEffect {
-    type: ACTOR_EFFECT_TYPES,
-    value: number,
-    duration: number,
-}
-
-export enum ATTACK_MODIFIER_TYPE {
-    Add = "add",
-    Multiply = "multiply",
-    Cancel = "cancel"
-}
-
-export interface AttackModifier {
-    type: ATTACK_MODIFIER_TYPE,
-    isCurse: boolean
-    isBlessing: boolean
-    value?: number
-}
-
-export interface AttackModifierCounts {
-        drawPileCount: number,
-        discardPileCount: number
-}
-
+import { AttackModifier, AttackModifierCounts } from './AttackModifier'
+import { ActorEffect } from './ActorEffect'
 
 export interface Actor {
     id: string,
@@ -41,9 +12,9 @@ export interface Actor {
 export interface Player extends Actor {
     baseModifierDeck: AttackModifier[],
     modifierDeck: AttackModifierCounts,
-    baseHealthStats?: {[key: number]: number},
+    baseHealthStats?: { [key: number]: number },
     baseHealth?: number,
-    levels?: {[key: number]: number}
+    levels?: { [key: number]: number }
     experience: number
 }
 

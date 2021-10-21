@@ -86,13 +86,16 @@ export default {
 
 		// Watch the `public` directory and refresh the
 		// browser on changes when not in production
-		!isBuildOnly && livereload('public'),
+		!isBuildOnly && livereload('public/**'),
 
 		// If we're building for production (npm run build
 		// instead of npm run dev), minify
 		isBuildOnly && terser()
 	],
 	watch: {
-		clearScreen: false
+		clearScreen: false,
+        chokidar: {
+            usePolling: true
+        }
 	}
 };

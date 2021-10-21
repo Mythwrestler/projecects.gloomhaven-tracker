@@ -1,10 +1,5 @@
 <script lang="ts">
     import CombatPanel from "./CombatPanel.svelte";
-    import CombatSpace, {
-        apisReady,
-        combatHubConnected,
-        combatSpaceConnected,
-    } from "./CombatTracker";
 
     export let isLeft: boolean = false;
     export let isRight: boolean = false;
