@@ -3,6 +3,7 @@ using GloomhavenTracker.Service.Models;
 using Microsoft.AspNetCore.Mvc;
 using GloomhavenTracker.Service.Hubs;
 using Microsoft.AspNetCore.SignalR;
+using System;
 
 namespace GloomhavenTracker.Service.Controllers
 {
@@ -19,9 +20,9 @@ namespace GloomhavenTracker.Service.Controllers
 
         [Route("new")]
         [HttpPost]
-        public IActionResult CreateCombat()
+        public IActionResult CreateCombat([FromBody] NewCombatTrackerDescription body)
         {
-            var combat = _service.NewCombat();
+            var combat = _service.NewCombat(body.Description);
             var result = new JsonResult(combat);
             result.StatusCode = 200;
             return result;

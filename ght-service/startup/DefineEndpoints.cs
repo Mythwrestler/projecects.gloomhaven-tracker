@@ -1,3 +1,6 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Hosting;
+
 namespace GloomhavenTracker.Service.Startup;
 
 public static class Define

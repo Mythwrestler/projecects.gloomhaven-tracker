@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using GloomhavenTracker.Service.Models;
 
 namespace GloomhavenTracker.Service.Services
@@ -6,7 +8,7 @@ namespace GloomhavenTracker.Service.Services
 
         public bool CombatExists(Guid combatId);
 
-        public List<Guid> GetCombatList();
+        public List<CombatTrackerSummaryDTO> GetCombatList();
 
         public bool PlayerBelongsToCombat(Guid combatId, Guid playerId);
 
@@ -18,7 +20,7 @@ namespace GloomhavenTracker.Service.Services
 
         public CombatTrackerDTO NextRound(Guid combatId);
 
-        public Guid NewCombat();
+        public CombatTrackerSummaryDTO NewCombat(string description);
 
         public CombatTrackerDTO AddActors(Guid combatId, ActorsDTO actors);
 

@@ -1,42 +1,74 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace GloomhavenTracker.Service.Models
 {
 
     public class CombatTrackerDO
     {
         public Guid CombatId { get; set; }
+        public string Description { get; set; } = String.Empty;
         public ActorsDO Actors { get; set; } = new ActorsDO();
         public AttackModifierDeckDO MonsterDeck { get; set; } = new AttackModifierDeckDO();
         public Dictionary<ELEMENT_TYPE, ELEMENT_STRENGTH> Elements { get; set; } = new Dictionary<ELEMENT_TYPE, ELEMENT_STRENGTH>();
         public Dictionary<Guid, int> Initiative { get; set; } = new Dictionary<Guid, int>();
         public int CurrentActor { get; set; }
         public int RoundNumber { get; set; }
-        public List<string> RegisteredHubClients {get; set;} = new List<string>();
+        public List<string> RegisteredHubClients { get; set; } = new List<string>();
+
+        public CombatTrackerSummaryDTO SummaryDTO 
+        {
+            get
+            {
+                return new CombatTrackerSummaryDTO()
+                {
+                    CombatId = CombatId,
+                    Description = Description
+                };
+            }
+        }
     }
 
     public class CombatTrackerDTO
     {
         public Guid CombatId { get; set; }
-
+        public string Description { get; set; } = String.Empty;
         public ActorsDTO Actors { get; set; } = new ActorsDTO();
         public AttackModifierDeckDTO MonsterDeck { get; set; } = new AttackModifierDeckDTO();
         public Dictionary<ELEMENT_TYPE, ELEMENT_STRENGTH> Elements { get; set; } = new Dictionary<ELEMENT_TYPE, ELEMENT_STRENGTH>();
-        public Dictionary<int, Guid> TurnOrder {get; set;} = new Dictionary<int, Guid>();
+        public Dictionary<int, Guid> TurnOrder { get; set; } = new Dictionary<int, Guid>();
         public Guid? CurrentActor { get; set; }
         public int RoundNumber { get; set; }
     }
 
+    public class CombatTrackerSummaryDTO
+    {
+        public Guid CombatId { get; set; }
+        public string Description { get; set; } = String.Empty;
+    }
+
+    public class NewCombatTrackerDescription {
+        public string Description { get; set; } = String.Empty;
+    }
+
+
     public class CombatTracker
     {
         private readonly Guid _combatId = Guid.NewGuid();
+
+        private readonly string _description;
         private int _roundNumber = 0;
 
         private List<string> _registeredHubClients = new List<string>();
         public List<string> HubClients => _registeredHubClients.ToList();
-        public void RegisterHubClient (string clientId) {
-            if(!_registeredHubClients.Contains(clientId)) _registeredHubClients.Add(clientId);
+        public void RegisterHubClient(string clientId)
+        {
+            if (!_registeredHubClients.Contains(clientId)) _registeredHubClients.Add(clientId);
         }
-        public void RemoveHubClient (string clientId) {
-            if(_registeredHubClients.Contains(clientId)) _registeredHubClients.Remove(clientId);
+        public void RemoveHubClient(string clientId)
+        {
+            if (_registeredHubClients.Contains(clientId)) _registeredHubClients.Remove(clientId);
         }
 
         private Dictionary<Guid, Player> _players = new Dictionary<Guid, Player>();
@@ -57,9 +89,10 @@ namespace GloomhavenTracker.Service.Models
 
         private AttackModifierDeck _monsterModDeck;
 
-        public CombatTracker(List<Player> players, List<Monster> monsters, List<AttackModifier> monsterModDeck)
+        public CombatTracker(String description, List<Player> players, List<Monster> monsters, List<AttackModifier> monsterModDeck)
         {
             _combatId = Guid.NewGuid();
+            _description = description;
             _monsterModDeck = new AttackModifierDeck(monsterModDeck);
             players.ForEach(p => AddPlayer(p));
             monsters.ForEach(m => AddMonster(m));
@@ -69,62 +102,67 @@ namespace GloomhavenTracker.Service.Models
         {
             _combatId = combat.CombatId;
 
+            _description = combat.Description;
+
             _roundNumber = combat.RoundNumber;
 
             _monsterModDeck = new AttackModifierDeck(combat.MonsterDeck);
 
             _elements = new Elements(combat.Elements);
 
-            combat.Actors.Players.ForEach(player => {
-                    Player actor = new Player()
-                    {
-                        Id = player.Id,
-                        Name = player.Name,
-                        Experience = player.Experience,
-                        ModifierDeck = new AttackModifierDeck(player.modifierDeck),
-                        BaseModifierDeck = player.BaseModifierDeck,
-                        BaseHealthStats = player.BaseHealthStats,
-                        Effects = new ActorEffects(player.Effects),
-                        Health = player.Health,
-                        Levels = player.Levels
-                    };
+            combat.Actors.Players.ForEach(player =>
+            {
+                Player actor = new Player()
+                {
+                    Id = player.Id,
+                    Name = player.Name,
+                    Experience = player.Experience,
+                    ModifierDeck = new AttackModifierDeck(player.modifierDeck),
+                    BaseModifierDeck = player.BaseModifierDeck,
+                    BaseHealthStats = player.BaseHealthStats,
+                    Effects = new ActorEffects(player.Effects),
+                    Health = player.Health,
+                    Levels = player.Levels
+                };
 
-                    if (actor.Health > 0)
-                    {
-                        _players.Add(actor.Id, actor);
-                    }
-                    else
-                    {
-                        _exhaustedPlayers.Add(actor.Id, actor);
-                    }
+                if (actor.Health > 0)
+                {
+                    _players.Add(actor.Id, actor);
+                }
+                else
+                {
+                    _exhaustedPlayers.Add(actor.Id, actor);
+                }
             });
 
-            combat.Actors.Monsters.ForEach(monster => {
-                    Monster actor = new Monster()
-                    {
-                        Id = monster.Id,
-                        BaseStats = monster.BaseStats,
-                        Effects = new ActorEffects(monster.Effects),
-                        Health = monster.Health,
-                        IsElite = monster.IsElite,
-                        Level = monster.Level,
-                        MonsterId = monster.MonsterId,
-                        Name = monster.Name,
-                        Type = monster.Type
-                    };
-                    _monsters.Add(actor.Id, actor);
+            combat.Actors.Monsters.ForEach(monster =>
+            {
+                Monster actor = new Monster()
+                {
+                    Id = monster.Id,
+                    BaseStats = monster.BaseStats,
+                    Effects = new ActorEffects(monster.Effects),
+                    Health = monster.Health,
+                    IsElite = monster.IsElite,
+                    Level = monster.Level,
+                    MonsterId = monster.MonsterId,
+                    Name = monster.Name,
+                    Type = monster.Type
+                };
+                _monsters.Add(actor.Id, actor);
             });
 
-            combat.Actors.Objectives.ForEach(objective => {
-                    Objective actor = new Objective(objective.BaseHealth)
-                    {
-                        Id = objective.Id,
-                        ObjectiveId = objective.ObjectiveId,
-                        Effects = new ActorEffects(objective.Effects),
-                        Health = objective.Health,
-                        Name = objective.Name
-                    };
-                    _objectives.Add(actor.Id, actor);
+            combat.Actors.Objectives.ForEach(objective =>
+            {
+                Objective actor = new Objective(objective.BaseHealth)
+                {
+                    Id = objective.Id,
+                    ObjectiveId = objective.ObjectiveId,
+                    Effects = new ActorEffects(objective.Effects),
+                    Health = objective.Health,
+                    Name = objective.Name
+                };
+                _objectives.Add(actor.Id, actor);
             });
 
             _initiative = combat.Initiative;
@@ -151,7 +189,7 @@ namespace GloomhavenTracker.Service.Models
 
         public Player? GetPlayer(Guid id)
         {
-            if(_players.ContainsKey(id))
+            if (_players.ContainsKey(id))
             {
                 return _players.GetValueOrDefault(id);
             }
@@ -168,7 +206,7 @@ namespace GloomhavenTracker.Service.Models
 
         public void SetCombatInitiative(CombatInitiative initiative)
         {
-            if(String.IsNullOrWhiteSpace(initiative.MonsterType))
+            if (String.IsNullOrWhiteSpace(initiative.MonsterType))
             {
                 SetPlayerInitiative(
                     initiative.PlayerId,
@@ -183,7 +221,7 @@ namespace GloomhavenTracker.Service.Models
                 );
             }
 
-            if(TurnOrder != null) _currentActor = 1;
+            if (TurnOrder != null) _currentActor = 1;
 
         }
 
@@ -254,7 +292,7 @@ namespace GloomhavenTracker.Service.Models
             _objectives.Values.ToList().ForEach(Actor => Actor.Effects.ReduceEffectDurations());
             _monsters.Values.ToList().ForEach(Actor => Actor.Effects.ReduceEffectDurations());
             _currentActor = -1;
-            if(_roundNumber > -1) _roundNumber++;
+            if (_roundNumber > -1) _roundNumber++;
         }
 
         public List<AttackModifier> DrawFromMonsterModDeck(int count) => _monsterModDeck.DrawNewCards(count);
@@ -266,12 +304,12 @@ namespace GloomhavenTracker.Service.Models
 
         public CombatActionResult ProcessBattleAction(CombatAction action)
         {
-            if(!_players.ContainsKey(action.Source) && !_monsters.ContainsKey(action.Source) && !_objectives.ContainsKey(action.Source))
+            if (!_players.ContainsKey(action.Source) && !_monsters.ContainsKey(action.Source) && !_objectives.ContainsKey(action.Source))
                 throw new ArgumentException("Invalid Combat Action Source");
 
-            
-            if(!_players.ContainsKey(action.Target) && !_monsters.ContainsKey(action.Target) && !_objectives.ContainsKey(action.Target))
-                 throw new ArgumentException("Invalid Combat Action Target");
+
+            if (!_players.ContainsKey(action.Target) && !_monsters.ContainsKey(action.Target) && !_objectives.ContainsKey(action.Target))
+                throw new ArgumentException("Invalid Combat Action Target");
 
             action.ElementsCharged.ForEach(e => _elements.ChargeElement(e));
             action.ElementSpent.ForEach(e => _elements.SpendElementCharge(e));
@@ -290,7 +328,7 @@ namespace GloomhavenTracker.Service.Models
                 {
                     Actors = new ActorsDTO
                     {
-                        Players = new List<PlayerDTO>(){player.DTO}
+                        Players = new List<PlayerDTO>() { player.DTO }
                     },
                     ElementalStrength = ElementalStrength
                 };
@@ -301,12 +339,12 @@ namespace GloomhavenTracker.Service.Models
                 Actor actor = _monsters[action.Target];
                 ApplyBattleActionToActor(action, ref actor);
                 if (monster.Health <= 0) _monsters.Remove(monster.Id);
-                
+
                 return new CombatActionResult
                 {
                     Actors = new ActorsDTO
                     {
-                        Monsters = new List<MonsterDTO>(){monster.DTO}
+                        Monsters = new List<MonsterDTO>() { monster.DTO }
                     },
                     ElementalStrength = ElementalStrength
                 };
@@ -321,7 +359,7 @@ namespace GloomhavenTracker.Service.Models
                 {
                     Actors = new ActorsDTO
                     {
-                        Objectives = new List<ObjectiveDTO>(){objective.DTO}
+                        Objectives = new List<ObjectiveDTO>() { objective.DTO }
                     },
                     ElementalStrength = ElementalStrength
                 };
@@ -366,7 +404,7 @@ namespace GloomhavenTracker.Service.Models
 
         }
 
-        public CombatTrackerDO State 
+        public CombatTrackerDO State
         {
             get
             {
@@ -376,6 +414,7 @@ namespace GloomhavenTracker.Service.Models
                 return new CombatTrackerDO
                 {
                     CombatId = _combatId,
+                    Description = _description,
                     Actors = new ActorsDO
                     {
                         Players = players,
@@ -402,6 +441,7 @@ namespace GloomhavenTracker.Service.Models
                 return new CombatTrackerDTO
                 {
                     CombatId = _combatId,
+                    Description = _description,
                     Actors = new ActorsDTO
                     {
                         Players = players,
@@ -416,7 +456,19 @@ namespace GloomhavenTracker.Service.Models
                 };
 
             }
-        } 
+        }
+
+        public CombatTrackerSummaryDTO SummaryDTO
+        {
+            get
+            {
+                return new CombatTrackerSummaryDTO()
+                {
+                    CombatId = _combatId,
+                    Description = _description
+                };
+            }
+        }
 
     }
 

@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using GloomhavenTracker.Service.Models;
@@ -13,9 +16,12 @@ namespace GloomhavenTracker.Service.Services
 
         public CombatService(ICombatRepo repo) => _repo = repo;
 
-        public List<Guid> GetCombatList()
+        public List<CombatTrackerSummaryDTO> GetCombatList()
         {
-            return _repo.GetCombats();
+            List<Guid> ids = _repo.GetCombats();
+            List<CombatTrackerSummaryDTO> summaries = ids.Select(id => _repo.GetCombat(id).SummaryDTO).ToList();
+
+            return summaries;
         }
 
         public bool CombatExists(Guid combatId)
@@ -160,14 +166,14 @@ namespace GloomhavenTracker.Service.Services
         }
 
 
-        public Guid NewCombat()
+        public CombatTrackerSummaryDTO NewCombat(string description)
         {
-            CombatTracker combat = new CombatTracker(new List<Player>(), new List<Monster>(), CombatBuilder.BaseModDeck);
+            CombatTracker combat = new CombatTracker(description, new List<Player>(), new List<Monster>(), CombatBuilder.BaseModDeck);
 
             _combatSpaces.Add(combat.CombatId, combat);
 
             _repo.SaveCombat(combat.State);
-            return combat.DTO.CombatId;
+            return combat.SummaryDTO;
         }
 
         Dictionary<Guid, int> ICombatService.ProcessActorInitiative(Guid combatId, CombatInitiative initiative)
