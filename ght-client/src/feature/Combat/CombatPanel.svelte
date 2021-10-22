@@ -1,8 +1,8 @@
 <script lang="ts">
     import clsx from "clsx";
-    export let isCenter: boolean = false;
-    export let isLeft: boolean = false;
-    export let isRight: boolean = false;
+    export let isCenter = false;
+    export let isLeft = false;
+    export let isRight = false;
 </script>
 
 <div

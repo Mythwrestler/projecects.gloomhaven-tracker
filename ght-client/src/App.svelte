@@ -20,7 +20,7 @@
   console.log(`AUTH_DOMAIN: ${ENV_VARS.AUTH.Domain()}`);
   console.log(`AUTH_CLIENT_ID: ${ENV_VARS.AUTH.ClientId()}`);
   console.log(`AUTH_API_AUDIENCE: ${ENV_VARS.AUTH.APIAudience()}`);
-  console.log(`AUTH_ENABLED: ${ENV_VARS.AUTH.Enabled()}`);
+  console.log(`AUTH_ENABLED: ${JSON.stringify(ENV_VARS.AUTH.Enabled())}`);
   console.log(`CLIENT_BASE_URL: ${ENV_VARS.CLIENT.BaseURL()}`);
   console.log(`API_BASE_URL: ${ENV_VARS.API.BaseURL()}`);
 </script>

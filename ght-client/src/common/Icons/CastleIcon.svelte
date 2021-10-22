@@ -1,5 +1,5 @@
 <script lang="ts">
-    export let iconClassOverride: string = "h-5 w-5";
+    export let iconClassOverride = "h-5 w-5";
 </script>
 
 <svg

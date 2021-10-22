@@ -16,12 +16,12 @@
         combatHubConnecting,
     } from "./CombatTrackerService";
 
-    export let isLeft: boolean = false;
-    export let isRight: boolean = false;
-    export let isCenter: boolean = false;
+    export let isLeft = false;
+    export let isRight = false;
+    export let isCenter = false;
     export let onNext: () => void;
     export let onPrevious: () => void;
-    export let disabled: boolean = true;
+    export let disabled = true;
 
     let changeCombatSpace: string | undefined;
 
@@ -31,29 +31,33 @@
 
     const handleCombatSpaceSelect = async (combatId: string) => {
         if (!$combatSpaceConnected) {
-            joinCombatSpace(combatId);
+            await joinCombatSpace(combatId);
         } else {
             changeCombatSpace = combatId;
-            leaveCombatSpace();
+            await leaveCombatSpace();
         }
     };
 
     combatSpaceDisconnecting.subscribe((disconnecting) => {
         // If changing combat spaces, dispatch join after disconnect completes.
         if (!disconnecting && !$combatSpaceConnected && changeCombatSpace) {
-            joinCombatSpace(changeCombatSpace);
+            void (async () => {
+                await joinCombatSpace(changeCombatSpace);
+            })();
             changeCombatSpace = undefined;
         }
     });
 
-    let showAddCombatSpaceTextField: boolean = false;
-    let addCombatSpaceTextField: string = "";
+    let showAddCombatSpaceTextField = false;
+    let addCombatSpaceTextField = "";
     const handleAddClicked = () => {
         showAddCombatSpaceTextField = true;
     };
     const handleAddbuttonClicked = () => {
         showAddCombatSpaceTextField = false;
-        addCombatSpace(addCombatSpaceTextField);
+        void (async () => {
+            await addCombatSpace(addCombatSpaceTextField);
+        })();
         addCombatSpaceTextField = "";
     };
 

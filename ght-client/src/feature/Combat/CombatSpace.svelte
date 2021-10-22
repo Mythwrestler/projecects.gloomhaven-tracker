@@ -27,7 +27,7 @@
     const panelOrder: Map<number, PanelLabel> = new Map<number, PanelLabel>();
 
     let leftIndex: number | null = null;
-    let centerIndex: number = 0;
+    let centerIndex = 0;
     let rightIndex: number | null = 1;
 
     const movePanelLeft = (panelPosition: PanelPosition): PanelPosition => {
@@ -58,10 +58,10 @@
     const handleNext = () => {
         if (centerIndex + 1 >= panelOrder.size) return;
 
-        let currentLeft: string = "";
-        let currentCenter: string = "";
-        let currentRight: string = "";
-        let nextRight: string = "";
+        let currentLeft = "";
+        let currentCenter = "";
+        let currentRight = "";
+        let nextRight = "";
 
         currentLeft = panelOrder.get(centerIndex - 1) ?? "";
         currentCenter = panelOrder.get(centerIndex) ?? "";
@@ -84,10 +84,10 @@
     const handlePrevious = () => {
         if (centerIndex - 1 < 0) return;
 
-        let currentLeft: string = "";
-        let currentCenter: string = "";
-        let currentRight: string = "";
-        let nextLeft: string = "";
+        let currentLeft = "";
+        let currentCenter = "";
+        let currentRight = "";
+        let nextLeft = "";
 
         nextLeft = panelOrder.get(centerIndex - 2) ?? "";
         currentLeft = panelOrder.get(centerIndex - 1) ?? "";
@@ -108,11 +108,15 @@
     };
 
     isAuthenticated.subscribe((isAuthenticated) => {
-        if (ENV_VARS.AUTH.Enabled() && isAuthenticated) buildCombatHub();
+        if (ENV_VARS.AUTH.Enabled() && isAuthenticated) {
+            void (async () => {
+                await buildCombatHub();
+            })();
+        }
     });
 
     onMount(async () => {
-        if (!ENV_VARS.AUTH.Enabled()) buildCombatHub();
+        if (!ENV_VARS.AUTH.Enabled()) await buildCombatHub();
         panelOrder.set(0, "CombatSpaceListing");
         panelOrder.set(1, "AddMonster");
         panelOrder.set(2, "StartCombat");

@@ -1,6 +1,8 @@
 {
     "image": "registry.casperinc.net/node:14",
-    "forwardPorts": [5025],
+    "forwardPorts": [
+        5025
+    ],
     "extensions": [
         "streetsidesoftware.code-spell-checker",
         "eamodio.gitlens",
@@ -16,9 +18,15 @@
     ],
     "settings": {
         "editor.defaultFormatter": "svelte.svelte-vscode",
+        "eslint.validate": [
+            "javascript",
+            "typescript",
+            "javascriptreact",
+            "svelte"
+        ],
         "editor.formatOnSave": true,
         "editor.formatOnPaste": true,
         "files.autoSave": "afterDelay",
-        "files.autoSaveDelay": 1000    
+        "files.autoSaveDelay": 1000
     }
 }

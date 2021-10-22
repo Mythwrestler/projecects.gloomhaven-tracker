@@ -1,12 +1,12 @@
 <script lang="ts">
     import CombatPanel from "./CombatPanel.svelte";
 
-    export let isLeft: boolean = false;
-    export let isRight: boolean = false;
-    export let isCenter: boolean = false;
+    export let isLeft = false;
+    export let isRight = false;
+    export let isCenter = false;
     export let onNext: () => void;
     export let onPrevious: () => void;
-    export let disabled: boolean = true;
+    export let disabled = true;
 </script>
 
 <CombatPanel {isLeft} {isRight} {isCenter}>

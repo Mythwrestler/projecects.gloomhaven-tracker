@@ -1,8 +1,8 @@
 <script lang="ts">
-    export let textBoxName: string = "";
-    export let displayLabel: string = "";
-    export let ariaLabel: string = "";
-    export let value: string = "";
+    export let textBoxName = "";
+    export let displayLabel = "";
+    export let ariaLabel = "";
+    export let value = "";
 </script>
 
 <div class="relative z-0 w-full mb-5" aria-label={ariaLabel}>

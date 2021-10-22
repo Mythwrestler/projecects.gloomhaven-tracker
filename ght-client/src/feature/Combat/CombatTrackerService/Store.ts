@@ -16,15 +16,15 @@ export const clearErrorMessage = (): void => {
 // Hub Connection
 export const combatHubConnecting: Writable<boolean> = writable<boolean>(false);
 export const combatHubConnected: Writable<boolean> = writable<boolean>(false);
-export const requestCombatHubConnection = () => {
+export const requestCombatHubConnection = ():void => {
     combatHubConnected.set(false);
     combatHubConnecting.set(true);
 }
-export const requestCombatHubConnectionSuccess = () => {
+export const requestCombatHubConnectionSuccess = ():void => {
     combatHubConnected.set(true);
     combatHubConnecting.set(false);
 }
-export const requestCombatHubConnectionFailure = () => {
+export const requestCombatHubConnectionFailure = ():void => {
     combatHubConnected.set(false);
     combatHubConnecting.set(false);
 }
@@ -34,26 +34,26 @@ export const combatSpaceConnecting: Writable<boolean> = writable<boolean>(false)
 export const combatSpaceDisconnecting: Writable<boolean> = writable<boolean>(false);
 export const combatSpaceConnected: Writable<boolean> = writable<boolean>(false);
 export const combatSpaceId: Writable<string> = writable<string>("");
-export const requestCombatSpaceConnection = () => {
+export const requestCombatSpaceConnection = ():void => {
     combatSpaceConnecting.set(true);
 }
-export const requestCombatSpaceConnectionSuccess = (combatId: string) => {
+export const requestCombatSpaceConnectionSuccess = (combatId: string):void => {
     combatSpaceConnected.set(true);
     combatSpaceConnecting.set(false);
     combatSpaceId.set(combatId)
 }
-export const requestCombatSpaceConnectionFailure = () => {
+export const requestCombatSpaceConnectionFailure = ():void => {
     combatSpaceConnecting.set(false);
 }
-export const requestCombatSpaceDisconnect = () => {
+export const requestCombatSpaceDisconnect = ():void => {
     combatSpaceDisconnecting.set(true);
 }
-export const requestCombatSpaceDisconnectSuccess = () => {
+export const requestCombatSpaceDisconnectSuccess = ():void => {
     combatSpaceConnected.set(false);
     combatSpaceDisconnecting.set(false);
     combatSpaceId.set("")
 }
-export const requestCombatSpaceDisconnectFailure = () => {
+export const requestCombatSpaceDisconnectFailure = ():void => {
     combatSpaceDisconnecting.set(false);
 }
 
