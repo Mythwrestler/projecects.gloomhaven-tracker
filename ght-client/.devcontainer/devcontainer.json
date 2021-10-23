@@ -1,32 +1,35 @@
 {
-    "image": "registry.casperinc.net/node:14",
-    "forwardPorts": [
-        5025
+  "image": "registry.casperinc.net/node:14",
+  "forwardPorts": [5025],
+  "extensions": [
+    "streetsidesoftware.code-spell-checker",
+    "eamodio.gitlens",
+    "codezombiech.gitignore",
+    "heaths.vscode-guid",
+    "visualstudioexptteam.vscodeintellicode",
+    "dbaeumer.vscode-eslint",
+    "eg2.vscode-npm-script",
+    "christian-kohler.npm-intellisense",
+    "svelte.svelte-vscode",
+    "spmeesseman.vscode-taskexplorer",
+    "bradlc.vscode-tailwindcss",
+    "esbenp.prettier-vscode"
+  ],
+  "settings": {
+    "[svelte]": {
+      "editor.defaultFormatter": "svelte.svelte-vscode"
+    },
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "eslint.validate": [
+      "javascript",
+      "typescript",
+      "javascriptreact",
+      "svelte"
     ],
-    "extensions": [
-        "streetsidesoftware.code-spell-checker",
-        "eamodio.gitlens",
-        "codezombiech.gitignore",
-        "heaths.vscode-guid",
-        "visualstudioexptteam.vscodeintellicode",
-        "dbaeumer.vscode-eslint",
-        "eg2.vscode-npm-script",
-        "christian-kohler.npm-intellisense",
-        "svelte.svelte-vscode",
-        "spmeesseman.vscode-taskexplorer",
-        "bradlc.vscode-tailwindcss",
-    ],
-    "settings": {
-        "editor.defaultFormatter": "svelte.svelte-vscode",
-        "eslint.validate": [
-            "javascript",
-            "typescript",
-            "javascriptreact",
-            "svelte"
-        ],
-        "editor.formatOnSave": true,
-        "editor.formatOnPaste": true,
-        "files.autoSave": "afterDelay",
-        "files.autoSaveDelay": 1000
-    }
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "files.autoSave": "afterDelay",
+    "files.autoSaveDelay": 1000,
+    
+  }
 }
