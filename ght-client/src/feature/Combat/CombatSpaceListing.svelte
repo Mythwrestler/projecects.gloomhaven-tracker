@@ -69,7 +69,7 @@
 <CombatPanel {isLeft} {isRight} {isCenter}>
   <div>
     <button class="flex flex-row" on:click={handleAddClicked}>
-      <div>Add New Combat Spaces</div>
+      <div>Add New Combat Spaces!</div>
       <AddContainedIcon />
     </button>
   </div>
