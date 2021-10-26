@@ -1,5 +1,6 @@
 {
-    "image": "registry.casperinc.net/dotnet/sdk:6.0",
+    "image": "registry.casperinc.net/vscode/devcontainers/dotnet:6.0",
+    "remoteUser": "vscode",
     "forwardPorts": [5020],
     "extensions": [
         "streetsidesoftware.code-spell-checker",
@@ -9,5 +10,5 @@
         "ms-dotnettools.csharp",
         "patcx.vscode-nuget-gallery",
         "leo-labs.dotnet",
-    ],
+    ]
 }

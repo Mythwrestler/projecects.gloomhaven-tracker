@@ -1,5 +1,6 @@
 {
-  "image": "registry.casperinc.net/node:14",
+  "image": "registry.casperinc.net/vscode/devcontainers/typescript-node:16",
+  "remoteUser": "node",
   "forwardPorts": [5025],
   "extensions": [
     "streetsidesoftware.code-spell-checker",
@@ -29,7 +30,6 @@
     "editor.formatOnSave": true,
     "editor.formatOnPaste": true,
     "files.autoSave": "afterDelay",
-    "files.autoSaveDelay": 1000,
-    
+    "files.autoSaveDelay": 5000
   }
 }
