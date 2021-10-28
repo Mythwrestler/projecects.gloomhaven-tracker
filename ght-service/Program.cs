@@ -6,10 +6,12 @@ using GloomhavenTracker.Service.BackgroundServices;
 using GloomhavenTracker.Service.Hubs;
 using GloomhavenTracker.Service.Repos;
 using GloomhavenTracker.Service.Services;
+using GloomhavenTracker.Service.SeedData;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http.Json;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -87,6 +89,7 @@ builder.Services.AddSwaggerGen(c =>
         });
 
 builder.Services.AddMemoryCache();
+
 builder.Services.AddSignalR();
 builder.Services.AddControllers();
 
@@ -97,8 +100,29 @@ builder.Services.Configure<JsonOptions>(options =>
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
 });
 
-builder.Services.AddSingleton<ICombatRepo, CombatRepo>();
+
+string dbServer = Environment.GetEnvironmentVariable("DB_SERVER") ??  String.Empty;
+string dbPort = Environment.GetEnvironmentVariable("DB_PORT") ??  String.Empty;
+string dbDatabase = Environment.GetEnvironmentVariable("DB_DATABASE") ?? String.Empty;
+string dbUser = Environment.GetEnvironmentVariable("DB_USER") ?? String.Empty;
+string dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? String.Empty;
+string dbConnectionString = String.Format(
+    builder.Configuration["ConnectionStrings:PostgreSQL"],
+    dbServer,
+    dbPort,
+    dbDatabase,
+    dbUser,
+    dbPassword,
+    "true"
+);
+builder.Services.AddSingleton<ICombatRepo, CombatRepo>(factory => {
+    return new CombatRepo(factory.GetRequiredService<IMemoryCache>(), dbConnectionString);
+});
+builder.Services.AddSingleton<IContentRepo, ContentRepo>(factory => {
+    return new ContentRepo(dbConnectionString);
+});
 builder.Services.AddSingleton<ICombatService, CombatService>();
+builder.Services.AddSingleton<IContentService, ContentService>();
 builder.Services.AddHostedService<BattleHubMonitor>();
 
 if(httpLoggingEnabled)
@@ -113,6 +137,8 @@ if(httpLoggingEnabled)
 var app = builder.Build();
 
 var logger = app.Logger;
+
+SeedData.LoadDefaultContent(dbConnectionString);
 
 if(httpLoggingEnabled) {
     app.UseHttpLogging();

@@ -28,8 +28,8 @@ namespace GloomhavenTracker.Service.Services
                 new AttackModifier(){Type=ATTACK_MODIFIER_TYPE.Add, Value=-2},
                 new AttackModifier(){Type=ATTACK_MODIFIER_TYPE.Add, Value=-2},
 
-                new AttackModifier(){Type=ATTACK_MODIFIER_TYPE.Cancel, Value=0, triggerShuffle=true},
-                new AttackModifier(){Type=ATTACK_MODIFIER_TYPE.Multiply, Value=2, triggerShuffle=true},
+                new AttackModifier(){Type=ATTACK_MODIFIER_TYPE.Cancel, Value=0, TriggerShuffle=true},
+                new AttackModifier(){Type=ATTACK_MODIFIER_TYPE.Multiply, Value=2, TriggerShuffle=true},
             };
     }
 }

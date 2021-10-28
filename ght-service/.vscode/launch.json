@@ -20,7 +20,12 @@
               "AUTH_ENABLED": "false",
               "AUTH_AUTHORITY": "http://fake-authority/",
               "AUTH_AUDIENCE": "fake-audience",
-              "HTTP_LOGGING_ENABLED": "true"
+              "HTTP_LOGGING_ENABLED": "true",
+              "DB_SERVER": "host.docker.internal",
+              "DB_PORT": "5432",
+              "DB_DATABASE": "ght-db",
+              "DB_USER": "pguser",
+              "DB_PASSWORD": "pguser"
           },
           "sourceFileMap": {
               "/Views": "${workspaceFolder}/Views"

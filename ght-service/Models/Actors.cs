@@ -22,6 +22,7 @@ public enum PLAYER_CLASS
     RedGuard,
 }
 
+
 [Serializable]
 public abstract class Actor
 {
@@ -37,6 +38,26 @@ public abstract class Actor
 
 }
 
+
+[Serializable]
+public class PlayerBaseHealth
+{
+    [JsonPropertyName("level")]
+    public int Level {get; set;}
+    [JsonPropertyName("health")]
+    public int Health {get; set;}
+}
+
+[Serializable]
+public class PlayerLevel
+{
+    [JsonPropertyName("experience")]
+    public int Experience {get; set;}
+    [JsonPropertyName("level")]
+    public int Level {get; set;}
+}
+
+
 [Serializable]
 public class Player : Actor
 {
@@ -44,20 +65,19 @@ public class Player : Actor
 
     public AttackModifierDeck ModifierDeck { get; set; } = new AttackModifierDeck(new List<AttackModifier>());
 
-    public Dictionary<int, int> BaseHealthStats { get; set; } = new Dictionary<int, int>();
+    public List<PlayerBaseHealth> BaseHealthStats { get; set; } = new List<PlayerBaseHealth>();
 
-    override public int BaseHealth => BaseHealthStats[CurrentLevel];
+    override public int BaseHealth => BaseHealthStats.First(hs => hs.Level == CurrentLevel)?.Health ?? 0;
 
-    public Dictionary<int, int> Levels { get; set; } = new Dictionary<int, int>();
+    public List<PlayerLevel> Levels { get; set; } = new List<PlayerLevel>();
 
     public int Experience { get; set; } = 0;
 
-    public int CurrentLevel 
+    public int CurrentLevel
     {
         get
         {
-            int experienceLevel = Levels.Keys.OrderBy(k => k).Where(k => k <= Experience).Max();
-            return Levels[experienceLevel];
+            return Levels.OrderBy(lvl => lvl.Experience).Where(lvl => lvl.Experience >= Experience).First()?.Level ?? 0;
         }
     }
 
@@ -89,27 +109,59 @@ public class Player : Actor
 }
 
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum MONSTER_STAT_MOD_TYPE
+{
+
+    [EnumMember(Value = "add")]
+    add,
+    [EnumMember(Value = "multi")]
+    multi
+}
+
 [Serializable]
 public class MonsterStatSet
 {
+    [JsonPropertyName("level")]
+    public int Level { get; set; }
+
+    [JsonPropertyName("health")]
     public int Health { get; set; }
 
+    [JsonPropertyName("healthMod")]
+    public MONSTER_STAT_MOD_TYPE? HealthMod {get; set;}
+
+    [JsonPropertyName("movement")]
     public int Movement { get; set; }
 
+    [JsonPropertyName("moveMod")]
+    public MONSTER_STAT_MOD_TYPE? MoveMod {get; set;}
+
+    [JsonPropertyName("attack")]
     public int Attack { get; set; }
 
-    public List<ActorEffect> Effects { get; set; } = new List<ActorEffect>();
+    [JsonPropertyName("attackMod")]
+    public MONSTER_STAT_MOD_TYPE? attackMod {get; set;}
+    
+    [JsonPropertyName("defenseEffects")]
+    public List<ActorEffect> DefenseEffects { get; set; } = new List<ActorEffect>();
+    
+    [JsonPropertyName("attackEffects")]
+    public List<ActorEffect> AttackEffects { get; set; } = new List<ActorEffect>();
+    
+    [JsonPropertyName("immunity")]
+    public List<ACTOR_EFFECT_TYPE> Immunity { get; set; } = new List<ACTOR_EFFECT_TYPE>();
 
 }
 
 [Serializable]
 public class BaseMonsterStatSet
 {
-    public string Type { get; set; } = string.Empty;
-    // Monster Level, Monster Stats
-    public Dictionary<int, MonsterStatSet> Elite { get; set; } = new Dictionary<int, MonsterStatSet>();
+    [JsonPropertyName("elite")]
+    public List<MonsterStatSet> Elite { get; set; } = new List<MonsterStatSet>();
     // Monster level, Monster Stats
-    public Dictionary<int, MonsterStatSet> Standard { get; set; } = new Dictionary<int, MonsterStatSet>();
+    [JsonPropertyName("standard")]
+    public List<MonsterStatSet> Standard { get; set; } = new List<MonsterStatSet>();
 }
 
 [Serializable]
@@ -120,25 +172,25 @@ public class Monster : Actor
     public int Level { get; set; }
     public bool IsElite { get; set; }
     public int MonsterId { get; set; }
-    public int Attack 
-    { 
+    public int Attack
+    {
         get
         {
-            return IsElite ? BaseStats.Elite[Level].Attack : BaseStats.Standard[Level].Attack;
+            return IsElite ? BaseStats.Elite.First(bs => bs.Level == Level).Attack : BaseStats.Standard.First(bs => bs.Level == Level).Attack;
         }
     }
     public int Movement
-    { 
+    {
         get
         {
-            return IsElite ? BaseStats.Elite[Level].Movement : BaseStats.Standard[Level].Movement;
+            return IsElite ? BaseStats.Elite.First(bs => bs.Level == Level).Movement : BaseStats.Standard.First(bs => bs.Level == Level).Movement;
         }
     }
     override public int BaseHealth
     {
         get
         {
-            return IsElite ? BaseStats.Elite[Level].Health : BaseStats.Standard[Level].Health;
+            return IsElite ? BaseStats.Elite.First(bs => bs.Level == Level).Health : BaseStats.Standard.First(bs => bs.Level == Level).Health;
         }
     }
     public MonsterDO State => new MonsterDO
@@ -212,7 +264,6 @@ public class ActorDO
     public List<ActorEffect> Effects { get; set; } = new List<ActorEffect>();
 }
 
-
 [Serializable]
 public class PlayerDO : ActorDO
 {
@@ -220,9 +271,9 @@ public class PlayerDO : ActorDO
 
     public AttackModifierDeckDO modifierDeck { get; set; } = new AttackModifierDeckDO();
 
-    public Dictionary<int, int> BaseHealthStats { get; set; } = new Dictionary<int, int>();
+    public List<PlayerBaseHealth> BaseHealthStats { get; set; } = new List<PlayerBaseHealth>();
 
-    public Dictionary<int, int> Levels { get; set; } = new Dictionary<int, int>();
+    public List<PlayerLevel> Levels { get; set; } = new List<PlayerLevel>();
 
     public int Experience { get; set; } = 0;
 }
@@ -251,7 +302,7 @@ public class ActorDTO
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public string Name { get; set; } = String.Empty;
-    public int? BaseHealth {get; set;}
+    public int? BaseHealth { get; set; }
     public int Health { get; set; }
     public List<ActorEffect> Effects { get; set; } = new List<ActorEffect>();
 }
@@ -278,15 +329,15 @@ public class PlayerDTO : ActorDTO
 
     public List<AttackModifier>? flippedModifierCards { get; set; }
 
-    public Dictionary<int, int>? BaseHealthStats { get; set; } = new Dictionary<int, int>();
+    public List<PlayerBaseHealth>? BaseHealthStats { get; set; } = new List<PlayerBaseHealth>();
 
-    public Dictionary<int, int>? Levels { get; set; } = new Dictionary<int, int>();
+    public List<PlayerLevel>? Levels { get; set; } = new List<PlayerLevel>();
 
     public int Experience { get; set; } = 0;
 }
 
 [Serializable]
-public class ActorsDTO 
+public class ActorsDTO
 {
     public List<PlayerDTO> Players { get; set; } = new List<PlayerDTO>();
     public List<MonsterDTO> Monsters { get; set; } = new List<MonsterDTO>();

@@ -24,14 +24,19 @@ namespace GloomhavenTracker.Service.Models
     [Serializable]
     public class AttackModifier
     {
+        [JsonPropertyName("type")]
         public ATTACK_MODIFIER_TYPE Type { get; set; }
 
-        public bool isCurse { get; set; } = false;
+        [JsonPropertyName("isCurse")]
+        public bool IsCurse { get; set; } = false;
 
-        public bool isBlessing { get; set; } = false;
+        [JsonPropertyName("isBlessing")]
+        public bool IsBlessing { get; set; } = false;
 
-        public bool triggerShuffle { get; set; } = false;
+        [JsonPropertyName("triggerShuffle")]
+        public bool TriggerShuffle { get; set; } = false;
 
+        [JsonPropertyName("value")]
         public int? Value { get; set; }
     }
 
