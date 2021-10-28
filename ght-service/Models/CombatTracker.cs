@@ -8,6 +8,7 @@ namespace GloomhavenTracker.Service.Models
     public class CombatTrackerDO
     {
         public Guid CombatId { get; set; }
+        public GAME_CODES GameCode {get; set;}
         public string Description { get; set; } = String.Empty;
         public ActorsDO Actors { get; set; } = new ActorsDO();
         public AttackModifierDeckDO MonsterDeck { get; set; } = new AttackModifierDeckDO();
@@ -24,7 +25,8 @@ namespace GloomhavenTracker.Service.Models
                 return new CombatTrackerSummaryDTO()
                 {
                     CombatId = CombatId,
-                    Description = Description
+                    Description = Description,
+                    GameCode = GameCode
                 };
             }
         }
@@ -33,6 +35,7 @@ namespace GloomhavenTracker.Service.Models
     public class CombatTrackerDTO
     {
         public Guid CombatId { get; set; }
+        public GAME_CODES GameCode {get; set;}
         public string Description { get; set; } = String.Empty;
         public ActorsDTO Actors { get; set; } = new ActorsDTO();
         public AttackModifierDeckDTO MonsterDeck { get; set; } = new AttackModifierDeckDTO();
@@ -45,16 +48,19 @@ namespace GloomhavenTracker.Service.Models
     public class CombatTrackerSummaryDTO
     {
         public Guid CombatId { get; set; }
+        public GAME_CODES GameCode {get; set;}
         public string Description { get; set; } = String.Empty;
     }
 
     public class NewCombatTrackerDescription {
+        public GAME_CODES GameCode {get; set;}
         public string Description { get; set; } = String.Empty;
     }
 
 
     public class CombatTracker
     {
+        private readonly GAME_CODES _gameCode;
         private readonly Guid _combatId = Guid.NewGuid();
 
         private readonly string _description;
@@ -89,9 +95,10 @@ namespace GloomhavenTracker.Service.Models
 
         private AttackModifierDeck _monsterModDeck;
 
-        public CombatTracker(String description, List<Player> players, List<Monster> monsters, List<AttackModifier> monsterModDeck)
+        public CombatTracker(String description, GAME_CODES gameCode, List<Player> players, List<Monster> monsters, List<AttackModifier> monsterModDeck)
         {
             _combatId = Guid.NewGuid();
+            _gameCode = gameCode;
             _description = description;
             _monsterModDeck = new AttackModifierDeck(monsterModDeck);
             players.ForEach(p => AddPlayer(p));

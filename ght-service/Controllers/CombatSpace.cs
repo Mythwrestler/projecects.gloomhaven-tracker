@@ -22,7 +22,7 @@ namespace GloomhavenTracker.Service.Controllers
         [HttpPost]
         public IActionResult CreateCombat([FromBody] NewCombatTrackerDescription body)
         {
-            var combat = _service.NewCombat(body.Description);
+            var combat = _service.NewCombat(body.GameCode, body.Description);
             var result = new JsonResult(combat);
             result.StatusCode = 200;
             return result;

@@ -23,7 +23,7 @@ public interface ICombatService
 
     public CombatTrackerDTO NextRound(Guid combatId);
 
-    public CombatTrackerSummaryDTO NewCombat(string description);
+    public CombatTrackerSummaryDTO NewCombat(GAME_CODES gameCode, string description);
 
     public CombatTrackerDTO AddActors(Guid combatId, ActorsDTO actors);
 
@@ -200,9 +200,9 @@ public class CombatService : ICombatService
     }
 
 
-    public CombatTrackerSummaryDTO NewCombat(string description)
+    public CombatTrackerSummaryDTO NewCombat(GAME_CODES gameCode, string description)
     {
-        CombatTracker combat = new CombatTracker(description, new List<Player>(), new List<Monster>(), CombatBuilder.BaseModDeck);
+        CombatTracker combat = new CombatTracker(description, gameCode, new List<Player>(), new List<Monster>(), CombatBuilder.BaseModDeck);
 
         _combatSpaces.Add(combat.CombatId, combat);
 
