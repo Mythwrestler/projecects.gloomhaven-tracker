@@ -9,9 +9,9 @@ namespace GloomhavenTracker.Service.Repos;
 public interface IContentRepo
 {
     public List<ContentItemSummary> GetContentSummary(CONTENT_TYPE kind, GAME_CODES? gameCode);
-    public ContentItemSummary GetDefaultsForGame(GAME_CODES gameCode);
-    public List<ContentItemSummary> GetPlayerDefaultsForGame(GAME_CODES gameCode);
-    public List<ContentItemSummary> GeMonsterDefaultsForGame(GAME_CODES gameCode);
+    public GameDefaults GetGameDefaults(GAME_CODES gameCode);
+    public PlayerDefaults GetPlayerDefaults(GAME_CODES gameCode, string contentCode);
+    public MonsterDefaults GetMonsterDefaults(GAME_CODES gameCode, string contentCode);
 }
 
 public class ContentRepo : IContentRepo
@@ -60,23 +60,23 @@ public class ContentRepo : IContentRepo
         }
     }
 
-    public ContentItemSummary GetDefaultsForGame(GAME_CODES gameCode)
+    public GameDefaults GetGameDefaults(GAME_CODES gameCode)
     {
         string gameString = GameUtils.codeString(gameCode);
-        string sqlString = $"SELECT json_build_object('contentId', gc.contentId,'name', gc.contentjson->'name','code', gc.contentjson->'code') from \"Game Content\" gc where gc.contentJson->>'kind' = 'game' and gc.contentJson->>'code'='{gameString}'";
+        string sqlString = $"SELECT gc.contentjson from \"Game Content\" gc where gc.contentJson->>'kind' = 'game' and gc.game='{gameString}'";
         try
         {
             _connection.Open();
             using(NpgsqlCommand command = new NpgsqlCommand(sqlString, _connection))
             {
                 string? jsonString;
-                ContentItemSummary? game;
+                GameDefaults? game;
                 NpgsqlDataReader reader = command.ExecuteReader();
                 while(reader.Read())
                 {
                     jsonString = reader[0].ToString();
                     if(jsonString != null){
-                        game = JsonSerializer.Deserialize<ContentItemSummary>(jsonString);
+                        game = JsonSerializer.Deserialize<GameDefaults>(jsonString);
                         if(game != null) return game;
                     }
                 }
@@ -92,32 +92,33 @@ public class ContentRepo : IContentRepo
             _connection.Close();
         }
     }
-    public List<ContentItemSummary> GeMonsterDefaultsForGame(GAME_CODES gameCode)
+    
+    public PlayerDefaults GetPlayerDefaults(GAME_CODES gameCode, string contentCode)
     {
         string gameString = GameUtils.codeString(gameCode);
-        string sqlString = $"SELECT json_build_object('contentId', gc.contentId,'name', gc.contentjson->'name','code', gc.contentjson->'code') from \"Game Content\" gc where gc.contentJson->>'kind' = 'monster' and gc.game='{gameString}'";
+        string sqlString = $"SELECT gc.contentjson from \"Game Content\" gc where gc.contentJson->>'kind' = 'player' and gc.contentJson->>'code'='{contentCode}' and gc.game='{gameString}'";
         try
         {
-            List<ContentItemSummary> monsters = new List<ContentItemSummary>();
             _connection.Open();
             using(NpgsqlCommand command = new NpgsqlCommand(sqlString, _connection))
             {
                 string? jsonString;
+                PlayerDefaults? player;
                 NpgsqlDataReader reader = command.ExecuteReader();
                 while(reader.Read())
                 {
                     jsonString = reader[0].ToString();
                     if(jsonString != null){
-                        var monster = JsonSerializer.Deserialize<ContentItemSummary>(jsonString);
-                        if(monster != null) monsters.Add(monster);
+                        player = JsonSerializer.Deserialize<PlayerDefaults>(jsonString);
+                        if(player != null) return player;
                     }
                 }
             }
-            return monsters;
+            throw new ArgumentException("Could Not Find Game");
         }
         catch (Exception ex)
         {
-            throw new ArgumentException("Could Not Pull Monster Defaults", ex);
+            throw new ArgumentException("Could Not Pull Game Defaults", ex);
         }
         finally
         {
@@ -125,32 +126,32 @@ public class ContentRepo : IContentRepo
         }
     }
 
-    public List<ContentItemSummary> GetPlayerDefaultsForGame(GAME_CODES gameCode)
+    public MonsterDefaults GetMonsterDefaults(GAME_CODES gameCode, string contentCode)
     {
         string gameString = GameUtils.codeString(gameCode);
-        string sqlString = $"SELECT json_build_object('contentId', gc.contentId,'name', gc.contentjson->'name','code', gc.contentjson->'code') from \"Game Content\" gc where gc.contentJson->>'kind' = 'player' and gc.game='{gameString}'";
+        string sqlString = $"SELECT gc.contentjson from \"Game Content\" gc where gc.contentJson->>'kind' = 'monster' and gc.contentJson->>'code'='{contentCode}' and gc.game='{gameString}'";
         try
         {
-            List<ContentItemSummary> players = new List<ContentItemSummary>();
             _connection.Open();
             using(NpgsqlCommand command = new NpgsqlCommand(sqlString, _connection))
             {
                 string? jsonString;
+                MonsterDefaults? monster;
                 NpgsqlDataReader reader = command.ExecuteReader();
                 while(reader.Read())
                 {
                     jsonString = reader[0].ToString();
                     if(jsonString != null){
-                        var player = JsonSerializer.Deserialize<ContentItemSummary>(jsonString);
-                        if(player != null) players.Add(player);
+                        monster = JsonSerializer.Deserialize<MonsterDefaults>(jsonString);
+                        if(monster != null) return monster;
                     }
                 }
             }
-            return players;
+            throw new ArgumentException("Could Not Find Game");
         }
         catch (Exception ex)
         {
-            throw new ArgumentException("Could Not Pull Player Defaults", ex);
+            throw new ArgumentException("Could Not Pull Game Defaults", ex);
         }
         finally
         {

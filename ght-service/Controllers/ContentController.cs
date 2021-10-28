@@ -28,11 +28,26 @@ namespace GloomhavenTracker.Service.Controllers
 
         [Route("{gameCode}")]
         [HttpGet]
-        public IActionResult GetGameSummary(GAME_CODES gameCode)
+        public IActionResult GetGame(GAME_CODES gameCode)
         {
             try
             {
                 var gameDefaults = _service.GetContentSummary(CONTENT_TYPE.game, gameCode);
+                return new OkObjectResult(gameDefaults);
+            }
+            catch
+            {
+                return new BadRequestResult();
+            }
+        }
+
+        [Route("{gameCode}/default")]
+        [HttpGet]
+        public IActionResult GetGameDefaults(GAME_CODES gameCode)
+        {
+            try
+            {
+                var gameDefaults = _service.GetGameDefaults(gameCode);
                 return new OkObjectResult(gameDefaults);
             }
             catch
@@ -56,6 +71,21 @@ namespace GloomhavenTracker.Service.Controllers
             }
         }
 
+        [Route("{gameCode}/players/{contentCode}")]
+        [HttpGet]
+        public IActionResult GetPlayerDefaults(GAME_CODES gameCode, string contentCode)
+        {
+            try
+            {
+                var playerList = _service.GetPlayerDefaults(gameCode, contentCode);
+                return new OkObjectResult(playerList);
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestResult();
+            }
+        }
+
         [Route("{gameCode}/monsters")]
         [HttpGet]
         public IActionResult GetMonstersForGame(GAME_CODES gameCode)
@@ -63,6 +93,21 @@ namespace GloomhavenTracker.Service.Controllers
             try
             {
                 var monsterList = _service.GetContentSummary(CONTENT_TYPE.monster, gameCode);
+                return new OkObjectResult(monsterList);
+            }
+            catch(Exception ex)
+            {
+                return new BadRequestResult();
+            }
+        }
+
+        [Route("{gameCode}/monsters/{contentCode}")]
+        [HttpGet]
+        public IActionResult GetMonsterDefaults(GAME_CODES gameCode, string contentCode)
+        {
+            try
+            {
+                var monsterList = _service.GetMonsterDefaults(gameCode, contentCode);
                 return new OkObjectResult(monsterList);
             }
             catch(Exception ex)

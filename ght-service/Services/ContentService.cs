@@ -7,9 +7,9 @@ namespace GloomhavenTracker.Service.Services;
 public interface IContentService
 {
     public List<ContentItemSummary> GetContentSummary(CONTENT_TYPE kind, GAME_CODES? gameCode);
-    public ContentItemSummary GetDefaultsForGame(GAME_CODES gameCode);
-    public List<ContentItemSummary> GetPlayerDefaultsForGame(GAME_CODES gameCode);
-    public List<ContentItemSummary> GetMonsterDefaultsForGame(GAME_CODES gameCode);
+    public GameDefaults GetGameDefaults(GAME_CODES gameCode);
+    public PlayerDefaults GetPlayerDefaults(GAME_CODES gameCode, string contentCode);
+    public MonsterDefaults GetMonsterDefaults(GAME_CODES gameCode, string contentCode);
 
 }
 
@@ -24,18 +24,18 @@ public class ContentService : IContentService
         return _repo.GetContentSummary(kind, gameCode);
     }
 
-    public ContentItemSummary GetDefaultsForGame(GAME_CODES gameCode)
+    public GameDefaults GetGameDefaults(GAME_CODES gameCode)
     {
-        return _repo.GetDefaultsForGame(gameCode);
+        return _repo.GetGameDefaults(gameCode);
     }
 
-    public List<ContentItemSummary> GetMonsterDefaultsForGame(GAME_CODES gameCode)
+    public PlayerDefaults GetPlayerDefaults(GAME_CODES gameCode, string contentCode)
     {
-        return _repo.GeMonsterDefaultsForGame(gameCode);
+        return _repo.GetPlayerDefaults(gameCode, contentCode);
     }
 
-    public List<ContentItemSummary> GetPlayerDefaultsForGame(GAME_CODES gameCode)
+    public MonsterDefaults GetMonsterDefaults(GAME_CODES gameCode, string contentCode)
     {
-        return _repo.GetPlayerDefaultsForGame(gameCode);
+        return _repo.GetMonsterDefaults(gameCode, contentCode);
     }
 }

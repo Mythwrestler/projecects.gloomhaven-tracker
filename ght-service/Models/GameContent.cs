@@ -99,18 +99,6 @@ public class BasePlayerStats
     public List<PlayerBaseHealth> Health {get; set;} = new List<PlayerBaseHealth>();
 }
 
-public class PlayerSummary
-{
-    [JsonPropertyName("contentId")]
-    public Guid ContentId {get; set;} = new Guid();
-    
-    [JsonPropertyName("name")]
-    public string Name {get; set;} = string.Empty;
-
-    [JsonPropertyName("code")]
-    public GAME_CODES Code { get; set; }
-}
-
 [Serializable]
 public class PlayerDefaults
 {
