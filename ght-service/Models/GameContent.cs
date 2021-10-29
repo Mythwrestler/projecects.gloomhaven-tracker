@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.Serialization;
-using System.Text.Json;
 using System.Text.Json.Serialization;
+using GloomhavenTracker.Service.Models;
 
 namespace GloomhavenTracker.Service.Models;
 
@@ -29,6 +28,9 @@ public enum CONTENT_TYPE
 
     [EnumMember(Value = "monster")]
     monster,
+
+    [EnumMember(Value = "scenario")]
+    scenario,
 
 }
 
@@ -57,14 +59,25 @@ public static class GameUtils
                 return "monster";
             case CONTENT_TYPE.player:
                 return "player";
+            case CONTENT_TYPE.scenario:
+                return "scenario";
             default:
                 return "";
         }
     }
 }
 
+
+public class ContentItemSummary {
+    [JsonPropertyName("name")]
+    public string Name {get; set;} = string.Empty;
+
+    [JsonPropertyName("code")]
+    public string Code { get; set; } = string.Empty;
+}
+
 [Serializable]
-public class GameDefaults
+public class GameContent
 {
     [JsonPropertyName("name")]
     public string Name {get; set;} = string.Empty;
@@ -78,17 +91,16 @@ public class GameDefaults
     // public List<AttackModifier> BaseModifierDeck = new List<AttackModifier>();
     [JsonPropertyName("baseModifierDeck")]
     public List<AttackModifier> BaseModifierDeck {get; set;} = new List<AttackModifier>();
+    public ContentItemSummary ToDTO()
+    {
+        return new ContentItemSummary()
+        {
+            Name = Name,
+            Code = GameUtils.codeString(Code)
+        };
+    }
 }
-public class ContentItemSummary {
-    [JsonPropertyName("contentId")]
-    public Guid ContentId {get; set;} = new Guid();
 
-    [JsonPropertyName("name")]
-    public string Name {get; set;} = string.Empty;
-
-    [JsonPropertyName("code")]
-    public string Code { get; set; } = string.Empty;
-}
 
 [Serializable]
 public class BasePlayerStats
@@ -100,7 +112,7 @@ public class BasePlayerStats
 }
 
 [Serializable]
-public class PlayerDefaults
+public class PlayerContent
 {
 
     [JsonPropertyName("name")]
@@ -111,11 +123,23 @@ public class PlayerDefaults
 
     [JsonPropertyName("baseStats")]
     public BasePlayerStats BaseStats {get; set;} = new BasePlayerStats();
+
+    public ContentItemSummary ToDTO()
+    {
+        return new ContentItemSummary()
+        {
+            Name = Name,
+            Code = Code
+        };
+    }
+
 }
 
 
+
+
 [Serializable]
-public class MonsterDefaults
+public class MonsterContent
 {   
     [JsonPropertyName("name")]
     public string Name { get; set; } = string.Empty;
@@ -125,5 +149,47 @@ public class MonsterDefaults
     
     [JsonPropertyName("baseStats")]
     public BaseMonsterStatSet BaseStats { get; set; } = new BaseMonsterStatSet();
+    
+    public ContentItemSummary ToDTO()
+    {
+        return new ContentItemSummary()
+        {
+            Name = Name,
+            Code = Code
+        };
+    }
 }
 
+public class ScenarioContent
+{
+    [JsonPropertyName("name")]
+    public string Name { get; set; } = string.Empty;
+
+    [JsonPropertyName("code")]
+    public string Code { get; set; } = string.Empty;
+    
+    [JsonPropertyName("scenarioNumber")]
+    public int ScenarioNumber {get; set;}
+
+    [JsonPropertyName("monsters")]
+    public List<MonsterContent> Monsters {get; set;} = new List<MonsterContent>();
+
+    public ScenarioContentDTO ToDTO()
+    {
+        return new ScenarioContentDTO()
+        {
+            Code = Code,
+            Name = Name,
+            ScenarioNumber = ScenarioNumber,
+            Monsters = Monsters.Select(mon => new ContentItemSummary(){Code = mon.Code, Name = mon.Name}).ToList()
+        };
+    }
+}
+
+public class ScenarioContentDTO
+{
+    public string Code {get; set;} = string.Empty;
+    public string Name {get; set;} = string.Empty;
+    public int ScenarioNumber {get; set;}
+    public List<ContentItemSummary> Monsters { get; set; } = new List<ContentItemSummary>();
+}

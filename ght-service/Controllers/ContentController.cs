@@ -20,7 +20,7 @@ namespace GloomhavenTracker.Service.Controllers
                 var gameDefaults = _service.GetContentSummary(CONTENT_TYPE.game, null);
                 return new OkObjectResult(gameDefaults);
             }
-            catch
+            catch (Exception ex)
             {
                 return new BadRequestResult();
             }
@@ -35,7 +35,7 @@ namespace GloomhavenTracker.Service.Controllers
                 var gameDefaults = _service.GetContentSummary(CONTENT_TYPE.game, gameCode);
                 return new OkObjectResult(gameDefaults);
             }
-            catch
+            catch (Exception ex)
             {
                 return new BadRequestResult();
             }
@@ -50,7 +50,7 @@ namespace GloomhavenTracker.Service.Controllers
                 var gameDefaults = _service.GetGameDefaults(gameCode);
                 return new OkObjectResult(gameDefaults);
             }
-            catch
+            catch (Exception ex)
             {
                 return new BadRequestResult();
             }
@@ -77,8 +77,8 @@ namespace GloomhavenTracker.Service.Controllers
         {
             try
             {
-                var playerList = _service.GetPlayerDefaults(gameCode, contentCode);
-                return new OkObjectResult(playerList);
+                var player = _service.GetPlayerDefaults(gameCode, contentCode);
+                return new OkObjectResult(player);
             }
             catch (Exception ex)
             {
@@ -107,13 +107,46 @@ namespace GloomhavenTracker.Service.Controllers
         {
             try
             {
-                var monsterList = _service.GetMonsterDefaults(gameCode, contentCode);
-                return new OkObjectResult(monsterList);
+                var monster = _service.GetMonsterDefaults(gameCode, contentCode);
+                return new OkObjectResult(monster);
             }
             catch(Exception ex)
             {
                 return new BadRequestResult();
             }
         }
+
+        [Route("{gameCode}/scenarios")]
+        [HttpGet]
+        public IActionResult GetScenariosForGame(GAME_CODES gameCode)
+        {
+            try
+            {
+                var scenarioList = _service.GetContentSummary(CONTENT_TYPE.scenario, gameCode);
+                return new OkObjectResult(scenarioList);
+            }
+            catch(Exception ex)
+            {
+                return new BadRequestResult();
+            }
+        }
+
+
+        [Route("{gameCode}/scenarios/{contentCode}")]
+        [HttpGet]
+        public IActionResult GetScenarioDefaults(GAME_CODES gameCode, string contentCode)
+        {
+            try
+            {
+                var scenario = _service.GetScenarioDefaults(gameCode, contentCode).ToDTO();
+                return new OkObjectResult(scenario);
+            }
+            catch(Exception ex)
+            {
+                return new BadRequestResult();
+            }
+        }
+
+
     }
 }
