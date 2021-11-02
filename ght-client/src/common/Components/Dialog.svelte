@@ -28,10 +28,10 @@
   >
     <!-- Modal Header -->
     <div>
-      <div class="px-4 py-3 border-b border-gray-200">
-        <h2 class="text-xl font-semibold text-gray-600">Title</h2>
-      </div>
-
+      <!-- Header Label -->
+      {#if $$slots.DialogHeader}
+        <slot name="DialogHeader" />
+      {/if}
       <!-- button close -->
       {#if close !== undefined}
         <button
@@ -57,15 +57,15 @@
       {/if}
     </div>
     <!-- Modal Content -->
-    {#if $$slots.modalBody || $$slots.modalFooter}
+    {#if $$slots.DialogBody || $$slots.DialogFooter}
       <!-- body -->
       <div class="flex flex-col">
-        {#if $$slots.modalBody}
-          <slot name="modalBody" />
+        {#if $$slots.DialogBody}
+          <slot name="DialogBody" />
         {/if}
         <!-- footer -->
-        {#if $$slots.modalFooter}
-          <slot name="modalFooter" />
+        {#if $$slots.DialogFooter}
+          <slot name="DialogFooter" />
         {/if}
       </div>
     {/if}
