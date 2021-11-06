@@ -2,7 +2,7 @@ import ENV_VARS from "../../Environment";
 import { get } from "svelte/store";
 import { authToken as authTokenStore } from "@dopry/svelte-auth0";
 
-const baseUrl = `${ENV_VARS.API.BaseURL()}api/combatspace/`;
+const baseUrl = `${ENV_VARS.API.BaseURL()}api/`;
 
 const request = async <T>(
   url: string,
