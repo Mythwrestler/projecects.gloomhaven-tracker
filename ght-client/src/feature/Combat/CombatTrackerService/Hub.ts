@@ -14,6 +14,7 @@ interface HubRequestResult {
 
 interface HubListener {
     method: string
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     effect: (...args: any[]) => void
 }
 
@@ -26,7 +27,7 @@ const HUB_METHODS = {
 
 export const joinCombatSpace = async (combatId: string): Promise<void> => {
     console.log("joinCombatSpace - Start")
-    let hubConnected = get(combatHubConnected)
+    const hubConnected = get(combatHubConnected)
     if (!hubConnected) return;
     const hub = get(combatHub)
     if (hub === undefined) return;
@@ -53,7 +54,7 @@ export const joinCombatSpaceResult = (result: HubRequestResult): void => {
 
 export const leaveCombatSpace = async (): Promise<void> => {
     console.log("leaveCombatSpace - Start")
-    let hubConnected = get(combatHubConnected)
+    const hubConnected = get(combatHubConnected)
     if (!hubConnected) return;
     const hub = get(combatHub)
     const combatId = get(combatSpaceId)

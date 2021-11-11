@@ -1,4 +1,4 @@
 export interface CombatSpaceSummary {
-    combatId: string,
-    description: string
+  combatId: string;
+  description: string;
 }

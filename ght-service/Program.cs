@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using GloomhavenTracker.Service.BackgroundServices;
 using GloomhavenTracker.Service.Hubs;
 using GloomhavenTracker.Service.Repos;
+using GloomhavenTracker.Service.SeedData;
 using GloomhavenTracker.Service.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http.Json;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -42,13 +44,13 @@ if (authEnabled)
             {
                 var accessToken = context.Request.Query["access_token"];
 
-                    // If the request is for our hub...
-                    var path = context.HttpContext.Request.Path;
+                // If the request is for our hub...
+                var path = context.HttpContext.Request.Path;
                 if (!string.IsNullOrEmpty(accessToken) &&
                     (path.StartsWithSegments("/battle")))
                 {
-                        // Read the token out of the query string
-                        context.Token = accessToken;
+                    // Read the token out of the query string
+                    context.Token = accessToken;
                 }
                 return Task.CompletedTask;
             }
@@ -65,7 +67,7 @@ if (authEnabled)
 
 }
 
-builder.Services.AddSwaggerGen(c => 
+builder.Services.AddSwaggerGen(c =>
         {
             c.SwaggerDoc("v1", new OpenApiInfo
             {
@@ -75,7 +77,7 @@ builder.Services.AddSwaggerGen(c =>
                 TermsOfService = new System.Uri("https://www.talkingdotnet.com"),
                 Contact = new OpenApiContact() { Name = "Talking Dotnet", Email = "contact@talkingdotnet.com" }
             });
- 
+
             c.SwaggerDoc("v2", new OpenApiInfo
             {
                 Version = "v2",
@@ -87,6 +89,7 @@ builder.Services.AddSwaggerGen(c =>
         });
 
 builder.Services.AddMemoryCache();
+
 builder.Services.AddSignalR();
 builder.Services.AddControllers();
 
@@ -97,13 +100,37 @@ builder.Services.Configure<JsonOptions>(options =>
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
 });
 
-builder.Services.AddSingleton<ICombatRepo, CombatRepo>();
+
+string dbServer = Environment.GetEnvironmentVariable("DB_SERVER") ?? String.Empty;
+string dbPort = Environment.GetEnvironmentVariable("DB_PORT") ?? String.Empty;
+string dbDatabase = Environment.GetEnvironmentVariable("DB_DATABASE") ?? String.Empty;
+string dbUser = Environment.GetEnvironmentVariable("DB_USER") ?? String.Empty;
+string dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? String.Empty;
+string dbConnectionString = String.Format(
+    builder.Configuration["ConnectionStrings:PostgreSQL"],
+    dbServer,
+    dbPort,
+    dbDatabase,
+    dbUser,
+    dbPassword,
+    "true"
+);
+builder.Services.AddSingleton<ICombatRepo, CombatRepo>(factory =>
+{
+    return new CombatRepo(factory.GetRequiredService<IMemoryCache>(), dbConnectionString);
+});
+builder.Services.AddSingleton<IContentRepo, ContentRepo>(factory =>
+{
+    return new ContentRepo(dbConnectionString);
+});
 builder.Services.AddSingleton<ICombatService, CombatService>();
+builder.Services.AddSingleton<IContentService, ContentService>();
 builder.Services.AddHostedService<BattleHubMonitor>();
 
-if(httpLoggingEnabled)
+if (httpLoggingEnabled)
 {
-    builder.Services.AddHttpLogging(options => {
+    builder.Services.AddHttpLogging(options =>
+    {
         options.LoggingFields = Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.All;
         options.RequestBodyLogLimit = 4096;
         options.RequestBodyLogLimit = 4096;
@@ -114,16 +141,11 @@ var app = builder.Build();
 
 var logger = app.Logger;
 
-if(httpLoggingEnabled) {
-    app.UseHttpLogging();
+SeedData.LoadDefaultContent(dbConnectionString);
 
-        // app.Use(async (context, next) =>
-        // {
-        //     logger.LogTrace(context.Request.Body.)
-        //     // Do work that doesn't write to the Response.
-        //     await next.Invoke();
-        //     // Do logging or other work that doesn't write to the Response.
-        // });
+if (httpLoggingEnabled)
+{
+    app.UseHttpLogging();
 }
 
 // Configure the HTTP request pipeline.
@@ -137,7 +159,7 @@ if (app.Environment.IsDevelopment())
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
         c.SwaggerEndpoint("/swagger/v2/swagger.json", "My API V2");
     });
-        
+
 }
 
 app.UseCors((config) =>
@@ -150,6 +172,9 @@ app.UseCors((config) =>
 });
 
 app.UseAuthentication();
+
+app.UseRouting();
+
 app.UseAuthorization();
 
 var helloEndPoint = app.MapGet("hello-world", () => "Hello World");
@@ -172,12 +197,9 @@ else
     battleHub.AllowAnonymous();
 }
 
-app.UseRouting();
-
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+});
 
 app.Run();
