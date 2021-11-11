@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using GloomhavenTracker.Service.Models.Combat;
 using GloomhavenTracker.Service.Models;
 using GloomhavenTracker.Service.Services;
 using Microsoft.AspNetCore.SignalR;

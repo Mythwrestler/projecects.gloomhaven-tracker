@@ -1,0 +1,1 @@
+namespace GloomhavenTracker.Service.Models.Campaign;

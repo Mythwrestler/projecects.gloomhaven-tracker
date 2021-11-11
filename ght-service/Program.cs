@@ -117,7 +117,8 @@ string dbConnectionString = String.Format(
 );
 builder.Services.AddSingleton<ICombatRepo, CombatRepo>(factory =>
 {
-    return new CombatRepo(factory.GetRequiredService<IMemoryCache>(), dbConnectionString);
+    // return new CombatRepo(factory.GetRequiredService<IMemoryCache>(), dbConnectionString);
+    return new CombatRepo();
 });
 builder.Services.AddSingleton<IContentRepo, ContentRepo>(factory =>
 {
