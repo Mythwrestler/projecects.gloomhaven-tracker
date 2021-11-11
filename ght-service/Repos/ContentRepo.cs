@@ -2,17 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using GloomhavenTracker.Service.Models;
+using GloomhavenTracker.Service.Models.Content;
 using Npgsql;
 
 namespace GloomhavenTracker.Service.Repos;
 
 public interface IContentRepo
 {
-    public List<ContentItemSummary> GetContentSummary(CONTENT_TYPE kind, GAME_CODES? gameCode);
-    public GameContent GetGameDefaults(GAME_CODES gameCode);
-    public PlayerContent GetPlayerDefaults(GAME_CODES gameCode, string contentCode);
-    public MonsterContent GetMonsterDefaults(GAME_CODES gameCode, string contentCode);
-    public ScenarioContent GetScenarioDefaults(GAME_CODES gameCode, string contentCode);
+    public List<ContentSummary> GetContentSummary(CONTENT_TYPE kind, GAME_TYPE? gameCode);
+    public Game GetGameDefaults(GAME_TYPE gameCode);
+    public Character GetPlayerDefaults(GAME_TYPE gameCode, string contentCode);
+    public Monster GetMonsterDefaults(GAME_TYPE gameCode, string contentCode);
+    public ScenarioContent GetScenarioDefaults(GAME_TYPE gameCode, string contentCode);
 }
 
 public class ContentRepo : IContentRepo
@@ -21,20 +22,20 @@ public class ContentRepo : IContentRepo
     
     public ContentRepo(string connectionString) => _connection = new NpgsqlConnection(connectionString);
 
-    public List<ContentItemSummary> GetContentSummary(CONTENT_TYPE kind, GAME_CODES? gameCode)
+    public List<ContentSummary> GetContentSummary(CONTENT_TYPE kind, GAME_TYPE? gameCode)
     {
         
-        string kindString = GameUtils.kindString(kind);
-        string sqlString = $"SELECT json_build_object('name', gc.contentjson->'name','code', gc.contentjson->'code') from \"Game Content\" gc where gc.contentJson->>'kind' = '{kindString}'";
+        string contentTypeString = GameUtils.contentTypeString(kind);
+        string sqlString = $"SELECT json_build_object('name', gc.contentjson->'name','code', gc.contentjson->'code') from \"Game Content\" gc where gc.contentJson->>'kind' = '{contentTypeString}'";
         if(gameCode != null)
         {
-            string gameString = GameUtils.codeString(gameCode);
+            string gameString = GameUtils.gameTypeString(gameCode);
             sqlString += $" and gc.game='{gameString}'";
         }
         
         try
         {
-            List<ContentItemSummary> summaries = new List<ContentItemSummary>();
+            List<ContentSummary> summaries = new List<ContentSummary>();
             _connection.Open();
             using(NpgsqlCommand command = new NpgsqlCommand(sqlString, _connection))
             {
@@ -44,7 +45,7 @@ public class ContentRepo : IContentRepo
                 {
                     jsonString = reader[0].ToString();
                     if(jsonString != null){
-                        var summary = JsonSerializer.Deserialize<ContentItemSummary>(jsonString);
+                        var summary = JsonSerializer.Deserialize<ContentSummary>(jsonString);
                         if(summary != null) summaries.Add(summary);
                     }
                 }
@@ -61,9 +62,9 @@ public class ContentRepo : IContentRepo
         }
     }
 
-    public GameContent GetGameDefaults(GAME_CODES gameCode)
+    public Game GetGameDefaults(GAME_TYPE gameCode)
     {
-        string gameString = GameUtils.codeString(gameCode);
+        string gameString = GameUtils.gameTypeString(gameCode);
         string sqlString = $"SELECT gc.contentjson from \"Game Content\" gc where gc.contentJson->>'kind' = 'game' and gc.game='{gameString}'";
         try
         {
@@ -71,13 +72,13 @@ public class ContentRepo : IContentRepo
             using(NpgsqlCommand command = new NpgsqlCommand(sqlString, _connection))
             {
                 string? jsonString;
-                GameContent? game;
+                Game? game;
                 NpgsqlDataReader reader = command.ExecuteReader();
                 while(reader.Read())
                 {
                     jsonString = reader[0].ToString();
                     if(jsonString != null){
-                        game = JsonSerializer.Deserialize<GameContent>(jsonString);
+                        game = JsonSerializer.Deserialize<Game>(jsonString);
                         if(game != null) return game;
                     }
                 }
@@ -94,9 +95,9 @@ public class ContentRepo : IContentRepo
         }
     }
     
-    public PlayerContent GetPlayerDefaults(GAME_CODES gameCode, string contentCode)
+    public Character GetPlayerDefaults(GAME_TYPE gameCode, string contentCode)
     {
-        string gameString = GameUtils.codeString(gameCode);
+        string gameString = GameUtils.gameTypeString(gameCode);
         string sqlString = $"SELECT gc.contentjson from \"Game Content\" gc where gc.contentJson->>'kind' = 'player' and gc.contentJson->>'code'='{contentCode}' and gc.game='{gameString}'";
         try
         {
@@ -104,13 +105,13 @@ public class ContentRepo : IContentRepo
             using(NpgsqlCommand command = new NpgsqlCommand(sqlString, _connection))
             {
                 string? jsonString;
-                PlayerContent? player;
+                Character? player;
                 NpgsqlDataReader reader = command.ExecuteReader();
                 while(reader.Read())
                 {
                     jsonString = reader[0].ToString();
                     if(jsonString != null){
-                        player = JsonSerializer.Deserialize<PlayerContent>(jsonString);
+                        player = JsonSerializer.Deserialize<Character>(jsonString);
                         if(player != null) return player;
                     }
                 }
@@ -127,9 +128,9 @@ public class ContentRepo : IContentRepo
         }
     }
 
-    public MonsterContent GetMonsterDefaults(GAME_CODES gameCode, string contentCode)
+    public Monster GetMonsterDefaults(GAME_TYPE gameCode, string contentCode)
     {
-        string gameString = GameUtils.codeString(gameCode);
+        string gameString = GameUtils.gameTypeString(gameCode);
         string sqlString = $"SELECT gc.contentjson from \"Game Content\" gc where gc.contentJson->>'kind' = 'monster' and gc.contentJson->>'code'='{contentCode}' and gc.game='{gameString}'";
         try
         {
@@ -137,13 +138,13 @@ public class ContentRepo : IContentRepo
             using(NpgsqlCommand command = new NpgsqlCommand(sqlString, _connection))
             {
                 string? jsonString;
-                MonsterContent? monster;
+                Monster? monster;
                 NpgsqlDataReader reader = command.ExecuteReader();
                 while(reader.Read())
                 {
                     jsonString = reader[0].ToString();
                     if(jsonString != null){
-                        monster = JsonSerializer.Deserialize<MonsterContent>(jsonString);
+                        monster = JsonSerializer.Deserialize<Monster>(jsonString);
                         if(monster != null) return monster;
                     }
                 }
@@ -160,10 +161,10 @@ public class ContentRepo : IContentRepo
         }
     }
 
-    public ScenarioContent GetScenarioDefaults(GAME_CODES gameCode, string contentCode)
+    public ScenarioContent GetScenarioDefaults(GAME_TYPE gameCode, string contentCode)
     {
         ScenarioContent? scenario = null;
-        string gameString = GameUtils.codeString(gameCode);
+        string gameString = GameUtils.gameTypeString(gameCode);
         string sqlStringScenario = $"SELECT json_build_object('name', gc.contentjson->'name','code', gc.contentjson->'code') from \"Game Content\" gc where gc.contentJson->>'kind' = 'scenario' and gc.contentJson->>'code'='{contentCode}' and gc.game='{gameString}'";
         string sqlStringMonsters = $"SELECT gc.contentJson from \"Game Content\" gc where gc.contentjson->>'code'::text = ANY(select jsonb_array_elements_text(gc2.contentjson->'monsters') from \"Game Content\" gc2 where gc2.game='{gameString}' and gc2.contentjson->>'code'='{contentCode}')";
         try
@@ -192,10 +193,10 @@ public class ContentRepo : IContentRepo
                 NpgsqlDataReader reader = command.ExecuteReader();
                 while(reader.Read())
                 {
-                    MonsterContent? monster = null;
+                    Monster? monster = null;
                     jsonString = reader[0].ToString();
                     if(jsonString != null){
-                        monster = JsonSerializer.Deserialize<MonsterContent>(jsonString);
+                        monster = JsonSerializer.Deserialize<Monster>(jsonString);
                         if(monster != null) scenario.Monsters.Add(monster);
                     }
                 }

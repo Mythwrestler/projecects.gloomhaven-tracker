@@ -12,9 +12,9 @@ namespace GloomhavenTracker.Service.BackgroundServices
     {
         private readonly IHubContext<CombatHub> _context;
 
-        private readonly ICombatService3 _service;
+        private readonly ICombatService _service;
 
-        public BattleHubMonitor(IHubContext<CombatHub> context, ICombatService3 service)
+        public BattleHubMonitor(IHubContext<CombatHub> context, ICombatService service)
         {
             _context = context;
             _service = service;

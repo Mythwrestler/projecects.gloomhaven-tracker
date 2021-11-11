@@ -96,11 +96,6 @@ public class CombatRepo : ICombatRepo
     //     _memCache.Set<List<Guid>>(CACHE_KEYS.CombatListing, _combatListing);
     // }
 
-        if (!_combatListing.Contains(combatId)) _combatListing.Add(combatId);
-        _memCache.Set<List<Guid>>(CACHE_KEYS.CombatListing, _combatListing);
-    }
-
-
 
 
 

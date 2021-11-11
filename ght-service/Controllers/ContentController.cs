@@ -1,7 +1,7 @@
 using GloomhavenTracker.Service.Services;
-using GloomhavenTracker.Service.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using GloomhavenTracker.Service.Models.Content;
 
 namespace GloomhavenTracker.Service.Controllers
 {
@@ -28,7 +28,7 @@ namespace GloomhavenTracker.Service.Controllers
 
         [Route("{gameCode}")]
         [HttpGet]
-        public IActionResult GetGame(GAME_CODES gameCode)
+        public IActionResult GetGame(GAME_TYPE gameCode)
         {
             try
             {
@@ -43,7 +43,7 @@ namespace GloomhavenTracker.Service.Controllers
 
         [Route("{gameCode}/default")]
         [HttpGet]
-        public IActionResult GetGameDefaults(GAME_CODES gameCode)
+        public IActionResult GetGameDefaults(GAME_TYPE gameCode)
         {
             try
             {
@@ -58,11 +58,11 @@ namespace GloomhavenTracker.Service.Controllers
 
         [Route("{gameCode}/players")]
         [HttpGet]
-        public IActionResult GetPlayersForGame(GAME_CODES gameCode)
+        public IActionResult GetPlayersForGame(GAME_TYPE gameCode)
         {
             try
             {
-                var playerList = _service.GetContentSummary(CONTENT_TYPE.player, gameCode);
+                var playerList = _service.GetContentSummary(CONTENT_TYPE.character, gameCode);
                 return new OkObjectResult(playerList);
             }
             catch (Exception ex)
@@ -73,7 +73,7 @@ namespace GloomhavenTracker.Service.Controllers
 
         [Route("{gameCode}/players/{contentCode}")]
         [HttpGet]
-        public IActionResult GetPlayerDefaults(GAME_CODES gameCode, string contentCode)
+        public IActionResult GetPlayerDefaults(GAME_TYPE gameCode, string contentCode)
         {
             try
             {
@@ -88,7 +88,7 @@ namespace GloomhavenTracker.Service.Controllers
 
         [Route("{gameCode}/monsters")]
         [HttpGet]
-        public IActionResult GetMonstersForGame(GAME_CODES gameCode)
+        public IActionResult GetMonstersForGame(GAME_TYPE gameCode)
         {
             try
             {
@@ -103,7 +103,7 @@ namespace GloomhavenTracker.Service.Controllers
 
         [Route("{gameCode}/monsters/{contentCode}")]
         [HttpGet]
-        public IActionResult GetMonsterDefaults(GAME_CODES gameCode, string contentCode)
+        public IActionResult GetMonsterDefaults(GAME_TYPE gameCode, string contentCode)
         {
             try
             {
@@ -118,7 +118,7 @@ namespace GloomhavenTracker.Service.Controllers
 
         [Route("{gameCode}/scenarios")]
         [HttpGet]
-        public IActionResult GetScenariosForGame(GAME_CODES gameCode)
+        public IActionResult GetScenariosForGame(GAME_TYPE gameCode)
         {
             try
             {
@@ -134,11 +134,11 @@ namespace GloomhavenTracker.Service.Controllers
 
         [Route("{gameCode}/scenarios/{contentCode}")]
         [HttpGet]
-        public IActionResult GetScenarioDefaults(GAME_CODES gameCode, string contentCode)
+        public IActionResult GetScenarioDefaults(GAME_TYPE gameCode, string contentCode)
         {
             try
             {
-                var scenario = _service.GetScenarioDefaults(gameCode, contentCode).ToDTO();
+                var scenario = _service.GetScenarioDefaults(gameCode, contentCode).Summary;
                 return new OkObjectResult(scenario);
             }
             catch(Exception ex)
