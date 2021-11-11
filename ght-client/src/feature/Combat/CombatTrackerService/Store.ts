@@ -76,7 +76,6 @@ export const requestScenarioListingSuccess = (
 ): void => {
   scenarioListingLoading.set(false);
   scenarioListingLoaded.set(true);
-  console.log(JSON.stringify(scenarios));
   scenarioListing.set(scenarios);
 };
 export const requestScenarioListingFailure = (): void => {

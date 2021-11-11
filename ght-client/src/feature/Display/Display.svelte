@@ -37,7 +37,7 @@
   <Router primary={false}>
     <content
       class={clsx(
-        "overflow-y-auto w-full h-full relative",
+        "overflow-y-auto w-full h-full relative bg-gray-200",
         "lg:pt-0 lg:flex lg:flex-row"
       )}
     >

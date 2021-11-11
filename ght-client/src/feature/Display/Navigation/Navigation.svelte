@@ -12,10 +12,10 @@
 
 <nav
   class={clsx(
-    "flex flex-col overflow-y-auto overflow-x-hidden h-full w-full absolute top-0 left-0 ",
+    "z-10 flex flex-col overflow-y-auto overflow-x-hidden h-full w-full absolute top-0 left-0",
     "bg-white dark:bg-gray-700 text-gray-700 dark:text-white",
-    "lg:static lg:w-44 lg:pt-0",
-    !showNavMenu && "hidden lg:block"
+    "lg:static lg:min-w lg:pt-0 lg:w-auto lg:z-0",
+    !showNavMenu && "hidden lg:block lg:min-w-min"
   )}
 >
   <ul class="flex flex-col">

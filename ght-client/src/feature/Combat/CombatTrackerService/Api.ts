@@ -1,5 +1,5 @@
 import { getAPI, postAPI } from "../../../common/Utils/API";
-import { Actors, CombatSpaceSummary } from "../../../models";
+import { Actors, CombatSpace, CombatSpaceSummary } from "../../../models";
 import { Scenario } from "../../../models/Content";
 import * as CombatStore from "./Store";
 
@@ -12,6 +12,19 @@ export const getCombatSpaces = async (): Promise<void> => {
     CombatStore.requestCombatSpacesFailure();
     CombatStore.showErrorMessage("Failed to get list of combat spaces");
   }
+};
+
+export const getCombatSpace = async (
+  combatId: string
+): Promise<CombatSpace | undefined> => {
+  try {
+    console.log(`combatspace/${combatId}`);
+    const result = await getAPI<CombatSpace>(`combatspace/${combatId}`);
+    return result;
+  } catch (err: unknown) {
+    CombatStore.showErrorMessage("Failed to get list of combat spaces");
+  }
+  return undefined;
 };
 
 export const getScenarios = async (gameCode: string): Promise<void> => {
@@ -51,10 +64,14 @@ export const getScenarios = async (gameCode: string): Promise<void> => {
 // };
 
 export const addCombatSpace = async (
+  gameCode: string,
+  scenarioCode: string,
   description: string
 ): Promise<CombatSpaceSummary | undefined> => {
   try {
     const result = await postAPI<CombatSpaceSummary>("combatspace/new", {
+      gameCode,
+      scenarioCode,
       description,
     });
     CombatStore.requestNewCombatSpaceSuccess(result);
