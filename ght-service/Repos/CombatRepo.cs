@@ -8,94 +8,93 @@ namespace GloomhavenTracker.Service.Repos;
 
 public interface ICombatRepo
 {
-    public bool CombatExists(Guid combatId);
+    // public bool CombatExists(Guid combatId);
 
-    public List<Guid> GetCombats();
+    // public List<Guid> GetCombats();
 
-    public CombatTrackerDO GetCombat(Guid combatId);
+    // public CombatTrackerDO GetCombat(Guid combatId);
 
-    public void SaveCombat(CombatTrackerDO combat);
+    // public void SaveCombat(CombatTrackerDO combat);
 
-    public void DisposeCombat(Guid combatId);
+    // public void DisposeCombat(Guid combatId);
 
 }
 
 public class CombatRepo : ICombatRepo
 {
-    private readonly IMemoryCache _memCache;
-    private readonly string _connectionString;
+    // private readonly IMemoryCache _memCache;
+    // private readonly string _connectionString;
 
-    private List<Guid>? _combatListing;
+    // private List<Guid>? _combatListing;
 
-    private static class CACHE_KEYS
-    {
-        public static string Combat { get; } = "combat_";
-        public static string CombatListing { get; } = "combat_listing";
-    }
+    // private static class CACHE_KEYS
+    // {
+    //     public static string Combat { get; } = "combat_";
+    //     public static string CombatListing { get; } = "combat_listing";
+    // }
 
-    public CombatRepo(IMemoryCache memCache, string connectionString)
-    {
-        _memCache = memCache;
-        _connectionString = connectionString;
-    }
+    // public CombatRepo(IMemoryCache memCache, string connectionString)
+    // {
+    //     _memCache = memCache;
+    //     _connectionString = connectionString;
+    // }
 
-    public bool CombatExists(Guid combatId)
-    {
-        return CombatIdInListing(combatId);
-    }
+    // public bool CombatExists(Guid combatId)
+    // {
+    //     return CombatIdInListing(combatId);
+    // }
 
-    public List<Guid> GetCombats()
-    {
-        return _combatListing ?? new List<Guid>();
-    }
+    // public List<Guid> GetCombats()
+    // {
+    //     return _combatListing ?? new List<Guid>();
+    // }
 
-    public CombatTrackerDO GetCombat(Guid combatId)
-    {
-        CombatTrackerDO? combat;
-        _memCache.TryGetValue<CombatTrackerDO>($"{CACHE_KEYS.Combat}{combatId.ToString()}", out combat);
-        return combat;
-    }
+    // public CombatTrackerDO GetCombat(Guid combatId)
+    // {
+    //     CombatTrackerDO? combat;
+    //     _memCache.TryGetValue<CombatTrackerDO>($"{CACHE_KEYS.Combat}{combatId.ToString()}", out combat);
+    //     return combat;
+    // }
 
-    public void SaveCombat(CombatTrackerDO combat)
-    {
-        _memCache.Set<CombatTrackerDO>($"{CACHE_KEYS.Combat}{combat.CombatId.ToString()}", combat);
-        if (!CombatIdInListing(combat.CombatId)) AddNewCombatToListing(combat.CombatId);
-    }
+    // public void SaveCombat(CombatTrackerDO combat)
+    // {
+    //     _memCache.Set<CombatTrackerDO>($"{CACHE_KEYS.Combat}{combat.CombatId.ToString()}", combat);
+    //     if (!CombatIdInListing(combat.CombatId)) AddNewCombatToListing(combat.CombatId);
+    // }
 
-    public void DisposeCombat(Guid combatId)
-    {
-        throw new NotImplementedException();
-    }
-
-
-    private bool CombatIdInListing(Guid combatId)
-    {
-        if (_combatListing == null)
-        {
-            _combatListing = new List<Guid>();
-            List<Guid>? listingFromMemory;
-            _memCache.TryGetValue(CACHE_KEYS.CombatListing, out listingFromMemory);
-            if (listingFromMemory != null) _combatListing.AddRange(listingFromMemory);
-        }
-
-        return _combatListing.Contains(combatId);
-    }
+    // public void DisposeCombat(Guid combatId)
+    // {
+    //     throw new NotImplementedException();
+    // }
 
 
-    private void AddNewCombatToListing(Guid combatId)
-    {
-        if (_combatListing == null)
-        {
-            _combatListing = new List<Guid>();
-            List<Guid>? listingFromMemory;
-            _memCache.TryGetValue(CACHE_KEYS.CombatListing, out listingFromMemory);
-            if (listingFromMemory != null) _combatListing.AddRange(listingFromMemory);
-        }
+    // private bool CombatIdInListing(Guid combatId)
+    // {
+    //     if (_combatListing == null)
+    //     {
+    //         _combatListing = new List<Guid>();
+    //         List<Guid>? listingFromMemory;
+    //         _memCache.TryGetValue(CACHE_KEYS.CombatListing, out listingFromMemory);
+    //         if (listingFromMemory != null) _combatListing.AddRange(listingFromMemory);
+    //     }
 
-        if (!_combatListing.Contains(combatId)) _combatListing.Add(combatId);
-        _memCache.Set<List<Guid>>(CACHE_KEYS.CombatListing, _combatListing);
-    }
+    //     return _combatListing.Contains(combatId);
+    // }
 
+
+    // private void AddNewCombatToListing(Guid combatId)
+    // {
+    //     if (_combatListing == null)
+    //     {
+    //         _combatListing = new List<Guid>();
+    //         List<Guid>? listingFromMemory;
+    //         _memCache.TryGetValue(CACHE_KEYS.CombatListing, out listingFromMemory);
+    //         if (listingFromMemory != null) _combatListing.AddRange(listingFromMemory);
+    //     }
+
+    //     if (!_combatListing.Contains(combatId)) _combatListing.Add(combatId);
+    //     _memCache.Set<List<Guid>>(CACHE_KEYS.CombatListing, _combatListing);
+    // }
 
 
 

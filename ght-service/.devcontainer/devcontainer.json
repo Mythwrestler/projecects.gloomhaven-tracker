@@ -10,5 +10,9 @@
         "ms-dotnettools.csharp",
         "patcx.vscode-nuget-gallery",
         "leo-labs.dotnet",
-    ]
+    ],
+    "settings": {
+        "editor.semanticHighlighting.enabled": true,
+        "csharp.semanticHighlighting.enabled": true
+    }
 }
