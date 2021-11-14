@@ -53,8 +53,17 @@ public class BaseMonsterStatSet
 
 
 [Serializable]
-public class Monster : ContentItem
+public class Monster
 {
+
+    [JsonPropertyName("contentCode")]
+    public string ContentCode { get; set; } = string.Empty;
+
+    [JsonPropertyName("name")]
+    public string Name { get; set; } = string.Empty;
+
+    [JsonPropertyName("description")]
+    public string Description { get; set; } = string.Empty;
 
     [JsonPropertyName("baseStats")]
     public BaseMonsterStatSet BaseStats { get; set; } = new BaseMonsterStatSet();

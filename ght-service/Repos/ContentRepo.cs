@@ -9,11 +9,11 @@ namespace GloomhavenTracker.Service.Repos;
 
 public interface IContentRepo
 {
-    public List<ContentSummary> GetContentSummary(CONTENT_TYPE kind, GAME_TYPE? gameCode);
+    public List<ContentSummary> GetContentSummary(CONTENT_TYPE contentType, GAME_TYPE? gameCode);
     public Game GetGameDefaults(GAME_TYPE gameCode);
-    public Character GetPlayerDefaults(GAME_TYPE gameCode, string contentCode);
+    public Character GetCharacterDefaults(GAME_TYPE gameCode, string contentCode);
     public Monster GetMonsterDefaults(GAME_TYPE gameCode, string contentCode);
-    public ScenarioContent GetScenarioDefaults(GAME_TYPE gameCode, string contentCode);
+    public Scenario GetScenarioDefaults(GAME_TYPE gameCode, string contentCode);
 }
 
 public class ContentRepo : IContentRepo
@@ -22,14 +22,14 @@ public class ContentRepo : IContentRepo
     
     public ContentRepo(string connectionString) => _connection = new NpgsqlConnection(connectionString);
 
-    public List<ContentSummary> GetContentSummary(CONTENT_TYPE kind, GAME_TYPE? gameCode)
+    public List<ContentSummary> GetContentSummary(CONTENT_TYPE contentType, GAME_TYPE? gameCode)
     {
         
-        string contentTypeString = GameUtils.contentTypeString(kind);
-        string sqlString = $"SELECT json_build_object('name', gc.contentjson->'name','code', gc.contentjson->'code') from \"Game Content\" gc where gc.contentJson->>'kind' = '{contentTypeString}'";
+        string contentTypeString = GameUtils.ContentTypeString(contentType);
+        string sqlString = $"SELECT json_build_object('name', gc.contentjson->'name','contentCode', gc.contentjson->'contentCode', 'description', gc.description) from \"Game Content\" gc where gc.contentJson->>'kind' = '{contentTypeString}'";
         if(gameCode != null)
         {
-            string gameString = GameUtils.gameTypeString(gameCode);
+            string gameString = GameUtils.GameTypeString(gameCode);
             sqlString += $" and gc.game='{gameString}'";
         }
         
@@ -64,8 +64,8 @@ public class ContentRepo : IContentRepo
 
     public Game GetGameDefaults(GAME_TYPE gameCode)
     {
-        string gameString = GameUtils.gameTypeString(gameCode);
-        string sqlString = $"SELECT gc.contentjson from \"Game Content\" gc where gc.contentJson->>'kind' = 'game' and gc.game='{gameString}'";
+        string gameString = GameUtils.GameTypeString(gameCode);
+        string sqlString = $"SELECT json_build_object('description', gc.description)::jsonb || gc.contentjson from \"Game Content\" gc where gc.contentJson->>'kind' = 'game' and gc.game='{gameString}'";
         try
         {
             _connection.Open();
@@ -95,10 +95,10 @@ public class ContentRepo : IContentRepo
         }
     }
     
-    public Character GetPlayerDefaults(GAME_TYPE gameCode, string contentCode)
+    public Character GetCharacterDefaults(GAME_TYPE gameCode, string contentCode)
     {
-        string gameString = GameUtils.gameTypeString(gameCode);
-        string sqlString = $"SELECT gc.contentjson from \"Game Content\" gc where gc.contentJson->>'kind' = 'player' and gc.contentJson->>'code'='{contentCode}' and gc.game='{gameString}'";
+        string gameString = GameUtils.GameTypeString(gameCode);
+        string sqlString = $"SELECT json_build_object('description', gc.description)::jsonb || gc.contentjson from \"Game Content\" gc where gc.contentJson->>'kind' = 'character' and gc.contentJson->>'code'='{contentCode}' and gc.game='{gameString}'";
         try
         {
             _connection.Open();
@@ -130,8 +130,8 @@ public class ContentRepo : IContentRepo
 
     public Monster GetMonsterDefaults(GAME_TYPE gameCode, string contentCode)
     {
-        string gameString = GameUtils.gameTypeString(gameCode);
-        string sqlString = $"SELECT gc.contentjson from \"Game Content\" gc where gc.contentJson->>'kind' = 'monster' and gc.contentJson->>'code'='{contentCode}' and gc.game='{gameString}'";
+        string gameString = GameUtils.GameTypeString(gameCode);
+        string sqlString = $"SELECT json_build_object('description', gc.description)::jsonb || gc.contentjson from \"Game Content\" gc where gc.contentJson->>'kind' = 'monster' and gc.contentJson->>'contentCode'='{contentCode}' and gc.game='{gameString}'";
         try
         {
             _connection.Open();
@@ -161,11 +161,11 @@ public class ContentRepo : IContentRepo
         }
     }
 
-    public ScenarioContent GetScenarioDefaults(GAME_TYPE gameCode, string contentCode)
+    public Scenario GetScenarioDefaults(GAME_TYPE gameCode, string contentCode)
     {
-        ScenarioContent? scenario = null;
-        string gameString = GameUtils.gameTypeString(gameCode);
-        string sqlStringScenario = $"SELECT json_build_object('name', gc.contentjson->'name','code', gc.contentjson->'code') from \"Game Content\" gc where gc.contentJson->>'kind' = 'scenario' and gc.contentJson->>'code'='{contentCode}' and gc.game='{gameString}'";
+        Scenario? scenario = null;
+        string gameString = GameUtils.GameTypeString(gameCode);
+        string sqlStringScenario = $"SELECT json_build_object('name', gc.contentjson->'name','contentCode', gc.contentjson->'code', 'description', gc.description) from \"Game Content\" gc where gc.contentJson->>'kind' = 'scenario' and gc.contentJson->>'code'='{contentCode}' and gc.game='{gameString}'";
         string sqlStringMonsters = $"SELECT gc.contentJson from \"Game Content\" gc where gc.contentjson->>'code'::text = ANY(select jsonb_array_elements_text(gc2.contentjson->'monsters') from \"Game Content\" gc2 where gc2.game='{gameString}' and gc2.contentjson->>'code'='{contentCode}')";
         try
         {
@@ -178,7 +178,7 @@ public class ContentRepo : IContentRepo
                 {
                     jsonString = reader[0].ToString();
                     if(jsonString != null){
-                        scenario = JsonSerializer.Deserialize<ScenarioContent>(jsonString);
+                        scenario = JsonSerializer.Deserialize<Scenario>(jsonString);
                     }
                 }
             }

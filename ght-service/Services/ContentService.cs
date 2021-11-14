@@ -8,9 +8,9 @@ public interface IContentService
 {
     public List<ContentSummary> GetContentSummary(CONTENT_TYPE kind, GAME_TYPE? gameCode);
     public Game GetGameDefaults(GAME_TYPE gameCode);
-    public Character GetPlayerDefaults(GAME_TYPE gameCode, string contentCode);
+    public Character GetCharacterDefaults(GAME_TYPE gameCode, string contentCode);
     public Monster GetMonsterDefaults(GAME_TYPE gameCode, string contentCode);
-    public ScenarioContent GetScenarioDefaults(GAME_TYPE gameCode, string contentCode);
+    public Scenario GetScenarioDefaults(GAME_TYPE gameCode, string contentCode);
 
 }
 
@@ -30,9 +30,9 @@ public class ContentService : IContentService
         return _repo.GetGameDefaults(gameCode);
     }
 
-    public Character GetPlayerDefaults(GAME_TYPE gameCode, string contentCode)
+    public Character GetCharacterDefaults(GAME_TYPE gameCode, string contentCode)
     {
-        return _repo.GetPlayerDefaults(gameCode, contentCode);
+        return _repo.GetCharacterDefaults(gameCode, contentCode);
     }
 
     public Monster GetMonsterDefaults(GAME_TYPE gameCode, string contentCode)
@@ -40,7 +40,7 @@ public class ContentService : IContentService
         return _repo.GetMonsterDefaults(gameCode, contentCode);
     }
 
-    public ScenarioContent GetScenarioDefaults(GAME_TYPE gameCode, string contentCode)
+    public Scenario GetScenarioDefaults(GAME_TYPE gameCode, string contentCode)
     {
         return _repo.GetScenarioDefaults(gameCode, contentCode);
     }

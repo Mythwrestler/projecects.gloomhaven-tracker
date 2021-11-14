@@ -32,8 +32,17 @@ public class BaseCharacterStats
 }
 
 [Serializable]
-public class Character : ContentItem
+public class Character
 {
+    [JsonPropertyName("contentCode")]
+    public string ContentCode { get; set; } = string.Empty;
+
+    [JsonPropertyName("name")]
+    public string Name { get; set; } = string.Empty;
+
+    [JsonPropertyName("description")]
+    public string Description { get; set; } = string.Empty;
+
     [JsonPropertyName("baseStats")]
     public BaseCharacterStats BaseStats { get; set; } = new BaseCharacterStats();
 

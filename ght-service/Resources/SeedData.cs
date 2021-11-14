@@ -1,8 +1,6 @@
 using System.IO;
 using Npgsql;
-using System.Text.Json;
 using System;
-using System.Collections.Generic;
 
 namespace GloomhavenTracker.Service.SeedData
 {
@@ -58,50 +56,3 @@ namespace GloomhavenTracker.Service.SeedData
         }
     }
 }
-
-/*
-
-
-{
-	"standard":{
-		"0":{"health":0,"movement":0,"attack":0,"defenseEffects":[],"attackEffects":[],"immunity":[]},
-		"1":{"health":0,"movement":0,"attack":0,"defenseEffects":[],"attackEffects":[],"immunity":[]},
-		"2":{"health":0,"movement":0,"attack":0,"defenseEffects":[],"attackEffects":[],"immunity":[]},
-		"3":{"health":0,"movement":0,"attack":0,"defenseEffects":[],"attackEffects":[],"immunity":[]},
-		"4":{"health":0,"movement":0,"attack":0,"defenseEffects":[],"attackEffects":[],"immunity":[]},
-		"5":{"health":0,"movement":0,"attack":0,"defenseEffects":[],"attackEffects":[],"immunity":[]},
-		"6":{"health":0,"movement":0,"attack":0,"defenseEffects":[],"attackEffects":[],"immunity":[]},
-		"7":{"health":0,"movement":0,"attack":0,"defenseEffects":[],"attackEffects":[],"immunity":[]}
-	},
-	"elite":{
-		"0":{"health":0,"movement":0,"attack":0,"defenseEffects":[],"attackEffects":[],"immunity":[]},
-		"1":{"health":0,"movement":0,"attack":0,"defenseEffects":[],"attackEffects":[],"immunity":[]},
-		"2":{"health":0,"movement":0,"attack":0,"defenseEffects":[],"attackEffects":[],"immunity":[]},
-		"3":{"health":0,"movement":0,"attack":0,"defenseEffects":[],"attackEffects":[],"immunity":[]},
-		"4":{"health":0,"movement":0,"attack":0,"defenseEffects":[],"attackEffects":[],"immunity":[]},
-		"5":{"health":0,"movement":0,"attack":0,"defenseEffects":[],"attackEffects":[],"immunity":[]},
-		"6":{"health":0,"movement":0,"attack":0,"defenseEffects":[],"attackEffects":[],"immunity":[]},
-		"7":{"health":0,"movement":0,"attack":0,"defenseEffects":[],"attackEffects":[],"immunity":[]}
-	}
-}
-
-
-
-
-{
-	"standard":{
-		"0":{"health":0,"healthMod":"","movement":0,"moveMod":"","attack":0,"attackMod":"","defenseEffects":[],"attackEffects":[],"immunity":[]},
-		"1":{"health":0,"healthMod":"","movement":0,"moveMod":"","attack":0,"attackMod":"","defenseEffects":[],"attackEffects":[],"immunity":[]},
-		"2":{"health":0,"healthMod":"","movement":0,"moveMod":"","attack":0,"attackMod":"","defenseEffects":[],"attackEffects":[],"immunity":[]},
-		"3":{"health":0,"healthMod":"","movement":0,"moveMod":"","attack":0,"attackMod":"","defenseEffects":[],"attackEffects":[],"immunity":[]},
-		"4":{"health":0,"healthMod":"","movement":0,"moveMod":"","attack":0,"attackMod":"","defenseEffects":[],"attackEffects":[],"immunity":[]},
-		"5":{"health":0,"healthMod":"","movement":0,"moveMod":"","attack":0,"attackMod":"","defenseEffects":[],"attackEffects":[],"immunity":[]},
-		"6":{"health":0,"healthMod":"","movement":0,"moveMod":"","attack":0,"attackMod":"","defenseEffects":[],"attackEffects":[],"immunity":[]},
-		"7":{"health":0,"healthMod":"","movement":0,"moveMod":"","attack":0,"attackMod":"","defenseEffects":[],"attackEffects":[],"immunity":[]}
-	},
-	"elite":{}
-}
-
-
-
-*/
