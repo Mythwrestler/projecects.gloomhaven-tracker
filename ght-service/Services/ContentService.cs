@@ -16,9 +16,9 @@ public interface IContentService
 
 public class ContentService : IContentService
 {
-    private readonly IContentRepo _repo;
+    private readonly ContentRepo _repo;
 
-    public ContentService(IContentRepo repo) => _repo = repo;
+    public ContentService(ContentRepo repo) => _repo = repo;
 
     public List<ContentSummary> GetContentSummary(CONTENT_TYPE kind, GAME_TYPE? gameCode = null)
     {

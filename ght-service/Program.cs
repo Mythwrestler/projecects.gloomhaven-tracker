@@ -115,14 +115,14 @@ string dbConnectionString = String.Format(
     dbPassword,
     "true"
 );
-builder.Services.AddSingleton<ICombatRepo, CombatRepo>(factory =>
+builder.Services.AddSingleton<CombatRepo, CombatRepoImplementation>(factory =>
 {
     // return new CombatRepo(factory.GetRequiredService<IMemoryCache>(), dbConnectionString);
-    return new CombatRepo();
+    return new CombatRepoImplementation();
 });
-builder.Services.AddSingleton<IContentRepo, ContentRepo>(factory =>
+builder.Services.AddSingleton<ContentRepo, ContentRepoImplementation>(factory =>
 {
-    return new ContentRepo(dbConnectionString);
+    return new ContentRepoImplementation(dbConnectionString);
 });
 builder.Services.AddSingleton<ICombatService, CombatService>();
 builder.Services.AddSingleton<IContentService, ContentService>();

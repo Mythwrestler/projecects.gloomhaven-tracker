@@ -6,7 +6,7 @@ using Microsoft.Extensions.Caching.Memory;
 namespace GloomhavenTracker.Service.Repos;
 
 
-public interface ICombatRepo
+public interface CombatRepo
 {
     // public bool CombatExists(Guid combatId);
 
@@ -20,7 +20,7 @@ public interface ICombatRepo
 
 }
 
-public class CombatRepo : ICombatRepo
+public class CombatRepoImplementation : CombatRepo
 {
     // private readonly IMemoryCache _memCache;
     // private readonly string _connectionString;

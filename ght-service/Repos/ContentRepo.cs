@@ -7,7 +7,7 @@ using Npgsql;
 
 namespace GloomhavenTracker.Service.Repos;
 
-public interface IContentRepo
+public interface ContentRepo
 {
     public List<ContentSummary> GetContentSummary(CONTENT_TYPE kind, GAME_TYPE? gameCode);
     public Game GetGameDefaults(GAME_TYPE gameCode);
@@ -16,11 +16,11 @@ public interface IContentRepo
     public ScenarioContent GetScenarioDefaults(GAME_TYPE gameCode, string contentCode);
 }
 
-public class ContentRepo : IContentRepo
+public class ContentRepoImplementation : ContentRepo
 {
     private readonly NpgsqlConnection _connection;
     
-    public ContentRepo(string connectionString) => _connection = new NpgsqlConnection(connectionString);
+    public ContentRepoImplementation(string connectionString) => _connection = new NpgsqlConnection(connectionString);
 
     public List<ContentSummary> GetContentSummary(CONTENT_TYPE kind, GAME_TYPE? gameCode)
     {
