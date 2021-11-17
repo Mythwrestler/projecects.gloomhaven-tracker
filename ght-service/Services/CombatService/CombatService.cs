@@ -5,7 +5,7 @@ using GloomhavenTracker.Service.Models.Combat;
 using GloomhavenTracker.Service.Models.Content;
 
 namespace GloomhavenTracker.Service.Services;
-public interface ICombatService
+public interface CombatService
 {
 
     #region Find or Start Combat Interface
@@ -26,7 +26,7 @@ public interface ICombatService
     #endregion
 }
 
-public partial class CombatService : ICombatService
+public partial class CombatServiceImplentation : CombatService
 {
     public bool CombatExists(Guid combatId)
     {

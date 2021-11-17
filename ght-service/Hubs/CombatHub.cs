@@ -11,8 +11,8 @@ namespace GloomhavenTracker.Service.Hubs
 
     public class CombatHub : Hub
     {
-        private readonly ICombatService _service;
-        public CombatHub(ICombatService service) => _service = service;
+        private readonly CombatService _service;
+        public CombatHub(CombatService service) => _service = service;
 
         public async Task CombatAction(CombatAction action)
         {

@@ -8,9 +8,9 @@ namespace GloomhavenTracker.Service.Controllers
     [Route("api/content/games")]
     public class ContentController : Controller
     {
-        private readonly IContentService _service;
+        private readonly ContentService _service;
 
-        public ContentController(IContentService service) => _service = service;
+        public ContentController(ContentService service) => _service = service;
 
         [HttpGet]
         public IActionResult GetGameSummaries()

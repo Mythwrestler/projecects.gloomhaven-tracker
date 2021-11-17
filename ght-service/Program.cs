@@ -115,18 +115,28 @@ string dbConnectionString = String.Format(
     dbPassword,
     "true"
 );
+
+
+// Register Content DI
+builder.Services.AddSingleton<ContentService, ContentServiceImplementation>();
+builder.Services.AddSingleton<ContentRepo, ContentRepoImplementation>(factory =>
+{
+    return new ContentRepoImplementation(dbConnectionString);
+});
+
+//  Register Campaign DI
+builder.Services.AddSingleton<CampaignService, CampaignServiceImplementation>();
+builder.Services.AddSingleton<CampaignRepo, CampaignRepoImplementation>();
+
+//  Register Combat DI
+builder.Services.AddSingleton<CombatService, CombatServiceImplentation>();
 builder.Services.AddSingleton<CombatRepo, CombatRepoImplementation>(factory =>
 {
     // return new CombatRepo(factory.GetRequiredService<IMemoryCache>(), dbConnectionString);
     return new CombatRepoImplementation();
 });
-builder.Services.AddSingleton<ContentRepo, ContentRepoImplementation>(factory =>
-{
-    return new ContentRepoImplementation(dbConnectionString);
-});
-builder.Services.AddSingleton<ICombatService, CombatService>();
-builder.Services.AddSingleton<IContentService, ContentService>();
 builder.Services.AddHostedService<BattleHubMonitor>();
+
 
 if (httpLoggingEnabled)
 {

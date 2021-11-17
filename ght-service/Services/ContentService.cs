@@ -4,7 +4,7 @@ using GloomhavenTracker.Service.Repos;
 
 namespace GloomhavenTracker.Service.Services;
 
-public interface IContentService
+public interface ContentService
 {
     public List<ContentSummary> GetContentSummary(CONTENT_TYPE kind, GAME_TYPE? gameCode);
     public Game GetGameDefaults(GAME_TYPE gameCode);
@@ -14,11 +14,11 @@ public interface IContentService
 
 }
 
-public class ContentService : IContentService
+public class ContentServiceImplementation : ContentService
 {
     private readonly ContentRepo _repo;
 
-    public ContentService(ContentRepo repo) => _repo = repo;
+    public ContentServiceImplementation(ContentRepo repo) => _repo = repo;
 
     public List<ContentSummary> GetContentSummary(CONTENT_TYPE kind, GAME_TYPE? gameCode = null)
     {
