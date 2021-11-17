@@ -25,7 +25,8 @@
               "DB_PORT": "5432",
               "DB_DATABASE": "ght-db",
               "DB_USER": "pguser",
-              "DB_PASSWORD": "pguser"
+              "DB_PASSWORD": "pguser",
+              "DB_SEED_DATA": "true"
           },
           "sourceFileMap": {
               "/Views": "${workspaceFolder}/Views"

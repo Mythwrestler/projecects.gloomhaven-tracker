@@ -9,8 +9,9 @@ public class Campaign
 {
     public Guid Id {get;}
     public string Description {get;}
-    public List<Guid> CompletedScenarios {get;}
-    public List<Guid> AvailableScenarios {get;}
+    public string Game {get;}
+    public List<string> CompletedScenarios {get;}
+    public List<string> AvailableScenarios {get;}
     public Party Party {get;}
 
 
@@ -18,6 +19,7 @@ public class Campaign
     public CampaignSummary Summary => new CampaignSummary()
     {
         Id = this.Id.ToString(),
+        Game = this.Game.ToString(),
         Description = this.Description
     };
 
@@ -25,8 +27,9 @@ public class Campaign
     {
         this.Id = new Guid(campaign.Id);
         this.Description = campaign.Description;
-        this.CompletedScenarios = campaign.CompletedScenarios.Select(scenarioId => new Guid(scenarioId)).ToList();
-        this.AvailableScenarios = campaign.AvailableScenarios.Select(scenarioId => new Guid(scenarioId)).ToList();
+        this.Game = campaign.Game;
+        this.CompletedScenarios = campaign.CompletedScenarios;
+        this.AvailableScenarios = campaign.AvailableScenarios;
         this.Party = new Party(campaign.Party);
     }
 
@@ -36,8 +39,9 @@ public class Campaign
         {
             Id = this.Id.ToString(),
             Description = this.Description,
-            CompletedScenarios = this.CompletedScenarios.Select(scenarioId => scenarioId.ToString()).ToList(),
-            AvailableScenarios = this.AvailableScenarios.Select(scenarioId => scenarioId.ToString()).ToList(),
+            Game = this.Game,
+            CompletedScenarios = this.CompletedScenarios,
+            AvailableScenarios = this.AvailableScenarios,
             Party = this.Party.ToDO()
         };
     }
@@ -52,6 +56,9 @@ public struct CampaignDO
 
     [JsonPropertyName("description")]
     public string Description {get; set;}
+    
+    [JsonPropertyName("game")]
+    public string Game {get; set;}
 
     [JsonPropertyName("completedScenarios")]
     public List<string> CompletedScenarios {get; set;}
@@ -72,4 +79,7 @@ public struct CampaignSummary
 
     [JsonPropertyName("description")]
     public string Description {get; set;}
+
+    [JsonPropertyName("game")]
+    public string Game {get; set;}
 }

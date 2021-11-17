@@ -22,3 +22,25 @@ COMMENT ON COLUMN public."Game Content".contentJson IS 'Content Object';
 
 CREATE INDEX IF NOT EXISTS IDX_game_content_gin_contentjson_code ON "Game Content" USING gin ((contentJson->'code') jsonb_path_ops);
 CREATE UNIQUE INDEX  IF NOT EXISTS IDX_game_content_game_contentJson_code on "Game Content"(game, (contentJson->>'code'));
+
+
+
+DROP TABLE IF EXISTS public."Campaign";
+
+CREATE TABLE public."Campaign" (
+	id bigint NOT NULL GENERATED ALWAYS AS IDENTITY,
+	campaignId uuid NOT NULL,
+	game varchar NOT NULL,
+	description varchar NOT NULL,
+	campaignJson jsonb NOT NULL
+);
+
+
+DROP TABLE IF EXISTS public."Combat";
+
+CREATE TABLE public."Combat" (
+	id bigint NOT NULL GENERATED ALWAYS AS IDENTITY,
+	combatId uuid NOT NULL,
+	game varchar NOT NULL,
+	combatJson jsonb NOT NULL
+);

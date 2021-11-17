@@ -150,9 +150,10 @@ if (httpLoggingEnabled)
 
 var app = builder.Build();
 
-var logger = app.Logger;
 
-SeedData.LoadDefaultContent(dbConnectionString);
+//  Build and Seed Database
+bool seedDefaultData = bool.Parse(Environment.GetEnvironmentVariable("DB_SEED_DATA") ?? "false");
+if(seedDefaultData) SeedData.LoadDefaultContent(dbConnectionString);
 
 if (httpLoggingEnabled)
 {

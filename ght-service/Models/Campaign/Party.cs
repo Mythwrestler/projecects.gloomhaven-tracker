@@ -7,10 +7,10 @@ namespace GloomhavenTracker.Service.Models.Campaign;
 
 public class Party
 {
-    public Dictionary<Guid, Character> Characters {get;}
+    public Dictionary<string, Character> Characters {get;}
     public void AddCharacter(CharacterDO newCharacter) 
     {
-        if(!Characters.TryAdd(new Guid(newCharacter.CharacterContentId), new Character(newCharacter)))
+        if(!Characters.TryAdd(newCharacter.CharacterContentCode, new Character(newCharacter)))
         {
             throw new ArgumentException("Character was not added to party");
         }
@@ -18,7 +18,7 @@ public class Party
 
     public Party(PartyDO party)
     {
-        this.Characters = party.Characters.ToDictionary(character => new Guid(character.CharacterContentId), characterDO => new Character(characterDO));
+        this.Characters = party.Characters.ToDictionary(character =>character.CharacterContentCode, characterDO => new Character(characterDO));
     }
     public PartyDO ToDO()
     {

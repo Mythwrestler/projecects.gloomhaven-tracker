@@ -9,22 +9,22 @@ public class Character
 {
     public Guid Id {get;}
     public string Name {get;}
-    public Guid CharacterContentId {get;}
+    public string CharacterContentCode {get;}
     public int Experience {get;}
     public int Gold {get;}
-    public List<Guid> Items {get;}
-    public List<Guid> AppliedPerks {get;}
+    public List<string> Items {get;}
+    public List<string> AppliedPerks {get;}
     public int PerkPoints {get;}
 
     public Character(CharacterDO character)
     {
         this.Id = new Guid(character.Id);
         this.Name = character.Name;
-        this.CharacterContentId = new Guid(character.CharacterContentId);
+        this.CharacterContentCode = character.CharacterContentCode;
         this.Experience = character.Experience;
         this.Gold = character.Gold;
-        this.Items = character.Items.Select(itemId => new Guid(itemId)).ToList();
-        this.AppliedPerks = character.AppliedPerks.Select(perkId => new Guid(perkId)).ToList();
+        this.Items = character.Items;
+        this.AppliedPerks = character.AppliedPerks;
         this.PerkPoints = character.PerkPoints;
     }
 
@@ -34,11 +34,11 @@ public class Character
         {
             Id = this.Id.ToString(),
             Name = this.Name,
-            CharacterContentId = this.CharacterContentId.ToString(),
+            CharacterContentCode = this.CharacterContentCode,
             Experience = this.Experience,
             Gold = this.Gold,
-            Items = this.Items.Select(itemId => itemId.ToString()).ToList(), 
-            AppliedPerks = this.Items.Select(perkId => perkId.ToString()).ToList(), 
+            Items = this.Items, 
+            AppliedPerks = this.Items, 
             PerkPoints = this.PerkPoints
         };
     }
@@ -53,8 +53,8 @@ public struct CharacterDO
     [JsonPropertyName("name")]
     public string Name {get; set;}
 
-    [JsonPropertyName("characterContentId")]
-    public string CharacterContentId {get; set;}
+    [JsonPropertyName("characterContentCode")]
+    public string CharacterContentCode {get; set;}
 
     [JsonPropertyName("experience")]
     public int Experience {get; set;}
