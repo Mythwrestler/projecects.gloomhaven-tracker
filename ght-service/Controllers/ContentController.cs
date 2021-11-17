@@ -2,27 +2,34 @@ using GloomhavenTracker.Service.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using GloomhavenTracker.Service.Models.Content;
+using Microsoft.Extensions.Logging;
 
 namespace GloomhavenTracker.Service.Controllers
 {
     [Route("api/content/games")]
     public class ContentController : Controller
     {
-        private readonly ContentService _service;
+        private readonly ContentService service;
+        private readonly ILogger<ContentController> logger;
 
-        public ContentController(ContentService service) => _service = service;
+        public ContentController(ContentService service, ILogger<ContentController> logger)
+        {
+            this.service = service;
+            this.logger = logger;
+        }
 
         [HttpGet]
         public IActionResult GetGameSummaries()
         {
             try
             {
-                var gameDefaults = _service.GetContentSummary(CONTENT_TYPE.game, null);
+                var gameDefaults = service.GetContentSummary(CONTENT_TYPE.game, null);
                 return new OkObjectResult(gameDefaults);
             }
             catch (Exception ex)
             {
-                return new BadRequestResult();
+                logger.LogError(new EventId(), ex, "Things");
+                return UnprocessableEntity("Issue processing request");
             }
         }
 
@@ -32,12 +39,13 @@ namespace GloomhavenTracker.Service.Controllers
         {
             try
             {
-                var gameDefaults = _service.GetContentSummary(CONTENT_TYPE.game, gameCode);
+                var gameDefaults = service.GetContentSummary(CONTENT_TYPE.game, gameCode);
                 return new OkObjectResult(gameDefaults);
             }
             catch (Exception ex)
             {
-                return new BadRequestResult();
+                logger.LogError(new EventId(), ex, "Things");
+                return UnprocessableEntity("Issue processing request");
             }
         }
 
@@ -47,12 +55,13 @@ namespace GloomhavenTracker.Service.Controllers
         {
             try
             {
-                var gameDefaults = _service.GetGameDefaults(gameCode);
+                var gameDefaults = service.GetGameDefaults(gameCode);
                 return new OkObjectResult(gameDefaults);
             }
             catch (Exception ex)
             {
-                return new BadRequestResult();
+                logger.LogError(new EventId(), ex, "Things");
+                return UnprocessableEntity("Issue processing request");
             }
         }
 
@@ -62,12 +71,13 @@ namespace GloomhavenTracker.Service.Controllers
         {
             try
             {
-                var playerList = _service.GetContentSummary(CONTENT_TYPE.character, gameCode);
+                var playerList = service.GetContentSummary(CONTENT_TYPE.character, gameCode);
                 return new OkObjectResult(playerList);
             }
             catch (Exception ex)
             {
-                return new BadRequestResult();
+                logger.LogError(new EventId(), ex, "Things");
+                return UnprocessableEntity("Issue processing request");
             }
         }
 
@@ -77,12 +87,13 @@ namespace GloomhavenTracker.Service.Controllers
         {
             try
             {
-                var player = _service.GetPlayerDefaults(gameCode, contentCode);
+                var player = service.GetPlayerDefaults(gameCode, contentCode);
                 return new OkObjectResult(player);
             }
             catch (Exception ex)
             {
-                return new BadRequestResult();
+                logger.LogError(new EventId(), ex, "Things");
+                return UnprocessableEntity("Issue processing request");
             }
         }
 
@@ -92,12 +103,13 @@ namespace GloomhavenTracker.Service.Controllers
         {
             try
             {
-                var monsterList = _service.GetContentSummary(CONTENT_TYPE.monster, gameCode);
+                var monsterList = service.GetContentSummary(CONTENT_TYPE.monster, gameCode);
                 return new OkObjectResult(monsterList);
             }
             catch(Exception ex)
             {
-                return new BadRequestResult();
+                logger.LogError(new EventId(), ex, "Things");
+                return UnprocessableEntity("Issue processing request");
             }
         }
 
@@ -107,12 +119,13 @@ namespace GloomhavenTracker.Service.Controllers
         {
             try
             {
-                var monster = _service.GetMonsterDefaults(gameCode, contentCode);
+                var monster = service.GetMonsterDefaults(gameCode, contentCode);
                 return new OkObjectResult(monster);
             }
             catch(Exception ex)
             {
-                return new BadRequestResult();
+                logger.LogError(new EventId(), ex, "Things");
+                return UnprocessableEntity("Issue processing request");
             }
         }
 
@@ -122,12 +135,13 @@ namespace GloomhavenTracker.Service.Controllers
         {
             try
             {
-                var scenarioList = _service.GetContentSummary(CONTENT_TYPE.scenario, gameCode);
+                var scenarioList = service.GetContentSummary(CONTENT_TYPE.scenario, gameCode);
                 return new OkObjectResult(scenarioList);
             }
             catch(Exception ex)
             {
-                return new BadRequestResult();
+                logger.LogError(new EventId(), ex, "Things");
+                return UnprocessableEntity("Issue processing request");
             }
         }
 
@@ -138,12 +152,13 @@ namespace GloomhavenTracker.Service.Controllers
         {
             try
             {
-                var scenario = _service.GetScenarioDefaults(gameCode, contentCode).Summary;
+                var scenario = service.GetScenarioDefaults(gameCode, contentCode).Summary;
                 return new OkObjectResult(scenario);
             }
             catch(Exception ex)
             {
-                return new BadRequestResult();
+                logger.LogError(new EventId(), ex, "Things");
+                return UnprocessableEntity("Issue processing request");
             }
         }
 
