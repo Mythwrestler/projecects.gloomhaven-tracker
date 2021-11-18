@@ -13,6 +13,9 @@
     ],
     "settings": {
         "editor.semanticHighlighting.enabled": true,
-        "csharp.semanticHighlighting.enabled": true
+        "csharp.semanticHighlighting.enabled": true,
+        "cSpell.words": [
+            "Npgsql"
+        ]
     }
 }
