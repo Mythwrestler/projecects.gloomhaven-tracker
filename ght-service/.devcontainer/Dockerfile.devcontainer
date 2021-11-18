@@ -1,3 +1,0 @@
-FROM registry.casperinc.net/dotnet/sdk:5.0-focal
-
-RUN dotnet nuget remove source nuget.org

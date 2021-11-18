@@ -65,7 +65,7 @@ namespace GloomhavenTracker.Service.Controllers
             }
         }
 
-        [Route("{gameCode}/players")]
+        [Route("{gameCode}/characters")]
         [HttpGet]
         public IActionResult GetPlayersForGame(GAME_TYPE gameCode)
         {
@@ -81,13 +81,13 @@ namespace GloomhavenTracker.Service.Controllers
             }
         }
 
-        [Route("{gameCode}/players/{contentCode}")]
+        [Route("{gameCode}/characters/{contentCode}")]
         [HttpGet]
-        public IActionResult GetPlayerDefaults(GAME_TYPE gameCode, string contentCode)
+        public IActionResult GetCharacterDefaults(GAME_TYPE gameCode, string contentCode)
         {
             try
             {
-                var player = service.GetPlayerDefaults(gameCode, contentCode);
+                var player = service.GetCharacterDefaults(gameCode, contentCode);
                 return new OkObjectResult(player);
             }
             catch (Exception ex)

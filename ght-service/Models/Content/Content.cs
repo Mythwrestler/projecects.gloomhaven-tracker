@@ -1,13 +1,17 @@
 using System;
+using System.Data;
+using System.Text.Json.Serialization;
 
 namespace GloomhavenTracker.Service.Models.Content;
 
-public enum GAME_TYPE {
+public enum GAME_TYPE
+{
     original,
     jawsOfTheLion
 }
 
-public enum CONTENT_TYPE {
+public enum CONTENT_TYPE
+{
     game,
     scenario,
     monster,
@@ -16,23 +20,31 @@ public enum CONTENT_TYPE {
     attackModifier
 }
 
-public abstract class ContentItem{
+public abstract class ContentItem
+{
     public Guid Id { get; set; } = new Guid();
     public string ContentCode { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
 }
 
-public class ContentSummary {
+[Serializable]
+public class ContentSummary
+{
+    [JsonPropertyName("contentCode")]
     public string ContentCode { get; set; } = string.Empty;
-    public string Name { get; set; } = string.Empty; 
+
+    [JsonPropertyName("name")]
+    public string Name { get; set; } = string.Empty;
+
+    [JsonPropertyName("description")]
     public string Description { get; set; } = string.Empty;
 }
 
 
 public static class GameUtils
 {
-    public static string gameTypeString(GAME_TYPE? game)
+    public static string GameTypeString(GAME_TYPE? game)
     {
         switch (game)
         {
@@ -45,7 +57,7 @@ public static class GameUtils
         }
     }
 
-    public static string contentTypeString(CONTENT_TYPE? type)
+    public static string ContentTypeString(CONTENT_TYPE? type)
     {
         switch (type)
         {
@@ -65,4 +77,23 @@ public static class GameUtils
                 return "";
         }
     }
+
+    public static int ResolveModifierValue(string expression, int attackValue)
+    {
+        return ResolveExpression(expression, 0, 0, attackValue);
+    }
+
+    public static int ResolveStatExpression(string expression, int characterCount = 0, int scenarioLevel = 0)
+    {
+        return ResolveExpression(expression, characterCount, scenarioLevel, 0);
+    }
+
+    public static int ResolveExpression(string expression, int characterCount = 0, int scenarioLevel = 0, int attackValue = 0)
+    {
+        var expressionThings = expression.Replace("C", characterCount.ToString());
+        expressionThings = expressionThings.Replace("L", scenarioLevel.ToString());
+        expressionThings = expressionThings.Replace("A", attackValue.ToString());
+        return Convert.ToInt16(new DataTable().Compute(expressionThings, null));
+    }
+
 }

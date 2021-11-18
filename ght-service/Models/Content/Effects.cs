@@ -12,25 +12,25 @@ public enum EFFECT_TYPE
 
     [EnumMember(Value = "poison")]
     poison,
-    
+
     [EnumMember(Value = "wound")]
     wound,
-    
+
     [EnumMember(Value = "stun")]
     stun,
-    
+
     [EnumMember(Value = "shield")]
     shield,
-    
+
     [EnumMember(Value = "disarm")]
     disarm,
-    
+
     [EnumMember(Value = "muddle")]
     muddle,
-    
+
     [EnumMember(Value = "immobilize")]
     immobilize,
-    
+
     [EnumMember(Value = "curse")]
     curse,
 }
@@ -39,7 +39,7 @@ public enum EFFECT_TYPE
 [Serializable]
 public class Effect
 {
-    
+
     [JsonPropertyName("type")]
     public EFFECT_TYPE Type { get; set; }
 
