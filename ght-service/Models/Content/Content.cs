@@ -57,6 +57,19 @@ public static class GameUtils
         }
     }
 
+    public static GAME_TYPE GameType(string gameString)
+    {
+        switch (gameString.ToUpper())
+        {
+            case "JAWSOFTHELION":
+                return GAME_TYPE.jawsOfTheLion;
+            case "ORIGINAL":
+                return GAME_TYPE.original;
+            default:
+                throw new InvalidCastException("invalid game code string");
+        }
+    }
+
     public static string ContentTypeString(CONTENT_TYPE? type)
     {
         switch (type)

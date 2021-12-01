@@ -11,10 +11,11 @@ public interface ContentService
     public Character GetCharacterDefaults(GAME_TYPE gameCode, string contentCode);
     public Monster GetMonsterDefaults(GAME_TYPE gameCode, string contentCode);
     public Scenario GetScenarioDefaults(GAME_TYPE gameCode, string contentCode);
-
+    public bool IsValidGameCode(string gameCode);
+    public bool IsValidCharacterCode(string gameCode, string characterCode);
 }
 
-public class ContentServiceImplementation : ContentService
+public partial class ContentServiceImplementation : ContentService
 {
     private readonly ContentRepo _repo;
 
@@ -43,5 +44,15 @@ public class ContentServiceImplementation : ContentService
     public Scenario GetScenarioDefaults(GAME_TYPE gameCode, string contentCode)
     {
         return _repo.GetScenarioDefaults(gameCode, contentCode);
+    }
+
+    public bool IsValidGameCode(string gameCode)
+    {
+        return _repo.IsValidCode("game", gameCode, null);
+    }
+
+    public bool IsValidCharacterCode(string gameCode, string characterCode)
+    {
+        return _repo.IsValidCode("character", characterCode, gameCode);
     }
 }

@@ -27,6 +27,13 @@ public class Party
             Characters = this.Characters.Select(kvp => kvp.Value.ToDO()).ToList()
         };
     }
+    public PartyDTO ToDTO()
+    {
+        return new PartyDTO()
+        {
+            Characters = this.Characters.Select(kvp => kvp.Value.ToDTO()).ToList()
+        };
+    }
 }
 
 [Serializable]
@@ -35,4 +42,12 @@ public struct PartyDO
 
     [JsonPropertyName("characters")]
     public List<CharacterDO> Characters {get; set;}
+}
+
+[Serializable]
+public struct PartyDTO
+{
+
+    [JsonPropertyName("characters")]
+    public List<CharacterDTO> Characters {get; set;}
 }

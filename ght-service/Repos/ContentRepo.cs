@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
+using Dapper;
 using GloomhavenTracker.Service.Models;
 using GloomhavenTracker.Service.Models.Content;
 using Npgsql;
@@ -14,6 +15,7 @@ public interface ContentRepo
     public Character GetCharacterDefaults(GAME_TYPE gameCode, string contentCode);
     public Monster GetMonsterDefaults(GAME_TYPE gameCode, string contentCode);
     public Scenario GetScenarioDefaults(GAME_TYPE gameCode, string contentCode);
+    public bool IsValidCode(string kind, string contentCode, string? gameCode);
 }
 
 public class ContentRepoImplementation : ContentRepo
@@ -213,4 +215,27 @@ public class ContentRepoImplementation : ContentRepo
             _connection.Close();
         }
     }
+
+    public bool IsValidCode(string kind, string contentCode, string? gameCode) {
+        string sqlString = $"select exists(select 1 from \"Game Content\" gc where gc.contentJson->>'kind' = '{kind}' and gc.contentjson->>'contentCode' = '{contentCode}'";
+        if(gameCode != null) sqlString += $" and gc.game='{gameCode}'";
+        sqlString += ")";
+
+        using var connection = new NpgsqlConnection(_connection.ConnectionString);
+        try
+        {
+            connection.Open();
+            return connection.QuerySingle<bool>(sqlString);
+        }
+        catch (Exception ex)
+        {
+            throw new ArgumentException("Failed to validate code", ex);
+        }
+        finally
+        {
+            connection.Close();
+        }
+    }
+
+
 }

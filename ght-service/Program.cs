@@ -126,7 +126,9 @@ builder.Services.AddSingleton<ContentRepo, ContentRepoImplementation>(factory =>
 
 //  Register Campaign DI
 builder.Services.AddSingleton<CampaignService, CampaignServiceImplementation>();
-builder.Services.AddSingleton<CampaignRepo, CampaignRepoImplementation>();
+builder.Services.AddSingleton<CampaignRepo, CampaignRepoImplementation>(factory => {
+    return new CampaignRepoImplementation(dbConnectionString, factory.GetRequiredService<ILogger<CampaignRepoImplementation>>());
+});
 
 //  Register Combat DI
 builder.Services.AddSingleton<CombatService, CombatServiceImplentation>();

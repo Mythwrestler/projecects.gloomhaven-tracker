@@ -26,7 +26,7 @@
               "DB_DATABASE": "ght-db",
               "DB_USER": "pguser",
               "DB_PASSWORD": "pguser",
-              "DB_SEED_DATA": "true"
+              "DB_SEED_DATA": "false"
           },
           "sourceFileMap": {
               "/Views": "${workspaceFolder}/Views"

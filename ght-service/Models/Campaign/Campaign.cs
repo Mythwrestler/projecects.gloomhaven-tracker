@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
+using GloomhavenTracker.Service.Models.Content;
 
 namespace GloomhavenTracker.Service.Models.Campaign;
 
@@ -45,6 +46,18 @@ public class Campaign
             Party = this.Party.ToDO()
         };
     }
+    public CampaignDTO ToDTO()
+    {
+        return new CampaignDTO()
+        {
+            Id = this.Id.ToString(),
+            Description = this.Description,
+            Game = this.Game,
+            CompletedScenarios = this.CompletedScenarios,
+            AvailableScenarios = this.AvailableScenarios,
+            Party = this.Party.ToDTO()
+        };
+    }
 
 }
 
@@ -70,6 +83,28 @@ public struct CampaignDO
     public PartyDO Party {get; set;}
 }
 
+[Serializable]
+public struct CampaignDTO
+{
+    [JsonPropertyName("id")]
+    public string Id {get; set;}
+
+    [JsonPropertyName("description")]
+    public string Description {get; set;}
+    
+    [JsonPropertyName("game")]
+    public string Game {get; set;}
+
+    [JsonPropertyName("completedScenarios")]
+    public List<string> CompletedScenarios {get; set;}
+
+    [JsonPropertyName("availableScenarios")]
+    public List<string> AvailableScenarios {get; set;}
+
+    [JsonPropertyName("party")]
+    public PartyDTO Party {get; set;}
+}
+
 
 [Serializable]
 public struct CampaignSummary
@@ -82,4 +117,24 @@ public struct CampaignSummary
 
     [JsonPropertyName("game")]
     public string Game {get; set;}
+}
+
+
+[Serializable]
+public struct NewCampaignRequestBody
+{
+    [JsonPropertyName("id")]
+    public string Id {get; set;}
+
+    [JsonPropertyName("description")]
+    public string Description {get; set;}
+
+    [JsonPropertyName("game")]
+    public string Game {get; set;}
+    
+    [JsonPropertyName("availableScenarios")]
+    public List<string> AvailableScenarios {get; set;}
+    
+    [JsonPropertyName("completedScenarios")]
+    public List<string> CompletedScenarios {get; set;}
 }
