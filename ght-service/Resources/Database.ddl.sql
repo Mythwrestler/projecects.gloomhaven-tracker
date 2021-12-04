@@ -35,6 +35,8 @@ CREATE TABLE public."Campaign" (
 	campaignJson jsonb NOT NULL
 );
 
+ALTER TABLE public."Campaign" ADD CONSTRAINT campaign_unique_identifier_campaignid UNIQUE (campaignId);
+
 
 DROP TABLE IF EXISTS public."Combat";
 
@@ -44,3 +46,5 @@ CREATE TABLE public."Combat" (
 	game varchar NOT NULL,
 	combatJson jsonb NOT NULL
 );
+
+ALTER TABLE public."Combat" ADD CONSTRAINT combat_unique_identifier_combatid UNIQUE (combatId);

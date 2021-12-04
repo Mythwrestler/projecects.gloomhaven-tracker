@@ -40,7 +40,7 @@
           <svelte:component this={cell.component} {...cell.value ?? {}} />
         {:else}
           <!-- Eventaully Handle Default String / Number / Date -->
-          <div class="text-sm text-gray-900">{cell.value}</div>
+          <div class="text-sm text-gray-900 p-2">{cell.value}</div>
         {/if}
       </td>
     {/each}

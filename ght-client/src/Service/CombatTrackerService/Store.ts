@@ -1,18 +1,6 @@
 import { Writable, writable } from "svelte/store";
-import { CombatSpaceSummary } from "../../../models";
-import { ContentItemSummary, Scenario } from "../../../models/Content";
-
-// Global Error Messaging
-export const displayErrorMessage: Writable<boolean> = writable<boolean>(false);
-export const errorMessage: Writable<string> = writable<string>("");
-export const showErrorMessage = (message: string): void => {
-  displayErrorMessage.set(true);
-  errorMessage.set(message);
-};
-export const clearErrorMessage = (): void => {
-  displayErrorMessage.set(false);
-  errorMessage.set("");
-};
+import { CombatSpaceSummary } from "../../models";
+import { ContentItemSummary } from "../../models/Content";
 
 // Hub Connection
 export const combatHubConnecting: Writable<boolean> = writable<boolean>(false);

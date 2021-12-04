@@ -11,7 +11,7 @@ public interface CampaignService
 {
     public List<CampaignSummary> GetCampaignList();
     public CampaignDTO GetCampaign(Guid campaignId);
-    public CampaignSummary NewCampaign(string game, string Description, List<string> availableScenarios, List<string> completedScenarios);
+    public CampaignSummary NewCampaign(string game, string Description, List<string> availableScenarios, List<string> closedScenarios, List<string> completedScenarios);
     public CharacterSummary AddCharacterToCampaign(Guid campaignId, CharacterDTO character);
     public List<CharacterDTO> GetCharactersForCampaign(Guid campaignId);
 }
@@ -65,7 +65,7 @@ public class CampaignServiceImplementation : CampaignService
     }
 
 
-    public CampaignSummary NewCampaign(string game, string Description, List<string> availableScenarios, List<string> completedScenarios)
+    public CampaignSummary NewCampaign(string game, string Description, List<string> availableScenarios, List<string> closedScenarios, List<string> completedScenarios)
     {
 
         CampaignDO newCampaignDO = new CampaignDO()
@@ -74,6 +74,7 @@ public class CampaignServiceImplementation : CampaignService
             Description = Description,
             Id = Guid.NewGuid().ToString(),
             AvailableScenarios = availableScenarios,
+            ClosedScenarios = closedScenarios,
             CompletedScenarios = completedScenarios,
             Party = new PartyDO() { Characters = new List<CharacterDO>() }
         };

@@ -1,6 +1,6 @@
 export interface ContentItemSummary {
   name: string;
-  code: string;
+  contentCode: string;
 }
 
 export interface Scenario extends ContentItemSummary {

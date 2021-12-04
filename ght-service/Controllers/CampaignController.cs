@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 namespace GloomhavenTracker.Service.Controllers;
 
 
-[Route("api/campaign")]
+[Route("api/campaigns")]
 public class CampaignController : Controller
 {
     private CampaignService service;
@@ -65,6 +65,7 @@ public class CampaignController : Controller
                 body.Game,
                 body.Description,
                 body.AvailableScenarios,
+                body.ClosedScenarios,
                 body.CompletedScenarios
             );
             return Ok(campaign);

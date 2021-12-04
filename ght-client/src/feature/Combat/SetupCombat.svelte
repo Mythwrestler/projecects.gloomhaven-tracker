@@ -10,11 +10,13 @@
   import { ContentItemSummary } from "../../models/Content";
 
   import {
-    getScenarios,
     scenarioListing,
     scenarioListingLoading,
     scenarioListingLoaded,
-  } from "./CombatTrackerService";
+  } from "../../Service/CombatTrackerService";
+  
+  import { getScenarios } from "../../Service/ContentService"
+
 
   const handleGetScenarios = async () => {
     console.log("handelGetCalled");
@@ -34,7 +36,7 @@
   let scenarioOptions: Option[] = [];
   scenarioListing.subscribe((list) => {
     scenarioOptions = list.map((l) => {
-      return { label: l.name, value: l.code };
+      return { label: l.name, value: l.contentCode };
     });
   });
   const onSecenariSelection = (scenarioCode: string | number) => {
