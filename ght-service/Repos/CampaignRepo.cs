@@ -118,6 +118,10 @@ public class CampaignRepoImplementation : CampaignRepo
             logger.LogError(new EventId(), ex, "Failed to save campaign.");
             throw new Exception("Failed to save campaign", ex);
         }
+        finally
+        {
+            connection.Close();
+        }
     }
 
     public void UpdateCampaign(CampaignDO campaign)
@@ -139,6 +143,10 @@ public class CampaignRepoImplementation : CampaignRepo
             connection.Close();
             logger.LogError(new EventId(), ex, "Failed to save campaign.");
             throw new Exception("Failed to save campaign", ex);
+        }
+        finally
+        {
+            connection.Close();
         }
 
     }

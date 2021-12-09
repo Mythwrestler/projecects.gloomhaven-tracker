@@ -20,13 +20,14 @@ public interface ContentRepo
 
 public class ContentRepoImplementation : ContentRepo
 {
-    private readonly NpgsqlConnection _connection;
+    private readonly string connectionString;
     
-    public ContentRepoImplementation(string connectionString) => _connection = new NpgsqlConnection(connectionString);
+    public ContentRepoImplementation(string connectionString) => this.connectionString = connectionString;
 
     public List<ContentSummary> GetContentSummary(CONTENT_TYPE contentType, GAME_TYPE? gameCode)
-    {
-        
+    {   
+        using var connection = new NpgsqlConnection(connectionString);
+
         string contentTypeString = GameUtils.ContentTypeString(contentType);
         string sqlString = $"SELECT json_build_object('name', gc.contentjson->'name','contentCode', gc.contentjson->'contentCode', 'description', gc.description) from \"Game Content\" gc where gc.contentJson->>'kind' = '{contentTypeString}'";
         if(gameCode != null)
@@ -38,8 +39,8 @@ public class ContentRepoImplementation : ContentRepo
         try
         {
             List<ContentSummary> summaries = new List<ContentSummary>();
-            _connection.Open();
-            using(NpgsqlCommand command = new NpgsqlCommand(sqlString, _connection))
+            connection.Open();
+            using(NpgsqlCommand command = new NpgsqlCommand(sqlString, connection))
             {
                 string? jsonString;
                 NpgsqlDataReader reader = command.ExecuteReader();
@@ -60,18 +61,21 @@ public class ContentRepoImplementation : ContentRepo
         }
         finally
         {
-            _connection.Close();
+            connection.Close();
         }
     }
 
     public Game GetGameDefaults(GAME_TYPE gameCode)
     {
+        
+        using var connection = new NpgsqlConnection(connectionString);
+
         string gameString = GameUtils.GameTypeString(gameCode);
         string sqlString = $"SELECT json_build_object('description', gc.description)::jsonb || gc.contentjson from \"Game Content\" gc where gc.contentJson->>'kind' = 'game' and gc.game='{gameString}'";
         try
         {
-            _connection.Open();
-            using(NpgsqlCommand command = new NpgsqlCommand(sqlString, _connection))
+            connection.Open();
+            using(NpgsqlCommand command = new NpgsqlCommand(sqlString, connection))
             {
                 string? jsonString;
                 Game? game;
@@ -93,18 +97,19 @@ public class ContentRepoImplementation : ContentRepo
         }
         finally
         {
-            _connection.Close();
+            connection.Close();
         }
     }
     
     public Character GetCharacterDefaults(GAME_TYPE gameCode, string contentCode)
     {
+        using var connection = new NpgsqlConnection(connectionString);
         string gameString = GameUtils.GameTypeString(gameCode);
         string sqlString = $"SELECT json_build_object('description', gc.description)::jsonb || gc.contentjson from \"Game Content\" gc where gc.contentJson->>'kind' = 'character' and gc.contentJson->>'code'='{contentCode}' and gc.game='{gameString}'";
         try
         {
-            _connection.Open();
-            using(NpgsqlCommand command = new NpgsqlCommand(sqlString, _connection))
+            connection.Open();
+            using(NpgsqlCommand command = new NpgsqlCommand(sqlString, connection))
             {
                 string? jsonString;
                 Character? player;
@@ -126,18 +131,19 @@ public class ContentRepoImplementation : ContentRepo
         }
         finally
         {
-            _connection.Close();
+            connection.Close();
         }
     }
 
     public Monster GetMonsterDefaults(GAME_TYPE gameCode, string contentCode)
     {
+        using var connection = new NpgsqlConnection(connectionString);
         string gameString = GameUtils.GameTypeString(gameCode);
         string sqlString = $"SELECT json_build_object('description', gc.description)::jsonb || gc.contentjson from \"Game Content\" gc where gc.contentJson->>'kind' = 'monster' and gc.contentJson->>'contentCode'='{contentCode}' and gc.game='{gameString}'";
         try
         {
-            _connection.Open();
-            using(NpgsqlCommand command = new NpgsqlCommand(sqlString, _connection))
+            connection.Open();
+            using(NpgsqlCommand command = new NpgsqlCommand(sqlString, connection))
             {
                 string? jsonString;
                 Monster? monster;
@@ -159,20 +165,21 @@ public class ContentRepoImplementation : ContentRepo
         }
         finally
         {
-            _connection.Close();
+            connection.Close();
         }
     }
 
     public Scenario GetScenarioDefaults(GAME_TYPE gameCode, string contentCode)
     {
+        using var connection = new NpgsqlConnection(connectionString);
         Scenario? scenario = null;
         string gameString = GameUtils.GameTypeString(gameCode);
         string sqlStringScenario = $"SELECT json_build_object('name', gc.contentjson->'name','contentCode', gc.contentjson->'code', 'description', gc.description) from \"Game Content\" gc where gc.contentJson->>'kind' = 'scenario' and gc.contentJson->>'code'='{contentCode}' and gc.game='{gameString}'";
         string sqlStringMonsters = $"SELECT gc.contentJson from \"Game Content\" gc where gc.contentjson->>'code'::text = ANY(select jsonb_array_elements_text(gc2.contentjson->'monsters') from \"Game Content\" gc2 where gc2.game='{gameString}' and gc2.contentjson->>'code'='{contentCode}')";
         try
         {
-            _connection.Open();
-            using(NpgsqlCommand command = new NpgsqlCommand(sqlStringScenario, _connection))
+            connection.Open();
+            using(NpgsqlCommand command = new NpgsqlCommand(sqlStringScenario, connection))
             {
                 string? jsonString;
                 NpgsqlDataReader reader = command.ExecuteReader();
@@ -184,12 +191,12 @@ public class ContentRepoImplementation : ContentRepo
                     }
                 }
             }
-            _connection.Close();
+            connection.Close();
             
             if(scenario == null) throw new ArgumentException("Could Not Find Scenario");
 
-            _connection.Open();
-            using(NpgsqlCommand command = new NpgsqlCommand(sqlStringMonsters, _connection))
+            connection.Open();
+            using(NpgsqlCommand command = new NpgsqlCommand(sqlStringMonsters, connection))
             {
                 string? jsonString;
                 NpgsqlDataReader reader = command.ExecuteReader();
@@ -212,16 +219,17 @@ public class ContentRepoImplementation : ContentRepo
         }
         finally
         {
-            _connection.Close();
+            connection.Close();
         }
     }
 
-    public bool IsValidCode(string kind, string contentCode, string? gameCode) {
+    public bool IsValidCode(string kind, string contentCode, string? gameCode)
+    {
+        using var connection = new NpgsqlConnection(connectionString);
         string sqlString = $"select exists(select 1 from \"Game Content\" gc where gc.contentJson->>'kind' = '{kind}' and gc.contentjson->>'contentCode' = '{contentCode}'";
         if(gameCode != null) sqlString += $" and gc.game='{gameCode}'";
         sqlString += ")";
 
-        using var connection = new NpgsqlConnection(_connection.ConnectionString);
         try
         {
             connection.Open();

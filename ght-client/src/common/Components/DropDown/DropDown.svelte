@@ -2,9 +2,10 @@
   import clsx from "clsx";
 
   import DownTickIcon from "../Icons/DownTickIcon.svelte";
-  import { Option } from "../types";
+  import { DropDownOption } from "./types";
   export let label = "";
-  export let options: Option[] = [];
+  export let disabled = false;
+  export let options: DropDownOption[] = [];
   export let placeHolder = "";
   export let variant: "rounded" | "square" = "square";
   export let selected: string | number = "";
@@ -33,6 +34,7 @@
       variant === "rounded" && "rounded-full"
     )}
     on:change={handleSelection}
+    {disabled}
   >
     {#if placeHolder !== ""}
       <option value="">{placeHolder}</option>

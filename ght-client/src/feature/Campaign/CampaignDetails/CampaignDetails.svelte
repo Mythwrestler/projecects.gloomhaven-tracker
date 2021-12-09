@@ -5,6 +5,7 @@
 
   import { getCampaign } from "../../../Service/CampaignService";
   import CampaignScenarios from "./CampaignScenarios.svelte";
+  import CampaignParty from "./CampaignParty.svelte";
 
   // your script goes here
   export let campaignId = "";
@@ -40,6 +41,7 @@
         displayLabel="Description"
       />
     </div>
-    <CampaignScenarios {campaign} />
+    <CampaignParty bind:campaign />
+    <CampaignScenarios bind:campaign />
   {/if}
 </section>

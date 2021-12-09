@@ -81,7 +81,7 @@ public static class GameUtils
             case CONTENT_TYPE.objective:
                 return "objective";
             case CONTENT_TYPE.character:
-                return "player";
+                return "character";
             case CONTENT_TYPE.scenario:
                 return "scenario";
             case CONTENT_TYPE.attackModifier:

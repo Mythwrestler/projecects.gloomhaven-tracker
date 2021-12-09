@@ -5,7 +5,7 @@
     TextField,
     CheckMarkIcon,
     DropDown,
-    Option,
+    DropDownOption,
   } from "../../common/Components";
   import { ContentItemSummary } from "../../models/Content";
 
@@ -33,7 +33,7 @@
   };
 
   let scenarioSelection: string | undefined = undefined;
-  let scenarioOptions: Option[] = [];
+  let scenarioOptions: DropDownOption[] = [];
   scenarioListing.subscribe((list) => {
     scenarioOptions = list.map((l) => {
       return { label: l.name, value: l.contentCode };

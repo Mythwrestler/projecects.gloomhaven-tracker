@@ -23,3 +23,26 @@ export const requestScenarioListingFailure = (): void => {
   scenarioListingLoading.set(false);
   scenarioListingLoaded.set(false);
 };
+
+// Scenario Content Listing
+export const characterListingLoading: Writable<boolean> =
+  writable<boolean>(false);
+export const characterListingLoaded: Writable<boolean> =
+  writable<boolean>(false);
+export const characterListing: Writable<ContentItemSummary[]> = writable<
+  ContentItemSummary[]
+>([]);
+export const requestCharacterListing = (): void => {
+  characterListingLoading.set(true);
+};
+export const requestCharacterListingSuccess = (
+  characters: ContentItemSummary[]
+): void => {
+  characterListingLoading.set(false);
+  characterListingLoaded.set(true);
+  characterListing.set(characters);
+};
+export const requestCharacterListingFailure = (): void => {
+  characterListingLoading.set(false);
+  characterListingLoaded.set(false);
+};
