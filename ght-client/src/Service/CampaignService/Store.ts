@@ -1,5 +1,5 @@
 import { writable, Writable } from "svelte/store";
-import { CampaignSummary } from "../../models";
+import { CampaignSummary, Character } from "../../models";
 
 export const campaignListingLoading: Writable<boolean> =
   writable<boolean>(false);

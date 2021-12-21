@@ -6,7 +6,7 @@ const baseUrl = `${ENV_VARS.API.BaseURL()}api/`;
 
 const request = async <T>(
   url: string,
-  method: "POST" | "GET",
+  method: "POST" | "GET" | "PUT",
   body: unknown = undefined
 ): Promise<T> => {
   const headers: string[][] = [["Content-Type", "application/json"]];
@@ -54,6 +54,13 @@ export const postAPI = async <T>(
   body: unknown = undefined
 ): Promise<T> => {
   return await request<T>(`${baseUrl}${path}`, "POST", body);
+};
+
+export const putAPI = async <T>(
+  path: string,
+  body: unknown = undefined
+): Promise<T> => {
+  return await request<T>(`${baseUrl}${path}`, "PUT", body);
 };
 
 export const getAPI = async <T>(path: string): Promise<T> => {

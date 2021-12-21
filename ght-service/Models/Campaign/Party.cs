@@ -16,6 +16,16 @@ public class Party
         }
     }
 
+    public void UpdateCharacter(CharacterDO updateToApply)
+    {
+        Characters.Remove(updateToApply.CharacterContentCode);
+        
+        if(!Characters.TryAdd(updateToApply.CharacterContentCode, new Character(updateToApply)))
+        {
+            throw new ArgumentException("Character was not updated in party");
+        }    
+    }
+
     public Party(PartyDO party)
     {
         this.Characters = party.Characters.ToDictionary(character =>character.CharacterContentCode, characterDO => new Character(characterDO));

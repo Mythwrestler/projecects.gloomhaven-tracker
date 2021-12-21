@@ -12,7 +12,9 @@ public interface CampaignService
     public List<CampaignSummary> GetCampaignList();
     public CampaignDTO GetCampaign(Guid campaignId);
     public CampaignSummary NewCampaign(string game, string Description, List<string> availableScenarios, List<string> closedScenarios, List<string> completedScenarios);
-    public CharacterSummary AddCharacterToCampaign(Guid campaignId, CharacterDTO character);
+    public CharacterDTO AddCharacterToCampaign(Guid campaignId, CharacterDTO character);
+    public CharacterDTO UpdateCharacter(Guid campaignId, CharacterDTO characterToUpdate);
+    public CharacterDTO GetCharacterForCampaign(Guid campaignId, string characterCode);
     public List<CharacterDTO> GetCharactersForCampaign(Guid campaignId);
 }
 
@@ -88,7 +90,7 @@ public class CampaignServiceImplementation : CampaignService
         return campaign.Summary;
     }
 
-    public CharacterSummary AddCharacterToCampaign(Guid campaignId, CharacterDTO newCharacter)
+    public CharacterDTO AddCharacterToCampaign(Guid campaignId, CharacterDTO newCharacter)
     {
         Campaign campaign = GetCampaignById(campaignId);
 
@@ -113,17 +115,53 @@ public class CampaignServiceImplementation : CampaignService
 
         repo.UpdateCampaign(campaign.ToDO());
 
-        var characterSummary = campaign.Party.Characters.GetValueOrDefault(newCharacter.CharacterContentCode)?.Summary;
-        if(characterSummary == null)
+        var characterDTO = campaign.Party.Characters.GetValueOrDefault(newCharacter.CharacterContentCode)?.ToDTO();
+        if(characterDTO == null)
             throw new Exception("could not find character");
-        return characterSummary ?? new CharacterSummary();
+        return characterDTO ?? new CharacterDTO();
     }
 
+    public CharacterDTO UpdateCharacter(Guid campaignId, CharacterDTO characterToUpdate)
+    {
+        Campaign campaign = GetCampaignById(campaignId);
+
+        if(!contentService.IsValidCharacterCode(campaign.Game, characterToUpdate.CharacterContentCode))
+            throw new ArgumentException("Character type is not valid for game");
+
+        if(!campaign.Party.Characters.ContainsKey(characterToUpdate.CharacterContentCode))
+            throw new ArgumentException("Character not in campaign");
+
+        CharacterDO characterDO = new CharacterDO() {
+            Id = Guid.NewGuid().ToString(),
+            AppliedPerks = characterToUpdate.AppliedPerks,
+            CharacterContentCode = characterToUpdate.CharacterContentCode,
+            Experience = characterToUpdate.Experience,
+            Gold = characterToUpdate.Gold,
+            Items = characterToUpdate.Items,
+            Name = characterToUpdate.Name,
+            PerkPoints = characterToUpdate.PerkPoints
+        };
+
+        campaign.Party.UpdateCharacter(characterDO);
+
+        repo.UpdateCampaign(campaign.ToDO());
+
+        var characterDTO = campaign.Party.Characters.GetValueOrDefault(characterToUpdate.CharacterContentCode)?.ToDTO();
+        if(characterDTO == null)
+            throw new Exception("could not find character");
+        return characterDTO ?? new CharacterDTO();
+
+    }
+
+    public CharacterDTO GetCharacterForCampaign(Guid campaignId, string characterCode)
+    {
+        Campaign campaign = GetCampaignById(campaignId);
+        return campaign.Party.Characters[characterCode].ToDTO();
+    }
 
     public List<CharacterDTO> GetCharactersForCampaign(Guid campaignId)
     {
         Campaign campaign = GetCampaignById(campaignId);
-
         return campaign.Party.ToDTO().Characters;
     }
 

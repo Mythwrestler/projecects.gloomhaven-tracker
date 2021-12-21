@@ -14,8 +14,7 @@
     DialogFooter,
     Button,
   } from "../../../common/Components";
-  import { Campaign } from "../../../models";
-  import { ContentItemSummary, Scenario } from "../../../models/Content";
+  import { Campaign, ContentItemSummary } from "../../../models";
   import {
     getScenarios,
     scenarioListing,
@@ -35,13 +34,13 @@
     if (
       !$scenarioListingLoaded &&
       !$scenarioListingLoading &&
-      ($scenarioListing as Scenario[]).length === 0
+      ($scenarioListing as ContentItemSummary[]).length === 0
     ) {
       await getScenarios(gameCode);
     }
   };
 
-  let scenarios: Scenario[] = [];
+  let scenarios: ContentItemSummary[] = [];
   let unusedScenarioOptions: DropDownOption[] = [];
   let fullScenarioListOptions: DropDownOption[] = [];
   const handleProcessScenarios = () => {
@@ -50,9 +49,11 @@
         (scenario) =>
           campaign?.availableScenarios.includes(scenario.contentCode)
       );
-      fullScenarioListOptions = scenarios.map((scenario) => {
-        return { label: scenario.name, value: scenario.contentCode };
-      });
+      fullScenarioListOptions = ($scenarioListing as ContentItemSummary[]).map(
+        (scenario) => {
+          return { label: scenario.name, value: scenario.contentCode };
+        }
+      );
       unusedScenarioOptions = fullScenarioListOptions.filter(
         (scenario) =>
           !campaign?.availableScenarios.includes(scenario.value as string)
@@ -87,15 +88,16 @@
     displayNewScenarioSelection = false;
   };
 
-  const scenarioCompleted = (scenario: Scenario): string => {
+  const scenarioCompleted = (scenario: ContentItemSummary): string => {
     return `${scenario.name} Completed`;
   };
-  const scenarioClosed = (scenario: Scenario): string => {
+  const scenarioClosed = (scenario: ContentItemSummary): string => {
     return `${scenario.name} Closed`;
   };
 
   $: if (campaign?.game) void handleGetScenarios(campaign.game);
   $: if ($scenarioListingLoaded || campaign) handleProcessScenarios();
+  $: console.log(JSON.stringify(unusedScenarioOptions));
 </script>
 
 {#if campaign}
@@ -147,39 +149,40 @@
     {/if}
   </div>
 {/if}
-{#if displayNewScenarioSelection}
-  <Dialog
-    offClick
-    open={displayNewScenarioSelection}
-    onClose={handleCloseNewScenarioSelection}
-  >
-    <DialogHeader slot="DialogHeader">Select a scenario to add</DialogHeader>
-    <DialogBody slot="DialogBody">
-      <DropDown
-        label="Scenarios"
-        selected={selectedScenario}
-        placeHolder={selectedScenario === "" ? "Select a Scenario" : ""}
-        options={selectedScenario === ""
-          ? unusedScenarioOptions
-          : fullScenarioListOptions}
-        variant="rounded"
-        disabled={selectedScenario !== ""}
-      />
-      <RadioGroup
-        centered
-        value={selectedScenarioStatus}
-        options={scenarioStatusOptions}
-      />
-    </DialogBody>
-    <DialogFooter slot="DialogFooter">
-      <Button
-        variant="filled"
-        onClick={selectedScenarioStatus !== ""
-          ? handleCloseNewScenarioSelection
-          : undefined}
-      >
-        Add Scenario
-      </Button>
-    </DialogFooter>
-  </Dialog>
-{/if}
+<Dialog
+  offClick
+  open={displayNewScenarioSelection}
+  onClose={handleCloseNewScenarioSelection}
+>
+  <DialogHeader slot="DialogHeader">
+    <div class="mx-full text-center text-2xl mb-3">Add / Edit Scenario</div>
+    <div class="border-b-2 border-solid" />
+  </DialogHeader>
+  <DialogBody slot="DialogBody">
+    <DropDown
+      label="Scenarios"
+      selected={selectedScenario}
+      placeHolder={selectedScenario === "" ? "Select a Scenario" : ""}
+      options={selectedScenario === ""
+        ? unusedScenarioOptions
+        : fullScenarioListOptions}
+      variant="rounded"
+      disabled={selectedScenario !== ""}
+    />
+    <RadioGroup
+      centered
+      value={selectedScenarioStatus}
+      options={scenarioStatusOptions}
+    />
+  </DialogBody>
+  <DialogFooter slot="DialogFooter">
+    <Button
+      variant="filled"
+      onClick={selectedScenarioStatus !== ""
+        ? handleCloseNewScenarioSelection
+        : undefined}
+    >
+      Add Scenario
+    </Button>
+  </DialogFooter>
+</Dialog>

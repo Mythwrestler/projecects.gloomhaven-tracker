@@ -179,7 +179,7 @@ if (app.Environment.IsDevelopment())
 app.UseCors((config) =>
 {
     config
-        .WithMethods("POST", "GET")
+        .WithMethods("POST", "PUT", "GET")
         .AllowAnyHeader()
         .AllowCredentials()
         .WithOrigins("http://localhost:5025", "http://localhost.fiddler:5025");

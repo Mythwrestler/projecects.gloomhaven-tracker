@@ -7,8 +7,9 @@
   export let variant: "rounded" | "square" = "square";
   export let border = false;
   export let onButtonClick: (() => void) | undefined = undefined;
-  export let value: string;
+  export let value: string | number;
   export let placeholderText: string;
+  export let type: "text" | "number" = "text";
 </script>
 
 <div
@@ -20,21 +21,35 @@
   )}
 >
   <div class="w-full relative">
-    <input
-      type="text"
-      name={textBoxName}
-      bind:value
-      class={clsx(
-        "w-full px-4 py-1 text-gray-900 focus:outline-none",
-        variant === "rounded" && "rounded-full",
-        variant === "square" && "rounded-sm"
-      )}
-      placeholder={displayLabel ? "" : placeholderText}
-    />
+    {#if type === "text"}
+      <input
+        type="text"
+        name={textBoxName}
+        bind:value
+        class={clsx(
+          "w-full px-4 py-1 text-gray-900 focus:outline-none",
+          variant === "rounded" && "rounded-full",
+          variant === "square" && "rounded-sm"
+        )}
+        placeholder={displayLabel ? "" : placeholderText}
+      />
+    {:else if type === "number"}
+      <input
+        type="number"
+        name={textBoxName}
+        bind:value
+        class={clsx(
+          "w-full px-4 py-1 text-gray-900 focus:outline-none",
+          variant === "rounded" && "rounded-full",
+          variant === "square" && "rounded-sm"
+        )}
+        placeholder={displayLabel ? "" : placeholderText}
+      />
+    {/if}
     {#if displayLabel}
       <label
         for={textBoxName}
-        class="absolute duration-300 pl-3 top-1 left-0 origin-0 text-gray-500"
+        class="absolute rounded-lg duration-300 ml-2 px-1 top-1 left-0 origin-0 text-gray-500 bg-white dark:bg-gray-700"
         >{displayLabel}</label
       >
     {/if}

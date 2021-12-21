@@ -67,12 +67,12 @@ namespace GloomhavenTracker.Service.Controllers
 
         [Route("{gameCode}/characters")]
         [HttpGet]
-        public IActionResult GetPlayersForGame(GAME_TYPE gameCode)
+        public IActionResult GetCharactersForGame(GAME_TYPE gameCode)
         {
             try
             {
-                var playerList = service.GetContentSummary(CONTENT_TYPE.character, gameCode);
-                return new OkObjectResult(playerList);
+                var characterList = service.GetContentSummary(CONTENT_TYPE.character, gameCode);
+                return new OkObjectResult(characterList);
             }
             catch (Exception ex)
             {

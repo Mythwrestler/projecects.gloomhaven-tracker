@@ -1,3 +1,3 @@
-<header class="w-full p-2">
+<header class="w-full">
   <slot />
 </header>

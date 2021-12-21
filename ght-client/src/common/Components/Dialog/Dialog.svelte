@@ -9,14 +9,14 @@
 
 {#if open}
   <div
-    class={clsx("hidden fixed inset-0 bg-black bg-opacity-30", "lg:block")}
+    class={clsx("hidden fixed inset-0 bg-black bg-opacity-30 z-10", "lg:block")}
     on:click={() => {
       if (offClick && onClose) onClose();
     }}
   />
   <div
     class={clsx(
-      "fixed top-0 right-0 h-full w-full z-20 flex flex-col overflow-auto",
+      "fixed top-0 right-0 h-full w-full z-20 flex flex-col overflow-hidden",
       "bg-white dark:bg-gray-900",
       "lg:rounded-md lg:h-3/4 lg:w-1/2 lg:inset-1/2 lg:transform lg:-translate-y-1/2 lg:-translate-x-1/2"
     )}
@@ -41,18 +41,18 @@
     {/if}
     <!-- Dialog Content -->
     {#if $$slots.DialogHeader || $$slots.DialogBody || $$slots.DialogFooter}
-      <div class="flex flex-col m-2">
+      <div class="flex flex-col h-full w-full">
         <!-- Dialog Header -->
         {#if $$slots.DialogHeader}
-          <header><slot name="DialogHeader" /></header>
+          <slot name="DialogHeader" />
         {/if}
         <!-- Dialog Body -->
         {#if $$slots.DialogBody}
-          <content><slot name="DialogBody" /></content>
+          <slot name="DialogBody" />
         {/if}
         <!-- footer -->
         {#if $$slots.DialogFooter}
-          <footer><slot name="DialogFooter" /></footer>
+          <slot name="DialogFooter" />
         {/if}
       </div>
     {/if}

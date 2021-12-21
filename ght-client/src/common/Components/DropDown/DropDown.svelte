@@ -31,7 +31,8 @@
     bind:value={selected}
     class={clsx(
       "w-full border border-gray-300 text-gray-600 h-12 bg-white hover:border-gray-400 focus:outline-none pl-3 pr-7 appearance-none",
-      variant === "rounded" && "rounded-full"
+      variant === "rounded" && "rounded-full",
+      variant === "square" && "rounded-md"
     )}
     on:change={handleSelection}
     {disabled}

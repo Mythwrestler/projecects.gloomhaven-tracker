@@ -1,4 +1,4 @@
-import { ContentItemSummary, Scenario } from "../../models/Content";
+import { ContentItemSummary, ScenarioDefault } from "../../models/Content";
 import {
   requestCharacterListingFailure,
   requestCharacterListingSuccess,

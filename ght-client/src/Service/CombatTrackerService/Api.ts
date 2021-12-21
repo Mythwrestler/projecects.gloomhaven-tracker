@@ -1,6 +1,6 @@
 import { getAPI, postAPI } from "../../common/Utils/API";
 import { Actors, CombatSpace, CombatSpaceSummary } from "../../models";
-import { Scenario } from "../../models/Content";
+import { ScenarioDefault } from "../../models/Content";
 import * as CombatStore from "./Store";
 import * as GlobalError from "../../Service/Error";
 
@@ -31,7 +31,7 @@ export const getCombatSpace = async (
 export const getScenarios = async (gameCode: string): Promise<void> => {
   try {
     CombatStore.requestScenarioListing();
-    const result = await getAPI<Scenario[]>(
+    const result = await getAPI<ScenarioDefault[]>(
       `content/games/${gameCode}/scenarios`
     );
     CombatStore.requestScenarioListingSuccess(result);

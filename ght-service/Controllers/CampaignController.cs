@@ -93,6 +93,40 @@ public class CampaignController : Controller
         }
     }
 
+    [Route("{campaignId}/characters")]
+    [HttpPut]
+    public IActionResult UpdateCharacterInCampaign(Guid campaignId, [FromBody] CharacterDTO characterForAdd)
+    {
+        try
+        {
+            var characterForReturn = service.UpdateCharacter(campaignId, characterForAdd);
+            return Ok(characterForReturn);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(new EventId(), ex, "Failed to update a character in the campaign");
+            return UnprocessableEntity("Issue processing request");
+        }
+    }
+    
+
+    
+    [Route("{campaignId}/characters")]
+    [HttpGet]
+    public IActionResult GetCharacterForCampaign(Guid campaignId, string characterCode)
+    {
+        try
+        {
+            var characterForReturn = service.GetCharacterForCampaign(campaignId, characterCode);
+            return Ok(characterForReturn);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(new EventId(), ex, "Failed to get character for the campaign");
+            return UnprocessableEntity("Issue processing request");
+        }
+    }
+
 
     [Route("{campaignId}/characters")]
     [HttpGet]

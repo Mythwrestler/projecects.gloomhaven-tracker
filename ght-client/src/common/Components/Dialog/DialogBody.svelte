@@ -1,3 +1,3 @@
-<content class="w-full p-2">
+<content class="w-full flex-1 overflow-y-auto">
   <slot />
 </content>

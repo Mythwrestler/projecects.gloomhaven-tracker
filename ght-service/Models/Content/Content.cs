@@ -17,7 +17,9 @@ public enum CONTENT_TYPE
     monster,
     character,
     objective,
-    attackModifier
+    attackModifier,
+    item,
+    perk
 }
 
 public abstract class ContentItem
@@ -86,6 +88,10 @@ public static class GameUtils
                 return "scenario";
             case CONTENT_TYPE.attackModifier:
                 return "attackModifier";
+            case CONTENT_TYPE.item:
+                return "item";
+            case CONTENT_TYPE.perk:
+                return "perk";
             default:
                 return "";
         }
