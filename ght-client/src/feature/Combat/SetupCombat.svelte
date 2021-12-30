@@ -14,9 +14,10 @@
     scenarioListingLoading,
     scenarioListingLoaded,
   } from "../../Service/CombatTrackerService";
-  
-  import { getScenarios } from "../../Service/ContentService"
 
+  import useContentService from "../../Service/ContentService";
+
+  const { GetScenariosForGame } = useContentService();
 
   const handleGetScenarios = async () => {
     console.log("handelGetCalled");
@@ -28,7 +29,7 @@
       !$scenarioListingLoading &&
       ($scenarioListing as ContentItemSummary[]).length === 0
     ) {
-      await getScenarios("jawsOfTheLion");
+      await GetScenariosForGame("jawsOfTheLion");
     }
   };
 

@@ -13,6 +13,7 @@ public interface ContentService
     public Scenario GetScenarioDefaults(GAME_TYPE gameCode, string contentCode);
     public bool IsValidGameCode(string gameCode);
     public bool IsValidCharacterCode(string gameCode, string characterCode);
+    public bool IsValidScenarioCode(string gameCode, string scenarioCode);
 }
 
 public partial class ContentServiceImplementation : ContentService
@@ -54,5 +55,9 @@ public partial class ContentServiceImplementation : ContentService
     public bool IsValidCharacterCode(string gameCode, string characterCode)
     {
         return _repo.IsValidCode("character", characterCode, gameCode);
+    }
+    public bool IsValidScenarioCode(string gameCode, string scenarioCode)
+    {
+        return _repo.IsValidCode("scenario", scenarioCode, gameCode);
     }
 }

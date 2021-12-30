@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { writable } from "svelte/store";
+
   /** eslint-disable @typescript-eslint/restrict-template-expressions */
   import {
     CheckMarkIcon,
@@ -14,15 +16,14 @@
     DialogFooter,
     Button,
   } from "../../../common/Components";
-  import { Campaign, ContentItemSummary } from "../../../models";
-  import {
-    getScenarios,
-    scenarioListing,
-    scenarioListingLoaded,
-    scenarioListingLoading,
-  } from "../../../Service/ContentService";
+  import { Campaign } from "../../../models";
+
+  import { ContentItemSummary } from "../../../models/Content";
+  import useContentService from "../../../Service/ContentService";
 
   export let campaign: Campaign | undefined;
+
+  const contentService = useContentService();
 
   const scenarioStatusOptions: RadioOption[] = [
     { label: "Completed", value: "completed" },
@@ -30,13 +31,13 @@
     { label: "Available", value: "available" },
   ];
 
+  const scenarioListing = writable<ContentItemSummary[]>([]);
+  const scenarioListingProcessed = writable<boolean>(false);
+
   const handleGetScenarios = async (gameCode: string) => {
-    if (
-      !$scenarioListingLoaded &&
-      !$scenarioListingLoading &&
-      ($scenarioListing as ContentItemSummary[]).length === 0
-    ) {
-      await getScenarios(gameCode);
+    if (($scenarioListing as ContentItemSummary[]).length === 0) {
+      const listing = await contentService.GetScenariosForGame(gameCode);
+      scenarioListing.set(listing);
     }
   };
 
@@ -58,6 +59,7 @@
         (scenario) =>
           !campaign?.availableScenarios.includes(scenario.value as string)
       );
+      scenarioListingProcessed.set(true);
     }
   };
 
@@ -87,6 +89,7 @@
     selectedScenarioStatus = "";
     displayNewScenarioSelection = false;
   };
+  
 
   const scenarioCompleted = (scenario: ContentItemSummary): string => {
     return `${scenario.name} Completed`;
@@ -96,8 +99,9 @@
   };
 
   $: if (campaign?.game) void handleGetScenarios(campaign.game);
-  $: if ($scenarioListingLoaded || campaign) handleProcessScenarios();
-  $: console.log(JSON.stringify(unusedScenarioOptions));
+  $: if (($scenarioListing as ContentItemSummary[]).length !== 0 && campaign)
+    handleProcessScenarios();
+  $: console.log(JSON.stringify(campaign));
 </script>
 
 {#if campaign}
@@ -108,7 +112,7 @@
       Available Scenarios
     </div>
     <div class="border-b-2 border-solid" />
-    {#if $scenarioListingLoaded}
+    {#if $scenarioListingProcessed}
       <div class="absolute top-1 right-1">
         <button
           aria-label="Add New Scenario"
@@ -171,7 +175,7 @@
     />
     <RadioGroup
       centered
-      value={selectedScenarioStatus}
+      bind:value={selectedScenarioStatus}
       options={scenarioStatusOptions}
     />
   </DialogBody>

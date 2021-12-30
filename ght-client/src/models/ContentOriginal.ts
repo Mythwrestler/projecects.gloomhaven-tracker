@@ -6,3 +6,4 @@ export interface ContentItemSummary {
 export interface ScenarioDefault extends ContentItemSummary {
   monsters?: ContentItemSummary[];
 }
+

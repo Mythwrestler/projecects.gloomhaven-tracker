@@ -6,11 +6,12 @@
   export let groupId: string = uuid();
   export let options: RadioOption[] = [];
   export let value: string | number | undefined;
-  export let onClick: (() => void) | undefined = undefined;
+  export let onClick: ((value: string | number) => void) | undefined =
+    undefined;
   export let centered = false;
 
-  const handleClick = () => {
-    if (onClick) onClick();
+  const handleClick = (value: string | number) => {
+    if (onClick) onClick(value);
   };
 </script>
 
@@ -23,7 +24,7 @@
         bind:group={value}
         name={groupId}
         value={option.value}
-        on:click={handleClick}
+        on:click={() => handleClick(option.value)}
       />
       <div class="title px-2">{option.label}</div>
     </label>

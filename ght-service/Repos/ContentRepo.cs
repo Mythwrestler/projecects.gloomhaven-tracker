@@ -105,7 +105,7 @@ public class ContentRepoImplementation : ContentRepo
     {
         using var connection = new NpgsqlConnection(connectionString);
         string gameString = GameUtils.GameTypeString(gameCode);
-        string sqlString = $"SELECT json_build_object('description', gc.description)::jsonb || gc.contentjson from \"Game Content\" gc where gc.contentJson->>'kind' = 'character' and gc.contentJson->>'code'='{contentCode}' and gc.game='{gameString}'";
+        string sqlString = $"SELECT json_build_object('description', gc.description)::jsonb || gc.contentjson from \"Game Content\" gc where gc.contentJson->>'kind' = 'character' and gc.contentJson->>'contentCode'='{contentCode}' and gc.game='{gameString}'";
         try
         {
             connection.Open();

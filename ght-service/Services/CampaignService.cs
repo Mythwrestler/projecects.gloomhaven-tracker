@@ -11,11 +11,15 @@ public interface CampaignService
 {
     public List<CampaignSummary> GetCampaignList();
     public CampaignDTO GetCampaign(Guid campaignId);
-    public CampaignSummary NewCampaign(string game, string Description, List<string> availableScenarios, List<string> closedScenarios, List<string> completedScenarios);
+    public CampaignSummary NewCampaign(Guid id, string game, string Description);
     public CharacterDTO AddCharacterToCampaign(Guid campaignId, CharacterDTO character);
     public CharacterDTO UpdateCharacter(Guid campaignId, CharacterDTO characterToUpdate);
     public CharacterDTO GetCharacterForCampaign(Guid campaignId, string characterCode);
     public List<CharacterDTO> GetCharactersForCampaign(Guid campaignId);
+    public ScenarioDTO AddScenarioToCampaign(Guid campaignId, ScenarioDTO scenarioToAdd);
+    public ScenarioDTO UpdateScenarioInCampaign(Guid campaignId, ScenarioDTO scenarioToAdd);
+    public List<ScenarioDTO> GetScenariosForCampaign(Guid campaignId);
+
 }
 
 public class CampaignServiceImplementation : CampaignService
@@ -39,7 +43,7 @@ public class CampaignServiceImplementation : CampaignService
             CampaignDO? campaignFromRepo = repo.GetCampaign(campaignId);
             if (campaignFromRepo == null)
             {
-                throw new ArgumentException("Could not find campaign with that id.");
+                
             }
             else
             {
@@ -67,17 +71,18 @@ public class CampaignServiceImplementation : CampaignService
     }
 
 
-    public CampaignSummary NewCampaign(string game, string Description, List<string> availableScenarios, List<string> closedScenarios, List<string> completedScenarios)
+    public CampaignSummary NewCampaign(Guid id, string game, string Description)
     {
 
         CampaignDO newCampaignDO = new CampaignDO()
         {
             Game = GameUtils.GameTypeString(GameUtils.GameType(game)),
             Description = Description,
-            Id = Guid.NewGuid().ToString(),
-            AvailableScenarios = availableScenarios,
-            ClosedScenarios = closedScenarios,
-            CompletedScenarios = completedScenarios,
+            Id = id.ToString(),
+            Scenarios = new ScenariosDO() { Scenarios = new List<ScenarioDO>() },
+            AvailableScenarios = new List<string>(),
+            ClosedScenarios = new List<string>(),
+            CompletedScenarios = new List<string>(),
             Party = new PartyDO() { Characters = new List<CharacterDO>() }
         };
 
@@ -163,6 +168,32 @@ public class CampaignServiceImplementation : CampaignService
     {
         Campaign campaign = GetCampaignById(campaignId);
         return campaign.Party.ToDTO().Characters;
+    }
+
+
+    public ScenarioDTO AddScenarioToCampaign(Guid campaignId, ScenarioDTO scenarioToAdd)
+    {
+        Campaign campaign = GetCampaignById(campaignId);
+
+        if(!contentService.IsValidScenarioCode(campaign.Game, scenarioToAdd.ContentCode))
+            throw new ArgumentException("Character type is not valid for game");
+
+        return campaign.Scenarios.AddScenario(new Models.Campaign.Scenario(scenarioToAdd)).ToDTO();
+    }
+
+    public ScenarioDTO UpdateScenarioInCampaign(Guid campaignId, ScenarioDTO scenarioToAdd)
+    {
+        Campaign campaign = GetCampaignById(campaignId);
+
+        if(!contentService.IsValidScenarioCode(campaign.Game, scenarioToAdd.ContentCode))
+            throw new ArgumentException("Character type is not valid for game");
+
+        return campaign.Scenarios.UpdateScenario(new Models.Campaign.Scenario(scenarioToAdd)).ToDTO();
+    }
+
+    public List<ScenarioDTO> GetScenariosForCampaign(Guid campaignId)
+    {
+        throw new NotImplementedException();
     }
 
 }

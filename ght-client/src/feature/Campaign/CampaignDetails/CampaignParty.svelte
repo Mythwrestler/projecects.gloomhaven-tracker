@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { writable } from "svelte/store";
+
   import { AddContainedIcon, DropDownOption } from "../../../common/Components";
 
   import { Campaign, Character } from "../../../models";
@@ -7,14 +9,12 @@
     addCharacterForCampaign,
     updateCharacterForCampaign,
   } from "../../../Service/CampaignService";
-  import {
-    characterListing,
-    characterListingLoaded,
-    characterListingLoading,
-    getCharacters,
-  } from "../../../Service/ContentService";
+
+  import useContentService from "../../../Service/ContentService";
   import CampaignCharacterEditor from "./CampaignCharacterEditor.svelte";
   export let campaign: Campaign;
+
+  const contentService = useContentService();
 
   const getContentSummary = (contentCode: string) => {
     return ($characterListing as ContentItemSummary[]).find((character) => {
@@ -78,13 +78,13 @@
     handleCloseDialog();
   };
 
+  const characterListing = writable<ContentItemSummary[]>([]);
+  const characterListingProcessed = writable<boolean>(false);
+
   const handleGetCharacters = async (gameCode: string) => {
-    if (
-      !$characterListingLoading &&
-      !$characterListingLoaded &&
-      ($characterListing as ContentItemSummary[]).length === 0
-    ) {
-      await getCharacters(gameCode);
+    if (($characterListing as ContentItemSummary[]).length === 0) {
+      const listing = await contentService.GetCharactersForGame(gameCode);
+      characterListing.set(listing);
     }
   };
 
@@ -105,6 +105,7 @@
           };
         }
       );
+      characterListingProcessed.set(true);
     }
   });
 
@@ -119,7 +120,7 @@
     Party Members
   </div>
   <div class="border-b-2 border-solid" />
-  {#if $characterListingLoaded}
+  {#if $characterListingProcessed}
     <div class="absolute top-1 right-1">
       <button
         aria-label="Add New Party Member"
@@ -154,12 +155,15 @@
     <div class="mx-auto">Loading...</div>
   {/if}
 </div>
-<CampaignCharacterEditor
-  bind:selectedCharacter
-  {isNewCharacter}
-  showCampaignCharacterDialog={showPlayerDialog}
-  handleSave={handleSaveCharacter}
-  {handleCloseDialog}
-  characterOptionsAlreadyUsed={usedCharacters}
-  fullCharcterOptionList={fullListOfPossibleCharacterOptions}
-/>
+{#if showPlayerDialog}
+  <CampaignCharacterEditor
+    gameCode={campaign.game ?? ""}
+    bind:selectedCharacter
+    {isNewCharacter}
+    showCampaignCharacterDialog={showPlayerDialog}
+    handleSave={handleSaveCharacter}
+    {handleCloseDialog}
+    characterOptionsAlreadyUsed={usedCharacters}
+    fullCharcterOptionList={fullListOfPossibleCharacterOptions}
+  />
+{/if}

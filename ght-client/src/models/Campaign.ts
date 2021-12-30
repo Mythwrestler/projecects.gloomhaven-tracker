@@ -4,11 +4,13 @@ export interface CampaignSummary {
   game: string;
 }
 
+
 export interface Campaign {
   party: Party;
   id: string;
   description: string;
   game: string;
+  scenarios: Scenarios;
   completedScenarios: string[];
   closedScenarios: string[];
   availableScenarios: string[];
@@ -26,4 +28,15 @@ export interface Character {
   items: string[];
   appliedPerks: string[];
   perkPoints: number;
+}
+
+export interface Scenarios {
+  scenarios: Scenario[];
+}
+export interface Scenario {
+  contentCode: string;
+  name: string;
+  description: string;
+  isCompleted: boolean;
+  isClosed: boolean;
 }

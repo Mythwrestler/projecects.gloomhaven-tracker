@@ -11,12 +11,11 @@ public class Campaign
     public Guid Id {get;}
     public string Description {get;}
     public string Game {get;}
+    public Scenarios Scenarios {get;}
     public List<string> CompletedScenarios {get;}
     public List<string> ClosedScenarios {get;}
     public List<string> AvailableScenarios {get;}
     public Party Party {get;}
-
-
 
     public CampaignSummary Summary => new CampaignSummary()
     {
@@ -30,6 +29,7 @@ public class Campaign
         this.Id = new Guid(campaign.Id);
         this.Description = campaign.Description;
         this.Game = campaign.Game;
+        this.Scenarios = new Scenarios(campaign.Scenarios);
         this.CompletedScenarios = campaign.CompletedScenarios;
         this.ClosedScenarios = campaign.ClosedScenarios;
         this.AvailableScenarios = campaign.AvailableScenarios;
@@ -43,6 +43,7 @@ public class Campaign
             Id = this.Id.ToString(),
             Description = this.Description,
             Game = this.Game,
+            Scenarios = this.Scenarios.ToDO(),
             CompletedScenarios = this.CompletedScenarios,
             ClosedScenarios = this.ClosedScenarios,
             AvailableScenarios = this.AvailableScenarios,
@@ -56,6 +57,7 @@ public class Campaign
             Id = this.Id.ToString(),
             Description = this.Description,
             Game = this.Game,
+            Scenarios = this.Scenarios.ToDTO(),
             CompletedScenarios = this.CompletedScenarios,
             ClosedScenarios = this.ClosedScenarios,
             AvailableScenarios = this.AvailableScenarios,
@@ -76,6 +78,9 @@ public struct CampaignDO
     
     [JsonPropertyName("game")]
     public string Game {get; set;}
+    
+    [JsonPropertyName("scenarios")]
+    public ScenariosDO Scenarios {get; set;}
 
     [JsonPropertyName("completedScenarios")]
     public List<string> CompletedScenarios {get; set;}
@@ -101,6 +106,9 @@ public struct CampaignDTO
     
     [JsonPropertyName("game")]
     public string Game {get; set;}
+    
+    [JsonPropertyName("scenarios")]
+    public ScenariosDTO Scenarios {get; set;}
 
     [JsonPropertyName("completedScenarios")]
     public List<string> CompletedScenarios {get; set;}
@@ -134,20 +142,11 @@ public struct CampaignSummary
 public struct NewCampaignRequestBody
 {
     [JsonPropertyName("id")]
-    public string Id {get; set;}
+    public Guid Id {get; set;}
 
     [JsonPropertyName("description")]
     public string Description {get; set;}
 
     [JsonPropertyName("game")]
     public string Game {get; set;}
-    
-    [JsonPropertyName("availableScenarios")]
-    public List<string> AvailableScenarios {get; set;}
-
-    [JsonPropertyName("closedScenarios")]
-    public List<string> ClosedScenarios {get; set;}
-    
-    [JsonPropertyName("completedScenarios")]
-    public List<string> CompletedScenarios {get; set;}
 }

@@ -8,10 +8,14 @@
     DialogHeader,
     DropDown,
     DropDownOption,
+    TextField,
   } from "../../../common/Components";
-  import TextField from "../../../common/Components/TextField/TextField.svelte";
   import { Character } from "../../../models";
+  import * as ContentModel from "../../../models/Content";
 
+  import useContentService from "../../../Service/ContentService";
+
+  export let gameCode = "";
   export let showCampaignCharacterDialog = false;
   export let isNewCharacter = false;
   export let selectedCharacter: Character;
@@ -19,6 +23,34 @@
   export let characterOptionsAlreadyUsed: string[] = [];
   export let handleCloseDialog: () => void;
   export let handleSave: () => void;
+
+  const contentService = useContentService();
+
+  let characterDetails: ContentModel.Character | undefined;
+
+  const handleCharacterSelection = async (characterCode: string) => {
+    characterDetails = await contentService.GetCharacterDefault(
+      gameCode,
+      characterCode
+    );
+  };
+  $: if (selectedCharacter?.characterContentCode)
+    void handleCharacterSelection(selectedCharacter.characterContentCode);
+
+  let characterLevel = 0;
+  let characterHealth = 0;
+  const calculateChracterLevel = () => {
+    characterLevel =
+      characterDetails?.baseStats.levels
+        .sort((a, b) => (a.level < b.level ? 1 : -1))
+        .find((lvl) => lvl.experience <= selectedCharacter.experience)?.level ??
+      0;
+    characterHealth =
+      characterDetails?.baseStats.health.find((h) => h.level === characterLevel)
+        ?.health ?? 0;
+  };
+  $: if (characterDetails && selectedCharacter.experience)
+    calculateChracterLevel();
 
   let availableCharacterOptions: DropDownOption[] = [];
   const determineAvailableCharacterOptions = (
@@ -64,40 +96,47 @@
         disabled={!isNewCharacter}
       />
     </div>
-    <div class="flex flex-row pt-3">
-      <TextField
-        type="number"
-        bind:value={selectedCharacter.experience}
-        placeholderText=""
-        displayLabel="Experience"
-        border
-      />
-      <TextField
-        type="number"
-        bind:value={selectedCharacter.gold}
-        placeholderText=""
-        displayLabel="Gold"
-        border
-      />
-    </div>
-    <div class="pt-3">
-      <div class="mx-full text-center text-l mb-3">Items</div>
-      <div class="border-b-2 border-solid" />
-    </div>
-
-    <div class="flex flex-row pt-3">
-      <TextField
-        type="number"
-        bind:value={selectedCharacter.perkPoints}
-        placeholderText=""
-        displayLabel="Perk Points"
-        border
-      />
-    </div>
-    <div class="pt-3">
-      <div class="mx-full text-center text-l mb-3">Applied Perks</div>
-      <div class="border-b-2 border-solid" />
-    </div>
+    {#if characterDetails}
+      <div class="flex flex-col pt-3">
+        <TextField
+          type="number"
+          bind:value={selectedCharacter.experience}
+          placeholderText=""
+          displayLabel="Experience"
+          border
+        />
+        <div class="max-w-md mx-auto">
+          Character Level: {characterLevel}
+        </div>
+        <div class="max-w-md mx-auto">
+          Character Health: {characterHealth}
+        </div>
+      </div>
+      <div class="pt-3">
+        <div class="mx-full text-center text-l mb-3">Items</div>
+        <div class="border-b-2 border-solid" />
+      </div>
+      <div class="flex flex-row pt-3">
+        <TextField
+          type="number"
+          bind:value={selectedCharacter.gold}
+          placeholderText=""
+          displayLabel="Gold"
+          border
+        />
+        <TextField
+          type="number"
+          bind:value={selectedCharacter.perkPoints}
+          placeholderText=""
+          displayLabel="Perk Points"
+          border
+        />
+      </div>
+      <div class="pt-3">
+        <div class="mx-full text-center text-l mb-3">Applied Perks</div>
+        <div class="border-b-2 border-solid" />
+      </div>
+    {/if}
   </DialogBody>
   <DialogFooter slot="DialogFooter">
     <div class="bg-white dark:bg-gray-700 w-full py-3 pl-3">

@@ -62,11 +62,9 @@ public class CampaignController : Controller
         try
         {
             var campaign = service.NewCampaign(
+                body.Id,
                 body.Game,
-                body.Description,
-                body.AvailableScenarios,
-                body.ClosedScenarios,
-                body.CompletedScenarios
+                body.Description
             );
             return Ok(campaign);
         }
@@ -93,9 +91,9 @@ public class CampaignController : Controller
         }
     }
 
-    [Route("{campaignId}/characters")]
+    [Route("{campaignId}/characters/{characterCode}")]
     [HttpPut]
-    public IActionResult UpdateCharacterInCampaign(Guid campaignId, [FromBody] CharacterDTO characterForAdd)
+    public IActionResult UpdateCharacterInCampaign(Guid campaignId, string characterCode, [FromBody] CharacterDTO characterForAdd)
     {
         try
         {
@@ -143,6 +141,57 @@ public class CampaignController : Controller
             return UnprocessableEntity("Issue processing request");
         }
     }
+
+
+    [Route("{campaignId}/scenarios")]
+    [HttpPut]
+    public IActionResult AddScenarioToCampaign(Guid campaignId, [FromBody] ScenarioDTO scenarioForAdd)
+    {
+        try
+        {
+            var scenarioForReturn = service.AddScenarioToCampaign(campaignId, scenarioForAdd);
+            return Ok(scenarioForReturn);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(new EventId(), ex, "Failed to add scenario to the campaign");
+            return UnprocessableEntity("Issue processing request");
+        }
+    }
+    
+    [Route("{campaignId}/scenarios/{scenarioCode}")]
+    [HttpPut]
+    public IActionResult UpdateScenarioInCampaign(Guid campaignId, string scenarioCode, [FromBody] ScenarioDTO scenarioForUpdate)
+    {
+        try
+        {
+            if(scenarioCode != scenarioForUpdate.ContentCode) throw new ArgumentException("Content Code Mismatch between request and body.");
+            var scenarioForReturn = service.UpdateScenarioInCampaign(campaignId, scenarioForUpdate);
+            return Ok(scenarioForReturn);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(new EventId(), ex, "Failed to add scenario to the campaign");
+            return UnprocessableEntity("Issue processing request");
+        }
+    }
+
+    [Route("{campaignId}/scenarios")]
+    [HttpGet]
+    public IActionResult GetScenariosForCampaign(Guid campaignId)
+    {
+        
+        try
+        {
+            throw new NotImplementedException();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(new EventId(), ex, "Failed to get scenarios for the campaign");
+            return UnprocessableEntity("Issue processing request");
+        }
+    }
+
 
 
 

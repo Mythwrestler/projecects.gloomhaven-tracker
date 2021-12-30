@@ -6,9 +6,20 @@
   import { getCampaign } from "../../../Service/CampaignService";
   import CampaignScenarios from "./CampaignScenarios.svelte";
   import CampaignParty from "./CampaignParty.svelte";
+  import { NavigatorLocation, useLocation } from "svelte-navigator";
+  import AnyObject from "svelte-navigator/types/AnyObject";
 
   // your script goes here
   export let campaignId = "";
+  const location = useLocation();
+
+  let newGameCode = "";
+  const getNewGameCode = () => {
+    newGameCode = ($location as NavigatorLocation<AnyObject>).search.replace(
+      "?selectedGame=",
+      ""
+    );
+  };
 
   let campaignLoading = false;
   let campaignLoaded = false;
@@ -27,6 +38,7 @@
     }
   };
 
+  $: if ($location.search) getNewGameCode();
   $: void handleGetCampaign(campaignId);
 </script>
 

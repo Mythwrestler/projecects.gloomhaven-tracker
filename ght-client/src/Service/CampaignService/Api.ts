@@ -1,5 +1,10 @@
 import { getAPI, postAPI, putAPI } from "../../common/Utils/API";
-import { Campaign, CampaignSummary, Character } from "../../models";
+import {
+  Campaign,
+  CampaignSummary,
+  Character,
+  ContentItemSummary,
+} from "../../models";
 import * as CampaignStore from "./Store";
 import * as GlobalError from "../../Service/Error";
 
@@ -24,6 +29,18 @@ export const getCampaign = async (
     GlobalError.showErrorMessage("Failed To Retrieve Campaign");
   }
   return undefined;
+};
+
+export const addCampaign = async (
+  campaign: Campaign
+): Promise<CampaignSummary | undefined> => {
+  try {
+    const result = await postAPI<CampaignSummary>(`campaigns/new`, campaign);
+    await getCampaigns();
+    return result;
+  } catch (err: unknown) {
+    GlobalError.showErrorMessage("Failed To Create Campaign");
+  }
 };
 
 export const getCharacterForCampaign = async (

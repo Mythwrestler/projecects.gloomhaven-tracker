@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import { Campaign } from "../../../models";
   import {
+    AddContainedIcon,
     ColumnDefinition,
     RowData,
     Table,
@@ -14,6 +15,7 @@
     getCampaigns,
   } from "../../../Service/CampaignService";
   import CampaignLink from "./CampaignLink.svelte";
+  import CampaignNewDialog from "./CampaignNewDialog.svelte";
 
   const handleGetCampaigns = async () => {
     if (
@@ -62,14 +64,39 @@
     });
   });
 
+  let newDialogOpen = false;
+  const handleOpenNewDialog = () => {
+    newDialogOpen = true;
+  };
+  const handleCloseNewDialog = () => {
+    newDialogOpen = false;
+  };
+
   onMount(() => {
     void handleGetCampaigns();
   });
 </script>
 
 <section class="text-center lg:text-left lg:pl-3 ">
-  <span class="text-2xl">Campaigns</span>
-  {#if $campaignListingLoaded}
-    <Table {config} rowData={campaignsRowData} />
+  <div
+    class="relative mt-2 px-3 py-1 items-center max-w-md mx-auto bg-gray-50 rounded-md backdrop-blur-sm"
+  >
+    <div aria-label="Available Scenarios" class="text-center text-xl">
+      Campaigns
+    </div>
+    <div class="absolute top-1 right-1">
+      <button aria-label="Add New Scenario" on:click={handleOpenNewDialog}>
+        <AddContainedIcon />
+      </button>
+    </div>
+    {#if $campaignListingLoaded}
+      <Table {config} rowData={campaignsRowData} />
+    {/if}
+  </div>
+  {#if newDialogOpen}
+    <CampaignNewDialog
+      {newDialogOpen}
+      handleCloseDialog={handleCloseNewDialog}
+    />
   {/if}
 </section>
