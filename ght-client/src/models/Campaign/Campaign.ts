@@ -4,12 +4,16 @@ export interface CampaignSummary {
   game: string;
 }
 
+
 export interface Campaign {
   party: Party;
   id: string;
   description: string;
   game: string;
   scenarios: Scenarios;
+  completedScenarios: string[];
+  closedScenarios: string[];
+  availableScenarios: string[];
 }
 
 export interface Party {

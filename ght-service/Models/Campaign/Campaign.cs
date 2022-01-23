@@ -12,9 +12,6 @@ public class Campaign
     public string Description {get;}
     public string Game {get;}
     public Scenarios Scenarios {get;}
-    public List<string> CompletedScenarios {get;}
-    public List<string> ClosedScenarios {get;}
-    public List<string> AvailableScenarios {get;}
     public Party Party {get;}
 
     public CampaignSummary Summary => new CampaignSummary()
@@ -30,9 +27,6 @@ public class Campaign
         this.Description = campaign.Description;
         this.Game = campaign.Game;
         this.Scenarios = new Scenarios(campaign.Scenarios);
-        this.CompletedScenarios = campaign.CompletedScenarios;
-        this.ClosedScenarios = campaign.ClosedScenarios;
-        this.AvailableScenarios = campaign.AvailableScenarios;
         this.Party = new Party(campaign.Party);
     }
 
@@ -44,9 +38,6 @@ public class Campaign
             Description = this.Description,
             Game = this.Game,
             Scenarios = this.Scenarios.ToDO(),
-            CompletedScenarios = this.CompletedScenarios,
-            ClosedScenarios = this.ClosedScenarios,
-            AvailableScenarios = this.AvailableScenarios,
             Party = this.Party.ToDO()
         };
     }
@@ -58,9 +49,6 @@ public class Campaign
             Description = this.Description,
             Game = this.Game,
             Scenarios = this.Scenarios.ToDTO(),
-            CompletedScenarios = this.CompletedScenarios,
-            ClosedScenarios = this.ClosedScenarios,
-            AvailableScenarios = this.AvailableScenarios,
             Party = this.Party.ToDTO()
         };
     }
@@ -109,15 +97,6 @@ public struct CampaignDTO
     
     [JsonPropertyName("scenarios")]
     public ScenariosDTO Scenarios {get; set;}
-
-    [JsonPropertyName("completedScenarios")]
-    public List<string> CompletedScenarios {get; set;}
-
-    [JsonPropertyName("closedScenarios")]
-    public List<string> ClosedScenarios {get; set;}
-
-    [JsonPropertyName("availableScenarios")]
-    public List<string> AvailableScenarios {get; set;}
 
     [JsonPropertyName("party")]
     public PartyDTO Party {get; set;}

@@ -15,7 +15,7 @@
     scenarioListingLoaded,
   } from "../../Service/CombatTrackerService";
 
-  import useContentService from "../../Service/ContentService";
+  import { useContentService } from "../../Service/ContentService";
 
   const { GetScenariosForGame } = useContentService();
 

@@ -19,11 +19,11 @@
   import { Campaign } from "../../../models";
 
   import { ContentItemSummary } from "../../../models/Content";
-  import useContentService from "../../../Service/ContentService";
+  import { useContentService } from "../../../Service/ContentService";
 
   export let campaign: Campaign | undefined;
 
-  const contentService = useContentService();
+  const { GetScenariosForGame } = useContentService();
 
   const scenarioStatusOptions: RadioOption[] = [
     { label: "Completed", value: "completed" },
@@ -33,23 +33,17 @@
 
   const scenarioListing = writable<ContentItemSummary[]>([]);
   const scenarioListingProcessed = writable<boolean>(false);
-
   const handleGetScenarios = async (gameCode: string) => {
     if (($scenarioListing as ContentItemSummary[]).length === 0) {
-      const listing = await contentService.GetScenariosForGame(gameCode);
+      const listing = await GetScenariosForGame(gameCode);
       scenarioListing.set(listing);
     }
   };
 
-  let scenarios: ContentItemSummary[] = [];
-  let unusedScenarioOptions: DropDownOption[] = [];
   let fullScenarioListOptions: DropDownOption[] = [];
+  let unusedScenarioOptions: DropDownOption[] = [];
   const handleProcessScenarios = () => {
     if (campaign) {
-      scenarios = ($scenarioListing as ContentItemSummary[]).filter(
-        (scenario) =>
-          campaign?.availableScenarios.includes(scenario.contentCode)
-      );
       fullScenarioListOptions = ($scenarioListing as ContentItemSummary[]).map(
         (scenario) => {
           return { label: scenario.name, value: scenario.contentCode };
@@ -57,7 +51,9 @@
       );
       unusedScenarioOptions = fullScenarioListOptions.filter(
         (scenario) =>
-          !campaign?.availableScenarios.includes(scenario.value as string)
+          campaign?.scenarios.scenarios.findIndex(
+            (s) => s.contentCode === scenario.value
+          ) === -1
       );
       scenarioListingProcessed.set(true);
     }
@@ -72,12 +68,15 @@
     displayNewScenarioSelection = true;
   };
   const handleScenarioClick = (contentCode: string) => {
+    const scenario = campaign?.scenarios.scenarios.find(
+      (s) => s.contentCode === contentCode
+    );
     selectedScenario = contentCode;
-    if (campaign?.completedScenarios.includes(contentCode)) {
+    if (scenario?.isCompleted) {
       selectedScenarioStatus = "completed";
-    } else if (campaign?.closedScenarios.includes(contentCode)) {
+    } else if (scenario?.isClosed) {
       selectedScenarioStatus = "closed";
-    } else if (campaign?.availableScenarios.includes(contentCode)) {
+    } else if (scenario) {
       selectedScenarioStatus = "available";
     } else {
       selectedScenarioStatus = "";
@@ -89,7 +88,6 @@
     selectedScenarioStatus = "";
     displayNewScenarioSelection = false;
   };
-  
 
   const scenarioCompleted = (scenario: ContentItemSummary): string => {
     return `${scenario.name} Completed`;
@@ -101,7 +99,6 @@
   $: if (campaign?.game) void handleGetScenarios(campaign.game);
   $: if (($scenarioListing as ContentItemSummary[]).length !== 0 && campaign)
     handleProcessScenarios();
-  $: console.log(JSON.stringify(campaign));
 </script>
 
 {#if campaign}
@@ -121,7 +118,7 @@
       </div>
       <div>
         <ul aria-label="Scenario Listing">
-          {#each scenarios as scenario}
+          {#each campaign.scenarios.scenarios as scenario}
             <li aria-label={scenario.name}>
               <div class="flex flex-row">
                 <div class="mx-auto flex flex-row">
@@ -132,12 +129,12 @@
                       {scenario.name}
                     </button>
                   </div>
-                  {#if campaign.completedScenarios.includes(scenario.contentCode)}
+                  {#if scenario.isCompleted}
                     <div class="pl-2" aria-label={scenarioCompleted(scenario)}>
                       <CheckMarkIcon iconClassOverride="h-4 w-4 mt-1" />
                     </div>
                   {/if}
-                  {#if campaign.closedScenarios.includes(scenario.contentCode)}
+                  {#if scenario.isClosed}
                     <div class="pl-2" aria-label={scenarioClosed(scenario)}>
                       <CloseIconOpen iconClassOverride="h-4 w-4 mt-1" />
                     </div>

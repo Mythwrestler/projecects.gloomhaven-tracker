@@ -3,15 +3,16 @@
   import { Campaign } from "../../../models";
   import * as GlobalError from "../../../Service/Error";
 
-  import { getCampaign } from "../../../Service/CampaignService";
-  import CampaignScenarios from "./CampaignScenarios.svelte";
+  import { useCampaignService } from "../../../Service/CampaignService";
   import CampaignParty from "./CampaignParty.svelte";
   import { NavigatorLocation, useLocation } from "svelte-navigator";
   import AnyObject from "svelte-navigator/types/AnyObject";
+  import CampaignScenarios from "./CampaignScenarios.svelte";
 
   // your script goes here
   export let campaignId = "";
   const location = useLocation();
+  const { State: campaignState, getCampaign } = useCampaignService();
 
   let newGameCode = "";
   const getNewGameCode = () => {
@@ -21,25 +22,21 @@
     );
   };
 
-  let campaignLoading = false;
-  let campaignLoaded = false;
   let campaign: Campaign | undefined;
+  campaignState.campaign.subscribe((c) => {
+    campaign = c;
+  });
+
   const handleGetCampaign = async (campaignId: string) => {
-    campaignLoaded = false;
-    campaignLoading = true;
     try {
-      campaign = await getCampaign(campaignId);
-      campaignLoaded = true;
-      campaignLoading = false;
+      await getCampaign(campaignId);
     } catch {
-      campaignLoaded = false;
-      campaignLoading = false;
       GlobalError.showErrorMessage("Failed to get campaign");
     }
   };
 
   $: if ($location.search) getNewGameCode();
-  $: void handleGetCampaign(campaignId);
+  $: if (!campaign) void handleGetCampaign(campaignId);
 </script>
 
 <section>

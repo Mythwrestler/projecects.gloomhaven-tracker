@@ -13,7 +13,7 @@
   import { Character } from "../../../models";
   import * as ContentModel from "../../../models/Content";
 
-  import useContentService from "../../../Service/ContentService";
+  import { useContentService } from "../../../Service/ContentService";
 
   export let gameCode = "";
   export let showCampaignCharacterDialog = false;

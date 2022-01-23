@@ -5,16 +5,18 @@
 
   import { Campaign, Character } from "../../../models";
   import { ContentItemSummary } from "../../../models/Content";
-  import {
-    addCharacterForCampaign,
-    updateCharacterForCampaign,
-  } from "../../../Service/CampaignService";
-
-  import useContentService from "../../../Service/ContentService";
+  // import {
+  //   addCharacterForCampaign,
+  //   updateCharacterForCampaign,
+  // } from "../../..../../../Service/CampaignServiceTake1";
+  import { useCampaignService } from "../../../Service/CampaignService";
   import CampaignCharacterEditor from "./CampaignCharacterEditor.svelte";
+  import { useContentService } from "../../../Service/ContentService";
+  import Party from "../../Party/Party.svelte";
   export let campaign: Campaign;
 
-  const contentService = useContentService();
+  const { GetCharactersForGame } = useContentService();
+  const { State: campaignStore, addUpdatePartyMember } = useCampaignService();
 
   const getContentSummary = (contentCode: string) => {
     return ($characterListing as ContentItemSummary[]).find((character) => {
@@ -46,36 +48,23 @@
     isNewCharacter = false;
     showPlayerDialog = false;
   };
-  const handleSaveCharacter = async (): Promise<void> => {
-    // Do Stuff
-    let writtenCharacter: Character | undefined;
-    if (isNewCharacter) {
-      writtenCharacter = await addCharacterForCampaign(
-        campaign.id,
-        selectedCharacter
-      );
-    } else {
-      writtenCharacter = await updateCharacterForCampaign(
-        campaign.id,
-        selectedCharacter
-      );
-    }
-    if (!writtenCharacter) return;
-    const posIndex = campaign.party.characters.findIndex(
-      (c) => c.characterContentCode === selectedCharacter.characterContentCode
-    );
-    if (posIndex !== -1) {
-      const arrayToUpdate = [...campaign.party.characters];
-      arrayToUpdate.splice(posIndex, 1, writtenCharacter);
-      campaign.party.characters = arrayToUpdate;
-    } else {
-      campaign.party.characters = [
-        ...campaign.party.characters,
-        writtenCharacter,
-      ];
-    }
 
-    handleCloseDialog();
+  let saving = false;
+  const handleSaveCharacter = (): void => {
+    // Do Stuff
+    saving = true;
+    addUpdatePartyMember(selectedCharacter);
+  };
+
+  const checkSaving = (): void => {
+    if (
+      saving &&
+      campaign.party.characters.findIndex(
+        (c) => c.characterContentCode === selectedCharacter.characterContentCode
+      ) === -1
+    ) {
+      handleCloseDialog();
+    }
   };
 
   const characterListing = writable<ContentItemSummary[]>([]);
@@ -83,7 +72,7 @@
 
   const handleGetCharacters = async (gameCode: string) => {
     if (($characterListing as ContentItemSummary[]).length === 0) {
-      const listing = await contentService.GetCharactersForGame(gameCode);
+      const listing = await GetCharactersForGame(gameCode);
       characterListing.set(listing);
     }
   };
@@ -110,6 +99,7 @@
   });
 
   $: if (campaign?.game) void handleGetCharacters(campaign.game);
+  $: if (campaign?.party.characters) checkSaving();
   $: determineUsedCharacters(campaign.party.characters);
 </script>
 

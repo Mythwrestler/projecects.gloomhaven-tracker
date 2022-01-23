@@ -207,4 +207,4 @@ const useContentService = (): ContentServiceImplementation => {
   return contentService;
 };
 
-export default useContentService;
+export { useContentService };

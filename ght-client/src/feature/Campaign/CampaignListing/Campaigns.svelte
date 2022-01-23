@@ -8,24 +8,12 @@
     Table,
     TableConfiguration,
   } from "../../../common/Components";
-  import {
-    campaignListing,
-    campaignListingLoaded,
-    campaignListingLoading,
-    getCampaigns,
-  } from "../../../Service/CampaignService";
   import CampaignLink from "./CampaignLink.svelte";
   import CampaignNewDialog from "./CampaignNewDialog.svelte";
+  import { useCampaignService } from "../../../Service/CampaignService";
 
-  const handleGetCampaigns = async () => {
-    if (
-      !$campaignListingLoaded &&
-      !$campaignListingLoading &&
-      ($campaignListing as Campaign[]).length === 0
-    ) {
-      await getCampaigns();
-    }
-  };
+  const { State, getCampaignListing } = useCampaignService();
+  const { campaignListing } = State;
 
   const columns: ColumnDefinition[] = [
     {
@@ -48,6 +36,14 @@
     columns,
   };
   let campaignsRowData: RowData[] = [];
+
+  let campaignListingLoaded = false;
+  const handleGetCampaigns = async () => {
+    if (($campaignListing as Campaign[]).length === 0) {
+      await getCampaignListing();
+    }
+  };
+
   campaignListing.subscribe((campaigns) => {
     campaignsRowData = campaigns.map((campaign) => {
       const translateGame = (game: string) => {
@@ -62,9 +58,11 @@
         game: translateGame(campaign.game),
       };
     });
+    if (campaigns.length > 0) campaignListingLoaded = true;
   });
 
   let newDialogOpen = false;
+  
   const handleOpenNewDialog = () => {
     newDialogOpen = true;
   };
@@ -89,7 +87,7 @@
         <AddContainedIcon />
       </button>
     </div>
-    {#if $campaignListingLoaded}
+    {#if campaignListingLoaded}
       <Table {config} rowData={campaignsRowData} />
     {/if}
   </div>

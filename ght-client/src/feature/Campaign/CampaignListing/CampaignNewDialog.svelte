@@ -12,15 +12,16 @@
     DropDown,
     TextField,
   } from "../../../common/Components";
-  import { Campaign, CampaignSummary } from "../../../models";
+  import { Campaign, CampaignSummary } from "../../../models/Campaign";
   import { ContentItemSummary } from "../../../models/Content";
-  import useContentService from "../../../Service/ContentService";
+  import { useContentService } from "../../../Service/ContentService";
+  import { useCampaignService } from "../../../Service/CampaignService";
   import { v4 as uuid } from "uuid";
-  import { addCampaign } from "../../../Service/CampaignService";
   import { writable } from "svelte/store";
   const navigate = useNavigate();
 
   const { GetAvailableGames } = useContentService();
+  const { State: campaignState, saveCampaign } = useCampaignService();
 
   export let newDialogOpen = false;
   export let handleCloseDialog: () => void;
@@ -44,9 +45,7 @@
     id: uuid(),
     description: "",
     game: "",
-    availableScenarios: [],
-    closedScenarios: [],
-    completedScenarios: [],
+    scenarios: { scenarios: [] },
     party: {
       characters: [],
     },
@@ -54,12 +53,18 @@
 
   const savedNewCampaign = writable<CampaignSummary>();
   const handleNewCampaign = async () => {
-    let savedCampaign = await addCampaign(newCampaign);
-    if (savedCampaign) savedNewCampaign.set(savedCampaign);
+    await saveCampaign(newCampaign);
   };
+
   const handleNavigate = () => {
     navigate(`/campaign/${($savedNewCampaign as CampaignSummary).id}`);
   };
+
+  campaignState.campaign.subscribe((campaign) => {
+    if (campaign && campaign.id === newCampaign.id)
+      savedNewCampaign.set(campaign);
+  });
+
   $: if ($savedNewCampaign) handleNavigate();
   onMount(() => {
     void handleLoadGames();
