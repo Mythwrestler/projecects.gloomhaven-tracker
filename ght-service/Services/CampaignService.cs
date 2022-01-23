@@ -103,6 +103,7 @@ public class CampaignServiceImplementation : CampaignService
                     }).ToList()
             ,
             Party = campaign.Party.Select(c => new CharacterDO() {
+                        Id = c.Id ?? Guid.NewGuid().ToString(),
                         CharacterContentCode = c.CharacterContentCode,
                         AppliedPerks = c.AppliedPerks,
                         Experience = c.Experience,

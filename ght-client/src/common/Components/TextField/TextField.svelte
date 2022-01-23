@@ -7,6 +7,8 @@
   export let variant: "rounded" | "square" = "square";
   export let border = false;
   export let onButtonClick: (() => void) | undefined = undefined;
+  export let onChange: (() => void) | undefined = undefined;
+  export let onBlur: (() => void) | undefined = undefined;
   export let value: string | number;
   export let placeholderText: string;
   export let type: "text" | "number" = "text";
@@ -26,6 +28,8 @@
         type="text"
         name={textBoxName}
         bind:value
+        on:input={onChange}
+        on:blur={onBlur}
         class={clsx(
           "w-full px-4 py-1 text-gray-900 focus:outline-none",
           variant === "rounded" && "rounded-full",
@@ -38,6 +42,8 @@
         type="number"
         name={textBoxName}
         bind:value
+        on:input={onChange}
+        on:blur={onBlur}
         class={clsx(
           "w-full px-4 py-1 text-gray-900 focus:outline-none",
           variant === "rounded" && "rounded-full",

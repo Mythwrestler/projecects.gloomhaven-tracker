@@ -1,19 +1,17 @@
 <script lang="ts">
   import { Route } from "svelte-navigator";
-  import Party from "../../Party/Party.svelte";
-  import Campaigns from "../../Campaign/CampaignListing/Campaigns.svelte";
-  import SetupCombat from "../../Combat/SetupCombat.svelte";
+  import Campaigns from "../../Campaigns/CampaignListing/Campaigns.svelte";
   import Sampler from "../../Sampler/Sampler.svelte";
-  import CampaignDetails from "../../Campaign/CampaignDetails/CampaignDetails.svelte";
+  import CampaignDetails from "../../Campaigns/CampaignDetails/CampaignDetails.svelte";
+  import Scenarios from "../../Scenarios/Scenarios.svelte";
 </script>
 
 <main class="w-full h-full">
   <Route path="/">Landing</Route>
-  <Route path="/campaign"><Campaigns /></Route>
-  <Route path="/campaign/:id" let:params>
+  <Route path="/campaigns"><Campaigns /></Route>
+  <Route path="/campaigns/:id" let:params>
     <CampaignDetails campaignId={params.id} />
   </Route>
-  <Route path="/party"><Party /></Route>
-  <Route path="/combat"><SetupCombat /></Route>
+  <Route path="/scenarios"><Scenarios /></Route>
   <Route path="/sampler"><Sampler /></Route>
 </main>

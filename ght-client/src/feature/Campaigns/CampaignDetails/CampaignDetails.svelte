@@ -8,6 +8,7 @@
   import { NavigatorLocation, useLocation } from "svelte-navigator";
   import AnyObject from "svelte-navigator/types/AnyObject";
   import CampaignScenarios from "./CampaignScenarios.svelte";
+  import { onMount } from "svelte";
 
   // your script goes here
   export let campaignId = "";
@@ -16,6 +17,8 @@
     State: campaignState,
     getCampaign,
     saveCampaign,
+    addUpdateScenario,
+    updateCampaignDescription,
   } = useCampaignService();
   const { campaignNotSaved } = campaignState;
 
@@ -33,6 +36,7 @@
   });
 
   const handleGetCampaign = async (campaignId: string) => {
+    campaign = undefined;
     try {
       await getCampaign(campaignId);
     } catch {
@@ -44,8 +48,16 @@
     void saveCampaign();
   };
 
+  const handleUpdateCampaignDescription = () => {
+    updateCampaignDescription(campaign?.description ?? "");
+  };
+
   $: if ($location.search) getNewGameCode();
-  $: if (!campaign) void handleGetCampaign(campaignId);
+  $: if (campaignId !== campaign?.id) void handleGetCampaign(campaignId);
+
+  onMount(() => {
+    void handleGetCampaign(campaignId);
+  });
 </script>
 
 <section>
@@ -55,12 +67,13 @@
     <div class="mt-2">
       <TextField
         bind:value={campaign.description}
+        onChange={handleUpdateCampaignDescription}
         placeholderText="Campaign Description"
         displayLabel="Description"
       />
     </div>
     <CampaignParty bind:campaign />
-    <CampaignScenarios bind:campaign />
+    <CampaignScenarios bind:campaign saveScenario={addUpdateScenario} />
     <div class="flex max-w-md h-12 mx-auto mt-2">
       <Button
         variant="outlined"

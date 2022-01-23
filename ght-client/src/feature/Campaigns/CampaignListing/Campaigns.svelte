@@ -53,7 +53,7 @@
       return {
         description: {
           label: campaign.description,
-          path: `/campaign/${campaign.id}`,
+          path: `/campaigns/${campaign.id}`,
         },
         game: translateGame(campaign.game),
       };
@@ -79,11 +79,11 @@
   <div
     class="relative mt-2 px-3 py-1 items-center max-w-md mx-auto bg-gray-50 rounded-md backdrop-blur-sm"
   >
-    <div aria-label="Available Scenarios" class="text-center text-xl">
+    <div aria-label="Current Campaigns" class="text-center text-xl">
       Campaigns
     </div>
     <div class="absolute top-1 right-1">
-      <button aria-label="Add New Scenario" on:click={handleOpenNewDialog}>
+      <button aria-label="Add New Campaign" on:click={handleOpenNewDialog}>
         <AddContainedIcon />
       </button>
     </div>

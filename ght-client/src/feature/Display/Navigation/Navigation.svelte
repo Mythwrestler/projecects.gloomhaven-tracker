@@ -3,7 +3,6 @@
   import {
     CastleIcon,
     CompassIcon,
-    GroupIcon,
     SemanticWebIcon,
   } from "../../../common/Components";
   import NavListItem from "./NavListItem.svelte";
@@ -20,24 +19,16 @@
 >
   <ul class="flex flex-col">
     <NavListItem
-      path="/campaign"
-      label="Campaign"
+      path="/campaigns"
+      label="Campaigns"
       icon={CastleIcon}
       onClick={() => {
         showNavMenu = false;
       }}
     />
     <NavListItem
-      path="/party"
-      label="Party"
-      icon={GroupIcon}
-      onClick={() => {
-        showNavMenu = false;
-      }}
-    />
-    <NavListItem
-      path="/combat"
-      label="Scenario"
+      path="/scenarios"
+      label="Scenarios"
       icon={CompassIcon}
       onClick={() => {
         showNavMenu = false;
@@ -45,7 +36,7 @@
     />
     <NavListItem
       path="/sampler"
-      label="Share Component Examples"
+      label="Shared Component Examples"
       icon={SemanticWebIcon}
       onClick={() => {
         showNavMenu = false;

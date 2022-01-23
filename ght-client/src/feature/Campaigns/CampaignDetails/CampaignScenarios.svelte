@@ -17,11 +17,11 @@
     Button,
   } from "../../../common/Components";
   import { Campaign, Scenario } from "../../../models/Campaign";
-
   import { ContentItemSummary } from "../../../models/Content";
   import { useContentService } from "../../../Service/ContentService";
 
   export let campaign: Campaign | undefined;
+  export let saveScenario: (scenario: Scenario) => void | undefined;
 
   const { GetScenariosForGame } = useContentService();
 
@@ -60,14 +60,17 @@
   };
 
   let displayNewScenarioSelection = false;
+  let existingScenario = false;
   let selectedScenario = "";
   let selectedScenarioStatus = "";
   const handleAddNewScenarioClick = () => {
+    existingScenario = false;
     selectedScenario = "";
     selectedScenarioStatus = "";
     displayNewScenarioSelection = true;
   };
   const handleScenarioClick = (contentCode: string) => {
+    existingScenario = true;
     const scenario = campaign?.scenarios.find(
       (s) => s.contentCode === contentCode
     );
@@ -83,10 +86,29 @@
     }
     displayNewScenarioSelection = true;
   };
-  const handleCloseNewScenarioSelection = () => {
+  const handleCloseScenarioEdit = () => {
+    existingScenario = false;
     selectedScenario = "";
     selectedScenarioStatus = "";
     displayNewScenarioSelection = false;
+  };
+  const handleSaveScenario = () => {
+    if (saveScenario) {
+      saveScenario({
+        contentCode: selectedScenario,
+        description:
+          ($scenarioListing as ContentItemSummary[]).find(
+            (li) => li.contentCode === selectedScenario
+          )?.description ?? "",
+        name:
+          ($scenarioListing as ContentItemSummary[]).find(
+            (li) => li.contentCode === selectedScenario
+          )?.name ?? "",
+        isClosed: selectedScenarioStatus === "closed",
+        isCompleted: selectedScenarioStatus === "completed",
+      });
+      handleCloseScenarioEdit();
+    }
   };
 
   const scenarioCompleted = (scenario: Scenario): string => {
@@ -103,6 +125,17 @@
     );
   };
 
+  let disableSave = true;
+  const shouldDisableSave = (
+    selectedScenario: string,
+    selectedScenarioStatus: string
+  ): boolean => {
+    if (selectedScenario !== "" && selectedScenarioStatus !== "") return false;
+    return true;
+  };
+
+  $: disableSave = shouldDisableSave(selectedScenario, selectedScenarioStatus);
+
   $: if (campaign?.game) void handleGetScenarios(campaign.game);
   $: if (($scenarioListing as ContentItemSummary[]).length !== 0 && campaign)
     handleProcessScenarios();
@@ -113,7 +146,7 @@
     class="relative mt-2 px-3 py-1 items-center max-w-md mx-auto bg-gray-50 rounded-md backdrop-blur-sm"
   >
     <div aria-label="Available Scenarios" class="text-center text-xl">
-      Available Scenarios
+      Scenarios
     </div>
     <div class="border-b-2 border-solid" />
     {#if $scenarioListingProcessed}
@@ -160,16 +193,18 @@
 <Dialog
   offClick
   open={displayNewScenarioSelection}
-  onClose={handleCloseNewScenarioSelection}
+  onClose={handleCloseScenarioEdit}
 >
   <DialogHeader slot="DialogHeader">
-    <div class="mx-full text-center text-2xl mb-3">Add / Edit Scenario</div>
+    <div class="mx-full text-center text-2xl mb-3">
+      {existingScenario ? "Edit" : "Add"} Scenario
+    </div>
     <div class="border-b-2 border-solid" />
   </DialogHeader>
   <DialogBody slot="DialogBody">
     <DropDown
       label="Scenarios"
-      selected={selectedScenario}
+      bind:selected={selectedScenario}
       placeHolder={selectedScenario === "" ? "Select a Scenario" : ""}
       options={selectedScenario === ""
         ? unusedScenarioOptions
@@ -186,11 +221,11 @@
   <DialogFooter slot="DialogFooter">
     <Button
       variant="filled"
-      onClick={selectedScenarioStatus !== ""
-        ? handleCloseNewScenarioSelection
-        : undefined}
+      color={disableSave ? "gray" : "blue"}
+      disabled={disableSave}
+      onClick={handleSaveScenario}
     >
-      Add Scenario
+      {existingScenario ? "Update" : "Add"} Scenario
     </Button>
   </DialogFooter>
 </Dialog>

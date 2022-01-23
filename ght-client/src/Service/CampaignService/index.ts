@@ -35,8 +35,8 @@ class CampaignServiceImplementation {
   private campaignNotSaved = derived(
     [this.campaignStore, this.savedCampaign],
     ($campaignStates) => {
-      const [campaignStore, initialCampaign] = $campaignStates;
-      return !isEqual(campaignStore, initialCampaign);
+      const [campaignStore, savedCampaign] = $campaignStates;
+      return !isEqual(campaignStore, savedCampaign);
     },
     false
   );
@@ -46,11 +46,20 @@ class CampaignServiceImplementation {
       const result = await getAPI<Campaign>(`campaigns/${campaignId}`);
       if (result) {
         this.campaignStore.set(result);
-        this.savedCampaign.set(result);
+        this.savedCampaign.set(cloneDeep(result));
       }
     } catch (err: unknown) {
       GlobalError.showErrorMessage("Failed To Retrieve Campaign");
     }
+  };
+
+  public updateCampaignDescription = (description: string) => {
+    this.campaignStore.update((campaignBeingUpdated) => {
+      return {
+        ...campaignBeingUpdated,
+        description,
+      };
+    });
   };
 
   public addUpdatePartyMember = (character: Character) => {
@@ -92,12 +101,13 @@ class CampaignServiceImplementation {
 
   public saveCampaign = async () => {
     if (get(this.campaignNotSaved)) {
+      const campaignToSave = get(this.campaignStore);
       try {
         await putAPI<void>(
           `campaigns/${get(this.campaignStore).id}`,
-          get(this.campaignStore)
+          campaignToSave
         );
-        this.savedCampaign.set(get(this.campaignStore));
+        this.savedCampaign.set(cloneDeep(campaignToSave));
       } catch (ex) {
         GlobalError.showErrorMessage("Failed To Create a New Campaign");
       }

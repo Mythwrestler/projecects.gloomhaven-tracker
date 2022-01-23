@@ -5,18 +5,13 @@
 
   import { Campaign, Character } from "../../../models/Campaign";
   import { ContentItemSummary } from "../../../models/Content";
-  // import {
-  //   addCharacterForCampaign,
-  //   updateCharacterForCampaign,
-  // } from "../../..../../../Service/CampaignServiceTake1";
   import { useCampaignService } from "../../../Service/CampaignService";
   import CampaignCharacterEditor from "./CampaignCharacterEditor.svelte";
   import { useContentService } from "../../../Service/ContentService";
-  import Party from "../../Party/Party.svelte";
   export let campaign: Campaign;
 
   const { GetCharactersForGame } = useContentService();
-  const { State: campaignStore, addUpdatePartyMember } = useCampaignService();
+  const { addUpdatePartyMember } = useCampaignService();
 
   const getContentSummary = (contentCode: string) => {
     return ($characterListing as ContentItemSummary[]).find((character) => {
@@ -54,6 +49,8 @@
     // Do Stuff
     saving = true;
     addUpdatePartyMember(selectedCharacter);
+    saving = false;
+    handleCloseDialog();
   };
 
   const checkSaving = (): void => {
@@ -106,9 +103,7 @@
 <div
   class="relative mt-2 px-3 py-1 items-center max-w-md mx-auto bg-gray-50 rounded-md backdrop-blur-sm"
 >
-  <div aria-label="Party Members" class="text-center text-xl">
-    Party Members
-  </div>
+  <div aria-label="Party Members" class="text-center text-xl">Party</div>
   <div class="border-b-2 border-solid" />
   {#if $characterListingProcessed}
     <div class="absolute top-1 right-1">
