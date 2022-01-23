@@ -115,18 +115,30 @@ string dbConnectionString = String.Format(
     dbPassword,
     "true"
 );
-builder.Services.AddSingleton<ICombatRepo, CombatRepo>(factory =>
+
+
+// Register Content DI
+builder.Services.AddSingleton<ContentService, ContentServiceImplementation>();
+builder.Services.AddSingleton<ContentRepo, ContentRepoImplementation>(factory =>
+{
+    return new ContentRepoImplementation(dbConnectionString);
+});
+
+//  Register Campaign DI
+builder.Services.AddSingleton<CampaignService, CampaignServiceImplementation>();
+builder.Services.AddSingleton<CampaignRepo, CampaignRepoImplementation>(factory => {
+    return new CampaignRepoImplementation(dbConnectionString, factory.GetRequiredService<ILogger<CampaignRepoImplementation>>());
+});
+
+//  Register Combat DI
+builder.Services.AddSingleton<CombatService, CombatServiceImplentation>();
+builder.Services.AddSingleton<CombatRepo, CombatRepoImplementation>(factory =>
 {
     // return new CombatRepo(factory.GetRequiredService<IMemoryCache>(), dbConnectionString);
-    return new CombatRepo();
+    return new CombatRepoImplementation();
 });
-builder.Services.AddSingleton<IContentRepo, ContentRepo>(factory =>
-{
-    return new ContentRepo(dbConnectionString);
-});
-builder.Services.AddSingleton<ICombatService, CombatService>();
-builder.Services.AddSingleton<IContentService, ContentService>();
 builder.Services.AddHostedService<BattleHubMonitor>();
+
 
 if (httpLoggingEnabled)
 {
@@ -140,9 +152,10 @@ if (httpLoggingEnabled)
 
 var app = builder.Build();
 
-var logger = app.Logger;
 
-SeedData.LoadDefaultContent(dbConnectionString);
+//  Build and Seed Database
+bool seedDefaultData = bool.Parse(Environment.GetEnvironmentVariable("DB_SEED_DATA") ?? "false");
+if(seedDefaultData) SeedData.LoadDefaultContent(dbConnectionString);
 
 if (httpLoggingEnabled)
 {
@@ -166,7 +179,7 @@ if (app.Environment.IsDevelopment())
 app.UseCors((config) =>
 {
     config
-        .WithMethods("POST", "GET")
+        .WithMethods("POST", "PUT", "GET")
         .AllowAnyHeader()
         .AllowCredentials()
         .WithOrigins("http://localhost:5025", "http://localhost.fiddler:5025");

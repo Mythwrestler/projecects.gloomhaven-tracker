@@ -11,8 +11,8 @@ namespace GloomhavenTracker.Service.Hubs
 
     public class CombatHub : Hub
     {
-        private readonly ICombatService _service;
-        public CombatHub(ICombatService service) => _service = service;
+        private readonly CombatService service;
+        public CombatHub(CombatService service) => this.service = service;
 
         public async Task CombatAction(CombatAction action)
         {
@@ -21,10 +21,10 @@ namespace GloomhavenTracker.Service.Hubs
 
         public async Task JoinCombatSpace(Guid combatId)
         {
-            if (_service.CombatExists(combatId))
+            if (service.CombatExists(combatId))
             {
                 await Groups.AddToGroupAsync(Context.ConnectionId, combatId.ToString());
-                _service.RegisterHubClient(combatId, Context.ConnectionId);
+                service.RegisterHubClient(combatId, Context.ConnectionId);
                 await Clients.Caller.SendAsync(
                     "joinCombatSpaceResult", 
                     new HubRequestResult()
@@ -45,10 +45,10 @@ namespace GloomhavenTracker.Service.Hubs
 
         public async Task LeaveCombatSpace(Guid combatId)
         {
-            if (_service.CombatExists(combatId))
+            if (service.CombatExists(combatId))
             {
                 await Groups.RemoveFromGroupAsync(Context.ConnectionId, combatId.ToString());
-                _service.RemoveHubClient(combatId, Context.ConnectionId);
+                service.RemoveHubClient(combatId, Context.ConnectionId);
                 await Clients.Caller.SendAsync(
                     "leaveCombatSpaceResult", 
                     new HubRequestResult()

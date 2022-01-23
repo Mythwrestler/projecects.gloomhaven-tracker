@@ -9,12 +9,12 @@ using System.Collections.Generic;
 namespace GloomhavenTracker.Service.Controllers
 {
     [Route("api/combatspace")]
-    public class CombatSpaceController : Controller
+    public class CombatController : Controller
     {
-        private readonly ICombatService _service;
+        private readonly CombatService _service;
         private readonly IHubContext<CombatHub> _hubContext;
 
-        public CombatSpaceController(ICombatService service, IHubContext<CombatHub> hubContext) {
+        public CombatController(CombatService service, IHubContext<CombatHub> hubContext) {
             _service = service;
             _hubContext = hubContext;
         }

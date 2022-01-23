@@ -5,16 +5,19 @@
     TextField,
     CheckMarkIcon,
     DropDown,
-    Option,
+    DropDownOption,
   } from "../../common/Components";
   import { ContentItemSummary } from "../../models/Content";
 
   import {
-    getScenarios,
     scenarioListing,
     scenarioListingLoading,
     scenarioListingLoaded,
-  } from "./CombatTrackerService";
+  } from "../../Service/CombatTrackerService";
+
+  import { useContentService } from "../../Service/ContentService";
+
+  const { GetScenariosForGame } = useContentService();
 
   const handleGetScenarios = async () => {
     console.log("handelGetCalled");
@@ -26,15 +29,15 @@
       !$scenarioListingLoading &&
       ($scenarioListing as ContentItemSummary[]).length === 0
     ) {
-      await getScenarios("jawsOfTheLion");
+      await GetScenariosForGame("jawsOfTheLion");
     }
   };
 
   let scenarioSelection: string | undefined = undefined;
-  let scenarioOptions: Option[] = [];
+  let scenarioOptions: DropDownOption[] = [];
   scenarioListing.subscribe((list) => {
     scenarioOptions = list.map((l) => {
-      return { label: l.name, value: l.code };
+      return { label: l.name, value: l.contentCode };
     });
   });
   const onSecenariSelection = (scenarioCode: string | number) => {

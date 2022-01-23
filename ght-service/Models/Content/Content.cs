@@ -17,7 +17,9 @@ public enum CONTENT_TYPE
     monster,
     character,
     objective,
-    attackModifier
+    attackModifier,
+    item,
+    perk
 }
 
 public abstract class ContentItem
@@ -57,6 +59,19 @@ public static class GameUtils
         }
     }
 
+    public static GAME_TYPE GameType(string gameString)
+    {
+        switch (gameString.ToUpper())
+        {
+            case "JAWSOFTHELION":
+                return GAME_TYPE.jawsOfTheLion;
+            case "ORIGINAL":
+                return GAME_TYPE.original;
+            default:
+                throw new InvalidCastException("invalid game code string");
+        }
+    }
+
     public static string ContentTypeString(CONTENT_TYPE? type)
     {
         switch (type)
@@ -68,11 +83,15 @@ public static class GameUtils
             case CONTENT_TYPE.objective:
                 return "objective";
             case CONTENT_TYPE.character:
-                return "player";
+                return "character";
             case CONTENT_TYPE.scenario:
                 return "scenario";
             case CONTENT_TYPE.attackModifier:
                 return "attackModifier";
+            case CONTENT_TYPE.item:
+                return "item";
+            case CONTENT_TYPE.perk:
+                return "perk";
             default:
                 return "";
         }

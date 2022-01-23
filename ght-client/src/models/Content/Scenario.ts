@@ -1,7 +1,4 @@
-export interface ContentItemSummary {
-  name: string;
-  code: string;
-}
+import { ContentItemSummary } from "./ContentItem";
 
 export interface Scenario extends ContentItemSummary {
   monsters?: ContentItemSummary[];

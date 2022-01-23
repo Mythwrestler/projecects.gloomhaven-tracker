@@ -4,7 +4,6 @@
   import { TextField } from "../../common/Components";
   import CheckMarkIcon from "../../common/Components/Icons/CheckMarkIcon.svelte";
   import CombatPanel from "./CombatPanel.svelte";
-  import { addActor, combatSpaceId } from "./CombatTrackerService";
 
   export let isLeft = false;
   export let isRight = false;

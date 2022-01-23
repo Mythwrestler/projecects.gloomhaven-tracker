@@ -7,7 +7,7 @@
     combatHubConnected,
     combatSpaceConnected,
     combatSpaceId,
-  } from "./CombatTrackerService";
+  } from "../../Service/CombatTrackerService";
   import CombatSpaceListing from "./CombatSelection/CombatSpaceListing.svelte";
   import AddMonster from "./AddMonster.svelte";
   import StartCombat from "./StartCombat.svelte";

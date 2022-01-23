@@ -5,10 +5,10 @@ using GloomhavenTracker.Service.Models.Combat;
 using GloomhavenTracker.Service.Models.Content;
 
 namespace GloomhavenTracker.Service.Services;
-public interface ICombatService
+public interface CombatService
 {
 
-    #region Find or Start Combat
+    #region Find or Start Combat Interface
 
     public bool CombatExists(Guid combatId);
     public Guid NewCombat(GAME_TYPE gameCode, string scenarioCode, string description);
@@ -18,8 +18,7 @@ public interface ICombatService
 
     #endregion
 
-
-    #region Combat Hub Clients
+    #region Combat Hub Clients Interface
     
     public void RegisterHubClient(Guid combatId, string clientId);
     public void RemoveHubClient(Guid combatId, string clientId);
@@ -27,7 +26,7 @@ public interface ICombatService
     #endregion
 }
 
-public partial class CombatService : ICombatService
+public partial class CombatServiceImplentation : CombatService
 {
     public bool CombatExists(Guid combatId)
     {
@@ -45,11 +44,6 @@ public partial class CombatService : ICombatService
     }
 
     public List<CombatTrackerSummary> GetCombatListForScenario(string scenarioCode)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Guid NewCombat(GAME_TYPE gameCode, string scenarioCode, string description)
     {
         throw new NotImplementedException();
     }
