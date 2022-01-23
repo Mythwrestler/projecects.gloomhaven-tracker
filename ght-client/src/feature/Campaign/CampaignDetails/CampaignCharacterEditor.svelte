@@ -10,7 +10,7 @@
     DropDownOption,
     TextField,
   } from "../../../common/Components";
-  import { Character } from "../../../models";
+  import { Character } from "../../../models/Campaign";
   import * as ContentModel from "../../../models/Content";
 
   import { useContentService } from "../../../Service/ContentService";

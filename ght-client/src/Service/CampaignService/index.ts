@@ -4,12 +4,10 @@ import * as GlobalError from "../Error";
 import {
   CampaignSummary,
   Campaign,
-  Party,
-  Scenarios,
   Character,
   Scenario,
 } from "../../models/Campaign";
-import { cloneDeep, isEqual, result } from "lodash";
+import { cloneDeep, isEqual } from "lodash";
 
 class CampaignServiceImplementation {
   private campaignListingStore = writable<CampaignSummary[]>([]);
@@ -38,7 +36,7 @@ class CampaignServiceImplementation {
     [this.campaignStore, this.savedCampaign],
     ($campaignStates) => {
       const [campaignStore, initialCampaign] = $campaignStates;
-      return isEqual(campaignStore, initialCampaign);
+      return !isEqual(campaignStore, initialCampaign);
     },
     false
   );
@@ -57,7 +55,7 @@ class CampaignServiceImplementation {
 
   public addUpdatePartyMember = (character: Character) => {
     this.campaignStore.update((campaignBeingUpdated) => {
-      const characters = cloneDeep(campaignBeingUpdated.party.characters);
+      const characters = cloneDeep(campaignBeingUpdated.party);
       const characterIndex = characters.findIndex(
         (c) => c.characterContentCode === character.characterContentCode
       );
@@ -68,19 +66,16 @@ class CampaignServiceImplementation {
       }
       return {
         ...campaignBeingUpdated,
-        party: {
-          ...campaignBeingUpdated.party,
-          characters,
-        },
+        party: characters,
       };
     });
   };
 
   public addUpdateScenario = (scenario: Scenario) => {
     this.campaignStore.update((campaignBeingUpdated) => {
-      const scenarios = cloneDeep(campaignBeingUpdated.scenarios.scenarios);
+      const scenarios = cloneDeep(campaignBeingUpdated.scenarios);
       const scenarioIndex = scenarios.findIndex(
-        (s) => (s.contentCode = scenario.contentCode)
+        (s) => s.contentCode === scenario.contentCode
       );
       if (scenarioIndex === -1) {
         scenarios.push(scenario);
@@ -90,63 +85,39 @@ class CampaignServiceImplementation {
 
       return {
         ...campaignBeingUpdated,
-        scenarios: {
-          ...campaignBeingUpdated.scenarios,
-          scenarios,
-        },
+        scenarios,
       };
     });
   };
 
-  // public updateCampaignScenarios = (scenarios: Scenarios) => {
-  //   this.campaignStore.update((campaignBeingUpdated) => {
-  //     campaignBeingUpdated.scenarios = scenarios;
-  //     return cloneDeep<Campaign>(campaignBeingUpdated);
-  //   });
-  // };
-
-  public saveCampaign = async (campaign: Campaign) => {
-    const isNewCampaign =
-      get(this.campaignListing).findIndex((c) => c.id === campaign.id) === -1;
-
-    let result: Campaign | undefined;
-    if (isNewCampaign) {
-      result = await this.createNewCampaign(campaign);
-    } else {
-      result = await this.updateExistingCampaign(campaign);
-    }
-
-    if (result) {
-      this.campaignStore.set(result);
-      this.savedCampaign.set(result);
-      if (isNewCampaign) await this.getCampaignListing();
+  public saveCampaign = async () => {
+    if (get(this.campaignNotSaved)) {
+      try {
+        await putAPI<void>(
+          `campaigns/${get(this.campaignStore).id}`,
+          get(this.campaignStore)
+        );
+        this.savedCampaign.set(get(this.campaignStore));
+      } catch (ex) {
+        GlobalError.showErrorMessage("Failed To Create a New Campaign");
+      }
     }
   };
 
-  private createNewCampaign = async (
-    campaign: Campaign
-  ): Promise<Campaign | undefined> => {
+  public createNewCampaign = async (campaign: Campaign): Promise<void> => {
     try {
-      const result = await putAPI<Campaign>("campaigns/new", {
+      const result = await postAPI<Campaign>("campaigns/new", {
         id: campaign.id,
         description: campaign.description,
         game: campaign.game,
       });
-      if (result) return result;
+      if (result) {
+        this.campaignStore.set(result);
+        this.savedCampaign.set(result);
+        await this.getCampaignListing();
+      }
     } catch (ex) {
       GlobalError.showErrorMessage("Failed To Create a New Campaign");
-    }
-  };
-
-  private updateExistingCampaign = async (
-    campaign: Campaign
-  ): Promise<Campaign | undefined> => {
-    if (get(this.campaignNotSaved)) {
-      try {
-        return await putAPI<Campaign>(`campaigns/${campaign.id}`);
-      } catch (ex) {
-        GlobalError.showErrorMessage("Failed To Update Campaign");
-      }
     }
   };
 

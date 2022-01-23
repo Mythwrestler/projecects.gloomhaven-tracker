@@ -6,55 +6,40 @@ using System.Text.Json.Serialization;
 namespace GloomhavenTracker.Service.Models.Campaign;
 
 public class Scenarios {
-    private Dictionary<string, Scenario> scenarios;
+    private Dictionary<string, Scenario> ScenarioDictionary;
 
-    public Scenarios(ScenariosDTO scenarios)
-    {
-        this.scenarios = scenarios.Scenarios.ToDictionary(scn => scn.ContentCode, scn => new Scenario(scn));
+    public Scenarios(List<ScenarioDO> scenarios) {
+        this.ScenarioDictionary = scenarios.ToDictionary(scn => scn.ContentCode, scn => new Scenario(scn));
     }
-    public Scenarios(ScenariosDO scenarios)
-    {
-        this.scenarios = scenarios.Scenarios.ToDictionary(scn => scn.ContentCode, scn => new Scenario(scn));
+    
+    public Scenarios(List<ScenarioDTO> scenarios) {
+        this.ScenarioDictionary = scenarios.ToDictionary(scn => scn.ContentCode, scn => new Scenario(scn));
     }
 
     public Scenario AddScenario(Scenario newScenario)
     {
-        if(scenarios.ContainsKey(newScenario.ContentCode)) throw new ArgumentException("Scenario Already In Campaign");
-        scenarios.Add(newScenario.ContentCode, newScenario);
-        return scenarios[newScenario.ContentCode];
+        if(ScenarioDictionary.ContainsKey(newScenario.ContentCode)) throw new ArgumentException("Scenario Already In Campaign");
+        ScenarioDictionary.Add(newScenario.ContentCode, newScenario);
+        return ScenarioDictionary[newScenario.ContentCode];
     }
 
     public Scenario UpdateScenario(Scenario updateScenario)
     {
-        if(!scenarios.ContainsKey(updateScenario.ContentCode)) throw new ArgumentException("Scenario Not In Campaign");
-        scenarios[updateScenario.ContentCode] = updateScenario;
-        return scenarios[updateScenario.ContentCode];
+        if(!ScenarioDictionary.ContainsKey(updateScenario.ContentCode)) throw new ArgumentException("Scenario Not In Campaign");
+        ScenarioDictionary[updateScenario.ContentCode] = updateScenario;
+        return ScenarioDictionary[updateScenario.ContentCode];
     }
 
-    public ScenariosDTO ToDTO()
+    public List<ScenarioDTO> ToDTO()
     {
-        return new ScenariosDTO(){
-          Scenarios = this.scenarios.Select(kvp => kvp.Value.ToDTO()).ToList()
-        };
+        return this.ScenarioDictionary.Select(kvp => kvp.Value.ToDTO()).ToList();
     }
 
-    public ScenariosDO ToDO()
+    public List<ScenarioDO> ToDO()
     {
-        return new ScenariosDO(){
-          Scenarios = this.scenarios.Select(kvp => kvp.Value.ToDO()).ToList()
-        };
+        return this.ScenarioDictionary.Select(kvp => kvp.Value.ToDO()).ToList();
     }
-
 }
-
-public struct ScenariosDTO {
-    public List<ScenarioDTO> Scenarios {get; set;} = new List<ScenarioDTO>();
-}
-
-public struct ScenariosDO {
-    public List<ScenarioDO> Scenarios {get; set;} = new List<ScenarioDO>();
-}
-
 
 
 public class Scenario {
@@ -98,6 +83,7 @@ public class Scenario {
 }
 
 
+[Serializable]
 public struct ScenarioDTO
 {
     [JsonPropertyName("contentCode")]
@@ -110,6 +96,7 @@ public struct ScenarioDTO
     public bool IsCompleted {get; set;}
 }
 
+[Serializable]
 public struct ScenarioDO
 {
     [JsonPropertyName("contentCode")]

@@ -27,6 +27,17 @@ public class Character
         this.AppliedPerks = character.AppliedPerks;
         this.PerkPoints = character.PerkPoints;
     }
+    public Character(CharacterDTO character)
+    {
+        this.Id = new Guid(character.Id);
+        this.Name = character.Name;
+        this.CharacterContentCode = character.CharacterContentCode;
+        this.Experience = character.Experience;
+        this.Gold = character.Gold;
+        this.Items = character.Items;
+        this.AppliedPerks = character.AppliedPerks;
+        this.PerkPoints = character.PerkPoints;
+    }
 
     public CharacterSummary Summary 
     {
@@ -57,6 +68,7 @@ public class Character
     {
         return new CharacterDTO()
         {
+            Id = this.Id.ToString(),
             Name = this.Name,
             CharacterContentCode = this.CharacterContentCode,
             Experience = this.Experience,
@@ -100,6 +112,9 @@ public struct CharacterDO
 [Serializable]
 public struct CharacterDTO
 {
+    [JsonPropertyName("id")]
+    public string Id {get; set;}
+
     [JsonPropertyName("name")]
     public string Name {get; set;}
 

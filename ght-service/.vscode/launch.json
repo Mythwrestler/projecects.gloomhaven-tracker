@@ -4,34 +4,61 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        
-      {
-          "name": ".NET Core Launch (web)",
-          "type": "coreclr",
-          "request": "launch",
-          "preLaunchTask": "build",
-          "program": "${workspaceFolder}/bin/Debug/net6.0/ght-service.dll",
-          "args": [],
-          "cwd": "${workspaceFolder}",
-          "stopAtEntry": false,
-          "env": {
-              "ASPNETCORE_URLS": "http://localhost:5020",
-              "ASPNETCORE_ENVIRONMENT": "Development",
-              "AUTH_ENABLED": "false",
-              "AUTH_AUTHORITY": "http://fake-authority/",
-              "AUTH_AUDIENCE": "fake-audience",
-              "HTTP_LOGGING_ENABLED": "true",
-              "DB_SERVER": "host.docker.internal",
-              "DB_PORT": "5432",
-              "DB_DATABASE": "ght-db",
-              "DB_USER": "pguser",
-              "DB_PASSWORD": "pguser",
-              "DB_SEED_DATA": "false"
-          },
-          "sourceFileMap": {
-              "/Views": "${workspaceFolder}/Views"
-          },
-          "justMyCode": true
-      }
+        {
+            "name": "GTH Service",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/bin/Debug/net6.0/ght-service.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "env": {
+                "ASPNETCORE_URLS": "http://localhost:5020",
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "AUTH_ENABLED": "false",
+                "AUTH_AUTHORITY": "http://fake-authority/",
+                "AUTH_AUDIENCE": "fake-audience",
+                "HTTP_LOGGING_ENABLED": "true",
+                "DB_SERVER": "host.docker.internal",
+                "DB_PORT": "5432",
+                "DB_DATABASE": "ght-db",
+                "DB_USER": "pguser",
+                "DB_PASSWORD": "pguser",
+                "DB_SEED_DATA": "false"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceFolder}/Views"
+            },
+            "justMyCode": true
+        },
+        {
+            "name": "GTH Service w/ Data Seed",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/bin/Debug/net6.0/ght-service.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "env": {
+                "ASPNETCORE_URLS": "http://localhost:5020",
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "AUTH_ENABLED": "false",
+                "AUTH_AUTHORITY": "http://fake-authority/",
+                "AUTH_AUDIENCE": "fake-audience",
+                "HTTP_LOGGING_ENABLED": "true",
+                "DB_SERVER": "host.docker.internal",
+                "DB_PORT": "5432",
+                "DB_DATABASE": "ght-db",
+                "DB_USER": "pguser",
+                "DB_PASSWORD": "pguser",
+                "DB_SEED_DATA": "true"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceFolder}/Views"
+            },
+            "justMyCode": true
+        }
     ]
 }

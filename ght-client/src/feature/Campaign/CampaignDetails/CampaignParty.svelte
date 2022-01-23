@@ -3,7 +3,7 @@
 
   import { AddContainedIcon, DropDownOption } from "../../../common/Components";
 
-  import { Campaign, Character } from "../../../models";
+  import { Campaign, Character } from "../../../models/Campaign";
   import { ContentItemSummary } from "../../../models/Content";
   // import {
   //   addCharacterForCampaign,
@@ -59,7 +59,7 @@
   const checkSaving = (): void => {
     if (
       saving &&
-      campaign.party.characters.findIndex(
+      campaign.party.findIndex(
         (c) => c.characterContentCode === selectedCharacter.characterContentCode
       ) === -1
     ) {
@@ -99,8 +99,8 @@
   });
 
   $: if (campaign?.game) void handleGetCharacters(campaign.game);
-  $: if (campaign?.party.characters) checkSaving();
-  $: determineUsedCharacters(campaign.party.characters);
+  $: if (campaign?.party) checkSaving();
+  // $: determineUsedCharacters(campaign.party.characters);
 </script>
 
 <div
@@ -118,7 +118,7 @@
       >
     </div>
     <ul aria-label="Scenario Listing">
-      {#each campaign.party.characters as character}
+      {#each campaign.party as character}
         <li>
           <div class="flex flex-col">
             <div class="mx-auto">

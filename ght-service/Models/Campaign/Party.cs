@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json.Serialization;
-
 namespace GloomhavenTracker.Service.Models.Campaign;
 
 public class Party
@@ -26,38 +24,21 @@ public class Party
         }    
     }
 
-    public Party(PartyDO party)
+    public Party(List<CharacterDO> party)
     {
-        this.Characters = party.Characters.ToDictionary(character =>character.CharacterContentCode, characterDO => new Character(characterDO));
+        this.Characters = party.ToDictionary(character =>character.CharacterContentCode, characterDO => new Character(characterDO));
     }
-    public PartyDO ToDO()
+    public Party(List<CharacterDTO> party)
     {
-        return new PartyDO()
-        {
-            Characters = this.Characters.Select(kvp => kvp.Value.ToDO()).ToList()
-        };
+        this.Characters = party.ToDictionary(character => character.CharacterContentCode, characterDTO => new Character(characterDTO));
     }
-    public PartyDTO ToDTO()
+
+    public List<CharacterDO> ToDO()
     {
-        return new PartyDTO()
-        {
-            Characters = this.Characters.Select(kvp => kvp.Value.ToDTO()).ToList()
-        };
+        return this.Characters.Select(kvp => kvp.Value.ToDO()).ToList();
     }
-}
-
-[Serializable]
-public struct PartyDO
-{
-
-    [JsonPropertyName("characters")]
-    public List<CharacterDO> Characters {get; set;}
-}
-
-[Serializable]
-public struct PartyDTO
-{
-
-    [JsonPropertyName("characters")]
-    public List<CharacterDTO> Characters {get; set;}
+    public List<CharacterDTO> ToDTO()
+    {
+        return this.Characters.Select(kvp => kvp.Value.ToDTO()).ToList();
+    }
 }

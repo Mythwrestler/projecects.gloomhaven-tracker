@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { Campaign } from "../../../models";
+  import { Campaign } from "../../../models/Campaign";
   import {
     AddContainedIcon,
     ColumnDefinition,
@@ -62,7 +62,7 @@
   });
 
   let newDialogOpen = false;
-  
+
   const handleOpenNewDialog = () => {
     newDialogOpen = true;
   };

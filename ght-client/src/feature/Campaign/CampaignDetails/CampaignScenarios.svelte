@@ -16,7 +16,7 @@
     DialogFooter,
     Button,
   } from "../../../common/Components";
-  import { Campaign } from "../../../models";
+  import { Campaign, Scenario } from "../../../models/Campaign";
 
   import { ContentItemSummary } from "../../../models/Content";
   import { useContentService } from "../../../Service/ContentService";
@@ -51,7 +51,7 @@
       );
       unusedScenarioOptions = fullScenarioListOptions.filter(
         (scenario) =>
-          campaign?.scenarios.scenarios.findIndex(
+          campaign?.scenarios.findIndex(
             (s) => s.contentCode === scenario.value
           ) === -1
       );
@@ -68,7 +68,7 @@
     displayNewScenarioSelection = true;
   };
   const handleScenarioClick = (contentCode: string) => {
-    const scenario = campaign?.scenarios.scenarios.find(
+    const scenario = campaign?.scenarios.find(
       (s) => s.contentCode === contentCode
     );
     selectedScenario = contentCode;
@@ -89,11 +89,18 @@
     displayNewScenarioSelection = false;
   };
 
-  const scenarioCompleted = (scenario: ContentItemSummary): string => {
-    return `${scenario.name} Completed`;
+  const scenarioCompleted = (scenario: Scenario): string => {
+    return `${scenarioName(scenario)} Completed`;
   };
-  const scenarioClosed = (scenario: ContentItemSummary): string => {
-    return `${scenario.name} Closed`;
+  const scenarioClosed = (scenario: Scenario): string => {
+    return `${scenarioName(scenario)} Closed`;
+  };
+  const scenarioName = (scenario: Scenario): string => {
+    return (
+      ($scenarioListing as ContentItemSummary[]).find(
+        (item) => item.contentCode === scenario.contentCode
+      )?.name ?? scenario.contentCode
+    );
   };
 
   $: if (campaign?.game) void handleGetScenarios(campaign.game);
@@ -118,7 +125,7 @@
       </div>
       <div>
         <ul aria-label="Scenario Listing">
-          {#each campaign.scenarios.scenarios as scenario}
+          {#each campaign.scenarios as scenario}
             <li aria-label={scenario.name}>
               <div class="flex flex-row">
                 <div class="mx-auto flex flex-row">
@@ -126,7 +133,7 @@
                     <button
                       on:click={() => handleScenarioClick(scenario.contentCode)}
                     >
-                      {scenario.name}
+                      {scenarioName(scenario)}
                     </button>
                   </div>
                   {#if scenario.isCompleted}

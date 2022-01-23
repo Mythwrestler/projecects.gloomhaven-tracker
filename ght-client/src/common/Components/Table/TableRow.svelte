@@ -24,7 +24,6 @@
       });
     });
     _rowData = cells;
-    console.log(JSON.stringify(_rowData));
   };
 
   $: {

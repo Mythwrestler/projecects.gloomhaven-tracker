@@ -68,19 +68,10 @@ public struct CampaignDO
     public string Game {get; set;}
     
     [JsonPropertyName("scenarios")]
-    public ScenariosDO Scenarios {get; set;}
-
-    [JsonPropertyName("completedScenarios")]
-    public List<string> CompletedScenarios {get; set;}
-
-    [JsonPropertyName("closedScenarios")]
-    public List<string> ClosedScenarios {get; set;}
-
-    [JsonPropertyName("availableScenarios")]
-    public List<string> AvailableScenarios {get; set;}
+    public List<ScenarioDO> Scenarios {get; set;}
 
     [JsonPropertyName("party")]
-    public PartyDO Party {get; set;}
+    public List<CharacterDO> Party {get; set;}
 }
 
 [Serializable]
@@ -96,10 +87,10 @@ public struct CampaignDTO
     public string Game {get; set;}
     
     [JsonPropertyName("scenarios")]
-    public ScenariosDTO Scenarios {get; set;}
+    public List<ScenarioDTO> Scenarios {get; set;}
 
     [JsonPropertyName("party")]
-    public PartyDTO Party {get; set;}
+    public List<CharacterDTO> Party {get; set;}
 }
 
 

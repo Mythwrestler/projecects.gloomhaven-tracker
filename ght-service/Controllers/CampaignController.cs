@@ -81,7 +81,7 @@ public class CampaignController : Controller
         try
         {
             service.UpdateCampaign(campaignId, campaign);
-            return Ok();
+            return new NoContentResult();
         }
         catch (Exception ex)
         {

@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { TextField } from "../../../common/Components";
-  import { Campaign } from "../../../models";
+  import { Button, TextField } from "../../../common/Components";
+  import { Campaign } from "../../../models/Campaign";
   import * as GlobalError from "../../../Service/Error";
 
   import { useCampaignService } from "../../../Service/CampaignService";
@@ -12,7 +12,12 @@
   // your script goes here
   export let campaignId = "";
   const location = useLocation();
-  const { State: campaignState, getCampaign } = useCampaignService();
+  const {
+    State: campaignState,
+    getCampaign,
+    saveCampaign,
+  } = useCampaignService();
+  const { campaignNotSaved } = campaignState;
 
   let newGameCode = "";
   const getNewGameCode = () => {
@@ -35,6 +40,10 @@
     }
   };
 
+  const handleSaveCampaign = () => {
+    void saveCampaign();
+  };
+
   $: if ($location.search) getNewGameCode();
   $: if (!campaign) void handleGetCampaign(campaignId);
 </script>
@@ -52,5 +61,15 @@
     </div>
     <CampaignParty bind:campaign />
     <CampaignScenarios bind:campaign />
+    <div class="flex max-w-md h-12 mx-auto mt-2">
+      <Button
+        variant="outlined"
+        disabled={!$campaignNotSaved}
+        onClick={handleSaveCampaign}
+        color={$campaignNotSaved ? "blue" : "gray"}
+      >
+        Save Campaign
+      </Button>
+    </div>
   {/if}
 </section>
