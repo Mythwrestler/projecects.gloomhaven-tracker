@@ -21,6 +21,12 @@ services:
     - AUTH_AUTHORITY=http://fake-authority/
     - AUTH_AUDIENCE=fake-audience
     - HTTP_LOGGING_ENABLED=false
+    - DB_SERVER=dbpostgres
+    - DB_PORT=5432
+    - DB_DATABASE=ght-db
+    - DB_USER=pguser
+    - DB_PASSWORD=pguser
+    - DB_SEED_DATA=false
   dbpostgres:
     image: registry.casperinc.net/postgres:13.4-alpine3.14
     volumes:

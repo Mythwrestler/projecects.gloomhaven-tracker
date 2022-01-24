@@ -54,7 +54,7 @@
 
   campaignState.campaign.subscribe((campaign) => {
     if (campaign && campaign.id === newCampaign.id)
-      navigate(`/campaign/${campaign.id}`);
+      navigate(`/campaigns/${campaign.id}`);
   });
 
   onMount(() => {
