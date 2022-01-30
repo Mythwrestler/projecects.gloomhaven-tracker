@@ -33,8 +33,8 @@ public class CombatAction
 
 public class CombatInitiative
 {
-    public Guid PlayerId { get; set; }
-    public string MonsterType { get; set; } = string.Empty;
+    public Guid? PlayerId { get; set; }
+    public string? MonsterType { get; set; }
     public bool IsLongRest { get; set; }
     public int Initiative { get; set; }
 }

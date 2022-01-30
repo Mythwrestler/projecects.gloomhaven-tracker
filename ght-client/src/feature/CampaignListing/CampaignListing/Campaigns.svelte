@@ -38,11 +38,6 @@
   let campaignsRowData: RowData[] = [];
 
   let campaignListingLoaded = false;
-  const handleGetCampaigns = async () => {
-    if (($campaignListing as Campaign[]).length === 0) {
-      await getCampaignListing();
-    }
-  };
 
   campaignListing.subscribe((campaigns) => {
     campaignsRowData = campaigns.map((campaign) => {
@@ -71,7 +66,7 @@
   };
 
   onMount(() => {
-    void handleGetCampaigns();
+    void getCampaignListing();
   });
 </script>
 
