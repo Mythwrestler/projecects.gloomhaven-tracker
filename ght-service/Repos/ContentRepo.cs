@@ -11,6 +11,7 @@ namespace GloomhavenTracker.Service.Repos;
 public interface ContentRepo
 {
     public List<ContentSummary> GetContentSummary(CONTENT_TYPE contentType, GAME_TYPE? gameCode);
+    public List<ScenarioSummary> GetScenarioSummary(GAME_TYPE gameCode);
     public Game GetGameDefaults(GAME_TYPE gameCode);
     public Character GetCharacterDefaults(GAME_TYPE gameCode, string contentCode);
     public Monster GetMonsterDefaults(GAME_TYPE gameCode, string contentCode);
@@ -63,6 +64,40 @@ public class ContentRepoImplementation : ContentRepo
         {
             connection.Close();
         }
+    }
+
+    public List<ScenarioSummary> GetScenarioSummary(GAME_TYPE gameCode) {
+        using var connection = new NpgsqlConnection(connectionString);
+        string gameString = GameUtils.GameTypeString(gameCode);
+        string sqlString = $"SELECT json_build_object('name', gc.contentjson->'name','contentCode', gc.contentjson->'contentCode', 'description', gc.description, 'scenarioNumber', gc.contentjson -> 'scenarioNumber') from \"Game Content\" gc where gc.contentJson->>'kind' = 'scenario' and gc.game='{gameString}'";
+        try
+        {
+            List<ScenarioSummary> summaries = new List<ScenarioSummary>();
+            connection.Open();
+            using(NpgsqlCommand command = new NpgsqlCommand(sqlString, connection))
+            {
+                string? jsonString;
+                NpgsqlDataReader reader = command.ExecuteReader();
+                while(reader.Read())
+                {
+                    jsonString = reader[0].ToString();
+                    if(jsonString != null){
+                        var summary = JsonSerializer.Deserialize<ScenarioSummary>(jsonString);
+                        if(summary != null) summaries.Add(summary);
+                    }
+                }
+            }
+            return summaries;
+        }
+        catch (Exception ex)
+        {
+            throw new ArgumentException("Could Not Pull Scenario Summaries", ex);
+        }
+        finally
+        {
+            connection.Close();
+        }
+
     }
 
     public Game GetGameDefaults(GAME_TYPE gameCode)
@@ -174,8 +209,8 @@ public class ContentRepoImplementation : ContentRepo
         using var connection = new NpgsqlConnection(connectionString);
         Scenario? scenario = null;
         string gameString = GameUtils.GameTypeString(gameCode);
-        string sqlStringScenario = $"SELECT json_build_object('name', gc.contentjson->'name','contentCode', gc.contentjson->'code', 'description', gc.description) from \"Game Content\" gc where gc.contentJson->>'kind' = 'scenario' and gc.contentJson->>'code'='{contentCode}' and gc.game='{gameString}'";
-        string sqlStringMonsters = $"SELECT gc.contentJson from \"Game Content\" gc where gc.contentjson->>'code'::text = ANY(select jsonb_array_elements_text(gc2.contentjson->'monsters') from \"Game Content\" gc2 where gc2.game='{gameString}' and gc2.contentjson->>'code'='{contentCode}')";
+        string sqlStringScenario = $"SELECT json_build_object('description', gc.description)::jsonb || gc.contentjson - 'monsters' from \"Game Content\" gc where gc.contentJson->>'kind' = 'scenario' and gc.contentJson->>'contentCode'='{contentCode}' and gc.game='{gameString}'";
+        string sqlStringMonsters = $"SELECT json_build_object('name', gc.contentjson->'name','contentCode', gc.contentjson->'contentCode', 'description', gc.description) from \"Game Content\" gc where gc.contentjson->>'contentCode'::text = ANY(select jsonb_array_elements_text(gc2.contentjson->'monsters') from \"Game Content\" gc2 where gc2.game='{gameString}' and gc2.contentjson->>'contentCode'='{contentCode}')";
         try
         {
             connection.Open();

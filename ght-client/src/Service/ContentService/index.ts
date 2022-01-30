@@ -1,5 +1,10 @@
 import { getAPI } from "../../common/Utils/API";
-import { Character, ContentItemSummary, Scenario } from "../../models/Content";
+import {
+  Character,
+  ContentItemSummary,
+  Scenario,
+  ScenarioSummary,
+} from "../../models/Content";
 import * as GlobalError from "../Error";
 
 class ContentServiceImplementation {
@@ -7,18 +12,18 @@ class ContentServiceImplementation {
   availableGames: ContentItemSummary[] = [];
 
   // Scenario Summary
-  scenarioSummaries: Map<string, ContentItemSummary[]> = new Map<
+  scenarioSummaries: Map<string, ScenarioSummary[]> = new Map<
     string,
-    ContentItemSummary[]
+    ScenarioSummary[]
   >();
   private getScenarioSummaries = (gameCode: string) => {
     if (!this.scenarioSummaries.has(gameCode))
       this.scenarioSummaries.set(gameCode, []);
-    return this.scenarioSummaries.get(gameCode) as ContentItemSummary[];
+    return this.scenarioSummaries.get(gameCode) as ScenarioSummary[];
   };
   private setScenarioSummaries = (
     gameCode: string,
-    scenarios: ContentItemSummary[]
+    scenarios: ScenarioSummary[]
   ): ContentItemSummary[] => {
     this.scenarioSummaries.set(gameCode, scenarios);
     return this.scenarioSummaries.get(gameCode) as ContentItemSummary[];
@@ -108,13 +113,13 @@ class ContentServiceImplementation {
 
   public GetScenariosForGame = async (
     gameCode: string
-  ): Promise<ContentItemSummary[]> => {
+  ): Promise<ScenarioSummary[]> => {
     let gameScenarios = this.getScenarioSummaries(gameCode);
     if (gameScenarios.length > 0) return gameScenarios;
 
-    let result: ContentItemSummary[] = [];
+    let result: ScenarioSummary[] = [];
     try {
-      result = await getAPI<ContentItemSummary[]>(
+      result = await getAPI<ScenarioSummary[]>(
         `content/games/${gameCode}/scenarios`
       );
       if (result) {

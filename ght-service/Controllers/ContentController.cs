@@ -135,7 +135,7 @@ namespace GloomhavenTracker.Service.Controllers
         {
             try
             {
-                var scenarioList = service.GetContentSummary(CONTENT_TYPE.scenario, gameCode);
+                var scenarioList = service.GetScenarioSummary(gameCode);
                 return new OkObjectResult(scenarioList);
             }
             catch(Exception ex)
@@ -152,7 +152,7 @@ namespace GloomhavenTracker.Service.Controllers
         {
             try
             {
-                var scenario = service.GetScenarioDefaults(gameCode, contentCode).Summary;
+                var scenario = service.GetScenarioDefaults(gameCode, contentCode);
                 return new OkObjectResult(scenario);
             }
             catch(Exception ex)
