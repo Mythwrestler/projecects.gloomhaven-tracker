@@ -28,8 +28,8 @@ public class CombatantInitiativeDO
     [JsonPropertyName("initiative")]
     public int Initiative { get; set; } = 99;
 
-    [JsonPropertyName("contentId")]
-    public string ContentId { get; set; } = string.Empty;
+    [JsonPropertyName("contentCode")]
+    public string ContentCode { get; set; } = string.Empty;
 
     [JsonPropertyName("instanceNumber")]
     public int InstanceNumber { get; set; } = 0;
@@ -42,14 +42,14 @@ public class CombatantInitiative
 {
     public string CombatantCode { get; } = string.Empty;
     public int Initiative { get; set; } = 99;
-    public Guid ContentId { get; } = new Guid();
+    public string ContentCode { get; } = string.Empty;
     public int InstanceNumber { get; } = 0;
     public bool IsElite { get; } = false;
     public CombatantInitiative(CombatantInitiativeDO initiative)
     {
         this.CombatantCode = initiative.CombatantCode;
         this.Initiative = initiative.Initiative;
-        this.ContentId = new Guid(initiative.ContentId);
+        this.ContentCode = initiative.ContentCode;
         this.InstanceNumber = initiative.InstanceNumber;
         this.IsElite = initiative.IsElite;
     }
@@ -57,7 +57,7 @@ public class CombatantInitiative
     {
         this.CombatantCode = combatantCode;
         this.Initiative = initiative;
-        this.ContentId = contentId;
+        this.ContentCode = ContentCode;
         this.InstanceNumber = instanceNumber;
         this.IsElite = isElite;
     }
@@ -67,7 +67,7 @@ public class CombatantInitiative
         {
             CombatantCode = this.CombatantCode,
             Initiative = this.Initiative,
-            ContentId = this.ContentId.ToString(),
+            ContentCode = this.ContentCode,
             InstanceNumber = this.InstanceNumber,
             IsElite = this.IsElite
         };
@@ -109,12 +109,19 @@ public class Initiative
     public Initiative(InitiativeDO initiative)
     {
         this.combatants = initiative.Combatants.Select(combatant => new CombatantInitiative(combatant)).ToList();
-
+        
+        if(String.IsNullOrEmpty(initiative.CurrentCombatant))
+        {
+            turnOrder = new Dictionary<int, string>();
+            ClearInitiative();
+        }
+        else
+        {
         var order = 1;
         var turnOrder = new Dictionary<int, string>();
         combatants
             .Where(combatant => !initiative.CompletedCombatants.Contains(combatant.CombatantCode) && combatant.CombatantCode != initiative.CurrentCombatant)
-            .OrderBy(combatant => combatant.Initiative).ThenBy(combatant => combatant.ContentId).ThenBy(combatant => combatant.IsElite).ThenBy(combatant => combatant.InstanceNumber)
+            .OrderBy(combatant => combatant.Initiative).ThenBy(combatant => combatant.ContentCode).ThenBy(combatant => combatant.IsElite).ThenBy(combatant => combatant.InstanceNumber)
             .ToList().ForEach(combatant =>
             {
                 turnOrder.Add(order, combatant.CombatantCode);
@@ -127,7 +134,7 @@ public class Initiative
 
         combatants
             .Where(combatant => initiative.CompletedCombatants.Contains(combatant.CombatantCode))
-            .OrderBy(combatant => combatant.Initiative).ThenBy(combatant => combatant.ContentId).ThenBy(combatant => combatant.IsElite).ThenBy(combatant => combatant.InstanceNumber)
+            .OrderBy(combatant => combatant.Initiative).ThenBy(combatant => combatant.ContentCode).ThenBy(combatant => combatant.IsElite).ThenBy(combatant => combatant.InstanceNumber)
             .ToList().ForEach(combatant =>
             {
                 turnOrder.Add(order, combatant.CombatantCode);
@@ -135,6 +142,7 @@ public class Initiative
             });
 
         this.turnOrder = turnOrder;
+        }
     }
 
     public bool AddCombatant(string combatantCode, int initiative, Guid contentId, int instanceNumber, bool isElite)
@@ -191,7 +199,7 @@ public class Initiative
         {
             combatants
                 .Where(combatant => completedCombatants.Contains(combatant.CombatantCode))
-                .OrderBy(combatant => combatant.Initiative).ThenBy(combatant => combatant.ContentId).ThenBy(combatant => combatant.IsElite).ThenBy(combatant => combatant.InstanceNumber)
+                .OrderBy(combatant => combatant.Initiative).ThenBy(combatant => combatant.ContentCode).ThenBy(combatant => combatant.IsElite).ThenBy(combatant => combatant.InstanceNumber)
                 .ToList().ForEach(combatant =>
                 {
                     turnOrder.Add(order, combatant.CombatantCode);
@@ -210,7 +218,7 @@ public class Initiative
         // Load Remaining Combatants
         combatants
             .Where(combatant => !completedCombatants.Contains(combatant.CombatantCode) && combatant.CombatantCode != currentCombatantCode)
-            .OrderBy(combatant => combatant.Initiative).ThenBy(combatant => combatant.ContentId).ThenBy(combatant => combatant.IsElite).ThenBy(combatant => combatant.InstanceNumber)
+            .OrderBy(combatant => combatant.Initiative).ThenBy(combatant => combatant.ContentCode).ThenBy(combatant => combatant.IsElite).ThenBy(combatant => combatant.InstanceNumber)
             .ToList().ForEach(combatant =>
             {
                 turnOrder.Add(order, combatant.CombatantCode);
@@ -218,9 +226,9 @@ public class Initiative
             });
     }
 
-    public bool SetInitiative(Guid contentId, int initiative)
+    public bool SetInitiative(string contentCode, int initiative)
     {
-        combatants.Where(combatant => combatant.ContentId == contentId).ToList().ForEach(combatant => combatant.Initiative = initiative);
+        combatants.Where(combatant => combatant.ContentCode == contentCode).ToList().ForEach(combatant => combatant.Initiative = initiative);
         CalculateInitiative();
         return true;
     }

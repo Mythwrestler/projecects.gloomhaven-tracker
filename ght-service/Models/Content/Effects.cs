@@ -46,6 +46,6 @@ public class Effect
     [JsonPropertyName("value")]
     public int Value { get; set; } = -1;
 
-    [JsonPropertyName("Duration")]
+    [JsonPropertyName("duration")]
     public int Duration { get; set; } = -1;
 }

@@ -135,7 +135,7 @@ builder.Services.AddSingleton<CombatService, CombatServiceImplentation>();
 builder.Services.AddSingleton<CombatRepo, CombatRepoImplementation>(factory =>
 {
     // return new CombatRepo(factory.GetRequiredService<IMemoryCache>(), dbConnectionString);
-    return new CombatRepoImplementation();
+    return new CombatRepoImplementation(dbConnectionString, factory.GetRequiredService<ILogger<CombatRepoImplementation>>());
 });
 builder.Services.AddHostedService<BattleHubMonitor>();
 

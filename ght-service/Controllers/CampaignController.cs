@@ -62,7 +62,7 @@ public class CampaignController : Controller
     {
         try
         {
-            var campaign = service.GetCampaign(campaignId);
+            var campaign = service.GetCampaignDTO(campaignId);
             return Ok(campaign);
         }
         catch (Exception ex)

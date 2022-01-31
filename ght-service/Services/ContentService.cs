@@ -12,6 +12,7 @@ public interface ContentService
     public Character GetCharacterDefaults(GAME_TYPE gameCode, string contentCode);
     public Monster GetMonsterDefaults(GAME_TYPE gameCode, string contentCode);
     public Scenario GetScenarioDefaults(GAME_TYPE gameCode, string contentCode);
+    public List<AttackModifier> GetBaseModDeck(GAME_TYPE gameCode);
     public bool IsValidGameCode(string gameCode);
     public bool IsValidCharacterCode(string gameCode, string characterCode);
     public bool IsValidScenarioCode(string gameCode, string scenarioCode);
@@ -51,6 +52,11 @@ public partial class ContentServiceImplementation : ContentService
     public Scenario GetScenarioDefaults(GAME_TYPE gameCode, string contentCode)
     {
         return _repo.GetScenarioDefaults(gameCode, contentCode);
+    }
+
+    public List<AttackModifier> GetBaseModDeck(GAME_TYPE gameCode)
+    {
+        return _repo.GetBaseModifierDeck(gameCode);
     }
 
     public bool IsValidGameCode(string gameCode)

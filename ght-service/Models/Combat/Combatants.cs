@@ -24,9 +24,6 @@ public class CombatantDTO
 
 [Serializable]
 public class CharacterDO {
-    [JsonPropertyName("contentId")]
-    public string ContentId {get; set;} = string.Empty;
-
     [JsonPropertyName("contentCode")]
     public string ContentCode {get; set;} = string.Empty;
 
@@ -45,7 +42,6 @@ public class CharacterDO {
 
 public class Character
 {
-    public Guid ContentId {get;}
     public string ContentCode {get;}
     public string CombatantCode {get;} = string.Empty;
     public int Health {get; set;} = 0;
@@ -53,7 +49,6 @@ public class Character
     public AttackModifierDeck ModifierDeck {get;}
     public Character(CharacterDO character)
     {
-        this.ContentId = new Guid(character.ContentId);
         this.ContentCode = character.ContentCode;
         this.CombatantCode = character.CombatantCode;
         this.Health = character.Health;
@@ -64,7 +59,6 @@ public class Character
     {
         return new CharacterDO()
         {
-            ContentId = this.ContentId.ToString(),
             ContentCode = this.ContentCode,
             CombatantCode = this.CombatantCode,
             Health = this.Health,
@@ -138,9 +132,6 @@ public class Monster
 [Serializable]
 public class MonsterGroupDO
 {
-    [JsonPropertyName("contentId")]
-    public string ContentId {get; set;} = string.Empty;
-
     [JsonPropertyName("contentCode")]
     public string ContentCode {get; set;} = string.Empty;
 
@@ -150,12 +141,10 @@ public class MonsterGroupDO
 
 public class MonsterGroup
 {
-    public Guid ContentId {get;}
     public string ContentCode {get;}
     public List<Monster> Monsters {get;}
     public MonsterGroup(MonsterGroupDO monsterGroup)
     {
-        this.ContentId = new Guid(monsterGroup.ContentId);
         this.ContentCode = monsterGroup.ContentCode;
         this.Monsters = monsterGroup.Monsters.Select(monster => new Monster(monster)).ToList();
     }
@@ -163,7 +152,6 @@ public class MonsterGroup
     {
         return new MonsterGroupDO()
         {
-            ContentId = this.ContentId.ToString(),
             ContentCode = this.ContentCode,
             Monsters = this.Monsters.Select(monster => monster.ToDO()).ToList()
         };

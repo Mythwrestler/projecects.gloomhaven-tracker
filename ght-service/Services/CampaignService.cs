@@ -11,7 +11,8 @@ namespace GloomhavenTracker.Service.Services;
 public interface CampaignService
 {
     public List<CampaignSummary> GetCampaignList();
-    public CampaignDTO GetCampaign(Guid campaignId);
+    public Campaign GetCampaignById(Guid campaignId);
+    public CampaignDTO GetCampaignDTO(Guid campaignId);
     public CampaignDTO NewCampaign(Guid id, string game, string Description);
     public void UpdateCampaign(Guid campaignId, CampaignDTO campaign);
 
@@ -31,7 +32,7 @@ public class CampaignServiceImplementation : CampaignService
         this.repo = repo;
     }
 
-    private Campaign GetCampaignById(Guid campaignId)
+    public Campaign GetCampaignById(Guid campaignId)
     {
         if (!campaigns.ContainsKey(campaignId))
         {
@@ -60,7 +61,7 @@ public class CampaignServiceImplementation : CampaignService
         return repo.GetCampaignList();
     }
 
-    public CampaignDTO GetCampaign(Guid campaignId)
+    public CampaignDTO GetCampaignDTO(Guid campaignId)
     {
         return GetCampaignById(campaignId).ToDTO();
     }

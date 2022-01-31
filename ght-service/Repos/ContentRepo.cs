@@ -15,6 +15,7 @@ public interface ContentRepo
     public Game GetGameDefaults(GAME_TYPE gameCode);
     public Character GetCharacterDefaults(GAME_TYPE gameCode, string contentCode);
     public Monster GetMonsterDefaults(GAME_TYPE gameCode, string contentCode);
+    public List<AttackModifier> GetBaseModifierDeck (GAME_TYPE gameCode);
     public Scenario GetScenarioDefaults(GAME_TYPE gameCode, string contentCode);
     public bool IsValidCode(string kind, string contentCode, string? gameCode);
 }
@@ -278,6 +279,42 @@ public class ContentRepoImplementation : ContentRepo
         {
             connection.Close();
         }
+    }
+
+    
+    public List<AttackModifier> GetBaseModifierDeck (GAME_TYPE gameCode)
+    {
+        using var connection = new NpgsqlConnection(connectionString);
+        string gameString = GameUtils.GameTypeString(gameCode);
+        string sqlString = $"select json_build_object('description', gc2.description)::jsonb || gc2.contentjson from (select jsonb_array_elements_text(gc.contentjson->'deck') as cardId from \"Game Content\" gc where gc.game = '{gameString}' and gc.contentjson ->> 'kind' = 'deck' and gc.contentjson->>'contentCode' = 'mod_base_deck') cards join \"Game Content\" gc2 on gc2.contentid::text = cards.cardId";
+        try
+        {
+            List<AttackModifier> modDeck = new List<AttackModifier>();
+            connection.Open();
+            using(NpgsqlCommand command = new NpgsqlCommand(sqlString, connection))
+            {
+                string? jsonString;
+                NpgsqlDataReader reader = command.ExecuteReader();
+                while(reader.Read())
+                {
+                    jsonString = reader[0].ToString();
+                    if(jsonString != null){
+                        var modCard = JsonSerializer.Deserialize<AttackModifier>(jsonString);
+                        if(modCard != null) modDeck.Add(modCard);
+                    }
+                }
+            }
+            return modDeck;
+        }
+        catch (Exception ex)
+        {
+            throw new ArgumentException("Could Not Pull Scenario Summaries", ex);
+        }
+        finally
+        {
+            connection.Close();
+        }
+
     }
 
 

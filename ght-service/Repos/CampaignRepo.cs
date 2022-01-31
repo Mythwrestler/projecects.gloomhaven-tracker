@@ -46,12 +46,9 @@ public class CampaignRepoImplementation : CampaignRepo
                     campaigns.Add(campaign);
                 }
             }
-
-            connection.Close();
         }
         catch (Exception ex)
         {
-            connection.Close();
             logger.LogError(new EventId(), ex, "Failed to get campaign");
             throw new Exception("Failed to get campaign");
         }
@@ -82,12 +79,9 @@ public class CampaignRepoImplementation : CampaignRepo
                     if (campaign != null) return campaign;
                 }
             }
-
-            connection.Close();
         }
         catch (Exception ex)
         {
-            connection.Close();
             logger.LogError(new EventId(), ex, "Failed to get campaign");
             throw new Exception("Failed to get campaign");
         }
@@ -110,11 +104,9 @@ public class CampaignRepoImplementation : CampaignRepo
             connection.Open();
             using var command = new NpgsqlCommand(sqlString, connection);
             command.ExecuteNonQuery();
-            connection.Close();
         }
         catch (Exception ex)
         {
-            connection.Close();
             logger.LogError(new EventId(), ex, "Failed to save campaign.");
             throw new Exception("Failed to save campaign", ex);
         }
@@ -136,11 +128,9 @@ public class CampaignRepoImplementation : CampaignRepo
             connection.Open();
             using var command = new NpgsqlCommand(sqlString, connection);
             command.ExecuteNonQuery();
-            connection.Close();
         }
         catch (Exception ex)
         {
-            connection.Close();
             logger.LogError(new EventId(), ex, "Failed to save campaign.");
             throw new Exception("Failed to save campaign", ex);
         }
