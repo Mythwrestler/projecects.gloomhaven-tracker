@@ -149,7 +149,8 @@ public class AttackModifierDeck
             .OrderBy(kvp => kvp.Key)
             .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
-        int indexFrom = drawnCards.Keys.Max() + 1;
+        
+        int indexFrom = drawnCards.Count() == 0 ? 0 : drawnCards.Keys.Max() + 1;
 
         Dictionary<int, AttackModifier> shuffledDraw = ShuffleCards(cardsToShuffle, indexFrom);
         _drawPile = shuffledDraw.Keys.OrderBy(k => k).ToList();

@@ -76,13 +76,14 @@ public class CombatantInitiative
 
 }
 
+[Serializable]
 public class InitiativeDTO
 {
     [JsonPropertyName("turnOrder")]
-    public List<CombatantInitiativeDTO>? TurnOrder = new List<CombatantInitiativeDTO>();
+    public List<CombatantInitiativeDTO> TurnOrder {get; set;} = new List<CombatantInitiativeDTO>();
 
     [JsonPropertyName("currentCombatant")]
-    public string CurrentCombatant = string.Empty;
+    public string CurrentCombatant {get; set;} = string.Empty;
 }
 
 [Serializable]
@@ -239,7 +240,7 @@ public class Initiative
         {
             Combatants = this.combatants.Select(combatant => combatant.ToDO()).ToList(),
             CompletedCombatants = this.turnOrder.Where(kvp => kvp.Key < currentCombatant).Select(kvp => kvp.Value).ToList(),
-            CurrentCombatant = turnOrder[currentCombatant]
+            CurrentCombatant = currentCombatant == -1 ? "" : turnOrder[currentCombatant]
         };
     }
 
@@ -253,7 +254,7 @@ public class Initiative
                     {
                         CombatantCode = combatant.CombatantCode,
                         Initiative = combatant.Initiative,
-                        Order = this.turnOrder.Where(kvp => kvp.Value == combatant.CombatantCode).First().Key
+                        Order = this.turnOrder.Count() == 0 ? 0 : this.turnOrder.Where(kvp => kvp.Value == combatant.CombatantCode).First().Key
                     };
                 })
                 .ToList();

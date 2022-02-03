@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 
 namespace GloomhavenTracker.Service.Controllers;
-[Route("api/combatspace")]
+[Route("api/combats")]
 public class CombatController : Controller
 {
     private readonly CombatService combatService;
@@ -35,24 +35,39 @@ public class CombatController : Controller
         }
     }
 
-    // [Route("")]
-    // [HttpGet]
-    // public IActionResult GetCombatListing([FromQuery] string? scenarioCode)
-    // {
-    //     List<CombatTrackerSummaryDTO> listing;
-    //     if(scenarioCode == null)
-    //     {
-    //         listing = _service.GetCombatList();
-    //     }
-    //     else
-    //     {
-    //         listing = _service.GetCombatListForScenario(scenarioCode ?? "");
-    //     }
+    [Route("")]
+    [HttpGet]
+    public IActionResult GetCombatListing()
+    {
+        try
+        {
+            var combatListing = combatService.GetCombatList();
+            return Ok(combatListing);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(new EventId(), ex, "Failed to create a combat.");
+            return UnprocessableEntity("Issue processing request");
+        }
+    }
 
-    //     var result = new JsonResult(listing);
-    //     result.StatusCode = 200;
-    //     return result;
-    // }
+
+    [Route("{combatId}")]
+    [HttpGet]
+    public IActionResult GetCombatById(Guid combatId)
+    {
+        try
+        {
+            var combat = combatService.GetCombatDTO(combatId);
+            return Ok(combat);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(new EventId(), ex, "Failed to create a combat.");
+            return UnprocessableEntity("Issue processing request");
+        }
+    }
+
 
     // [Route("{combatId}")]
     // [HttpGet]

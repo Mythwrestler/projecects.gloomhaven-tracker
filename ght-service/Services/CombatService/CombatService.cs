@@ -13,9 +13,8 @@ public interface CombatService
 
     public bool CombatExists(Guid combatId);
     public Guid NewCombat(Guid campaingId, string ScenarioContentCode);
-    public CombatTrackerSummary GetCombatSummary(Guid combatId);
     public List<CombatTrackerSummary> GetCombatList();
-    public List<CombatTrackerSummary> GetCombatListForScenario(string scenarioCode);
+    public CombatTrackerDTO GetCombatDTO(Guid combatId);
 
     #endregion
 
@@ -33,6 +32,8 @@ public partial class CombatServiceImplentation : CombatService
     private ContentService contentService;
     private CampaignService campaignService;
     private ILogger<CombatServiceImplentation> logger;
+    private Dictionary<Guid, CombatTracker> combatTrackers = new Dictionary<Guid, CombatTracker>();
+
     public CombatServiceImplentation(
         CombatRepo combatRepo,
         ContentService contentService,
@@ -50,25 +51,28 @@ public partial class CombatServiceImplentation : CombatService
         throw new NotImplementedException();
     }
 
-    private CombatTracker GetCombat(Guid combatId)
+    private CombatTracker GetCombatById(Guid combatId)
     {
-        var combatDO = combatRepo.GetCombat(combatId);
-        return new CombatTracker(combatDO);
-    }
+        CombatTracker combat;
+        
+        if(!combatTrackers.ContainsKey(combatId)){
+            combat = new CombatTracker(combatRepo.GetCombatTracker(combatId));
+            combatTrackers.Add(combat.Id, combat);
+        }
+        combat = combatTrackers[combatId];
 
-    public CombatTrackerSummary GetCombatSummary(Guid combatId)
-    {
-        throw new NotImplementedException();
+        return combat;
     }
 
     public List<CombatTrackerSummary> GetCombatList()
     {
-        throw new NotImplementedException();
+        return combatRepo.GetCombatTrackerListing();
     }
 
-    public List<CombatTrackerSummary> GetCombatListForScenario(string scenarioCode)
+    public CombatTrackerDTO GetCombatDTO(Guid combatId)
     {
-        throw new NotImplementedException();
+        CombatTracker combat = GetCombatById(combatId);
+        return combat.DataTransferObject;
     }
 
     public void RegisterHubClient(Guid combatId, string clientId)

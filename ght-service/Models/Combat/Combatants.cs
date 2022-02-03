@@ -40,6 +40,21 @@ public class CharacterDO {
     public AttackModifierDeckDO ModifierDeck {get; set;} = new AttackModifierDeckDO();
 }
 
+[Serializable]
+public class CharacterDTO {
+    [JsonPropertyName("contentCode")]
+    public string ContentCode {get; set;} = string.Empty;
+
+    [JsonPropertyName("combatantCode")]
+    public string CombatantCode {get; set;} = string.Empty;
+
+    [JsonPropertyName("health")]
+    public int Health {get; set;}
+
+    [JsonPropertyName("activeEffects")]
+    public List<Effect> ActiveEffects {get; set;} = new List<Effect>();
+}
+
 public class Character
 {
     public string ContentCode {get;}
@@ -65,6 +80,18 @@ public class Character
             ActiveEffects = this.ActiveEffects.ToDO(),
             ModifierDeck = this.ModifierDeck.ToDO()
         };
+    }
+    public CharacterDTO DataTransferObject
+    {
+        get {
+        return new CharacterDTO()
+        {
+            ContentCode = this.ContentCode,
+            CombatantCode = this.CombatantCode,
+            Health = this.Health,
+            ActiveEffects = this.ActiveEffects.ToDO()
+        };
+        }
     }
 }
 

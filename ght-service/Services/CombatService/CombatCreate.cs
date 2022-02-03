@@ -91,7 +91,7 @@ public partial class CombatServiceImplentation
         try
         {
             combatRepo.NewCombat(newCombatForSave);
-            var combatFromRepo = GetCombat(new Guid(newCombatForSave.Id));
+            var combatFromRepo = GetCombatById(new Guid(newCombatForSave.Id));
             if(combatFromRepo == null) throw new Exception("Could not save new combat");
             return combatFromRepo.Id;
         }
@@ -103,6 +103,6 @@ public partial class CombatServiceImplentation
 
     private bool CombatExists(Guid campaignId, string scenarioContentCode)
     {
-        return combatRepo.CombatExists(campaignId, scenarioContentCode);
+        return combatRepo.CombatTrackerExists(campaignId, scenarioContentCode);
     }
 }

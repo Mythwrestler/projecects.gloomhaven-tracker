@@ -5,6 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace GloomhavenTracker.Service.Models.Combat;
 
+[Serializable]
 public class CombatTrackerSummary
 {
     [JsonPropertyName("id")]
@@ -26,6 +27,7 @@ public class CombatTrackerSummary
     public string Description { get; set; } = string.Empty;
 }
 
+[Serializable]
 public class CombatTrackerDO
 {
     [JsonPropertyName("id")]
@@ -65,6 +67,43 @@ public class CombatTrackerDO
     public AttackModifierDeckDO MonsterModifierDeck { get; set; } = new AttackModifierDeckDO();
 }
 
+[Serializable]
+public class CombatTrackerDTO
+{
+    [JsonPropertyName("id")]
+    public string Id { get; set; } = string.Empty;
+
+    [JsonPropertyName("gameCode")]
+    public string GameCode { get; set; } = string.Empty;
+
+    [JsonPropertyName("campaign")]
+    public string CampaignId { get; set; } = string.Empty;
+
+    [JsonPropertyName("scenarioContentCode")]
+    public string ScenarioContentCode { get; set; } = string.Empty;
+
+    [JsonPropertyName("scenarioLevel")]
+    public int ScenarioLevel { get; set; } = 0;
+
+    [JsonPropertyName("description")]
+    public string Description { get; set; } = string.Empty;
+
+    [JsonPropertyName("elements")]
+    public List<ElementDO> Elements { get; set; } = new List<ElementDO>();
+
+    [JsonPropertyName("characters")]
+    public List<CharacterDTO> Characters { get; set; } = new List<CharacterDTO>();
+
+    [JsonPropertyName("monsters")]
+    public List<MonsterGroupDO> Monsters { get; set; } = new List<MonsterGroupDO>();
+
+    [JsonPropertyName("objectives")]
+    public List<ObjectiveGroupDO> Objectives { get; set; } = new List<ObjectiveGroupDO>();
+
+    [JsonPropertyName("initiative")]
+    public InitiativeDTO Initiative { get; set; } = new InitiativeDTO();
+}
+
 
 public class CombatTracker
 {
@@ -72,6 +111,7 @@ public class CombatTracker
     public string GameCode { get; }
     public Guid CampaignId { get; }
     public string ScenarioContentCode { get; }
+    public string Description { get; }
     public int ScenarioLevel { get; }
     public Elements Elements { get; }
     public List<Character> Characters { get; }
@@ -88,6 +128,7 @@ public class CombatTracker
         this.GameCode = combat.GameCode;
         this.CampaignId = new Guid(combat.CampaignId);
         this.ScenarioContentCode = combat.ScenarioContentCode;
+        this.Description = combat.Description;
         this.ScenarioLevel = combat.ScenarioLevel;
         this.Elements = new Elements(combat.Elements);
         this.Characters = combat.Characters.Select(character => new Character(character)).ToList();
@@ -98,26 +139,65 @@ public class CombatTracker
     }
 
     // Generate Data Persistence Object
-    public CombatTrackerDO ToDO()
+    public CombatTrackerDO DataObject
     {
-        return new CombatTrackerDO()
-        {
-            Id = this.Id.ToString(),
-            GameCode = this.GameCode,
-            CampaignId = this.CampaignId.ToString(),
-            ScenarioContentCode = this.ScenarioContentCode,
-            ScenarioLevel = this.ScenarioLevel,
-            Elements = this.Elements.ToDO(),
-            Characters = this.Characters.Select(character => character.ToDO()).ToList(),
-            Monsters = this.Monsters.Select(monsterGroup => monsterGroup.ToDO()).ToList(),
-            Objectives = this.Objectives.Select(objectiveGroup => objectiveGroup.ToDO()).ToList(),
-            Initiative = this.Initiative.ToDO(),
-            MonsterModifierDeck = this.MonsterModifierDeck.ToDO()
-        };
+        get {
+            return new CombatTrackerDO()
+            {
+                Id = this.Id.ToString(),
+                GameCode = this.GameCode,
+                CampaignId = this.CampaignId.ToString(),
+                ScenarioContentCode = this.ScenarioContentCode,
+                Description = this.Description,
+                ScenarioLevel = this.ScenarioLevel,
+                Elements = this.Elements.ToDO(),
+                Characters = this.Characters.Select(character => character.ToDO()).ToList(),
+                Monsters = this.Monsters.Select(monsterGroup => monsterGroup.ToDO()).ToList(),
+                Objectives = this.Objectives.Select(objectiveGroup => objectiveGroup.ToDO()).ToList(),
+                Initiative = this.Initiative.ToDO(),
+                MonsterModifierDeck = this.MonsterModifierDeck.ToDO()
+            };
+        }
+    }
+
+    public CombatTrackerDTO DataTransferObject
+    {
+        get {
+            return new CombatTrackerDTO() 
+            {
+                Id = this.Id.ToString(),
+                GameCode = this.GameCode,
+                CampaignId = this.CampaignId.ToString(),
+                ScenarioContentCode = this.ScenarioContentCode,
+                Description = this.Description,
+                ScenarioLevel = this.ScenarioLevel,
+                Elements = this.Elements.ToDO(),
+                Characters = this.Characters.Select(character => character.DataTransferObject).ToList(),
+                Monsters = this.Monsters.Select(monsterGroup => monsterGroup.ToDO()).ToList(),
+                Objectives = this.Objectives.Select(objectiveGroup => objectiveGroup.ToDO()).ToList(),
+                Initiative = this.Initiative.TurnOrder,
+            };
+        }
+    }
+
+    public CombatTrackerSummary Summary 
+    {
+        get {
+            return new CombatTrackerSummary()
+            {
+                Id = this.Id.ToString(),
+                CampaignId = this.CampaignId.ToString(),
+                ScenarioContentCode = this.ScenarioContentCode,
+                ScenarioLevel = this.ScenarioLevel,
+                Description = this.Description,
+                GameCode = this.GameCode
+            };
+        }
     }
 
 }
 
+[Serializable]
 public struct NewCombatTracker
 {
     [JsonPropertyName("campaignId")]
