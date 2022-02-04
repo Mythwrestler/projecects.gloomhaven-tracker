@@ -1,7 +1,8 @@
-import { derived, get, Readable, writable } from "svelte/store";
+import { derived, get, writable } from "svelte/store";
+import type { Readable } from "svelte/store";
 import { getAPI, postAPI, putAPI } from "../../common/Utils/API";
 import * as GlobalError from "../Error";
-import {
+import type {
   CampaignSummary,
   Campaign,
   Character,

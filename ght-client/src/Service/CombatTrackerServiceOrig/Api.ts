@@ -1,5 +1,5 @@
 import { getAPI, postAPI } from "../../common/Utils/API";
-import { Actors, CombatSpace, CombatSpaceSummary } from "../../models";
+import type { Actors, CombatSpace, CombatSpaceSummary } from "../../models";
 // import { ScenarioDefault } from "../../models/Content";
 import * as CombatStore from "./Store";
 import * as GlobalError from "../Error";

@@ -1,6 +1,7 @@
-import { Writable, writable } from "svelte/store";
-import { CombatSpaceSummary } from "../../models";
-import { ContentItemSummary } from "../../models/Content";
+import { writable } from "svelte/store";
+import type { Writable } from "svelte/store";
+import type { CombatSpaceSummary } from "../../models";
+import type { ContentItemSummary } from "../../models/Content";
 
 // Hub Connection
 export const combatHubConnecting: Writable<boolean> = writable<boolean>(false);

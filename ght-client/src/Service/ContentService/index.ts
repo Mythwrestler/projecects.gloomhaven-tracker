@@ -1,5 +1,5 @@
 import { getAPI } from "../../common/Utils/API";
-import {
+import type {
   Character,
   ContentItemSummary,
   Scenario,

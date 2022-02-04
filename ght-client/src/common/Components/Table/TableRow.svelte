@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { RowData } from "./types";
+  import type { RowData } from "./types";
   export let rowData: RowData;
   export let propertyPostion: Map<number, string> | undefined = undefined;
   export let cellRenders: Map<string, unknown> = new Map<string, unknown>();
@@ -39,7 +39,9 @@
           <svelte:component this={cell.component} {...cell.value ?? {}} />
         {:else}
           <!-- Eventaully Handle Default String / Number / Date -->
-          <div class="text-sm text-gray-900 p-2">{cell.value}</div>
+          <div class="text-sm text-gray-800 dark:text-gray-100 p-2">
+            {cell.value}
+          </div>
         {/if}
       </td>
     {/each}

@@ -7,17 +7,16 @@
     CloseIconOpen,
     AddContainedIcon,
     RadioGroup,
-    RadioOption,
     DropDown,
-    DropDownOption,
     Dialog,
     DialogBody,
     DialogHeader,
     DialogFooter,
     Button,
   } from "../../../common/Components";
-  import { Campaign, Scenario } from "../../../models/Campaign";
-  import {
+  import type { RadioOption, DropDownOption } from "../../../common/Components";
+  import type { Campaign, Scenario } from "../../../models/Campaign";
+  import type {
     ContentItemSummary,
     Scenario as ScenarioContent,
     ScenarioSummary,

@@ -8,12 +8,14 @@
     DialogBody,
     DialogFooter,
     Button,
-    DropDownOption,
     DropDown,
     TextField,
   } from "../../../common/Components";
-  import { Campaign } from "../../../models/Campaign";
-  import { ContentItemSummary } from "../../../models/Content";
+
+  import type { DropDownOption } from "../../../common/Components";
+
+  import type { Campaign } from "../../../models/Campaign";
+  import type { ContentItemSummary } from "../../../models/Content";
   import { useContentService } from "../../../Service/ContentService";
   import { useCampaignService } from "../../../Service/CampaignService";
   import { v4 as uuid } from "uuid";

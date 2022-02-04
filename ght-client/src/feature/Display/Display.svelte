@@ -18,19 +18,19 @@
   <header
     class={clsx(
       "text-center top-0 left-0 sticky",
-      "bg-gray-300 dark:bg-gray-300",
+      "bg-gray-300 dark:bg-gray-800",
       "lg:hidden"
     )}
   >
-    <h6 class="p-2 text-gray-700 dark:text-gray-300">Gloom Haven Tracker</h6>
+    <h6 class="p-2 text-gray-800 dark:text-gray-300">Gloom Haven Tracker</h6>
     <button
       class={"absolute top-1 left-1 text-gray-900 flex w-8 h-8 items-center justify-center"}
       on:click={() => (showNavMenu ? onNavClose() : onNavOpen())}
     >
       {#if showNavMenu}
-        <CloseIconOpen />
+        <CloseIconOpen iconClassOverride="h-5 w-5 dark:text-gray-100" />
       {:else}
-        <MenuIcon />
+        <MenuIcon iconClassOverride="h-5 w-5 dark:text-gray-100" />
       {/if}
     </button>
   </header>
@@ -38,6 +38,7 @@
     <content
       class={clsx(
         "overflow-y-auto w-full h-full relative bg-gray-200",
+        "dark:bg-gray-800 dark:text-gray-100",
         "lg:pt-0 lg:flex lg:flex-row"
       )}
     >

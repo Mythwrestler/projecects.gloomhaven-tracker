@@ -13,8 +13,10 @@
   on:click={handleClick}
   class={clsx(
     "relative flex flex-row items-center h-11 focus:outline-none border-l-4 border-transparent pr-6 w-full",
-    "text-gray-600 hover:text-blue-800"
+    "text-gray-600 dark:text-gray-400 hover:text-blue-800 dark:hover:text-blue-300"
   )}
 >
-  <span class="ml-2 text-sm tracking-wide hover:font-bold text-center"> {label} </span>
+  <span class="ml-2 text-sm tracking-wide text-center">
+    {label}
+  </span>
 </button>
