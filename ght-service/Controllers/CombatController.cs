@@ -2,11 +2,15 @@ using System;
 using GloomhavenTracker.Service.Hubs;
 using GloomhavenTracker.Service.Models.Combat;
 using GloomhavenTracker.Service.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 
 namespace GloomhavenTracker.Service.Controllers;
+
+[Authorize(Policy = "authenticated")]
+[Authorize(Policy = "superuser")]
 [Route("api/combats")]
 public class CombatController : Controller
 {
