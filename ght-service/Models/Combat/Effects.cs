@@ -14,7 +14,7 @@ public class Effects
     {
         this.effects = effects.ToDictionary(effect => effect.Type, effect => effect);
     }
-    public Effects() {}
+    public Effects() { }
 
     public List<Effect> ActiveEffects => effects.Select(a => a.Value).ToList();
 
@@ -66,12 +66,20 @@ public class Effects
         effects.Clear();
     }
 
-    public List<Effect> ToDTO() {
-        return effects.Values.ToList();
+    public List<Effect> DataObject
+    {
+        get
+        {
+            return effects.Values.ToList();
+        }
     }
 
-    public List<Effect> ToDO() {
-        return this.ToDTO();
+    public List<Effect> DataTransferObject
+    {
+        get
+        {
+            return this.DataObject;
+        }
     }
 
 }

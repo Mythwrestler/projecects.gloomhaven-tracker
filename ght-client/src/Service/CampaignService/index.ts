@@ -11,6 +11,7 @@ import type {
 import { cloneDeep, isEqual } from "lodash";
 
 class CampaignServiceImplementation {
+  //#region Campaign Listing
   private campaignListingStore = writable<CampaignSummary[]>([]);
   private campaignListing = derived(
     this.campaignListingStore,
@@ -26,7 +27,9 @@ class CampaignServiceImplementation {
       GlobalError.showErrorMessage("Failed to get Campaign Listing");
     }
   };
+  //#endregion
 
+  //#region Campaign
   private campaignStore = writable<Campaign>();
   private savedCampaign = writable<Campaign>();
   private campaign: Readable<Campaign | undefined> = derived(
@@ -100,6 +103,10 @@ class CampaignServiceImplementation {
     });
   };
 
+  //#endregion
+
+  //#region Create / Save Campaign
+
   public saveCampaign = async () => {
     if (get(this.campaignNotSaved)) {
       const campaignToSave = get(this.campaignStore);
@@ -131,6 +138,8 @@ class CampaignServiceImplementation {
       GlobalError.showErrorMessage("Failed To Create a New Campaign");
     }
   };
+
+  //#endregion
 
   public State = {
     campaignListing: this.campaignListing,

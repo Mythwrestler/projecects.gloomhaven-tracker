@@ -15,7 +15,17 @@
         "editor.semanticHighlighting.enabled": true,
         "csharp.semanticHighlighting.enabled": true,
         "cSpell.words": [
-            "Npgsql"
+            "Npgsql",
+            "Unprocessable"
+        ],
+        "cSpell.ignorePaths": [
+            "package-lock.json",
+            "node_modules",
+            "vscode-extension",
+            ".git/objects",
+            ".vscode",
+            ".vscode-insiders",
+            ".devcontainer"
         ]
     }
 }

@@ -89,16 +89,16 @@ public class CombatTrackerDTO
     public string Description { get; set; } = string.Empty;
 
     [JsonPropertyName("elements")]
-    public List<ElementDO> Elements { get; set; } = new List<ElementDO>();
+    public List<ElementDTO> Elements { get; set; } = new List<ElementDTO>();
 
     [JsonPropertyName("characters")]
     public List<CharacterDTO> Characters { get; set; } = new List<CharacterDTO>();
 
     [JsonPropertyName("monsters")]
-    public List<MonsterGroupDO> Monsters { get; set; } = new List<MonsterGroupDO>();
+    public List<MonsterGroupDTO> Monsters { get; set; } = new List<MonsterGroupDTO>();
 
     [JsonPropertyName("objectives")]
-    public List<ObjectiveGroupDO> Objectives { get; set; } = new List<ObjectiveGroupDO>();
+    public List<ObjectiveGroupDTO> Objectives { get; set; } = new List<ObjectiveGroupDTO>();
 
     [JsonPropertyName("initiative")]
     public InitiativeDTO Initiative { get; set; } = new InitiativeDTO();
@@ -150,10 +150,10 @@ public class CombatTracker
                 ScenarioContentCode = this.ScenarioContentCode,
                 Description = this.Description,
                 ScenarioLevel = this.ScenarioLevel,
-                Elements = this.Elements.ToDO(),
-                Characters = this.Characters.Select(character => character.ToDO()).ToList(),
-                Monsters = this.Monsters.Select(monsterGroup => monsterGroup.ToDO()).ToList(),
-                Objectives = this.Objectives.Select(objectiveGroup => objectiveGroup.ToDO()).ToList(),
+                Elements = this.Elements.DataObject,
+                Characters = this.Characters.Select(character => character.DataObject).ToList(),
+                Monsters = this.Monsters.Select(monsterGroup => monsterGroup.DataObject).ToList(),
+                Objectives = this.Objectives.Select(objectiveGroup => objectiveGroup.DataObject).ToList(),
                 Initiative = this.Initiative.ToDO(),
                 MonsterModifierDeck = this.MonsterModifierDeck.ToDO()
             };
@@ -171,10 +171,10 @@ public class CombatTracker
                 ScenarioContentCode = this.ScenarioContentCode,
                 Description = this.Description,
                 ScenarioLevel = this.ScenarioLevel,
-                Elements = this.Elements.ToDO(),
+                Elements = this.Elements.DataTransferObject,
                 Characters = this.Characters.Select(character => character.DataTransferObject).ToList(),
-                Monsters = this.Monsters.Select(monsterGroup => monsterGroup.ToDO()).ToList(),
-                Objectives = this.Objectives.Select(objectiveGroup => objectiveGroup.ToDO()).ToList(),
+                Monsters = this.Monsters.Select(monsterGroup => monsterGroup.DataTransferObject).ToList(),
+                Objectives = this.Objectives.Select(objectiveGroup => objectiveGroup.DataTransferObject).ToList(),
                 Initiative = this.Initiative.TurnOrder,
             };
         }

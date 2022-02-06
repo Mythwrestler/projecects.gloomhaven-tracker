@@ -10,58 +10,60 @@ namespace GloomhavenTracker.Service.Models.Combat;
 public class CombatantDTO
 {
     [JsonPropertyName("combatantCode")]
-    public string CombatantCode {get; set;} = string.Empty;
-    
+    public string CombatantCode { get; set; } = string.Empty;
+
     [JsonPropertyName("type")]
-    public Content.CONTENT_TYPE Type {get; set;}
-    
+    public Content.CONTENT_TYPE Type { get; set; }
+
     [JsonPropertyName("health")]
-    public int Health {get; set;}
-    
+    public int Health { get; set; }
+
     [JsonPropertyName("activeEffects")]
-    public List<Effect> ActiveEffects {get; set;} = new List<Effect>();
+    public List<Effect> ActiveEffects { get; set; } = new List<Effect>();
 }
 
 [Serializable]
-public class CharacterDO {
+public class CharacterDO
+{
     [JsonPropertyName("contentCode")]
-    public string ContentCode {get; set;} = string.Empty;
+    public string ContentCode { get; set; } = string.Empty;
 
     [JsonPropertyName("combatantCode")]
-    public string CombatantCode {get; set;} = string.Empty;
+    public string CombatantCode { get; set; } = string.Empty;
 
     [JsonPropertyName("health")]
-    public int Health {get; set;}
+    public int Health { get; set; }
 
     [JsonPropertyName("activeEffects")]
-    public List<Effect> ActiveEffects {get; set;} = new List<Effect>();
+    public List<Effect> ActiveEffects { get; set; } = new List<Effect>();
 
     [JsonPropertyName("modifierDeck")]
-    public AttackModifierDeckDO ModifierDeck {get; set;} = new AttackModifierDeckDO();
+    public AttackModifierDeckDO ModifierDeck { get; set; } = new AttackModifierDeckDO();
 }
 
 [Serializable]
-public class CharacterDTO {
+public class CharacterDTO
+{
     [JsonPropertyName("contentCode")]
-    public string ContentCode {get; set;} = string.Empty;
+    public string ContentCode { get; set; } = string.Empty;
 
     [JsonPropertyName("combatantCode")]
-    public string CombatantCode {get; set;} = string.Empty;
+    public string CombatantCode { get; set; } = string.Empty;
 
     [JsonPropertyName("health")]
-    public int Health {get; set;}
+    public int Health { get; set; }
 
     [JsonPropertyName("activeEffects")]
-    public List<Effect> ActiveEffects {get; set;} = new List<Effect>();
+    public List<Effect> ActiveEffects { get; set; } = new List<Effect>();
 }
 
 public class Character
 {
-    public string ContentCode {get;}
-    public string CombatantCode {get;} = string.Empty;
-    public int Health {get; set;} = 0;
-    public Effects ActiveEffects {get;}
-    public AttackModifierDeck ModifierDeck {get;}
+    public string ContentCode { get; }
+    public string CombatantCode { get; } = string.Empty;
+    public int Health { get; set; } = 0;
+    public Effects ActiveEffects { get; }
+    public AttackModifierDeck ModifierDeck { get; }
     public Character(CharacterDO character)
     {
         this.ContentCode = character.ContentCode;
@@ -70,27 +72,31 @@ public class Character
         this.ActiveEffects = new Effects(character.ActiveEffects);
         this.ModifierDeck = new AttackModifierDeck(character.ModifierDeck);
     }
-    public CharacterDO ToDO()
+    public CharacterDO DataObject
     {
-        return new CharacterDO()
+        get
         {
-            ContentCode = this.ContentCode,
-            CombatantCode = this.CombatantCode,
-            Health = this.Health,
-            ActiveEffects = this.ActiveEffects.ToDO(),
-            ModifierDeck = this.ModifierDeck.ToDO()
-        };
+            return new CharacterDO()
+            {
+                ContentCode = this.ContentCode,
+                CombatantCode = this.CombatantCode,
+                Health = this.Health,
+                ActiveEffects = this.ActiveEffects.DataObject,
+                ModifierDeck = this.ModifierDeck.ToDO()
+            };
+        }
     }
     public CharacterDTO DataTransferObject
     {
-        get {
-        return new CharacterDTO()
+        get
         {
-            ContentCode = this.ContentCode,
-            CombatantCode = this.CombatantCode,
-            Health = this.Health,
-            ActiveEffects = this.ActiveEffects.ToDO()
-        };
+            return new CharacterDTO()
+            {
+                ContentCode = this.ContentCode,
+                CombatantCode = this.CombatantCode,
+                Health = this.Health,
+                ActiveEffects = this.ActiveEffects.DataObject
+            };
         }
     }
 }
@@ -100,26 +106,44 @@ public class Character
 public class MonsterDO
 {
     [JsonPropertyName("combatantCode")]
-    public string CombatantCode {get; set;} = string.Empty;
+    public string CombatantCode { get; set; } = string.Empty;
 
     [JsonPropertyName("health")]
-    public int Health {get; set;}
+    public int Health { get; set; }
 
     [JsonPropertyName("activeEffects")]
-    public List<Effect> ActiveEffects {get; set;} = new List<Effect>();
+    public List<Effect> ActiveEffects { get; set; } = new List<Effect>();
     [JsonPropertyName("instanceId")]
-    public int InstanceId {get; set;}
+    public int InstanceId { get; set; }
 
     [JsonPropertyName("isElite")]
-    public bool IsElite {get; set;}
+    public bool IsElite { get; set; }
+}
+[Serializable]
+
+public class MonsterDTO
+{
+    [JsonPropertyName("combatantCode")]
+    public string CombatantCode { get; set; } = string.Empty;
+
+    [JsonPropertyName("health")]
+    public int Health { get; set; }
+
+    [JsonPropertyName("activeEffects")]
+    public List<Effect> ActiveEffects { get; set; } = new List<Effect>();
+    [JsonPropertyName("instanceId")]
+    public int InstanceId { get; set; }
+
+    [JsonPropertyName("isElite")]
+    public bool IsElite { get; set; }
 }
 public class Monster
 {
-    public string CombatantCode {get;} = string.Empty;
-    public int Health {get; set;} = 0;
-    public Effects ActiveEffects {get;} = new Effects();
-    public int InstanceId {get;}
-    public bool IsElite {get;}
+    public string CombatantCode { get; } = string.Empty;
+    public int Health { get; set; } = 0;
+    public Effects ActiveEffects { get; } = new Effects();
+    public int InstanceId { get; }
+    public bool IsElite { get; }
     public Monster
     (
         string combatantCode,
@@ -143,16 +167,34 @@ public class Monster
         this.Health = monster.Health;
         this.ActiveEffects = new Effects(monster.ActiveEffects);
     }
-    public MonsterDO ToDO()
+    public MonsterDO DataObject
     {
-        return new MonsterDO
+        get
         {
-            CombatantCode = this.CombatantCode,
-            InstanceId = this.InstanceId,
-            IsElite = this.IsElite,
-            Health = this.Health,
-            ActiveEffects = this.ActiveEffects.ToDO()
-        };
+            return new MonsterDO
+            {
+                CombatantCode = this.CombatantCode,
+                InstanceId = this.InstanceId,
+                IsElite = this.IsElite,
+                Health = this.Health,
+                ActiveEffects = this.ActiveEffects.DataObject
+            };
+        }
+    }
+    public MonsterDTO DataTransferObject
+    {
+        get
+        {
+            return new MonsterDTO()
+            {
+                CombatantCode = this.CombatantCode,
+                InstanceId = this.InstanceId,
+                IsElite = this.IsElite,
+                Health = this.Health,
+                ActiveEffects = this.ActiveEffects.DataTransferObject,
+
+            };
+        }
     }
 }
 
@@ -160,28 +202,51 @@ public class Monster
 public class MonsterGroupDO
 {
     [JsonPropertyName("contentCode")]
-    public string ContentCode {get; set;} = string.Empty;
+    public string ContentCode { get; set; } = string.Empty;
 
     [JsonPropertyName("monsters")]
-    public List<MonsterDO> Monsters {get; set;} = new List<MonsterDO>();
+    public List<MonsterDO> Monsters { get; set; } = new List<MonsterDO>();
+}
+[Serializable]
+public class MonsterGroupDTO
+{
+    [JsonPropertyName("contentCode")]
+    public string ContentCode { get; set; } = string.Empty;
+
+    [JsonPropertyName("monsters")]
+    public List<MonsterDTO> Monsters { get; set; } = new List<MonsterDTO>();
 }
 
 public class MonsterGroup
 {
-    public string ContentCode {get;}
-    public List<Monster> Monsters {get;}
+    public string ContentCode { get; }
+    public List<Monster> Monsters { get; }
     public MonsterGroup(MonsterGroupDO monsterGroup)
     {
         this.ContentCode = monsterGroup.ContentCode;
         this.Monsters = monsterGroup.Monsters.Select(monster => new Monster(monster)).ToList();
     }
-    public MonsterGroupDO ToDO()
+    public MonsterGroupDO DataObject
     {
-        return new MonsterGroupDO()
+        get
         {
-            ContentCode = this.ContentCode,
-            Monsters = this.Monsters.Select(monster => monster.ToDO()).ToList()
-        };
+            return new MonsterGroupDO()
+            {
+                ContentCode = this.ContentCode,
+                Monsters = this.Monsters.Select(monster => monster.DataObject).ToList()
+            };
+        }
+    }
+    public MonsterGroupDTO DataTransferObject
+    {
+        get
+        {
+            return new MonsterGroupDTO()
+            {
+                ContentCode = this.ContentCode,
+                Monsters = this.Monsters.Select(monster => monster.DataTransferObject).ToList()
+            };
+        }
     }
     public void AddMonster(int instanceId, bool isElite, int health, List<Effect> effects)
     {
@@ -194,23 +259,39 @@ public class MonsterGroup
 public class ObjectiveDO
 {
     [JsonPropertyName("combatantCode")]
-    public string CombatantCode {get; set;} = string.Empty;
+    public string CombatantCode { get; set; } = string.Empty;
 
     [JsonPropertyName("health")]
-    public int Health {get; set;}
+    public int Health { get; set; }
 
     [JsonPropertyName("activeEffects")]
-    public List<Effect> ActiveEffects {get; set;} = new List<Effect>();
+    public List<Effect> ActiveEffects { get; set; } = new List<Effect>();
 
     [JsonPropertyName("objectiveNumber")]
-    public int ObjectiveNumber {get; set;}
+    public int ObjectiveNumber { get; set; }
 }
+[Serializable]
+public class ObjectiveDTO
+{
+    [JsonPropertyName("combatantCode")]
+    public string CombatantCode { get; set; } = string.Empty;
+
+    [JsonPropertyName("health")]
+    public int Health { get; set; }
+
+    [JsonPropertyName("activeEffects")]
+    public List<Effect> ActiveEffects { get; set; } = new List<Effect>();
+
+    [JsonPropertyName("objectiveNumber")]
+    public int ObjectiveNumber { get; set; }
+}
+
 public class Objective
 {
-    public string CombatantCode {get;} = string.Empty;
-    public int Health {get; set;} = 0;
-    public Effects ActiveEffects {get;} = new Effects();
-    public int InstanceId {get;}
+    public string CombatantCode { get; } = string.Empty;
+    public int Health { get; set; } = 0;
+    public Effects ActiveEffects { get; } = new Effects();
+    public int InstanceId { get; }
     public Objective(ObjectiveDO objective)
     {
         this.CombatantCode = objective.CombatantCode;
@@ -231,47 +312,89 @@ public class Objective
         this.Health = health;
         this.ActiveEffects = new Effects(effects);
     }
-    public ObjectiveDO ToDO()
+    public ObjectiveDO DataObject
     {
-        return new ObjectiveDO()
+        get
         {
-            CombatantCode = this.CombatantCode,
-            ObjectiveNumber = this.InstanceId,
-            Health = this.Health,
-            ActiveEffects = this.ActiveEffects.ToDO(),
-        };
+            return new ObjectiveDO()
+            {
+                CombatantCode = this.CombatantCode,
+                ObjectiveNumber = this.InstanceId,
+                Health = this.Health,
+                ActiveEffects = this.ActiveEffects.DataObject,
+            };
+        }
+    }
+    public ObjectiveDTO DataTransferObject
+    {
+        get
+        {
+            return new ObjectiveDTO()
+            {
+                CombatantCode = this.CombatantCode,
+                ObjectiveNumber = this.InstanceId,
+                Health = this.Health,
+                ActiveEffects = this.ActiveEffects.DataTransferObject,
+            };
+        }
     }
 }
 
+[Serializable]
 public class ObjectiveGroupDO
 {
     [JsonPropertyName("contentId")]
-    public string ContentId {get; set;} = string.Empty;
+    public string ContentId { get; set; } = string.Empty;
     [JsonPropertyName("contentCode")]
-    public string ContentCode {get; set;} = string.Empty;
+    public string ContentCode { get; set; } = string.Empty;
     [JsonPropertyName("objectives")]
-    public List<ObjectiveDO> Objectives {get; set;} = new List<ObjectiveDO>();
+    public List<ObjectiveDO> Objectives { get; set; } = new List<ObjectiveDO>();
+}
+[Serializable]
+public class ObjectiveGroupDTO
+{
+    [JsonPropertyName("contentId")]
+    public string ContentId { get; set; } = string.Empty;
+    [JsonPropertyName("contentCode")]
+    public string ContentCode { get; set; } = string.Empty;
+    [JsonPropertyName("objectives")]
+    public List<ObjectiveDTO> Objectives { get; set; } = new List<ObjectiveDTO>();
 }
 
 public class ObjectiveGroup
 {
-    public Guid ContentId {get;}
-    public string ContentCode {get;}
-    public List<Objective> Objectives {get;}
+    public Guid ContentId { get; }
+    public string ContentCode { get; }
+    public List<Objective> Objectives { get; }
     public ObjectiveGroup(ObjectiveGroupDO objectiveGroup)
     {
         this.ContentId = new Guid(objectiveGroup.ContentId);
         this.ContentCode = objectiveGroup.ContentCode;
         this.Objectives = objectiveGroup.Objectives.Select(objective => new Objective(objective)).ToList();
     }
-    public ObjectiveGroupDO ToDO()
+    public ObjectiveGroupDO DataObject
     {
-        return new ObjectiveGroupDO()
+        get
         {
-            ContentId = this.ContentId.ToString(),
-            ContentCode = this.ContentCode,
-            Objectives = this.Objectives.Select(objective => objective.ToDO()).ToList()
-        };
+            return new ObjectiveGroupDO()
+            {
+                ContentId = this.ContentId.ToString(),
+                ContentCode = this.ContentCode,
+                Objectives = this.Objectives.Select(objective => objective.DataObject).ToList()
+            };
+        }
+    }
+    public ObjectiveGroupDTO DataTransferObject
+    {
+        get
+        {
+            return new ObjectiveGroupDTO()
+            {
+                ContentId = this.ContentId.ToString(),
+                ContentCode = this.ContentCode,
+                Objectives = this.Objectives.Select(objective => objective.DataTransferObject).ToList()
+            };
+        }
     }
     public void AddObjective(int instanceId, bool isElite, int health, List<Effect> effects)
     {
