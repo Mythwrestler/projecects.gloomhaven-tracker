@@ -25,10 +25,7 @@
 
   let newGameCode = "";
   const getNewGameCode = () => {
-    newGameCode = ($location as NavigatorLocation<AnyObject>).search.replace(
-      "?selectedGame=",
-      ""
-    );
+    newGameCode = $location.search.replace("?selectedGame=", "");
   };
 
   let campaign: Campaign | undefined;

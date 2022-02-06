@@ -5,9 +5,10 @@ import type { MonsterGroup } from "./Monster";
 import type { ObjectiveGroup } from "./Objective";
 
 export interface CombatSpaceSummary {
-  gameCode: string;
-  scenarioCode: string;
-  combatId: string;
+  id: string;
+  scenarioContentCode: string;
+  scenarioLevel: number;
+  campaign: string;
   description: string;
 }
 
