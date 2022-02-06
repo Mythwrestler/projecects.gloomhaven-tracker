@@ -1,12 +1,13 @@
 <script lang="ts">
   import { Button, TextField } from "../../../common/Components";
-  import { Campaign } from "../../../models/Campaign";
+  import type { Campaign } from "../../../models/Campaign";
   import * as GlobalError from "../../../Service/Error";
 
   import { useCampaignService } from "../../../Service/CampaignService";
   import CampaignParty from "./CampaignParty.svelte";
-  import { NavigatorLocation, useLocation } from "svelte-navigator";
-  import AnyObject from "svelte-navigator/types/AnyObject";
+  import { useLocation } from "svelte-navigator";
+  import type { NavigatorLocation } from "svelte-navigator";
+  import type AnyObject from "svelte-navigator/types/AnyObject";
   import CampaignScenarios from "./CampaignScenarios.svelte";
   import { onMount } from "svelte";
 
@@ -24,10 +25,7 @@
 
   let newGameCode = "";
   const getNewGameCode = () => {
-    newGameCode = ($location as NavigatorLocation<AnyObject>).search.replace(
-      "?selectedGame=",
-      ""
-    );
+    newGameCode = $location.search.replace("?selectedGame=", "");
   };
 
   let campaign: Campaign | undefined;

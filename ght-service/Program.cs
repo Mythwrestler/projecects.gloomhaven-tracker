@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http.Json;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -20,13 +19,39 @@ using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Logging.AddConsole();
-// Add services to the container.
 
+#region Environment Variables / Configurations
 
-bool authEnabled = bool.Parse(Environment.GetEnvironmentVariable("AUTH_ENABLED") ?? "false");
+// Authentication
+bool authEnabled = bool.Parse(Environment.GetEnvironmentVariable("AUTH_ENABLED") ?? "true");
 string authAuthority = Environment.GetEnvironmentVariable("AUTH_AUTHORITY") ?? String.Empty;
 string authAudience = Environment.GetEnvironmentVariable("AUTH_AUDIENCE") ?? String.Empty;
+
+// CORS
+string[] allowedCORSOrigins = (Environment.GetEnvironmentVariable("CORS_ALLOWED_ORIGINS") ?? "").Split(',');
+
+// Logging
 bool httpLoggingEnabled = bool.Parse(Environment.GetEnvironmentVariable("HTTP_LOGGING_ENABLED") ?? "false");
+
+// Database
+string dbServer = Environment.GetEnvironmentVariable("DB_SERVER") ?? String.Empty;
+string dbPort = Environment.GetEnvironmentVariable("DB_PORT") ?? String.Empty;
+string dbDatabase = Environment.GetEnvironmentVariable("DB_DATABASE") ?? String.Empty;
+string dbUser = Environment.GetEnvironmentVariable("DB_USER") ?? String.Empty;
+string dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? String.Empty;
+string dbConnectionString = String.Format(
+    builder.Configuration["ConnectionStrings:PostgreSQL"],
+    dbServer,
+    dbPort,
+    dbDatabase,
+    dbUser,
+    dbPassword,
+    "true"
+);
+
+#endregion
+
+#region Authentication
 
 var authBuilder = builder.Services.AddAuthentication(options =>
 {
@@ -58,14 +83,20 @@ if (authEnabled)
         options.Authority = authAuthority;
         options.Audience = authAudience;
     });
-
-    builder.Services.AddAuthorization(options =>
-    {
-        options.AddPolicy("authenticated", new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
-        options.AddPolicy("superuser", new AuthorizationPolicyBuilder().RequireRole("superuser").Build());
-    });
-
 }
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("authenticated", new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
+    options.AddPolicy("superuser", new AuthorizationPolicyBuilder().RequireRole("superuser").Build());
+});
+
+// Add Anonoymous Authentication Handler is auth is disabled
+if(!authEnabled) builder.Services.AddSingleton<IAuthorizationHandler, AllowAnonymous>();
+
+# endregion
+
+#region Service Registry
 
 builder.Services.AddSwaggerGen(c =>
         {
@@ -88,6 +119,8 @@ builder.Services.AddSwaggerGen(c =>
             });
         });
 
+
+
 builder.Services.AddMemoryCache();
 
 builder.Services.AddSignalR();
@@ -99,23 +132,6 @@ builder.Services.Configure<JsonOptions>(options =>
 {
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
 });
-
-
-string dbServer = Environment.GetEnvironmentVariable("DB_SERVER") ?? String.Empty;
-string dbPort = Environment.GetEnvironmentVariable("DB_PORT") ?? String.Empty;
-string dbDatabase = Environment.GetEnvironmentVariable("DB_DATABASE") ?? String.Empty;
-string dbUser = Environment.GetEnvironmentVariable("DB_USER") ?? String.Empty;
-string dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? String.Empty;
-string dbConnectionString = String.Format(
-    builder.Configuration["ConnectionStrings:PostgreSQL"],
-    dbServer,
-    dbPort,
-    dbDatabase,
-    dbUser,
-    dbPassword,
-    "true"
-);
-
 
 // Register Content DI
 builder.Services.AddSingleton<ContentService, ContentServiceImplementation>();
@@ -135,10 +151,9 @@ builder.Services.AddSingleton<CombatService, CombatServiceImplentation>();
 builder.Services.AddSingleton<CombatRepo, CombatRepoImplementation>(factory =>
 {
     // return new CombatRepo(factory.GetRequiredService<IMemoryCache>(), dbConnectionString);
-    return new CombatRepoImplementation();
+    return new CombatRepoImplementation(dbConnectionString, factory.GetRequiredService<ILogger<CombatRepoImplementation>>());
 });
 builder.Services.AddHostedService<BattleHubMonitor>();
-
 
 if (httpLoggingEnabled)
 {
@@ -150,8 +165,11 @@ if (httpLoggingEnabled)
     });
 }
 
-var app = builder.Build();
+#endregion
 
+#region App Startup
+
+var app = builder.Build();
 
 //  Build and Seed Database
 bool seedDefaultData = bool.Parse(Environment.GetEnvironmentVariable("DB_SEED_DATA") ?? "false");
@@ -182,8 +200,9 @@ app.UseCors((config) =>
         .WithMethods("POST", "PUT", "GET")
         .AllowAnyHeader()
         .AllowCredentials()
-        .WithOrigins("http://localhost:5025", "http://localhost.fiddler:5025");
+        .WithOrigins(allowedCORSOrigins);
 });
+
 
 app.UseAuthentication();
 
@@ -191,29 +210,25 @@ app.UseRouting();
 
 app.UseAuthorization();
 
-var helloEndPoint = app.MapGet("hello-world", () => "Hello World");
-if (authEnabled)
-{
-    helloEndPoint.RequireAuthorization("superuser");
-}
-else
-{
-    helloEndPoint.AllowAnonymous();
-}
+app.MapHub<CombatHub>("hub/combatspace").RequireAuthorization("authenticated", "superuser");
 
-var battleHub = app.MapHub<CombatHub>("hub/combatspace");
-if (authEnabled)
-{
-    battleHub.RequireAuthorization("authenticated", "superuser");
-}
-else
-{
-    battleHub.AllowAnonymous();
-}
-
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapControllers();
-});
+app.UseEndpoints(endpoints => endpoints.MapControllers());
 
 app.Run();
+
+#endregion
+
+#region Helper Classes / Methods
+
+public class AllowAnonymous : IAuthorizationHandler 
+{
+    public Task HandleAsync(AuthorizationHandlerContext context)
+    {
+        foreach (IAuthorizationRequirement requirement in context.PendingRequirements)
+            context.Succeed(requirement); //Simply pass all requirements
+        
+        return Task.CompletedTask;
+    }
+}
+
+# endregion

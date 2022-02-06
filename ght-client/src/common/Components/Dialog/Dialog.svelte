@@ -9,7 +9,10 @@
 
 {#if open}
   <div
-    class={clsx("hidden fixed inset-0 bg-black bg-opacity-30 z-10", "lg:block")}
+    class={clsx(
+      "hidden fixed inset-0 bg-black bg-opacity-40 dark:bg-opacity-70 z-10",
+      "lg:block"
+    )}
     on:click={() => {
       if (offClick && onClose) onClose();
     }}
@@ -17,7 +20,7 @@
   <div
     class={clsx(
       "fixed top-0 right-0 h-full w-full z-20 flex flex-col overflow-hidden",
-      "bg-white dark:bg-gray-900",
+      "bg-gray-100 dark:bg-gray-800",
       "lg:rounded-md lg:h-3/4 lg:w-1/2 lg:inset-1/2 lg:transform lg:-translate-y-1/2 lg:-translate-x-1/2"
     )}
   >
@@ -29,7 +32,7 @@
         }}
         class={clsx(
           "absolute top-0 right-0 flex w-8 h-8 items-center justify-center",
-          "text-gray-900 dark:text-white"
+          "text-gray-800 dark:text-gray-100"
         )}
       >
         {#if closeButtonIcon !== undefined}

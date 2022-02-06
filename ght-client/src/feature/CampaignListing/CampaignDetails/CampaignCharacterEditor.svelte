@@ -1,5 +1,4 @@
 <script lang="ts">
-  import {} from "os";
   import {
     Button,
     Dialog,
@@ -7,10 +6,10 @@
     DialogFooter,
     DialogHeader,
     DropDown,
-    DropDownOption,
     TextField,
   } from "../../../common/Components";
-  import { Character } from "../../../models/Campaign";
+  import type { DropDownOption } from "../../../common/Components";
+  import type { Character } from "../../../models/Campaign";
   import * as ContentModel from "../../../models/Content";
 
   import { useContentService } from "../../../Service/ContentService";

@@ -2,7 +2,7 @@
   import clsx from "clsx";
 
   import DownTickIcon from "../Icons/DownTickIcon.svelte";
-  import { DropDownOption } from "./types";
+  import type { DropDownOption } from "./types";
   export let label = "";
   export let disabled = false;
   export let options: DropDownOption[] = [];
@@ -30,7 +30,7 @@
   <select
     bind:value={selected}
     class={clsx(
-      "w-full border border-gray-300 text-gray-600 h-12 bg-white hover:border-gray-400 focus:outline-none pl-3 pr-7 appearance-none",
+      "w-full border border-gray-300 dark:border-gray-500 text-gray-600 dark:text-gray-400 h-12 bg-gray-100 dark:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-600 focus:outline-none pl-3 pr-7 appearance-none",
       variant === "rounded" && "rounded-full",
       variant === "square" && "rounded-md"
     )}

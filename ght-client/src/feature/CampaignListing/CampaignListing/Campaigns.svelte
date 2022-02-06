@@ -1,16 +1,16 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { Campaign } from "../../../models/Campaign";
-  import {
-    AddContainedIcon,
+  import type { Campaign } from "../../../models/Campaign";
+  import { AddContainedIcon, Table } from "../../../common/Components";
+  import type {
     ColumnDefinition,
     RowData,
-    Table,
     TableConfiguration,
   } from "../../../common/Components";
   import CampaignLink from "./CampaignLink.svelte";
   import CampaignNewDialog from "./CampaignNewDialog.svelte";
   import { useCampaignService } from "../../../Service/CampaignService";
+  import clsx from "clsx";
 
   const { State, getCampaignListing } = useCampaignService();
   const { campaignListing } = State;
@@ -38,11 +38,6 @@
   let campaignsRowData: RowData[] = [];
 
   let campaignListingLoaded = false;
-  const handleGetCampaigns = async () => {
-    if (($campaignListing as Campaign[]).length === 0) {
-      await getCampaignListing();
-    }
-  };
 
   campaignListing.subscribe((campaigns) => {
     campaignsRowData = campaigns.map((campaign) => {
@@ -71,13 +66,16 @@
   };
 
   onMount(() => {
-    void handleGetCampaigns();
+    void getCampaignListing();
   });
 </script>
 
 <section class="text-center lg:text-left lg:pl-3 ">
   <div
-    class="relative mt-2 px-3 py-1 items-center max-w-md mx-auto bg-gray-50 rounded-md backdrop-blur-sm"
+    class={clsx(
+      "relative mt-2 px-3 py-1 items-center max-w-md mx-auto rounded-md backdrop-blur-sm",
+      "bg-gray-50 dark:bg-gray-700"
+    )}
   >
     <div aria-label="Current Campaigns" class="text-center text-xl">
       Campaigns

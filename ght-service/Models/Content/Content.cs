@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Linq;
 using System.Text.Json.Serialization;
 
 namespace GloomhavenTracker.Service.Models.Content;
@@ -95,6 +96,23 @@ public static class GameUtils
             default:
                 return "";
         }
+    }
+
+    public static int GetPlayerLevel(Character character, int experience)
+    {
+        return character.BaseStats.Levels
+            .Where(lvl => lvl.Experience <= experience)
+            .OrderByDescending(lvl => lvl.Experience)
+            .FirstOrDefault()?.Level ?? 0;
+    }
+
+    public static int GetPlayerBaseHealth(Character character, int experience)
+    {
+        var level = GetPlayerLevel(character, experience);
+        return character.BaseStats.Health
+            .Where(hl => hl.Level <= level)
+            .OrderByDescending(hl => hl.Level)
+            .FirstOrDefault()?.Health ?? 0;
     }
 
     public static int ResolveModifierValue(string expression, int attackValue)

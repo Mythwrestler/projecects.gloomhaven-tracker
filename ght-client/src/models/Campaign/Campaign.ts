@@ -26,6 +26,7 @@ export interface Scenario {
   contentCode: string;
   name: string;
   description: string;
+  scenarioNumber: number;
   isCompleted: boolean;
   isClosed: boolean;
 }

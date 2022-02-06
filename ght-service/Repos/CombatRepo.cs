@@ -1,251 +1,164 @@
 using System;
 using System.Collections.Generic;
-using GloomhavenTracker.Service.Models;
-using Microsoft.Extensions.Caching.Memory;
+using System.Text.Json;
+using Dapper;
+using GloomhavenTracker.Service.Models.Combat;
+using Microsoft.Extensions.Logging;
+using Npgsql;
 
 namespace GloomhavenTracker.Service.Repos;
 
-
 public interface CombatRepo
 {
-    // public bool CombatExists(Guid combatId);
-
-    // public List<Guid> GetCombats();
-
-    // public CombatTrackerDO GetCombat(Guid combatId);
-
-    // public void SaveCombat(CombatTrackerDO combat);
-
-    // public void DisposeCombat(Guid combatId);
-
+    public bool CombatTrackerExists(Guid combatId);
+    public bool CombatTrackerExists(Guid campaignId, string scenarioContentCode);
+    public CombatTrackerDO GetCombatTracker(Guid combatId);
+    public List<CombatTrackerSummary> GetCombatTrackerListing();
+    public void NewCombat(CombatTrackerDO combat);
 }
 
 public class CombatRepoImplementation : CombatRepo
 {
-    // private readonly IMemoryCache _memCache;
-    // private readonly string _connectionString;
+    private readonly string connectionString;
+    private readonly ILogger<CombatRepoImplementation> logger;
 
-    // private List<Guid>? _combatListing;
+    public CombatRepoImplementation(string connectionString, ILogger<CombatRepoImplementation> logger)
+    {
+        this.connectionString = connectionString;
+        this.logger = logger;
+    }
 
-    // private static class CACHE_KEYS
-    // {
-    //     public static string Combat { get; } = "combat_";
-    //     public static string CombatListing { get; } = "combat_listing";
-    // }
+    public bool CombatTrackerExists(Guid combatId)
+    {
+        using var connection = new NpgsqlConnection(connectionString);
+        var sqlString = $"SELECT EXISTS (SELECT 1 FROM \"Combat\" c WHERE c.id = '{combatId}'";
+        try
+        {
+            connection.Open();
+            return connection.QuerySingle<bool>(sqlString);
+        }
+        catch (Exception ex)
+        {
+            throw new ArgumentException("Failed to verify campaign exists", ex);
+        }
+        finally
+        {
+            connection.Close();
+        }
+    }
 
-    // public CombatRepo(IMemoryCache memCache, string connectionString)
-    // {
-    //     _memCache = memCache;
-    //     _connectionString = connectionString;
-    // }
+    public bool CombatTrackerExists(Guid campaignId, string scenarioContentCode)
+    {
+        using var connection = new NpgsqlConnection(connectionString);
+        var sqlString = $"SELECT EXISTS (SELECT 1 FROM \"Combat\" c WHERE c.combatjson ->> 'campaign' = '{campaignId.ToString()}' AND c.combatjson ->> 'scenarioContentCode' = '{scenarioContentCode}')";
+        try
+        {
+            connection.Open();
+            return connection.QuerySingle<bool>(sqlString);
+        }
+        catch (Exception ex)
+        {
+            throw new ArgumentException("Failed to verify campaign exists", ex);
+        }
+        finally
+        {
+            connection.Close();
+        }
+    }
 
-    // public bool CombatExists(Guid combatId)
-    // {
-    //     return CombatIdInListing(combatId);
-    // }
+    public CombatTrackerDO GetCombatTracker(Guid combatId)
+    {
+        using var connection = new NpgsqlConnection(connectionString);
+        var sqlString = $"SELECT c.combatjson from \"Combat\" c WHERE c.combatId = '{combatId.ToString()}'";
+        try
+        {
+            connection.Open();
+            using (NpgsqlCommand command = new NpgsqlCommand(sqlString, connection))
+            {
+                string? jsonString;
+                CombatTrackerDO? combat;
+                NpgsqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    jsonString = reader[0].ToString();
+                    if (jsonString != null)
+                    {
+                        combat = JsonSerializer.Deserialize<CombatTrackerDO>(jsonString);
+                        if (combat != null) return combat;
+                    }
+                }
+            }
+            throw new ArgumentException("Could Not Find Combat");
+        }
+        catch (Exception ex)
+        {
+            throw new ArgumentException("Could Not Pull Combat", ex);
+        }
+        finally
+        {
+            connection.Close();
+        }
+    }
 
-    // public List<Guid> GetCombats()
-    // {
-    //     return _combatListing ?? new List<Guid>();
-    // }
+    public List<CombatTrackerSummary> GetCombatTrackerListing()
+    {
+        using var connection = new NpgsqlConnection(connectionString);
+        var sqlString = $"SELECT json_build_object('id', c.combatid, 'description', c.description, 'gameCode', c.game, 'campaign', c.combatjson -> 'campaign', 'scenarioContentCode', c.combatjson -> 'scenarioContentCode', 'scenarioLevel', c.combatjson -> 'scenarioLevel') from \"Combat\" c";
 
-    // public CombatTrackerDO GetCombat(Guid combatId)
-    // {
-    //     CombatTrackerDO? combat;
-    //     _memCache.TryGetValue<CombatTrackerDO>($"{CACHE_KEYS.Combat}{combatId.ToString()}", out combat);
-    //     return combat;
-    // }
+        List<CombatTrackerSummary> combats = new List<CombatTrackerSummary>();
+        try
+        {
+            connection.Open();
+            using (NpgsqlCommand command = new NpgsqlCommand(sqlString, connection))
+            {
+                string? jsonString;
+                NpgsqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    CombatTrackerSummary? combatSummary = null;
+                    jsonString = reader[0].ToString();
+                    if (jsonString != null)
+                    {
+                        combatSummary = JsonSerializer.Deserialize<CombatTrackerSummary>(jsonString);
+                        if (combatSummary != null) combats.Add(combatSummary);
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new ArgumentException("Could Not Pull Game Defaults", ex);
+        }
+        finally
+        {
+            connection.Close();
+        }
+        return combats;
+    }
 
-    // public void SaveCombat(CombatTrackerDO combat)
-    // {
-    //     _memCache.Set<CombatTrackerDO>($"{CACHE_KEYS.Combat}{combat.CombatId.ToString()}", combat);
-    //     if (!CombatIdInListing(combat.CombatId)) AddNewCombatToListing(combat.CombatId);
-    // }
+    public void NewCombat(CombatTrackerDO combat)
+    {
 
-    // public void DisposeCombat(Guid combatId)
-    // {
-    //     throw new NotImplementedException();
-    // }
+        using var connection = new NpgsqlConnection(connectionString);
 
+        var combatJsonString = JsonSerializer.Serialize<CombatTrackerDO>(combat);
+        var sqlString = $"INSERT INTO \"Combat\" (combatId, game, description, combatJson) VALUES('{combat.Id}','{combat.GameCode}','{combat.Description}','{combatJsonString}')";
 
-    // private bool CombatIdInListing(Guid combatId)
-    // {
-    //     if (_combatListing == null)
-    //     {
-    //         _combatListing = new List<Guid>();
-    //         List<Guid>? listingFromMemory;
-    //         _memCache.TryGetValue(CACHE_KEYS.CombatListing, out listingFromMemory);
-    //         if (listingFromMemory != null) _combatListing.AddRange(listingFromMemory);
-    //     }
+        try
+        {
+            connection.Open();
+            using var command = new NpgsqlCommand(sqlString, connection);
+            command.ExecuteNonQuery();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(new EventId(), ex, "Failed to save new combat.");
+            throw new Exception("Failed to save new combat", ex);
+        }
+        finally
+        {
+            connection.Close();
+        }
+    }
 
-    //     return _combatListing.Contains(combatId);
-    // }
-
-
-    // private void AddNewCombatToListing(Guid combatId)
-    // {
-    //     if (_combatListing == null)
-    //     {
-    //         _combatListing = new List<Guid>();
-    //         List<Guid>? listingFromMemory;
-    //         _memCache.TryGetValue(CACHE_KEYS.CombatListing, out listingFromMemory);
-    //         if (listingFromMemory != null) _combatListing.AddRange(listingFromMemory);
-    //     }
-
-    //     if (!_combatListing.Contains(combatId)) _combatListing.Add(combatId);
-    //     _memCache.Set<List<Guid>>(CACHE_KEYS.CombatListing, _combatListing);
-    // }
-
-
-
-
-
-
-
-
-
-
-    // public Battle GetBattle()
-    // {
-    //     Battle? battle = _cache.Get<Battle>(CACHE_KEYS.Battle);
-
-    //     if(battle == null)
-    //     {
-    //         battle = GetTestData();
-    //         _cache.Set(CACHE_KEYS.Battle, battle);
-    //     }
-
-    //     return battle;
-    // }
-
-    // public void SaveBattle()
-    // {
-    //     throw new NotImplementedException();
-    // }
-
-
-    // private Battle GetTestData()
-    // {
-    //     var baseMonsterDeck = GetTestModifierDeck();
-    //     var monsterDeck = new List<AttackModifier>();
-    //     monsterDeck.AddRange(baseMonsterDeck);
-
-    //     Player player1 = GetTestPlayer(new Guid("1f11e875-d93f-4002-854f-579b90e3c736"), "Test Player 01");
-    //     Player player2 = GetTestPlayer(new Guid("ac6b070a-5625-45cd-80a0-6c05beb0510b"), "Test Player 02");
-    //     Player player3 = GetTestPlayer(new Guid("59502422-8b4f-49c4-a1c9-2b5c684186c6"), "Test Player 03");
-    //     Player player4 = GetTestPlayer(new Guid("d972f2a8-0d94-4842-b8c2-1f8e4fec7b14"), "Test Player 04");
-
-    //     Monster monster1 = GetTestMonster(new Guid("55387201-8a08-441b-b558-9227d16009c8"), MONSTER_TYPES.Cultist, 3, false);
-    //     Monster monster2 = GetTestMonster(new Guid("a6ca21ab-ccc8-43f0-83f7-37c865ea5db5"), MONSTER_TYPES.StoneGolem, 2, true);
-
-    //     var actors = new List<Actor>(){
-    //         player1,
-    //         player2,
-    //         player3,
-    //         player4,
-    //         monster1,
-    //         monster2
-    //     };
-
-    //     return new Battle(){
-    //         MonsterDeck = monsterDeck,
-    //         Actors = actors,
-    //         Initiative = new Dictionary<int, Guid> {
-    //             {1, player1.Id}, {2, monster1.Id}, {3, player2.Id}, {4, player3.Id}, {5, monster2.Id}, {6, player4.Id}
-    //         }
-    //     };
-    // }
-
-
-    // private Monster GetTestMonster(Guid id, MONSTER_TYPES type, int monsterId, bool isElite)
-    // {
-
-    //     var baseStats = new Dictionary<int, BaseMonsterStatSet>(){
-    //         {1, new BaseMonsterStatSet(){
-    //                 Elite = new MonsterStatSet(){Health = 10, Movement = 3, Attack = 2},
-    //                 Standard = new MonsterStatSet(){Health = 8, Movement = 2, Attack = 1}
-    //             }}
-    //     };
-
-    //     return new Monster(){
-    //         Id = id,
-    //         Type = type,
-    //         BaseStats = baseStats,
-    //         IsElite = isElite,
-    //         MonsterId = monsterId,
-    //         Health = isElite ? baseStats.GetValueOrDefault(1).Elite.Health : baseStats.GetValueOrDefault(1).Standard.Health,
-    //         Attack = isElite ? baseStats.GetValueOrDefault(1).Elite.Attack : baseStats.GetValueOrDefault(1).Standard.Attack,
-    //         Movement = isElite ? baseStats.GetValueOrDefault(1).Elite.Movement : baseStats.GetValueOrDefault(1).Standard.Movement
-    //     };
-    // }
-
-
-    // private Player GetTestPlayer(Guid id, string name) 
-    // {
-
-    //     var baseModDeck = GetTestModifierDeck();
-    //     var modDeck = new List<AttackModifier>();
-    //     modDeck.AddRange(baseModDeck);
-
-    //     return new Player()
-    //     {
-    //         Id = id,
-    //         BaseHealth = new Dictionary<int, int>(){
-    //             {0, 8},
-    //             {1, 12},
-    //             {3, 14}
-    //         },
-    //         Level = new Dictionary<int, int>() {
-    //             {0, 0},
-    //             {1, 0},
-    //             {2, 45}
-    //         },
-    //         CurrentHealth = 6,
-    //         Name = name,
-    //         ModifierDeck = modDeck,
-    //         BaseModifierDeck = baseModDeck
-    //     };
-
-    // }
-
-
-    // public List<AttackModifier> GetTestModifierDeck(){
-    //     return new List<AttackModifier>{
-    //         new AttackModifier(){Type = ATTACK_MODIFIER_TYPE.Add, Value = 1},
-    //         new AttackModifier(){Type = ATTACK_MODIFIER_TYPE.Add, Value = 1},
-    //         new AttackModifier(){Type = ATTACK_MODIFIER_TYPE.Add, Value = 1},
-    //         new AttackModifier(){Type = ATTACK_MODIFIER_TYPE.Add, Value = 1},
-    //         new AttackModifier(){Type = ATTACK_MODIFIER_TYPE.Add, Value = 2},
-    //         new AttackModifier(){Type = ATTACK_MODIFIER_TYPE.Add, Value = 2},
-    //         new AttackModifier(){Type = ATTACK_MODIFIER_TYPE.Multiply, Value = 2},
-    //         new AttackModifier(){Type = ATTACK_MODIFIER_TYPE.Add, Value = -1},
-    //         new AttackModifier(){Type = ATTACK_MODIFIER_TYPE.Add, Value = -1},
-    //         new AttackModifier(){Type = ATTACK_MODIFIER_TYPE.Add, Value = -1},
-    //         new AttackModifier(){Type = ATTACK_MODIFIER_TYPE.Add, Value = -1},
-    //         new AttackModifier(){Type = ATTACK_MODIFIER_TYPE.Add, Value = -2},
-    //         new AttackModifier(){Type = ATTACK_MODIFIER_TYPE.Add, Value = -2},
-    //         new AttackModifier(){Type = ATTACK_MODIFIER_TYPE.Cancel},
-    //         new AttackModifier(){Type = ATTACK_MODIFIER_TYPE.Cancel},
-    //     };
-    // }
-
-    // public CombatTracker GetBattle(Guid BattleId)
-    // {
-    //     throw new NotImplementedException();
-    // }
-
-    // public List<CombatTracker> GetActiveBattles()
-    // {
-    //     throw new NotImplementedException();
-    // }
-
-    // public void SaveBattle(CombatTracker battle)
-    // {
-    //     throw new NotImplementedException();
-    // }
-
-    // public bool BattleExists(Guid BattleId)
-    // {
-    //     throw new NotImplementedException();
-    // }
 }

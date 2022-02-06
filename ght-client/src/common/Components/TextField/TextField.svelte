@@ -16,10 +16,11 @@
 
 <div
   class={clsx(
-    "flex items-center max-w-md h-12 mx-auto bg-white",
+    "flex items-center max-w-md h-12 mx-auto bg-white dark:bg-gray-700",
     variant === "rounded" && "rounded-full",
     variant === "square" && "rounded-md",
-    border === true && "border-gray-400 border-opacity-50 border"
+    border === true &&
+      "border-gray-400 dark:border-gray-700 border-opacity-50 border"
   )}
 >
   <div class="w-full relative">
@@ -30,7 +31,7 @@
         bind:value
         on:change={onChange}
         class={clsx(
-          "w-full px-4 py-1 text-gray-900 focus:outline-none",
+          "w-full px-4 py-1 text-gray-800 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none",
           variant === "rounded" && "rounded-full",
           variant === "square" && "rounded-sm"
         )}
@@ -43,7 +44,7 @@
         bind:value
         on:change={onChange}
         class={clsx(
-          "w-full px-4 py-1 text-gray-900 focus:outline-none",
+          "w-full px-4 py-1 text-gray-800 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none",
           variant === "rounded" && "rounded-full",
           variant === "square" && "rounded-sm"
         )}
@@ -53,7 +54,7 @@
     {#if displayLabel}
       <label
         for={textBoxName}
-        class="absolute rounded-lg duration-300 ml-2 px-1 top-1 left-0 origin-0 text-gray-500 bg-white dark:bg-gray-700"
+        class="absolute rounded-lg duration-300 ml-2 px-1 top-1 left-0 origin-0 text-gray-500 bg-gray-white dark:bg-gray-700"
         >{displayLabel}</label
       >
     {/if}
@@ -65,7 +66,7 @@
           if (onButtonClick) onButtonClick();
         }}
         class={clsx(
-          "flex items-center justify-center w-12 h-12 font-bold bg-gray-800 text-gray-300",
+          "flex items-center justify-center w-12 h-12 font-bold bg-gray-800 dark:bg-gray-100 text-gray-300 dark:text-gray-500",
           variant === "rounded" && "rounded-r-full",
           variant === "square" && "rounded-r-sm"
         )}
@@ -114,7 +115,6 @@
   select:focus ~ label {
     /* @apply text-black; left-0; */
     --tw-text-opacity: 1;
-    color: rgba(0, 0, 0, var(--tw-text-opacity));
     left: 0px;
   }
 </style>

@@ -1,4 +1,4 @@
-import { Actors } from "./Actors";
+import type { Actors } from "./Actors";
 
 export interface CombatSpaceSummary {
   gameCode: string;

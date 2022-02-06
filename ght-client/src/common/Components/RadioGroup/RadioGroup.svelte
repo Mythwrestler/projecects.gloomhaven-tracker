@@ -2,7 +2,7 @@
   import clsx from "clsx";
 
   import { v4 as uuid } from "uuid";
-  import { RadioOption } from "./types";
+  import type { RadioOption } from "./types";
   export let groupId: string = uuid();
   export let options: RadioOption[] = [];
   export let value: string | number | undefined;

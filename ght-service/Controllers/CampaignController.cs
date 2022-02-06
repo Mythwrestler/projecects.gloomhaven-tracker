@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using GloomhavenTracker.Service.Models.Campaign;
 using GloomhavenTracker.Service.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace GloomhavenTracker.Service.Controllers;
 
-
+[Authorize(Policy = "authenticated")]
+[Authorize(Policy = "superuser")]
 [Route("api/campaigns")]
 public class CampaignController : Controller
 {
@@ -62,7 +64,7 @@ public class CampaignController : Controller
     {
         try
         {
-            var campaign = service.GetCampaign(campaignId);
+            var campaign = service.GetCampaignDTO(campaignId);
             return Ok(campaign);
         }
         catch (Exception ex)

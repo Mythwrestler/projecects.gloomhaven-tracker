@@ -7,23 +7,26 @@
     CloseIconOpen,
     AddContainedIcon,
     RadioGroup,
-    RadioOption,
     DropDown,
-    DropDownOption,
     Dialog,
     DialogBody,
     DialogHeader,
     DialogFooter,
     Button,
   } from "../../../common/Components";
-  import { Campaign, Scenario } from "../../../models/Campaign";
-  import { ContentItemSummary } from "../../../models/Content";
+  import type { RadioOption, DropDownOption } from "../../../common/Components";
+  import type { Campaign, Scenario } from "../../../models/Campaign";
+  import type {
+    ContentItemSummary,
+    Scenario as ScenarioContent,
+    ScenarioSummary,
+  } from "../../../models/Content";
   import { useContentService } from "../../../Service/ContentService";
 
   export let campaign: Campaign | undefined;
   export let saveScenario: (scenario: Scenario) => void | undefined;
 
-  const { GetScenariosForGame } = useContentService();
+  const { GetScenariosForGame, GetScenarioDefault } = useContentService();
 
   const scenarioStatusOptions: RadioOption[] = [
     { label: "Completed", value: "completed" },
@@ -31,10 +34,12 @@
     { label: "Available", value: "available" },
   ];
 
-  const scenarioListing = writable<ContentItemSummary[]>([]);
+  let campaignScenarios: Scenario[] = [];
+
+  const scenarioListing = writable<ScenarioSummary[]>([]);
   const scenarioListingProcessed = writable<boolean>(false);
   const handleGetScenarios = async (gameCode: string) => {
-    if (($scenarioListing as ContentItemSummary[]).length === 0) {
+    if (($scenarioListing as ScenarioSummary[]).length === 0) {
       const listing = await GetScenariosForGame(gameCode);
       scenarioListing.set(listing);
     }
@@ -44,7 +49,25 @@
   let unusedScenarioOptions: DropDownOption[] = [];
   const handleProcessScenarios = () => {
     if (campaign) {
-      fullScenarioListOptions = ($scenarioListing as ContentItemSummary[]).map(
+      campaignScenarios = (campaign.scenarios ?? [])
+        .map((cs) => {
+          let scenarioForLoad = ($scenarioListing as ScenarioSummary[]).find(
+            (ss) => ss.contentCode === cs.contentCode
+          ) as ScenarioSummary;
+          return {
+            contentCode: scenarioForLoad.contentCode,
+            description: scenarioForLoad.description,
+            scenarioNumber: scenarioForLoad.scenarioNumber,
+            name: scenarioForLoad.name,
+            isClosed: cs.isClosed,
+            isCompleted: cs.isCompleted,
+          };
+        })
+        .filter((cs) => cs !== undefined)
+        .sort((a: Scenario, b: Scenario) =>
+          a.scenarioNumber > b.scenarioNumber ? 1 : -1
+        );
+      fullScenarioListOptions = ($scenarioListing as ScenarioSummary[]).map(
         (scenario) => {
           return { label: scenario.name, value: scenario.contentCode };
         }
@@ -63,6 +86,7 @@
   let existingScenario = false;
   let selectedScenario = "";
   let selectedScenarioStatus = "";
+  let selectedScenarioDetail: ScenarioContent | undefined = undefined;
   const handleAddNewScenarioClick = () => {
     existingScenario = false;
     selectedScenario = "";
@@ -106,6 +130,10 @@
           )?.name ?? "",
         isClosed: selectedScenarioStatus === "closed",
         isCompleted: selectedScenarioStatus === "completed",
+        scenarioNumber:
+          ($scenarioListing as ScenarioSummary[]).find(
+            (ss) => ss.contentCode === selectedScenario
+          )?.scenarioNumber ?? 0,
       });
       handleCloseScenarioEdit();
     }
@@ -134,10 +162,26 @@
     return true;
   };
 
+  const handleScenarioSelected = async (contentCode: string): Promise<void> => {
+    if (contentCode != "") {
+      selectedScenarioDetail = await GetScenarioDefault(
+        campaign?.game ?? "",
+        contentCode
+      );
+    } else {
+      selectedScenarioDetail = undefined;
+    }
+  };
+
+  $: void handleScenarioSelected(selectedScenario);
+
   $: disableSave = shouldDisableSave(selectedScenario, selectedScenarioStatus);
 
   $: if (campaign?.game) void handleGetScenarios(campaign.game);
-  $: if (($scenarioListing as ContentItemSummary[]).length !== 0 && campaign)
+  $: if (
+    ($scenarioListing as ScenarioSummary[]).length !== 0 &&
+    campaign?.scenarios
+  )
     handleProcessScenarios();
 </script>
 
@@ -158,7 +202,7 @@
       </div>
       <div>
         <ul aria-label="Scenario Listing">
-          {#each campaign.scenarios as scenario}
+          {#each campaignScenarios as scenario}
             <li aria-label={scenario.name}>
               <div class="flex flex-row">
                 <div class="mx-auto flex flex-row">
@@ -210,13 +254,32 @@
         ? unusedScenarioOptions
         : fullScenarioListOptions}
       variant="rounded"
-      disabled={selectedScenario !== ""}
+      disabled={existingScenario}
     />
     <RadioGroup
       centered
       bind:value={selectedScenarioStatus}
       options={scenarioStatusOptions}
     />
+    {#if selectedScenarioDetail}
+      <div
+        class="relative mt-2 px-3 py-1 items-center max-w-md mx-auto bg-gray-50 rounded-md backdrop-blur-sm"
+      >
+        <div aria-label="Scenario Monsters" class="text-center text-xl">
+          Monsters
+        </div>
+        <div class="border-b-2 border-solid" />
+        <ul>
+          {#each selectedScenarioDetail?.monsters ?? [] as monster}
+            <li>
+              <div class="flex flex-row">
+                <div class="mx-auto flex flex-row">{monster.name}</div>
+              </div>
+            </li>
+          {/each}
+        </ul>
+      </div>
+    {/if}
   </DialogBody>
   <DialogFooter slot="DialogFooter">
     <Button

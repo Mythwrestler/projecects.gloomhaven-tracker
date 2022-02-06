@@ -1,10 +1,11 @@
 <script lang="ts">
   import { writable } from "svelte/store";
 
-  import { AddContainedIcon, DropDownOption } from "../../../common/Components";
+  import { AddContainedIcon } from "../../../common/Components";
+  import type { DropDownOption } from "../../../common/Components";
 
-  import { Campaign, Character } from "../../../models/Campaign";
-  import { ContentItemSummary } from "../../../models/Content";
+  import type { Campaign, Character } from "../../../models/Campaign";
+  import type { ContentItemSummary } from "../../../models/Content";
   import { useCampaignService } from "../../../Service/CampaignService";
   import CampaignCharacterEditor from "./CampaignCharacterEditor.svelte";
   import { useContentService } from "../../../Service/ContentService";

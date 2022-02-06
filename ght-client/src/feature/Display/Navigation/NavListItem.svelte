@@ -25,7 +25,8 @@
     on:click={handleClick}
     class={clsx(
       "relative flex flex-row items-center h-11 focus:outline-none border-l-4 border-transparent pr-6",
-      "text-gray-600 hover:bg-gray-50 hover:text-gray-800 hover:border-indigo-500"
+      "text-gray-600 hover:bg-gray-50 hover:text-gray-800 hover:border-indigo-500",
+      "dark:text-gray-100"
     )}
   >
     {#if icon}

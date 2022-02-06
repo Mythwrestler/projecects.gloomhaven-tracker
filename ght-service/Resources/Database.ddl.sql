@@ -44,6 +44,7 @@ CREATE TABLE public."Combat" (
 	id bigint NOT NULL GENERATED ALWAYS AS IDENTITY,
 	combatId uuid NOT NULL,
 	game varchar NOT NULL,
+	description varchar NOT NULL,
 	combatJson jsonb NOT NULL
 );
 

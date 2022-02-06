@@ -27,8 +27,8 @@
       }}
     />
     <NavListItem
-      path="/scenarios"
-      label="Scenarios"
+      path="/combats"
+      label="Combat Scenarios"
       icon={CompassIcon}
       onClick={() => {
         showNavMenu = false;

@@ -1,6 +1,7 @@
 import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 import ENV_VARS from "../../common/Environment";
-import { get, writable, Writable } from "svelte/store";
+import { get, writable } from "svelte/store";
+import type { Writable } from "svelte/store";
 import { authToken as authTokenStore } from "@dopry/svelte-auth0";
 import {
   combatSpaceId,

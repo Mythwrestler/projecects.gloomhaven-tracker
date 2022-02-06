@@ -10,7 +10,7 @@ public class Campaign
 {
     public Guid Id {get;}
     public string Description {get;}
-    public string Game {get;}
+    public GAME_TYPE Game {get;}
     public Scenarios Scenarios {get;}
     public Party Party {get;}
 
@@ -25,7 +25,7 @@ public class Campaign
     {
         this.Id = new Guid(campaign.Id);
         this.Description = campaign.Description;
-        this.Game = campaign.Game;
+        this.Game =  GameUtils.GameType(campaign.Game);
         this.Scenarios = new Scenarios(campaign.Scenarios);
         this.Party = new Party(campaign.Party);
     }
@@ -36,7 +36,7 @@ public class Campaign
         {
             Id = this.Id.ToString(),
             Description = this.Description,
-            Game = this.Game,
+            Game = GameUtils.GameTypeString(this.Game),
             Scenarios = this.Scenarios.ToDO(),
             Party = this.Party.ToDO()
         };
@@ -47,7 +47,7 @@ public class Campaign
         {
             Id = this.Id.ToString(),
             Description = this.Description,
-            Game = this.Game,
+            Game = GameUtils.GameTypeString(this.Game),
             Scenarios = this.Scenarios.ToDTO(),
             Party = this.Party.ToDTO()
         };
