@@ -30,7 +30,7 @@ public class MonsterStatSet
     public List<EFFECT_TYPE> Immunity { get; set; } = new List<EFFECT_TYPE>();
     public List<MonsterEffect> DefenseEffects { get; set; } = new List<MonsterEffect>();
     public List<MonsterEffect> AttackEffects { get; set; } = new List<MonsterEffect>();
-    public Boolean isElite { get; set; }
+    public Boolean IsElite { get; set; }
     public Guid? MonsterId {get; set;}
     public Monster? Monster {get; set; }
 }
