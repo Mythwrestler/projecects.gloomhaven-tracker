@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
-    <RootNamespace>ght_service</RootNamespace>
+    <RootNamespace>GloomhavenTracker.Service</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
