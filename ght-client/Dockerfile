@@ -1,4 +1,4 @@
-FROM registry.casperinc.net/node:14 as builder
+FROM node:14 as builder
 
 WORKDIR /app
 
@@ -30,7 +30,7 @@ RUN if [ "$BUILD_ENV" = "local" ] ; then npm run build:local ; fi ;
 RUN if [ "$BUILD_ENV" = "nprd" ] ; then npm run build:nprd ; fi ;
 RUN if [ "$BUILD_ENV" = "prod" ] ; then npm run build:prod ; fi ;
 
-FROM registry.casperinc.net/nginx:alpine
+FROM nginx:alpine
 
 WORKDIR /usr/share/nginx/html
 
