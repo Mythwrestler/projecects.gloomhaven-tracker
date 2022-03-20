@@ -11,12 +11,15 @@ public static partial class EntityDefinitions
         {
             attackModifierTable.HasIndex(attackMod => new { attackMod.GameId, attackMod.ContentCode }).IsUnique();
             attackModifierTable.HasMany(ae => ae.Effects).WithOne(ae => ae.AttackModifier).OnDelete(DeleteBehavior.Restrict);
+            attackModifierTable.HasMany(am => am.GameBaseAttackModifiers).WithOne(gbm => gbm.AttackModifier).OnDelete(DeleteBehavior.Restrict);
         });
 
         builder.Entity<AttackModifierEffect>(attackModifierEffectTable =>
         {
             attackModifierEffectTable.HasKey(me => new { me.EffectId, me.AttackModifierId });
         });
+
+        
     }
 }
 
@@ -33,6 +36,7 @@ public class AttackModifier
     public bool TriggerShuffle { get; set; } = false;
     public string Value { get; set; } = string.Empty;
     public ICollection<AttackModifierEffect> Effects { get; set; } = new HashSet<AttackModifierEffect>();
+    public ICollection<GameBaseAttackModifier> GameBaseAttackModifiers { get; set; } = new HashSet<GameBaseAttackModifier>();
     [Required]
     public Guid GameId { get; set; }
     public Game? Game { get; set; }
