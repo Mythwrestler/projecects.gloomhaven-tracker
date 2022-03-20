@@ -5,7 +5,7 @@ namespace GloomhavenTracker.Database.DataSeed;
 public static partial class ContentSeedData
 {
 
-    private static void SeedMonsters(ContentContextImplementation context)
+    private static void SeedMonsters(ContentContext context)
     {
         //Bosses
         Jaws_BloodHorror(context);
@@ -22,7 +22,7 @@ public static partial class ContentSeedData
     }
 
     #region Helper Methods
-    private static bool MonsterExists(ContentContextImplementation context, string contentCode, Game game)
+    private static bool MonsterExists(ContentContext context, string contentCode, Game game)
     {
         var check = context.Monster.Local.FirstOrDefault(monster => monster.ContentCode == contentCode && monster.Game.Id == game.Id);
         if(check is null) check = context.Monster.FirstOrDefault(monster => monster.ContentCode == contentCode && monster.Game.Id == game.Id);
@@ -46,7 +46,7 @@ public static partial class ContentSeedData
 
     #region Bosses
 
-    private static void Jaws_BloodHorror(ContentContextImplementation context)
+    private static void Jaws_BloodHorror(ContentContext context)
     {
         var game = GetGame(context, "jawsOfTheLion");
         if(MonsterExists(context, "blood_horror", game)) return;
@@ -69,7 +69,7 @@ public static partial class ContentSeedData
         context.Monster.Add(monster);
     }
 
-    private static void Jaws_BloodTumor(ContentContextImplementation context)
+    private static void Jaws_BloodTumor(ContentContext context)
     {
         var game = GetGame(context, "jawsOfTheLion");
         if(MonsterExists(context, "blood_tumor", game)) return;
@@ -91,7 +91,7 @@ public static partial class ContentSeedData
         context.Monster.Add(monster);
     }
 
-    private static void Jaws_FirstOfTheOrder(ContentContextImplementation context)
+    private static void Jaws_FirstOfTheOrder(ContentContext context)
     {
         var game = GetGame(context, "jawsOfTheLion");
         if(MonsterExists(context, "first_of_the_order", game)) return;
@@ -119,7 +119,7 @@ public static partial class ContentSeedData
 
     #region Monsters
 
-    private static void Jaws_VermlingRaider(ContentContextImplementation context)
+    private static void Jaws_VermlingRaider(ContentContext context)
     {
         var game = GetGame(context, "jawsOfTheLion");
         if(MonsterExists(context, "vermling_raider", game)) return;
@@ -150,7 +150,7 @@ public static partial class ContentSeedData
         context.Monster.Add(monster);
     }
 
-    private static void Jaws_VermlingScout(ContentContextImplementation context)
+    private static void Jaws_VermlingScout(ContentContext context)
     {
         var game = GetGame(context, "jawsOfTheLion");
         if(MonsterExists(context, "vermling_scout", game)) return;
@@ -181,7 +181,7 @@ public static partial class ContentSeedData
         context.Monster.Add(monster);
     }
 
-    private static void Jaws_GiantViper(ContentContextImplementation context)
+    private static void Jaws_GiantViper(ContentContext context)
     {
         var game = GetGame(context, "jawsOfTheLion");
         if(MonsterExists(context, "giant_viper", game)) return;
@@ -212,7 +212,7 @@ public static partial class ContentSeedData
         context.Monster.Add(monster);
     }
 
-    private static void Jaws_Zealot(ContentContextImplementation context)
+    private static void Jaws_Zealot(ContentContext context)
     {
         var game = GetGame(context, "jawsOfTheLion");
         if(MonsterExists(context, "zealot", game)) return;
@@ -243,7 +243,7 @@ public static partial class ContentSeedData
         context.Monster.Add(monster);
     }
 
-    private static void Jaws_BlackSludge(ContentContextImplementation context)
+    private static void Jaws_BlackSludge(ContentContext context)
     {
         var game = GetGame(context, "jawsOfTheLion");
         if(MonsterExists(context, "black_sludge", game)) return;
@@ -277,7 +277,7 @@ public static partial class ContentSeedData
 
     #endregion
 
-    private static void PlaceHolderMonsterAdd(ContentContextImplementation context)
+    private static void PlaceHolderMonsterAdd(ContentContext context)
     {
         var game = GetGame(context, "game_content_code");
         if(MonsterExists(context, "content_code", game)) return;

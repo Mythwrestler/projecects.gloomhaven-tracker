@@ -4,7 +4,7 @@ namespace GloomhavenTracker.Database.DataSeed;
 
 public static partial class ContentSeedData
 {
-    public static void Seed(ContentContextImplementation context)
+    public static void Seed(ContentContext context)
     {
         using (context)
         {

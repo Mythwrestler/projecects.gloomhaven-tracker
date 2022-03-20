@@ -136,10 +136,10 @@ builder.Services.Configure<JsonOptions>(options =>
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
 });
 
-builder.Services.AddDbContext<ContentContextImplementation>(optionsAction => {
+builder.Services.AddDbContext<ContentContext>(optionsAction => {
     optionsAction.UseNpgsql(
         dbConnectionString,
-        assembly => assembly.MigrationsAssembly(typeof(ContentContextImplementation).Assembly.FullName)
+        assembly => assembly.MigrationsAssembly(typeof(ContentContext).Assembly.FullName)
     );
 });
 
@@ -187,7 +187,7 @@ bool seedDefaultData = bool.Parse(Environment.GetEnvironmentVariable("DB_SEED_DA
 if(seedDefaultData) {
     using(var scope = app.Services.CreateScope())
     {
-        var dbContext = scope.ServiceProvider.GetRequiredService<ContentContextImplementation>();
+        var dbContext = scope.ServiceProvider.GetRequiredService<ContentContext>();
         ContentSeedData.Seed(dbContext);
     }
 }

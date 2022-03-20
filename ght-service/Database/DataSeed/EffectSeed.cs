@@ -4,7 +4,7 @@ namespace GloomhavenTracker.Database.DataSeed;
 
 public static partial class ContentSeedData
 {
-    private static Effect CheckAddEffect(ContentContextImplementation context, EFFECT_TYPE type, int value, int duration)
+    private static Effect CheckAddEffect(ContentContext context, EFFECT_TYPE type, int value, int duration)
     {
         var effect = context.Effect.Local.FirstOrDefault(e => e.Type == type && e.Value == value && e.Duration == duration);
         if(effect is null) 
