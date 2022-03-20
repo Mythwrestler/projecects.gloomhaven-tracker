@@ -28,7 +28,6 @@ public static partial class EntityDefinitions
     }
 }
 
-
 public class Monster
 {
     [Key]

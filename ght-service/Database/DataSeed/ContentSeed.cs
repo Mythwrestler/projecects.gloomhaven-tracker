@@ -11,6 +11,7 @@ public static partial class ContentSeedData
             context.Database.EnsureCreated();
             SeedGame(context);
             SeedMonsters(context);
+            SeedAttackModifiers(context);
             context.SaveChanges();
         }
     }
