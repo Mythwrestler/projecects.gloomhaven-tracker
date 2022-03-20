@@ -18,8 +18,9 @@ public class Monster
     [Required, MaxLength(500), StringLength(500)]
     public string Description { get; set; } = string.Empty;
     public List<MonsterStatSet> BaseStats { get; set; } = new List<MonsterStatSet>();
+    public Guid? GameId { get; set; }
+    public Game? Game { get; set; }
 }
-
 
 public class MonsterStatSet
 {
