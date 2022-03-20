@@ -7,4 +7,5 @@ public class Game
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public ICollection<Monster>? Monsters { get; set; }
+    public ICollection<AttackModifier>? BaseModifierDeck { get; set; }
 };
