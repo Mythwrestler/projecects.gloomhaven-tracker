@@ -7,12 +7,15 @@ public static partial class EntityDefinitions
 {
     public static void DefineAttackModifierEntities(this ModelBuilder builder)
     {
-        builder.Entity<AttackModifier>(attackModifierTable => {
-            attackModifierTable.HasIndex(attackMod => new {attackMod.GameId, attackMod.ContentCode}).IsUnique();
+        builder.Entity<AttackModifier>(attackModifierTable =>
+        {
+            attackModifierTable.HasIndex(attackMod => new { attackMod.GameId, attackMod.ContentCode }).IsUnique();
+            attackModifierTable.HasMany(ae => ae.Effects).WithOne(ae => ae.AttackModifier).OnDelete(DeleteBehavior.Restrict);
         });
 
-        builder.Entity<AttackModifierEffect>(attackModifierEffectTable => {
-            attackModifierEffectTable.HasKey(me => new {me.EffectId, me.AttackModifierId});
+        builder.Entity<AttackModifierEffect>(attackModifierEffectTable =>
+        {
+            attackModifierEffectTable.HasKey(me => new { me.EffectId, me.AttackModifierId });
         });
     }
 }
@@ -38,8 +41,8 @@ public class AttackModifier
 public class AttackModifierEffect
 {
     [Required]
-    public Guid EffectId {get; set;}
-    public Effect? Effect {get; set;}
+    public Guid EffectId { get; set; }
+    public Effect? Effect { get; set; }
     [Required]
     public Guid AttackModifierId { get; set; }
     public AttackModifier? AttackModifier { get; set; }

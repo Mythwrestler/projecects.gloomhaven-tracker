@@ -1,6 +1,5 @@
 ﻿using GloomhavenTracker.Database.Models.Content;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GloomhavenTracker.Database;
 
@@ -15,14 +14,22 @@ public class ContentContext : DbContext
     public DbSet<MonsterStatSet> MonsterStatSet => Set<MonsterStatSet>();
     public DbSet<MonsterDefenseEffect> MonsterDefenseEffect => Set<MonsterDefenseEffect>();
     public DbSet<MonsterAttackEffect> MonsterAttackEffect => Set<MonsterAttackEffect>();
+    public DbSet<Objective> Objective => Set<Objective>();
+    public DbSet<Scenario> Scenario => Set<Scenario>();
+    public DbSet<ScenarioMonster> ScenarioMonster => Set<ScenarioMonster>();
+    public DbSet<ScenarioObjective> ScenarioObjective => Set<ScenarioObjective>();
+    public DbSet<Character> Character => Set<Character>();
+    public DbSet<CharacterBaseStats> CharacterBaseStats => Set<CharacterBaseStats>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
-
         builder.DefineGameEntities();
         builder.DefineEffectEntities();
         builder.DefineMonsterEntities();
         builder.DefineAttackModifierEntities();
+        builder.DefineObjectiveEntities();
+        builder.DefineScenarioEntities();
+        builder.DefineCharacterEntities();
     }
 
 }

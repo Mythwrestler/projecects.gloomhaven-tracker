@@ -277,6 +277,7 @@ public static partial class ContentSeedData
 
     #endregion
 
+
     private static void PlaceHolderMonsterAdd(ContentContext context)
     {
         var game = GetGame(context, "game_content_code");
