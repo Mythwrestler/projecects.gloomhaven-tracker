@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace GloomhavenTracker.Database.Models.Content;
 
@@ -28,12 +29,25 @@ public class MonsterStatSet
     public string Movement { get; set; } = string.Empty;
     public string Attack { get; set; } = string.Empty;
     public List<EFFECT_TYPE> Immunity { get; set; } = new List<EFFECT_TYPE>();
-    public List<MonsterEffect> DefenseEffects { get; set; } = new List<MonsterEffect>();
-    public List<MonsterEffect> AttackEffects { get; set; } = new List<MonsterEffect>();
+    public virtual ICollection<MonsterDefenseEffect> DefenseEffects { get; set; } = new HashSet<MonsterDefenseEffect>();
+    public virtual ICollection<MonsterAttackEffect> AttackEffects { get; set; } = new HashSet<MonsterAttackEffect>();
     public Boolean IsElite { get; set; }
     public Guid? MonsterId {get; set;}
     public Monster? Monster {get; set; }
 }
 
+public class MonsterAttackEffect
+{
+    public Guid? EffectId {get; set;}
+    public Effect? Effect {get; set;}
+    public Guid? MonsterStatSetId {get; set;}
+    public MonsterStatSet? MonsterStatSet {get; set;}
+}
 
-public class MonsterEffect : Effect {}
+public class MonsterDefenseEffect
+{
+    public Guid? EffectId {get; set;}
+    public Effect? Effect {get; set;}
+    public Guid? MonsterStatSetId {get; set;}
+    public MonsterStatSet? MonsterStatSet {get; set;}
+}

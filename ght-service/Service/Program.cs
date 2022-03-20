@@ -8,6 +8,7 @@ using GloomhavenTracker.Service.Hubs;
 using GloomhavenTracker.Service.Repos;
 using GloomhavenTracker.Service.SeedData;
 using GloomhavenTracker.Service.Services;
+using GloomhavenTracker.Database.DataSeed;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -181,8 +182,15 @@ if (httpLoggingEnabled)
 var app = builder.Build();
 
 //  Build and Seed Database
-// bool seedDefaultData = bool.Parse(Environment.GetEnvironmentVariable("DB_SEED_DATA") ?? "false");
-// if(seedDefaultData) SeedData.LoadDefaultContent(dbConnectionString);
+bool seedDefaultData = bool.Parse(Environment.GetEnvironmentVariable("DB_SEED_DATA") ?? "false");
+//if(seedDefaultData) SeedData.LoadDefaultContent(dbConnectionString);
+if(seedDefaultData) {
+    using(var scope = app.Services.CreateScope())
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<ContentContextImplementation>();
+        ContentSeedData.Seed(dbContext);
+    }
+}
 
 if (httpLoggingEnabled)
 {
