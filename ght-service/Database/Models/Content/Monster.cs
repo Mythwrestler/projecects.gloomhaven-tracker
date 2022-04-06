@@ -19,6 +19,7 @@ public static partial class EntityDefinitions
         {
             monsterStatTable.HasMany(ae => ae.AttackEffects).WithOne(me => me.MonsterStatSet).OnDelete(DeleteBehavior.Cascade);
             monsterStatTable.HasMany(ae => ae.DefenseEffects).WithOne(me => me.MonsterStatSet).OnDelete(DeleteBehavior.Cascade);
+            monsterStatTable.HasMany(ae => ae.DeathEffects).WithOne(me => me.MonsterStatSet).OnDelete(DeleteBehavior.Cascade);
             monsterStatTable.HasMany(mi => mi.Immunity).WithOne(me => me.MonsterStatSet).OnDelete(DeleteBehavior.Cascade);
         });
 
@@ -30,6 +31,11 @@ public static partial class EntityDefinitions
         builder.Entity<MonsterDefenseEffect>(monsterDefenseEffectTable =>
         {
             monsterDefenseEffectTable.HasKey(me => new { me.EffectId, me.MonsterStatSetId });
+        });
+
+        builder.Entity<MonsterDeathEffect>(monsterDeathEffectTable =>
+        {
+            monsterDeathEffectTable.HasKey(me => new { me.EffectId, me.MonsterStatSetId });
         });
 
         builder.Entity<MonsterBaseStatImmunity>(monsterBaseStatImmunityTable =>
@@ -48,8 +54,8 @@ public class Monster
     public string ContentCode { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
-    public ICollection<MonsterStatSet> BaseStats { get; set; } = new HashSet<MonsterStatSet>();
-    public ICollection<ScenarioMonster> ScenarioMonsters { get; set; } = new HashSet<ScenarioMonster>();
+    public virtual ICollection<MonsterStatSet> BaseStats { get; set; } = new HashSet<MonsterStatSet>();
+    public virtual ICollection<ScenarioMonster> ScenarioMonsters { get; set; } = new HashSet<ScenarioMonster>();
     [Required]
     public Guid GameId { get; set; }
     public Game? Game { get; set; }
@@ -63,9 +69,12 @@ public class MonsterStatSet
     public string Health { get; set; } = string.Empty;
     public string Movement { get; set; } = string.Empty;
     public string Attack { get; set; } = string.Empty;
+    public bool RangeAttackable { get; set; } = true;
+    public bool MeleeAttackable { get; set; } = true;
     public virtual ICollection<MonsterBaseStatImmunity> Immunity { get; set; } = new HashSet<MonsterBaseStatImmunity>();
     public virtual ICollection<MonsterDefenseEffect> DefenseEffects { get; set; } = new HashSet<MonsterDefenseEffect>();
     public virtual ICollection<MonsterAttackEffect> AttackEffects { get; set; } = new HashSet<MonsterAttackEffect>();
+    public virtual ICollection<MonsterDeathEffect> DeathEffects { get; set; } = new HashSet<MonsterDeathEffect>();
     public Boolean IsElite { get; set; }
     [Required]
     public Guid MonsterId { get; set; }
@@ -83,6 +92,16 @@ public class MonsterAttackEffect
 }
 
 public class MonsterDefenseEffect
+{
+    [Required]
+    public Guid EffectId { get; set; }
+    public Effect? Effect { get; set; }
+    [Required]
+    public Guid MonsterStatSetId { get; set; }
+    public MonsterStatSet? MonsterStatSet { get; set; }
+}
+
+public class MonsterDeathEffect
 {
     [Required]
     public Guid EffectId { get; set; }

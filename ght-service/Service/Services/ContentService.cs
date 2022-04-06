@@ -21,8 +21,13 @@ public interface ContentService
 public partial class ContentServiceImplementation : ContentService
 {
     private readonly ContentRepo _repo;
+    private readonly ContentEFRepo efRepo;
 
-    public ContentServiceImplementation(ContentRepo repo) => _repo = repo;
+    public ContentServiceImplementation(ContentRepo repo, ContentEFRepo efRepo)
+    {
+        _repo = repo;
+        this.efRepo = efRepo;
+    }
 
     public List<ContentSummary> GetContentSummary(CONTENT_TYPE kind, GAME_TYPE? gameCode = null)
     {
@@ -46,7 +51,8 @@ public partial class ContentServiceImplementation : ContentService
 
     public Monster GetMonsterDefaults(GAME_TYPE gameCode, string contentCode)
     {
-        return _repo.GetMonsterDefaults(gameCode, contentCode);
+        return efRepo.GetMonsterDefaults(gameCode, contentCode);
+        //return _repo.GetMonsterDefaults(gameCode, contentCode);
     }
 
     public Scenario GetScenarioDefaults(GAME_TYPE gameCode, string contentCode)

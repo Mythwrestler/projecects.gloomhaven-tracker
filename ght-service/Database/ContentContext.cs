@@ -14,6 +14,7 @@ public class ContentContext : DbContext
     public DbSet<Monster> Monster => Set<Monster>();
     public DbSet<MonsterStatSet> MonsterStatSet => Set<MonsterStatSet>();
     public DbSet<MonsterDefenseEffect> MonsterDefenseEffect => Set<MonsterDefenseEffect>();
+    public DbSet<MonsterDeathEffect> MonsterDeathEffect => Set<MonsterDeathEffect>();
     public DbSet<MonsterAttackEffect> MonsterAttackEffect => Set<MonsterAttackEffect>();
     public DbSet<MonsterBaseStatImmunity> MonsterBaseStatImmunity => Set<MonsterBaseStatImmunity>();
     public DbSet<Objective> Objective => Set<Objective>();

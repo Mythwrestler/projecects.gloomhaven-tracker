@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using GloomhavenTracker.Service.Hubs;
 using GloomhavenTracker.Service.Services;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace GloomhavenTracker.Service.BackgroundServices
@@ -12,17 +13,20 @@ namespace GloomhavenTracker.Service.BackgroundServices
     {
         private readonly IHubContext<CombatHub> _context;
 
-        private readonly CombatService _service;
+        private readonly IServiceScopeFactory scopeFactory;
 
-        public BattleHubMonitor(IHubContext<CombatHub> context, CombatService service)
+        public BattleHubMonitor(IHubContext<CombatHub> context, IServiceScopeFactory  scopeFactory)
         {
             _context = context;
-            _service = service;
+            this.scopeFactory = scopeFactory;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-             while (!stoppingToken.IsCancellationRequested)
+            using var scope = scopeFactory.CreateScope();
+            var service = scope.ServiceProvider.GetService<CombatService>();
+
+            while (!stoppingToken.IsCancellationRequested)
             {
                 await _context.Clients.All.SendAsync("serverMessage", $"Its Been 5 Seconds... Time for another message from the server. messageId: {Guid.NewGuid()}");
 

@@ -144,21 +144,23 @@ builder.Services.AddDbContext<ContentContext>(optionsAction => {
 });
 
 // Register Content DI
-builder.Services.AddSingleton<ContentService, ContentServiceImplementation>();
-builder.Services.AddSingleton<ContentRepo, ContentRepoImplementation>(factory =>
+builder.Services.AddScoped<ContentService, ContentServiceImplementation>();
+builder.Services.AddScoped<ContentRepo, ContentRepoImplementation>(factory =>
 {
     return new ContentRepoImplementation(dbConnectionString);
 });
+builder.Services.AddScoped<ContentEFRepo, ContentEFRepo>();
+
 
 //  Register Campaign DI
-builder.Services.AddSingleton<CampaignService, CampaignServiceImplementation>();
-builder.Services.AddSingleton<CampaignRepo, CampaignRepoImplementation>(factory => {
+builder.Services.AddScoped<CampaignService, CampaignServiceImplementation>();
+builder.Services.AddScoped<CampaignRepo, CampaignRepoImplementation>(factory => {
     return new CampaignRepoImplementation(dbConnectionString, factory.GetRequiredService<ILogger<CampaignRepoImplementation>>());
 });
 
 //  Register Combat DI
-builder.Services.AddSingleton<CombatService, CombatServiceImplentation>();
-builder.Services.AddSingleton<CombatRepo, CombatRepoImplementation>(factory =>
+builder.Services.AddScoped<CombatService, CombatServiceImplentation>();
+builder.Services.AddScoped<CombatRepo, CombatRepoImplementation>(factory =>
 {
     // return new CombatRepo(factory.GetRequiredService<IMemoryCache>(), dbConnectionString);
     return new CombatRepoImplementation(dbConnectionString, factory.GetRequiredService<ILogger<CombatRepoImplementation>>());
@@ -183,14 +185,7 @@ var app = builder.Build();
 
 //  Build and Seed Database
 bool seedDefaultData = bool.Parse(Environment.GetEnvironmentVariable("DB_SEED_DATA") ?? "false");
-//if(seedDefaultData) SeedData.LoadDefaultContent(dbConnectionString);
-if(seedDefaultData) {
-    using(var scope = app.Services.CreateScope())
-    {
-        var dbContext = scope.ServiceProvider.GetRequiredService<ContentContext>();
-        ContentSeedData.Seed(dbContext);
-    }
-}
+if(seedDefaultData) SeedData.LoadDefaultContent(dbConnectionString);
 
 if (httpLoggingEnabled)
 {

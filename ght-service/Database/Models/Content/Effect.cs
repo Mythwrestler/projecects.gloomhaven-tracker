@@ -16,6 +16,7 @@ public static partial class EntityDefinitions
             effectTable.HasMany(effect => effect.AttackModifierEffects).WithOne(ame => ame.Effect).OnDelete(DeleteBehavior.Restrict);
             effectTable.HasMany(effect => effect.MonsterDefenseEffects).WithOne(ame => ame.Effect).OnDelete(DeleteBehavior.Restrict);
             effectTable.HasMany(effect => effect.MonsterAttackEffects).WithOne(ame => ame.Effect).OnDelete(DeleteBehavior.Restrict);
+            effectTable.HasMany(effect => effect.MonsterDeathEffects).WithOne(ame => ame.Effect).OnDelete(DeleteBehavior.Restrict);
         });
     }
 }
@@ -31,6 +32,9 @@ public enum EFFECT_TYPE
     muddle,
     immobilize,
     curse,
+    disadvantage,
+    advantage,
+    damage,
 }
 
 public class Effect
@@ -40,7 +44,9 @@ public class Effect
     public EFFECT_TYPE Type { get; set; }
     public int Value { get; set; } = -1;
     public int Duration { get; set; } = -1;
+    public int Range { get; set; } = -1;
     public virtual ICollection<AttackModifierEffect> AttackModifierEffects { get; set; } = new HashSet<AttackModifierEffect>();
     public virtual ICollection<MonsterDefenseEffect> MonsterDefenseEffects { get; set; } = new HashSet<MonsterDefenseEffect>();
     public virtual ICollection<MonsterAttackEffect> MonsterAttackEffects { get; set; } = new HashSet<MonsterAttackEffect>();
+    public virtual ICollection<MonsterDeathEffect> MonsterDeathEffects { get; set; } = new HashSet<MonsterDeathEffect>();
 }

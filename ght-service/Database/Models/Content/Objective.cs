@@ -23,6 +23,8 @@ public class Objective
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public string Health { get; set; } = string.Empty;
+    public bool RangeAttackable { get; set; } = true;
+    public bool MeleeAttackable { get; set; } = true;
     public ICollection<ScenarioObjective> ScenarioObjectives { get; set; } = new HashSet<ScenarioObjective>();
     [Required]
     public Guid GameId { get; set; }
