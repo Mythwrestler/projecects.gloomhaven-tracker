@@ -8,14 +8,14 @@ public static partial class EntityDefinitions
 {
     public static void DefineMonsterEntities(this ModelBuilder builder)
     {
-        builder.Entity<Monster>(monsterTable =>
+        builder.Entity<MonsterDAO>(monsterTable =>
         {
             monsterTable.HasIndex(monster => new { monster.GameId, monster.ContentCode }).IsUnique();
             monsterTable.HasMany(monster => monster.BaseStats).WithOne(bs => bs.Monster).OnDelete(DeleteBehavior.Cascade);
             monsterTable.HasMany(monster => monster.ScenarioMonsters).WithOne(sm => sm.Monster).OnDelete(DeleteBehavior.Restrict);
         });
 
-        builder.Entity<MonsterStatSet>(monsterStatTable =>
+        builder.Entity<MonsterStatSetDAO>(monsterStatTable =>
         {
             monsterStatTable.HasMany(ae => ae.AttackEffects).WithOne(me => me.MonsterStatSet).OnDelete(DeleteBehavior.Cascade);
             monsterStatTable.HasMany(ae => ae.DefenseEffects).WithOne(me => me.MonsterStatSet).OnDelete(DeleteBehavior.Cascade);
@@ -23,22 +23,22 @@ public static partial class EntityDefinitions
             monsterStatTable.HasMany(mi => mi.Immunity).WithOne(me => me.MonsterStatSet).OnDelete(DeleteBehavior.Cascade);
         });
 
-        builder.Entity<MonsterAttackEffect>(monsterAttackEffectTable =>
+        builder.Entity<MonsterAttackEffectDAO>(monsterAttackEffectTable =>
         {
             monsterAttackEffectTable.HasKey(me => new { me.EffectId, me.MonsterStatSetId });
         });
 
-        builder.Entity<MonsterDefenseEffect>(monsterDefenseEffectTable =>
+        builder.Entity<MonsterDefenseEffectDAO>(monsterDefenseEffectTable =>
         {
             monsterDefenseEffectTable.HasKey(me => new { me.EffectId, me.MonsterStatSetId });
         });
 
-        builder.Entity<MonsterDeathEffect>(monsterDeathEffectTable =>
+        builder.Entity<MonsterDeathEffectDAO>(monsterDeathEffectTable =>
         {
             monsterDeathEffectTable.HasKey(me => new { me.EffectId, me.MonsterStatSetId });
         });
 
-        builder.Entity<MonsterBaseStatImmunity>(monsterBaseStatImmunityTable =>
+        builder.Entity<MonsterBaseStatImmunityDAO>(monsterBaseStatImmunityTable =>
         {
             monsterBaseStatImmunityTable.HasKey(mi => new {mi.MonsterStatSetId, mi.Effect});
             monsterBaseStatImmunityTable.Property(mi => mi.Effect).HasConversion(effectType);
@@ -47,21 +47,21 @@ public static partial class EntityDefinitions
     }
 }
 
-public class Monster
+public class MonsterDAO
 {
     [Key]
     public Guid Id { get; set; } = Guid.NewGuid();
     public string ContentCode { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
-    public virtual ICollection<MonsterStatSet> BaseStats { get; set; } = new HashSet<MonsterStatSet>();
-    public virtual ICollection<ScenarioMonster> ScenarioMonsters { get; set; } = new HashSet<ScenarioMonster>();
+    public virtual ICollection<MonsterStatSetDAO> BaseStats { get; set; } = new HashSet<MonsterStatSetDAO>();
+    public virtual ICollection<ScenarioMonsterDAO> ScenarioMonsters { get; set; } = new HashSet<ScenarioMonsterDAO>();
     [Required]
     public Guid GameId { get; set; }
-    public Game? Game { get; set; }
+    public GameDAO? Game { get; set; }
 }
 
-public class MonsterStatSet
+public class MonsterStatSetDAO
 {
     [Key]
     public Guid Id { get; set; } = Guid.NewGuid();
@@ -71,50 +71,50 @@ public class MonsterStatSet
     public string Attack { get; set; } = string.Empty;
     public bool RangeAttackable { get; set; } = true;
     public bool MeleeAttackable { get; set; } = true;
-    public virtual ICollection<MonsterBaseStatImmunity> Immunity { get; set; } = new HashSet<MonsterBaseStatImmunity>();
-    public virtual ICollection<MonsterDefenseEffect> DefenseEffects { get; set; } = new HashSet<MonsterDefenseEffect>();
-    public virtual ICollection<MonsterAttackEffect> AttackEffects { get; set; } = new HashSet<MonsterAttackEffect>();
-    public virtual ICollection<MonsterDeathEffect> DeathEffects { get; set; } = new HashSet<MonsterDeathEffect>();
+    public virtual ICollection<MonsterBaseStatImmunityDAO> Immunity { get; set; } = new HashSet<MonsterBaseStatImmunityDAO>();
+    public virtual ICollection<MonsterDefenseEffectDAO> DefenseEffects { get; set; } = new HashSet<MonsterDefenseEffectDAO>();
+    public virtual ICollection<MonsterAttackEffectDAO> AttackEffects { get; set; } = new HashSet<MonsterAttackEffectDAO>();
+    public virtual ICollection<MonsterDeathEffectDAO> DeathEffects { get; set; } = new HashSet<MonsterDeathEffectDAO>();
     public Boolean IsElite { get; set; }
     [Required]
     public Guid MonsterId { get; set; }
-    public Monster? Monster { get; set; }
+    public MonsterDAO? Monster { get; set; }
 }
 
-public class MonsterAttackEffect
+public class MonsterAttackEffectDAO
 {
     [Required]
     public Guid EffectId { get; set; }
-    public Effect? Effect { get; set; }
+    public EffectDAO? Effect { get; set; }
     [Required]
     public Guid MonsterStatSetId { get; set; }
-    public MonsterStatSet? MonsterStatSet { get; set; }
+    public MonsterStatSetDAO? MonsterStatSet { get; set; }
 }
 
-public class MonsterDefenseEffect
+public class MonsterDefenseEffectDAO
 {
     [Required]
     public Guid EffectId { get; set; }
-    public Effect? Effect { get; set; }
+    public EffectDAO? Effect { get; set; }
     [Required]
     public Guid MonsterStatSetId { get; set; }
-    public MonsterStatSet? MonsterStatSet { get; set; }
+    public MonsterStatSetDAO? MonsterStatSet { get; set; }
 }
 
-public class MonsterDeathEffect
+public class MonsterDeathEffectDAO
 {
     [Required]
     public Guid EffectId { get; set; }
-    public Effect? Effect { get; set; }
+    public EffectDAO? Effect { get; set; }
     [Required]
     public Guid MonsterStatSetId { get; set; }
-    public MonsterStatSet? MonsterStatSet { get; set; }
+    public MonsterStatSetDAO? MonsterStatSet { get; set; }
 }
 
-public class MonsterBaseStatImmunity
+public class MonsterBaseStatImmunityDAO
 {
     [Required]
     public Guid MonsterStatSetId { get; set; }
-    public MonsterStatSet? MonsterStatSet { get; set; }
+    public MonsterStatSetDAO? MonsterStatSet { get; set; }
     public EFFECT_TYPE Effect { get; set; }
 }

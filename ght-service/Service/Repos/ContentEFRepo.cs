@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using GloomhavenTracker.Database;
+using GloomhavenTracker.Database.Models.Content;
 using GloomhavenTracker.Service.Models.Content;
 using Microsoft.EntityFrameworkCore;
 
@@ -38,7 +39,7 @@ public class ContentEFRepo : ContentRepo
     public Monster GetMonsterDefaults(GAME_TYPE gameCode, string contentCode)
     {
         var gameString = GameUtils.GameTypeString(gameCode);
-        Database.Models.Content.Monster? monster = context.Monster
+        MonsterDAO? monster = context.Monster
             .Where(monster => monster.Game.ContentCode == gameString && monster.ContentCode == contentCode)
             .Include(monster => monster.BaseStats).ThenInclude(bs => bs.AttackEffects)
             .Include(monster => monster.BaseStats).ThenInclude(bs => bs.DefenseEffects)

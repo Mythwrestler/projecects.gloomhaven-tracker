@@ -8,7 +8,6 @@ using GloomhavenTracker.Service.Hubs;
 using GloomhavenTracker.Service.Repos;
 using GloomhavenTracker.Service.SeedData;
 using GloomhavenTracker.Service.Services;
-using GloomhavenTracker.Database.DataSeed;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;

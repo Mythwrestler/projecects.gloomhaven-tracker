@@ -6,23 +6,23 @@ namespace GloomhavenTracker.Database;
 public class ContentContext : DbContext
 {
     public ContentContext(DbContextOptions options): base(options) {}
-    public DbSet<Game> Game => Set<Game>();
-    public DbSet<Effect> Effect => Set<Effect>();
-    public DbSet<AttackModifier> AttackModifier => Set<AttackModifier>();
-    public DbSet<AttackModifierEffect> AttackModifierEffect => Set<AttackModifierEffect>();
-    public DbSet<GameBaseAttackModifier> GameBaseAttackModifiers => Set<GameBaseAttackModifier>();
-    public DbSet<Monster> Monster => Set<Monster>();
-    public DbSet<MonsterStatSet> MonsterStatSet => Set<MonsterStatSet>();
-    public DbSet<MonsterDefenseEffect> MonsterDefenseEffect => Set<MonsterDefenseEffect>();
-    public DbSet<MonsterDeathEffect> MonsterDeathEffect => Set<MonsterDeathEffect>();
-    public DbSet<MonsterAttackEffect> MonsterAttackEffect => Set<MonsterAttackEffect>();
-    public DbSet<MonsterBaseStatImmunity> MonsterBaseStatImmunity => Set<MonsterBaseStatImmunity>();
-    public DbSet<Objective> Objective => Set<Objective>();
-    public DbSet<Scenario> Scenario => Set<Scenario>();
-    public DbSet<ScenarioMonster> ScenarioMonster => Set<ScenarioMonster>();
-    public DbSet<ScenarioObjective> ScenarioObjective => Set<ScenarioObjective>();
-    public DbSet<Character> Character => Set<Character>();
-    public DbSet<CharacterBaseStats> CharacterBaseStats => Set<CharacterBaseStats>();
+    public DbSet<GameDAO> Game => Set<GameDAO>();
+    public DbSet<EffectDAO> Effect => Set<EffectDAO>();
+    public DbSet<AttackModifierDAO> AttackModifier => Set<AttackModifierDAO>();
+    public DbSet<AttackModifierEffectDAO> AttackModifierEffect => Set<AttackModifierEffectDAO>();
+    public DbSet<GameBaseAttackModifierDAO> GameBaseAttackModifiers => Set<GameBaseAttackModifierDAO>();
+    public DbSet<MonsterDAO> Monster => Set<MonsterDAO>();
+    public DbSet<MonsterStatSetDAO> MonsterStatSet => Set<MonsterStatSetDAO>();
+    public DbSet<MonsterDefenseEffectDAO> MonsterDefenseEffect => Set<MonsterDefenseEffectDAO>();
+    public DbSet<MonsterDeathEffectDAO> MonsterDeathEffect => Set<MonsterDeathEffectDAO>();
+    public DbSet<MonsterAttackEffectDAO> MonsterAttackEffect => Set<MonsterAttackEffectDAO>();
+    public DbSet<MonsterBaseStatImmunityDAO> MonsterBaseStatImmunity => Set<MonsterBaseStatImmunityDAO>();
+    public DbSet<ObjectiveDAO> Objective => Set<ObjectiveDAO>();
+    public DbSet<ScenarioDAO> Scenario => Set<ScenarioDAO>();
+    public DbSet<ScenarioMonsterDAO> ScenarioMonster => Set<ScenarioMonsterDAO>();
+    public DbSet<ScenarioObjectiveDAO> ScenarioObjective => Set<ScenarioObjectiveDAO>();
+    public DbSet<CharacterDAO> Character => Set<CharacterDAO>();
+    public DbSet<CharacterBaseStatsDAO> CharacterBaseStats => Set<CharacterBaseStatsDAO>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

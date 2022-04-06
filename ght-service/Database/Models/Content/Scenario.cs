@@ -7,7 +7,7 @@ public static partial class EntityDefinitions
 {
     public static void DefineScenarioEntities(this ModelBuilder builder)
     {
-        builder.Entity<Scenario>(scenarioTable =>
+        builder.Entity<ScenarioDAO>(scenarioTable =>
         {
             scenarioTable.HasIndex(scenarioTable => new { scenarioTable.GameId, scenarioTable.ContentCode });
             scenarioTable.HasIndex(scenarioTable => new { scenarioTable.GameId, scenarioTable.ScenarioNumber });
@@ -15,12 +15,12 @@ public static partial class EntityDefinitions
             scenarioTable.HasMany(so => so.Objectives).WithOne(so => so.Scenario).OnDelete(DeleteBehavior.Restrict);
         });
 
-        builder.Entity<ScenarioMonster>(scenarioMonsterTable =>
+        builder.Entity<ScenarioMonsterDAO>(scenarioMonsterTable =>
         {
             scenarioMonsterTable.HasKey(sm => new { sm.ScenarioId, sm.MonsterId });
         });
 
-        builder.Entity<ScenarioObjective>(scenarioObjectiveTable =>
+        builder.Entity<ScenarioObjectiveDAO>(scenarioObjectiveTable =>
         {
             scenarioObjectiveTable.HasKey(so => new { so.ScenarioId, so.ObjectiveId });
         });
@@ -28,7 +28,7 @@ public static partial class EntityDefinitions
     }
 }
 
-public class Scenario
+public class ScenarioDAO
 {
     [Key]
     public Guid Id { get; set; } = Guid.NewGuid();
@@ -40,29 +40,29 @@ public class Scenario
     public string CityMapLocation { get; set; } = string.Empty;
     public List<int> ScenarioBookPages { get; set; } = new List<int>();
     public List<int> SupplementalBookPages { get; set; } = new List<int>();
-    public virtual ICollection<ScenarioMonster> Monsters { get; set; } = new HashSet<ScenarioMonster>();
-    public virtual ICollection<ScenarioObjective> Objectives { get; set; } = new HashSet<ScenarioObjective>();
+    public virtual ICollection<ScenarioMonsterDAO> Monsters { get; set; } = new HashSet<ScenarioMonsterDAO>();
+    public virtual ICollection<ScenarioObjectiveDAO> Objectives { get; set; } = new HashSet<ScenarioObjectiveDAO>();
     [Required]
     public Guid GameId { get; set; }
-    public Game? Game { get; set; }
+    public GameDAO? Game { get; set; }
 }
 
-public class ScenarioMonster
+public class ScenarioMonsterDAO
 {
     [Required]
     public Guid ScenarioId { get; set; }
-    public Scenario? Scenario { get; set; }
+    public ScenarioDAO? Scenario { get; set; }
     [Required]
     public Guid MonsterId { get; set; }
-    public Monster? Monster { get; set; }
+    public MonsterDAO? Monster { get; set; }
 }
 
-public class ScenarioObjective
+public class ScenarioObjectiveDAO
 {
     [Required]
     public Guid ScenarioId { get; set; }
-    public Scenario? Scenario { get; set; }
+    public ScenarioDAO? Scenario { get; set; }
     [Required]
     public Guid ObjectiveId { get; set; }
-    public Objective? Objective { get; set; }
+    public ObjectiveDAO? Objective { get; set; }
 }

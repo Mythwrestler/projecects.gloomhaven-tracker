@@ -7,7 +7,7 @@ public static partial class EntityDefinitions
 {
     public static void DefineObjectiveEntities(this ModelBuilder builder)
     {
-        builder.Entity<Objective>(objectiveTable =>
+        builder.Entity<ObjectiveDAO>(objectiveTable =>
         {
             objectiveTable.HasIndex(objectiveTable => new { objectiveTable.GameId, objectiveTable.ContentCode });
             objectiveTable.HasMany(objective => objective.ScenarioObjectives).WithOne(so => so.Objective).OnDelete(DeleteBehavior.Restrict);
@@ -15,7 +15,7 @@ public static partial class EntityDefinitions
     }
 }
 
-public class Objective
+public class ObjectiveDAO
 {
     [Key]
     public Guid Id { get; set; } = Guid.NewGuid();
@@ -25,8 +25,8 @@ public class Objective
     public string Health { get; set; } = string.Empty;
     public bool RangeAttackable { get; set; } = true;
     public bool MeleeAttackable { get; set; } = true;
-    public ICollection<ScenarioObjective> ScenarioObjectives { get; set; } = new HashSet<ScenarioObjective>();
+    public ICollection<ScenarioObjectiveDAO> ScenarioObjectives { get; set; } = new HashSet<ScenarioObjectiveDAO>();
     [Required]
     public Guid GameId { get; set; }
-    public Game? Game { get; set; }
+    public GameDAO? Game { get; set; }
 }
