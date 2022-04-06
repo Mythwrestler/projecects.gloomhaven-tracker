@@ -15,6 +15,7 @@ public class ContentContext : DbContext
     public DbSet<MonsterStatSet> MonsterStatSet => Set<MonsterStatSet>();
     public DbSet<MonsterDefenseEffect> MonsterDefenseEffect => Set<MonsterDefenseEffect>();
     public DbSet<MonsterAttackEffect> MonsterAttackEffect => Set<MonsterAttackEffect>();
+    public DbSet<MonsterBaseStatImmunity> MonsterBaseStatImmunity => Set<MonsterBaseStatImmunity>();
     public DbSet<Objective> Objective => Set<Objective>();
     public DbSet<Scenario> Scenario => Set<Scenario>();
     public DbSet<ScenarioMonster> ScenarioMonster => Set<ScenarioMonster>();
@@ -32,5 +33,4 @@ public class ContentContext : DbContext
         builder.DefineScenarioEntities();
         builder.DefineCharacterEntities();
     }
-
 }

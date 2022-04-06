@@ -35,7 +35,7 @@
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "Apply EF Core Migration",
+            "label": "Update EF Migration Database",
             "command": "dotnet",
             "type": "process",
             "args": [
@@ -44,8 +44,24 @@
                 "update",
                 "--project",
                 "${workspaceFolder}/Database/ght-database.csproj",
-                "--startup-project"
-                ,"${workspaceFolder}/Service"
+                "--startup-project",
+                "${workspaceFolder}/Service"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Drop EF Migraiton Database",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "ef",
+                "database",
+                "drop",
+                "--project",
+                "${workspaceFolder}/Database/ght-database.csproj",
+                "--startup-project",
+                "${workspaceFolder}/Service",
+                "--force"
             ],
             "problemMatcher": "$msCompile"
         },

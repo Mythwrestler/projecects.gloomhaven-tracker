@@ -31,16 +31,18 @@ public static partial class ContentSeedData
     }
 
     private static Monster BuildMonster(string code, string name, string description, Game game) => new Monster() {ContentCode = code, Name = name, Description = description, GameId = game.Id, Game = game };
-    private static MonsterStatSet BuildMonsterStatSet(int level, bool isElite, string attack, string health, string movement, List<EFFECT_TYPE> immunity, Monster monster, List<Effect> defenseEffects, List<Effect> attackEffects)
+    private static MonsterStatSet BuildMonsterStatSet(int level, bool isElite, string attack, string health, string movement, List<EFFECT_TYPE> immunities, Monster monster, List<Effect> defenseEffects, List<Effect> attackEffects)
     {
-        var statSet = BuildBaseMonsterStatSet(level, isElite, attack, health, movement, immunity, monster);
+        var statSet = BuildBaseMonsterStatSet(level, isElite, attack, health, movement, monster);
+        if(immunities.Count() > 0) statSet.Immunity = BuildImmunityStats(statSet, immunities);
         if(defenseEffects.Count() > 0) statSet.DefenseEffects = BuildDefenseEffects(statSet, defenseEffects);
-        if(attackEffects.Count() > 0)statSet.AttackEffects = BuildAttackEffects(statSet, attackEffects);
+        if(attackEffects.Count() > 0) statSet.AttackEffects = BuildAttackEffects(statSet, attackEffects);
         return statSet;
     }
-    private static MonsterStatSet BuildBaseMonsterStatSet(int level, bool isElite, string attack, string health, string movement, List<EFFECT_TYPE> immunity, Monster monster) => new MonsterStatSet() {Level = level, IsElite = isElite, Attack = attack, Movement = movement, Health = health, Immunity=immunity, Monster = monster, MonsterId = monster.Id};
+    private static MonsterStatSet BuildBaseMonsterStatSet(int level, bool isElite, string attack, string health, string movement, Monster monster) => new MonsterStatSet() {Level = level, IsElite = isElite, Attack = attack, Movement = movement, Health = health, Monster = monster, MonsterId = monster.Id};
     private static List<MonsterAttackEffect> BuildAttackEffects(MonsterStatSet stats, List<Effect> effects) => effects.Select(effect => new MonsterAttackEffect(){EffectId=effect.Id, Effect=effect, MonsterStatSetId=stats.Id, MonsterStatSet=stats}).ToList();
     private static List<MonsterDefenseEffect> BuildDefenseEffects(MonsterStatSet stats, List<Effect> effects) => effects.Select(effect => new MonsterDefenseEffect(){EffectId=effect.Id, Effect=effect, MonsterStatSetId=stats.Id, MonsterStatSet=stats}).ToList();
+    private static List<MonsterBaseStatImmunity> BuildImmunityStats(MonsterStatSet stats, List<EFFECT_TYPE> immunities) => immunities.Select(immunity => new MonsterBaseStatImmunity(){MonsterStatSetId=stats.Id, MonsterStatSet=stats, Effect=immunity}).ToList();
 
     #endregion
 
@@ -243,6 +245,37 @@ public static partial class ContentSeedData
         context.Monster.Add(monster);
     }
 
+    private static void Jaws_StoneGolem(ContentContext context)
+    {
+        var game = GetGame(context, "jawsOfTheLion");
+        if(MonsterExists(context, "stone_golem", game)) return;
+
+        Monster monster = BuildMonster("stone_golem", "Stone Golem", "Monster: Stone Golem", game);
+        List<EFFECT_TYPE> immunity = new List<EFFECT_TYPE>();
+
+        monster.BaseStats = new List<MonsterStatSet>() {
+            BuildMonsterStatSet(0, false, "3", "10", "1", immunity, monster, new List<Effect>(), new List<Effect>()),
+            BuildMonsterStatSet(1, false, "3", "10", "1", immunity, monster, new List<Effect>(){CheckAddEffect(context, EFFECT_TYPE.shield, 1, -1)}, new List<Effect>()),
+            BuildMonsterStatSet(2, false, "4", "11", "1", immunity, monster, new List<Effect>(){CheckAddEffect(context, EFFECT_TYPE.shield, 1, -1)}, new List<Effect>()),
+            BuildMonsterStatSet(3, false, "4", "11", "1", immunity, monster, new List<Effect>(){CheckAddEffect(context, EFFECT_TYPE.shield, 2, -1)}, new List<Effect>()),
+            BuildMonsterStatSet(4, false, "4", "12", "2", immunity, monster, new List<Effect>(){CheckAddEffect(context, EFFECT_TYPE.shield, 2, -1)}, new List<Effect>()),
+            BuildMonsterStatSet(5, false, "5", "13", "2", immunity, monster, new List<Effect>(){CheckAddEffect(context, EFFECT_TYPE.shield, 2, -1)}, new List<Effect>()),
+            BuildMonsterStatSet(6, false, "5", "16", "2", immunity, monster, new List<Effect>(){CheckAddEffect(context, EFFECT_TYPE.shield, 2, -1)}, new List<Effect>()),
+            BuildMonsterStatSet(7, false, "5", "16", "2", immunity, monster, new List<Effect>(){CheckAddEffect(context, EFFECT_TYPE.shield, 3, -1)}, new List<Effect>()),
+
+            BuildMonsterStatSet(0, true, "4", "10", "2", immunity, monster, new List<Effect>(){CheckAddEffect(context, EFFECT_TYPE.shield, 1, -1)}, new List<Effect>()),
+            BuildMonsterStatSet(1, true, "4", "10", "2", immunity, monster, new List<Effect>(){CheckAddEffect(context, EFFECT_TYPE.shield, 2, -1)}, new List<Effect>()),
+            BuildMonsterStatSet(2, true, "5", "13", "2", immunity, monster, new List<Effect>(){CheckAddEffect(context, EFFECT_TYPE.shield, 2, -1)}, new List<Effect>()),
+            BuildMonsterStatSet(3, true, "5", "14", "2", immunity, monster, new List<Effect>(){CheckAddEffect(context, EFFECT_TYPE.shield, 3, -1)}, new List<Effect>()),
+            BuildMonsterStatSet(4, true, "6", "16", "2", immunity, monster, new List<Effect>(){CheckAddEffect(context, EFFECT_TYPE.shield, 3, -1)}, new List<Effect>()),
+            BuildMonsterStatSet(5, true, "6", "18", "3", immunity, monster, new List<Effect>(){CheckAddEffect(context, EFFECT_TYPE.shield, 3, -1)}, new List<Effect>()),
+            BuildMonsterStatSet(6, true, "7", "20", "3", immunity, monster, new List<Effect>(){CheckAddEffect(context, EFFECT_TYPE.shield, 3, -1)}, new List<Effect>()),
+            BuildMonsterStatSet(7, true, "7", "21", "3", immunity, monster, new List<Effect>(){CheckAddEffect(context, EFFECT_TYPE.shield, 4, -1)}, new List<Effect>())
+        };
+        
+        context.Monster.Add(monster);
+    }
+
     private static void Jaws_BlackSludge(ContentContext context)
     {
         var game = GetGame(context, "jawsOfTheLion");
@@ -274,6 +307,8 @@ public static partial class ContentSeedData
         
         context.Monster.Add(monster);
     }
+
+
 
     #endregion
 

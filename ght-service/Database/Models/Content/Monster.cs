@@ -11,14 +11,15 @@ public static partial class EntityDefinitions
         builder.Entity<Monster>(monsterTable =>
         {
             monsterTable.HasIndex(monster => new { monster.GameId, monster.ContentCode }).IsUnique();
-            monsterTable.HasMany(monster => monster.BaseStats).WithOne(bs => bs.Monster).OnDelete(DeleteBehavior.Restrict);
+            monsterTable.HasMany(monster => monster.BaseStats).WithOne(bs => bs.Monster).OnDelete(DeleteBehavior.Cascade);
             monsterTable.HasMany(monster => monster.ScenarioMonsters).WithOne(sm => sm.Monster).OnDelete(DeleteBehavior.Restrict);
         });
 
         builder.Entity<MonsterStatSet>(monsterStatTable =>
         {
-            monsterStatTable.HasMany(ae => ae.AttackEffects).WithOne(me => me.MonsterStatSet).OnDelete(DeleteBehavior.Restrict);
-            monsterStatTable.HasMany(ae => ae.DefenseEffects).WithOne(me => me.MonsterStatSet).OnDelete(DeleteBehavior.Restrict);
+            monsterStatTable.HasMany(ae => ae.AttackEffects).WithOne(me => me.MonsterStatSet).OnDelete(DeleteBehavior.Cascade);
+            monsterStatTable.HasMany(ae => ae.DefenseEffects).WithOne(me => me.MonsterStatSet).OnDelete(DeleteBehavior.Cascade);
+            monsterStatTable.HasMany(mi => mi.Immunity).WithOne(me => me.MonsterStatSet).OnDelete(DeleteBehavior.Cascade);
         });
 
         builder.Entity<MonsterAttackEffect>(monsterAttackEffectTable =>
@@ -29,6 +30,12 @@ public static partial class EntityDefinitions
         builder.Entity<MonsterDefenseEffect>(monsterDefenseEffectTable =>
         {
             monsterDefenseEffectTable.HasKey(me => new { me.EffectId, me.MonsterStatSetId });
+        });
+
+        builder.Entity<MonsterBaseStatImmunity>(monsterBaseStatImmunityTable =>
+        {
+            monsterBaseStatImmunityTable.HasKey(mi => new {mi.MonsterStatSetId, mi.Effect});
+            monsterBaseStatImmunityTable.Property(mi => mi.Effect).HasConversion(effectType);
         });
 
     }
@@ -56,7 +63,7 @@ public class MonsterStatSet
     public string Health { get; set; } = string.Empty;
     public string Movement { get; set; } = string.Empty;
     public string Attack { get; set; } = string.Empty;
-    public List<EFFECT_TYPE> Immunity { get; set; } = new List<EFFECT_TYPE>();
+    public virtual ICollection<MonsterBaseStatImmunity> Immunity { get; set; } = new HashSet<MonsterBaseStatImmunity>();
     public virtual ICollection<MonsterDefenseEffect> DefenseEffects { get; set; } = new HashSet<MonsterDefenseEffect>();
     public virtual ICollection<MonsterAttackEffect> AttackEffects { get; set; } = new HashSet<MonsterAttackEffect>();
     public Boolean IsElite { get; set; }
@@ -83,4 +90,12 @@ public class MonsterDefenseEffect
     [Required]
     public Guid MonsterStatSetId { get; set; }
     public MonsterStatSet? MonsterStatSet { get; set; }
+}
+
+public class MonsterBaseStatImmunity
+{
+    [Required]
+    public Guid MonsterStatSetId { get; set; }
+    public MonsterStatSet? MonsterStatSet { get; set; }
+    public EFFECT_TYPE Effect { get; set; }
 }
