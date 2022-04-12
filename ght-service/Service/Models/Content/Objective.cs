@@ -15,6 +15,12 @@ public class Objective
     [JsonPropertyName("description")]
     public string Description { get; set; } = string.Empty;
 
+    [JsonPropertyName("rangeAttackable")]
+    public bool RangeAttackable { get; set; } = true;
+
+    [JsonPropertyName("meleeAttackable")]
+    public bool MeleeAttackable { get; set; } = true;
+
     [JsonPropertyName("health")]
     public string Health { get; set; } = string.Empty;
 

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using AutoMapper;
 using GloomhavenTracker.Database;
 using GloomhavenTracker.Database.Models.Content;
 using GloomhavenTracker.Service.Models.Content;
@@ -10,10 +11,12 @@ namespace GloomhavenTracker.Service.Repos;
 public class ContentEFRepo : ContentRepo
 {
     private readonly ContentContext context;
+    private readonly IMapper mapper;
 
-    public ContentEFRepo (ContentContext context)
+    public ContentEFRepo (ContentContext context, IMapper mapper)
     {
         this.context = context;
+        this.mapper = mapper;
     }
 
     public List<AttackModifier> GetBaseModifierDeck(GAME_TYPE gameCode)
@@ -41,32 +44,41 @@ public class ContentEFRepo : ContentRepo
         var gameString = GameUtils.GameTypeString(gameCode);
         MonsterDAO? monster = context.Monster
             .Where(monster => monster.Game.ContentCode == gameString && monster.ContentCode == contentCode)
-            .Include(monster => monster.BaseStats).ThenInclude(bs => bs.AttackEffects)
-            .Include(monster => monster.BaseStats).ThenInclude(bs => bs.DefenseEffects)
+            .Include(monster => monster.BaseStats).ThenInclude(bs => bs.AttackEffects).ThenInclude(ae => ae.Effect)
+            .Include(monster => monster.BaseStats).ThenInclude(bs => bs.DefenseEffects).ThenInclude(de => de.Effect)
+            .Include(monster => monster.BaseStats).ThenInclude(bs => bs.DeathEffects).ThenInclude(de => de.Effect)
             .Include(monster => monster.BaseStats).ThenInclude(bs => bs.Immunity)
             .FirstOrDefault();
         if(monster is null) throw new KeyNotFoundException("Monster Content Code Not Found");
-        return new Monster()
-        {
-            ContentCode = monster.ContentCode,
-            Name = monster.Name,
-            Description = monster.Description,
-            BaseStats = new BaseMonsterStatSet()
-            {
-                Elite = monster.BaseStats.Where(bs => bs.IsElite).Select(bs => new MonsterStatSet(){Level = bs.Level, Attack = bs.Attack, Health = bs.Health, Movement = bs.Movement}).ToList(),
-                Standard = monster.BaseStats.Where(bs => !bs.IsElite).Select(bs => new MonsterStatSet(){Level = bs.Level, Attack = bs.Attack, Health = bs.Health, Movement = bs.Movement}).ToList()
-            }
-        };
+
+        return mapper.Map<Monster>(monster);
     }
 
+    public List<ScenarioSummary> GetScenarios(GAME_TYPE gameCode)
+    {
+        var gameString = GameUtils.GameTypeString(gameCode);
+        List<ScenarioDAO> scenarios = context.Scenario
+            .Where(scenario => scenario.Game.ContentCode == gameString)
+            .ToList();
+        if(scenarios.Count() == 0) throw new KeyNotFoundException("Game Content Code Not Found");
+
+        return mapper.Map<List<Scenario>>(scenarios).Select(scenario => scenario.Summary).ToList();
+    }
+    
     public Scenario GetScenarioDefaults(GAME_TYPE gameCode, string contentCode)
     {
-        throw new System.NotImplementedException();
-    }
+        var gameString = GameUtils.GameTypeString(gameCode);
+        ScenarioDAO? scenario = context.Scenario
+            .Where(scenario => scenario.Game.ContentCode == gameString && scenario.ContentCode == contentCode)
+            .Include(scenario => scenario.Monsters).ThenInclude(sm => sm.Monster).ThenInclude(monster => monster.BaseStats).ThenInclude(bs => bs.AttackEffects).ThenInclude(ae => ae.Effect)
+            .Include(scenario => scenario.Monsters).ThenInclude(sm => sm.Monster).ThenInclude(monster => monster.BaseStats).ThenInclude(bs => bs.DefenseEffects).ThenInclude(de => de.Effect)
+            .Include(scenario => scenario.Monsters).ThenInclude(sm => sm.Monster).ThenInclude(monster => monster.BaseStats).ThenInclude(bs => bs.DeathEffects).ThenInclude(de => de.Effect)
+            .Include(scenario => scenario.Monsters).ThenInclude(sm => sm.Monster).ThenInclude(monster => monster.BaseStats).ThenInclude(bs => bs.Immunity)
+            .FirstOrDefault();
 
-    public List<ScenarioSummary> GetScenarioSummary(GAME_TYPE gameCode)
-    {
-        throw new System.NotImplementedException();
+        if(scenario is null) throw new KeyNotFoundException("Scenario Content Code Not Found");
+
+        return mapper.Map<Scenario>(scenario);
     }
 
     public bool IsValidCode(string kind, string contentCode, string? gameCode)

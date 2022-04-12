@@ -6,7 +6,7 @@ namespace GloomhavenTracker.Database.Models.Content;
 
 public static partial class EntityDefinitions
 {
-    private static EnumToStringConverter<EFFECT_TYPE> effectType = new EnumToStringConverter<EFFECT_TYPE>();
+    private static EnumToStringConverter<EFFECT_TYPE_DAO> effectType = new EnumToStringConverter<EFFECT_TYPE_DAO>();
     public static void DefineEffectEntities(this ModelBuilder builder)
     {
         builder.Entity<EffectDAO>(effectTable =>
@@ -21,7 +21,7 @@ public static partial class EntityDefinitions
     }
 }
 
-public enum EFFECT_TYPE
+public enum EFFECT_TYPE_DAO
 {
     strength,
     poison,
@@ -41,7 +41,7 @@ public class EffectDAO
 {
     [Key]
     public Guid Id { get; set; } = Guid.NewGuid();
-    public EFFECT_TYPE Type { get; set; }
+    public EFFECT_TYPE_DAO Type { get; set; }
     public int Value { get; set; } = -1;
     public int Duration { get; set; } = -1;
     public int Range { get; set; } = -1;

@@ -17,6 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using GloomhavenTracker.Service.Models.Content;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -140,6 +141,10 @@ builder.Services.AddDbContext<ContentContext>(optionsAction => {
         dbConnectionString,
         assembly => assembly.MigrationsAssembly(typeof(ContentContext).Assembly.FullName)
     );
+});
+
+builder.Services.AddAutoMapper(cfg => {
+    cfg.AddProfile(new ContentMapperProfile());
 });
 
 // Register Content DI

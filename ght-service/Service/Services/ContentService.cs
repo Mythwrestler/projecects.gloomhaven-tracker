@@ -36,7 +36,8 @@ public partial class ContentServiceImplementation : ContentService
 
     public List<ScenarioSummary> GetScenarioSummary(GAME_TYPE gameCode)
     {
-        return _repo.GetScenarioSummary(gameCode);
+        //return _repo.GetScenarioSummary(gameCode);
+        return efRepo.GetScenarios(gameCode);
     }
 
     public Game GetGameDefaults(GAME_TYPE gameCode)
@@ -57,7 +58,8 @@ public partial class ContentServiceImplementation : ContentService
 
     public Scenario GetScenarioDefaults(GAME_TYPE gameCode, string contentCode)
     {
-        return _repo.GetScenarioDefaults(gameCode, contentCode);
+        return efRepo.GetScenarioDefaults(gameCode, contentCode);
+        //return _repo.GetScenarioDefaults(gameCode, contentCode);
     }
 
     public List<AttackModifier> GetBaseModDeck(GAME_TYPE gameCode)

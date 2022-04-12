@@ -116,5 +116,5 @@ public class MonsterBaseStatImmunityDAO
     [Required]
     public Guid MonsterStatSetId { get; set; }
     public MonsterStatSetDAO? MonsterStatSet { get; set; }
-    public EFFECT_TYPE Effect { get; set; }
+    public EFFECT_TYPE_DAO Effect { get; set; }
 }

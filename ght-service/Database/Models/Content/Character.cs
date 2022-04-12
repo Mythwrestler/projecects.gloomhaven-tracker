@@ -15,7 +15,7 @@ public static partial class EntityDefinitions
 
         builder.Entity<CharacterBaseStatsDAO>(characterBaseStatsTable =>
         {
-            characterBaseStatsTable.HasIndex(stat => new { stat.CharacterId, stat.level });
+            characterBaseStatsTable.HasIndex(stat => new { stat.CharacterId, stat.Level });
         });
 
     }
@@ -38,9 +38,9 @@ public class CharacterBaseStatsDAO
 {
     [Key]
     public Guid Id { get; set; }
-    public int level { get; set; }
-    public int experience { get; set; }
-    public int health { get; set; }
+    public int Level { get; set; }
+    public int Experience { get; set; }
+    public int Health { get; set; }
     [Required]
     public Guid CharacterId { get; set; }
     public CharacterDAO? Character { get; set; }

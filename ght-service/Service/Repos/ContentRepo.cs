@@ -11,7 +11,7 @@ namespace GloomhavenTracker.Service.Repos;
 public interface ContentRepo
 {
     public List<ContentSummary> GetContentSummary(CONTENT_TYPE contentType, GAME_TYPE? gameCode);
-    public List<ScenarioSummary> GetScenarioSummary(GAME_TYPE gameCode);
+    public List<ScenarioSummary> GetScenarios(GAME_TYPE gameCode);
     public Game GetGameDefaults(GAME_TYPE gameCode);
     public Character GetCharacterDefaults(GAME_TYPE gameCode, string contentCode);
     public Monster GetMonsterDefaults(GAME_TYPE gameCode, string contentCode);
@@ -67,7 +67,7 @@ public class ContentRepoImplementation : ContentRepo
         }
     }
 
-    public List<ScenarioSummary> GetScenarioSummary(GAME_TYPE gameCode) {
+    public List<ScenarioSummary> GetScenarios(GAME_TYPE gameCode) {
         using var connection = new NpgsqlConnection(connectionString);
         string gameString = GameUtils.GameTypeString(gameCode);
         string sqlString = $"SELECT json_build_object('name', gc.contentjson->'name','contentCode', gc.contentjson->'contentCode', 'description', gc.description, 'scenarioNumber', gc.contentjson -> 'scenarioNumber') from \"Game Content\" gc where gc.contentJson->>'kind' = 'scenario' and gc.game='{gameString}'";

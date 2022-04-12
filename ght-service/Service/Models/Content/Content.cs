@@ -5,12 +5,6 @@ using System.Text.Json.Serialization;
 
 namespace GloomhavenTracker.Service.Models.Content;
 
-public enum GAME_TYPE
-{
-    original,
-    jawsOfTheLion
-}
-
 public enum CONTENT_TYPE
 {
     game,

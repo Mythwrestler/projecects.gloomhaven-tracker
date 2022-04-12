@@ -5,16 +5,6 @@ using System.Text.Json.Serialization;
 
 namespace GloomhavenTracker.Service.Models.Content;
 
-[JsonConverter(typeof(JsonStringEnumConverter))]
-public enum MONSTER_STAT_MOD_TYPE
-{
-
-    [EnumMember(Value = "add")]
-    add,
-    [EnumMember(Value = "multi")]
-    multi
-}
-
 [Serializable]
 public class MonsterStatSet
 {
@@ -30,11 +20,20 @@ public class MonsterStatSet
     [JsonPropertyName("attack")]
     public string Attack { get; set; } = string.Empty;
 
+    [JsonPropertyName("rangeAttackable")]
+    public bool RangeAttackable { get; set; } = true;
+
+    [JsonPropertyName("meleeAttackable")]
+    public bool MeleeAttackable { get; set; } = true;
+
     [JsonPropertyName("defenseEffects")]
     public List<Effect> DefenseEffects { get; set; } = new List<Effect>();
 
     [JsonPropertyName("attackEffects")]
     public List<Effect> AttackEffects { get; set; } = new List<Effect>();
+
+    [JsonPropertyName("deathEffects")]
+    public List<Effect> DeathEffects { get; set; } = new List<Effect>();
 
     [JsonPropertyName("immunity")]
     public List<EFFECT_TYPE> Immunity { get; set; } = new List<EFFECT_TYPE>();
