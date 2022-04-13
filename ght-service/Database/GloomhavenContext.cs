@@ -9,7 +9,7 @@ public partial class GloomhavenContext : DbContext
 {
 
     #region Content Db Sets
-    public GloomhavenContext(DbContextOptions options): base(options) {}
+    public GloomhavenContext(DbContextOptions options) : base(options) { }
     public DbSet<GameDAO> Game => Set<GameDAO>();
     public DbSet<EffectDAO> Effect => Set<EffectDAO>();
     public DbSet<AttackModifierDAO> AttackModifier => Set<AttackModifierDAO>();
@@ -33,10 +33,14 @@ public partial class GloomhavenContext : DbContext
 
     #region Campaign Db Sets
     public DbSet<Models.Campaign.CharacterDAO> CharacterCampaign => Set<Models.Campaign.CharacterDAO>();
-    public DbSet<CharacterPerkDAO> AppliedPerk => Set<CharacterPerkDAO>();
+    public DbSet<CharacterPerkDAO> CharacterPerk => Set<CharacterPerkDAO>();
     public DbSet<CharacterItemDAO> CharacterItem => Set<CharacterItemDAO>();
     public DbSet<Models.Campaign.ScenarioDAO> ScenarioCampaign => Set<Models.Campaign.ScenarioDAO>();
     public DbSet<CampaignDAO> Campaign => Set<CampaignDAO>();
+    #endregion
+
+    #region Audit
+        public DbSet<Audit> AuditLog => Set<Audit>();
     #endregion
 
     protected override void OnModelCreating(ModelBuilder builder)
@@ -62,27 +66,70 @@ public partial class GloomhavenContext : DbContext
 
     public override int SaveChanges()
     {
+        CaptureAuditBeforeSave();
+        return base.SaveChanges();
+    }
+
+    private void CaptureAuditBeforeSave()
+    {
         DateTime now = DateTime.UtcNow;
+        var auditEntries = new List<AuditEntry>();
 
         foreach (var changedEntity in ChangeTracker.Entries())
         {
-            if (changedEntity.Entity is IEntityDate entity)
+            if (changedEntity.Entity is AuditableEntityBase && changedEntity.State != EntityState.Detached && changedEntity.State != EntityState.Unchanged)
             {
-                switch (changedEntity.State)
+                var auditEntry = new AuditEntry(changedEntity);
+                auditEntry.TableName = changedEntity.Entity.GetType().Name;
+                auditEntry.UserId = null;
+                auditEntry.DateTimeUTC = now;
+                auditEntries.Add(auditEntry);
+                foreach (var property in changedEntity.Properties)
                 {
-                    case EntityState.Added:
-                        entity.CreatedOn = now;
-                        entity.UpdatedOn = now;
-                        break;
+                    string propertyName = property.Metadata.Name;
+                    if (property.Metadata.IsPrimaryKey())
+                    {
+                        auditEntry.KeyValues[propertyName] = property.CurrentValue;
+                        continue;
+                    }
+                    switch (changedEntity.State)
+                    {
+                        case EntityState.Added:
+                            auditEntry.Action = AUDIT_ACTION.Create;
+                            auditEntry.NewValues[propertyName] = property.CurrentValue;
+                            break;
+                        case EntityState.Deleted:
+                            auditEntry.Action = AUDIT_ACTION.Delete;
+                            auditEntry.OldValues[propertyName] = property.OriginalValue;
+                            break;
+                        case EntityState.Modified:
+                            if (property.IsModified)
+                            {
+                                auditEntry.ChangedColumns.Add(propertyName);
+                                auditEntry.Action = AUDIT_ACTION.Update;
+                                auditEntry.OldValues[propertyName] = property.OriginalValue;
+                                auditEntry.NewValues[propertyName] = property.CurrentValue;
+                            }
+                            break;
+                    }
+                }
 
-                    case EntityState.Modified:
-                        Entry(entity).Property(x => x.CreatedOn).IsModified = false;
-                        entity.UpdatedOn = now;
-                        break;
+                if (changedEntity.Entity is AuditableEntityBase entity)
+                {
+                    switch (changedEntity.State)
+                    {
+                        case EntityState.Added:
+                            entity.CreatedOnUTC = now;
+                            entity.UpdatedOnUTC = now;
+                            break;
+
+                        case EntityState.Modified:
+                            Entry(entity).Property(x => x.CreatedOnUTC).IsModified = false;
+                            entity.UpdatedOnUTC = now;
+                            break;
+                    }
                 }
             }
         }
-
-        return base.SaveChanges();
     }
 }

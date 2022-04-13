@@ -26,7 +26,7 @@ public static partial class EntityDefinitions
     }
 }
 
-public class CharacterDAO : AuditEntityBase<CharacterDAO>
+public class CharacterDAO : AuditableEntityBase
 {
     [Key]
     public Guid Id { get; set; } = Guid.NewGuid();
@@ -43,7 +43,7 @@ public class CharacterDAO : AuditEntityBase<CharacterDAO>
     public CampaignDAO? Campaign { get; set; }
 }
 
-public class CharacterPerkDAO : AuditEntityBase<CharacterPerkDAO>
+public class CharacterPerkDAO : AuditableEntityBase
 {
     [Required]
     public Guid PerkId { get; set; }
@@ -53,7 +53,7 @@ public class CharacterPerkDAO : AuditEntityBase<CharacterPerkDAO>
     public CharacterDAO? Character { get; set; }
 }
 
-public class CharacterItemDAO : AuditEntityBase<CharacterItemDAO>
+public class CharacterItemDAO : AuditableEntityBase
 {
     [Required]
     public Guid ItemId { get; set; }
