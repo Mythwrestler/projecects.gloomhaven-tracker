@@ -1,4 +1,5 @@
-﻿using GloomhavenTracker.Database.Models.Campaign;
+﻿using GloomhavenTracker.Database.Models;
+using GloomhavenTracker.Database.Models.Campaign;
 using GloomhavenTracker.Database.Models.Content;
 using Microsoft.EntityFrameworkCore;
 
@@ -38,7 +39,6 @@ public partial class GloomhavenContext : DbContext
     public DbSet<CampaignDAO> Campaign => Set<CampaignDAO>();
     #endregion
 
-
     protected override void OnModelCreating(ModelBuilder builder)
     {
         #region Content Entity Definitions
@@ -58,5 +58,31 @@ public partial class GloomhavenContext : DbContext
         builder.DefineScenarioCampaignEntities();
         builder.DefineCampaignEntities();
         #endregion
+    }
+
+    public override int SaveChanges()
+    {
+        DateTime now = DateTime.UtcNow;
+
+        foreach (var changedEntity in ChangeTracker.Entries())
+        {
+            if (changedEntity.Entity is IEntityDate entity)
+            {
+                switch (changedEntity.State)
+                {
+                    case EntityState.Added:
+                        entity.CreatedOn = now;
+                        entity.UpdatedOn = now;
+                        break;
+
+                    case EntityState.Modified:
+                        Entry(entity).Property(x => x.CreatedOn).IsModified = false;
+                        entity.UpdatedOn = now;
+                        break;
+                }
+            }
+        }
+
+        return base.SaveChanges();
     }
 }

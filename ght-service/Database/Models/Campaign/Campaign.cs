@@ -17,7 +17,7 @@ public static partial class EntityDefinitions
 }
 
 
-public class CampaignDAO
+public class CampaignDAO : AuditEntityBase<CampaignDAO>
 {
     [Key]
     public Guid Id {get; set;}

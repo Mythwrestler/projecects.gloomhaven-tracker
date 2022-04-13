@@ -16,7 +16,7 @@ public static partial class EntityDefinitions
     }
 }
 
-public class ScenarioDAO
+public class ScenarioDAO : AuditEntityBase<ScenarioDAO>
 {
     [Key]
     public Guid Id { get; set; }
