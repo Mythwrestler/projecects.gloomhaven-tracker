@@ -1,10 +1,10 @@
-using System;
 using System.Collections.Generic;
-using System.Text.Json;
-using Dapper;
-using GloomhavenTracker.Service.Models;
+using System.Linq;
+using AutoMapper;
+using GloomhavenTracker.Database;
+using GloomhavenTracker.Database.Models.Content;
 using GloomhavenTracker.Service.Models.Content;
-using Npgsql;
+using Microsoft.EntityFrameworkCore;
 
 namespace GloomhavenTracker.Service.Repos;
 
@@ -17,305 +17,192 @@ public interface ContentRepo
     public Monster GetMonsterDefaults(GAME_TYPE gameCode, string contentCode);
     public List<AttackModifier> GetBaseModifierDeck (GAME_TYPE gameCode);
     public Scenario GetScenarioDefaults(GAME_TYPE gameCode, string contentCode);
-    public bool IsValidCode(string kind, string contentCode, string? gameCode);
+    public bool IsValidCode(CONTENT_TYPE contentType, string contentCode, GAME_TYPE? gameCode);
 }
 
 public class ContentRepoImplementation : ContentRepo
 {
-    private readonly string connectionString;
-    
-    public ContentRepoImplementation(string connectionString) => this.connectionString = connectionString;
+    private readonly ContentContext context;
+    private readonly IMapper mapper;
 
-    public List<ContentSummary> GetContentSummary(CONTENT_TYPE contentType, GAME_TYPE? gameCode)
-    {   
-        using var connection = new NpgsqlConnection(connectionString);
-
-        string contentTypeString = GameUtils.ContentTypeString(contentType);
-        string sqlString = $"SELECT json_build_object('name', gc.contentjson->'name','contentCode', gc.contentjson->'contentCode', 'description', gc.description) from \"Game Content\" gc where gc.contentJson->>'kind' = '{contentTypeString}'";
-        if(gameCode != null)
-        {
-            string gameString = GameUtils.GameTypeString(gameCode);
-            sqlString += $" and gc.game='{gameString}'";
-        }
-        
-        try
-        {
-            List<ContentSummary> summaries = new List<ContentSummary>();
-            connection.Open();
-            using(NpgsqlCommand command = new NpgsqlCommand(sqlString, connection))
-            {
-                string? jsonString;
-                NpgsqlDataReader reader = command.ExecuteReader();
-                while(reader.Read())
-                {
-                    jsonString = reader[0].ToString();
-                    if(jsonString != null){
-                        var summary = JsonSerializer.Deserialize<ContentSummary>(jsonString);
-                        if(summary != null) summaries.Add(summary);
-                    }
-                }
-            }
-            return summaries;
-        }
-        catch (Exception ex)
-        {
-            throw new ArgumentException("Could Not Pull Player Defaults", ex);
-        }
-        finally
-        {
-            connection.Close();
-        }
+    public ContentRepoImplementation (ContentContext context, IMapper mapper)
+    {
+        this.context = context;
+        this.mapper = mapper;
     }
 
-    public List<ScenarioSummary> GetScenarios(GAME_TYPE gameCode) {
-        using var connection = new NpgsqlConnection(connectionString);
-        string gameString = GameUtils.GameTypeString(gameCode);
-        string sqlString = $"SELECT json_build_object('name', gc.contentjson->'name','contentCode', gc.contentjson->'contentCode', 'description', gc.description, 'scenarioNumber', gc.contentjson -> 'scenarioNumber') from \"Game Content\" gc where gc.contentJson->>'kind' = 'scenario' and gc.game='{gameString}'";
-        try
-        {
-            List<ScenarioSummary> summaries = new List<ScenarioSummary>();
-            connection.Open();
-            using(NpgsqlCommand command = new NpgsqlCommand(sqlString, connection))
-            {
-                string? jsonString;
-                NpgsqlDataReader reader = command.ExecuteReader();
-                while(reader.Read())
-                {
-                    jsonString = reader[0].ToString();
-                    if(jsonString != null){
-                        var summary = JsonSerializer.Deserialize<ScenarioSummary>(jsonString);
-                        if(summary != null) summaries.Add(summary);
-                    }
-                }
-            }
-            return summaries;
-        }
-        catch (Exception ex)
-        {
-            throw new ArgumentException("Could Not Pull Scenario Summaries", ex);
-        }
-        finally
-        {
-            connection.Close();
-        }
+    public List<AttackModifier> GetBaseModifierDeck(GAME_TYPE gameCode)
+    {
+        var gameString = GameUtils.GameTypeString(gameCode);
+        List<GameBaseAttackModifierDAO> baseDeck = context.GameBaseAttackModifiers
+            .Where(baseDeck => baseDeck.Game.ContentCode == gameString)
+            .Include(baseDeck => baseDeck.AttackModifier)
+            .ToList();
+        return mapper.Map<List<AttackModifier>>(baseDeck);
+    }
 
+    public Character GetCharacterDefaults(GAME_TYPE gameCode, string contentCode)
+    {
+        var gameString = GameUtils.GameTypeString(gameCode);
+        CharacterDAO? character = context.Character
+            .Where(character => character.Game.ContentCode == gameString && character.ContentCode == contentCode)
+            .Include(character => character.BaseStats)
+            .FirstOrDefault();
+        if(character is null) throw new KeyNotFoundException("Character Content Code Not Found");
+        
+        return mapper.Map<Character>(character);
+    }
+
+    public List<ContentSummary> GetContentSummary(CONTENT_TYPE contentType, GAME_TYPE? gameCode)
+    {
+        var gameString = GameUtils.GameTypeString(gameCode);
+        switch (contentType)
+        {
+            case(CONTENT_TYPE.attackModifier):
+            {
+                List<AttackModifierDAO> modifierDAOs = context.AttackModifier
+                    .Where(modifier => modifier.Game.ContentCode == gameString)
+                    .ToList();
+                return mapper.Map<List<AttackModifier>>(modifierDAOs).Select(am => am.Summary).ToList();
+            }
+            case(CONTENT_TYPE.character):
+            {
+                List<CharacterDAO> characterDAOs = context.Character
+                    .Where(character => character.Game.ContentCode == gameString)
+                    .ToList();
+                return mapper.Map<List<Character>>(characterDAOs).Select(c => c.Summary).ToList();
+            }
+            case(CONTENT_TYPE.item):
+            {
+                return new List<ContentSummary>();
+            }
+            case(CONTENT_TYPE.monster):
+            {
+                List<MonsterDAO> monsterDAOs = context.Monster
+                    .Where(monster => monster.Game.ContentCode == gameString)
+                    .ToList();
+                return mapper.Map<List<Monster>>(monsterDAOs).Select(m => m.Summary).ToList();
+            }
+            case(CONTENT_TYPE.objective):
+            {
+                List<ObjectiveDAO> objectiveDAOs = context.Objective
+                    .Where(monster => monster.Game.ContentCode == gameString)
+                    .ToList();
+                return mapper.Map<List<Objective>>(objectiveDAOs).Select(m => m.Summary).ToList();
+            }
+            default:
+            {
+                return new List<ContentSummary>();
+            }
+        }
     }
 
     public Game GetGameDefaults(GAME_TYPE gameCode)
     {
-        
-        using var connection = new NpgsqlConnection(connectionString);
-
-        string gameString = GameUtils.GameTypeString(gameCode);
-        string sqlString = $"SELECT json_build_object('description', gc.description)::jsonb || gc.contentjson from \"Game Content\" gc where gc.contentJson->>'kind' = 'game' and gc.game='{gameString}'";
-        try
-        {
-            connection.Open();
-            using(NpgsqlCommand command = new NpgsqlCommand(sqlString, connection))
-            {
-                string? jsonString;
-                Game? game;
-                NpgsqlDataReader reader = command.ExecuteReader();
-                while(reader.Read())
-                {
-                    jsonString = reader[0].ToString();
-                    if(jsonString != null){
-                        game = JsonSerializer.Deserialize<Game>(jsonString);
-                        if(game != null) return game;
-                    }
-                }
-            }
-            throw new ArgumentException("Could Not Find Game");
-        }
-        catch (Exception ex)
-        {
-            throw new ArgumentException("Could Not Pull Game Defaults", ex);
-        }
-        finally
-        {
-            connection.Close();
-        }
-    }
-    
-    public Character GetCharacterDefaults(GAME_TYPE gameCode, string contentCode)
-    {
-        using var connection = new NpgsqlConnection(connectionString);
-        string gameString = GameUtils.GameTypeString(gameCode);
-        string sqlString = $"SELECT json_build_object('description', gc.description)::jsonb || gc.contentjson from \"Game Content\" gc where gc.contentJson->>'kind' = 'character' and gc.contentJson->>'contentCode'='{contentCode}' and gc.game='{gameString}'";
-        try
-        {
-            connection.Open();
-            using(NpgsqlCommand command = new NpgsqlCommand(sqlString, connection))
-            {
-                string? jsonString;
-                Character? player;
-                NpgsqlDataReader reader = command.ExecuteReader();
-                while(reader.Read())
-                {
-                    jsonString = reader[0].ToString();
-                    if(jsonString != null){
-                        player = JsonSerializer.Deserialize<Character>(jsonString);
-                        if(player != null) return player;
-                    }
-                }
-            }
-            throw new ArgumentException("Could Not Find Game");
-        }
-        catch (Exception ex)
-        {
-            throw new ArgumentException("Could Not Pull Game Defaults", ex);
-        }
-        finally
-        {
-            connection.Close();
-        }
+        var gameString = GameUtils.GameTypeString(gameCode);
+        GameDAO? game = context.Game
+            .Where(game => game.ContentCode == gameString)
+            .Include(game => game.BaseModifierDeck)
+            .FirstOrDefault();
+        if(game is null) throw new KeyNotFoundException("Game Content Code Not Found");
+        return mapper.Map<Game>(game);
     }
 
     public Monster GetMonsterDefaults(GAME_TYPE gameCode, string contentCode)
     {
-        using var connection = new NpgsqlConnection(connectionString);
-        string gameString = GameUtils.GameTypeString(gameCode);
-        string sqlString = $"SELECT json_build_object('description', gc.description)::jsonb || gc.contentjson from \"Game Content\" gc where gc.contentJson->>'kind' = 'monster' and gc.contentJson->>'contentCode'='{contentCode}' and gc.game='{gameString}'";
-        try
-        {
-            connection.Open();
-            using(NpgsqlCommand command = new NpgsqlCommand(sqlString, connection))
-            {
-                string? jsonString;
-                Monster? monster;
-                NpgsqlDataReader reader = command.ExecuteReader();
-                while(reader.Read())
-                {
-                    jsonString = reader[0].ToString();
-                    if(jsonString != null){
-                        monster = JsonSerializer.Deserialize<Monster>(jsonString);
-                        if(monster != null) return monster;
-                    }
-                }
-            }
-            throw new ArgumentException("Could Not Find Monster");
-        }
-        catch (Exception ex)
-        {
-            throw new ArgumentException("Could Not Pull Game Defaults", ex);
-        }
-        finally
-        {
-            connection.Close();
-        }
+        var gameString = GameUtils.GameTypeString(gameCode);
+        MonsterDAO? monster = context.Monster
+            .Where(monster => monster.Game.ContentCode == gameString && monster.ContentCode == contentCode)
+            .Include(monster => monster.BaseStats).ThenInclude(bs => bs.AttackEffects).ThenInclude(ae => ae.Effect)
+            .Include(monster => monster.BaseStats).ThenInclude(bs => bs.DefenseEffects).ThenInclude(de => de.Effect)
+            .Include(monster => monster.BaseStats).ThenInclude(bs => bs.DeathEffects).ThenInclude(de => de.Effect)
+            .Include(monster => monster.BaseStats).ThenInclude(bs => bs.Immunity)
+            .FirstOrDefault();
+        if(monster is null) throw new KeyNotFoundException("Monster Content Code Not Found");
+
+        return mapper.Map<Monster>(monster);
     }
 
+    public List<ScenarioSummary> GetScenarios(GAME_TYPE gameCode)
+    {
+        var gameString = GameUtils.GameTypeString(gameCode);
+        List<ScenarioDAO> scenarios = context.Scenario
+            .Where(scenario => scenario.Game.ContentCode == gameString)
+            .ToList();
+        if(scenarios.Count() == 0) throw new KeyNotFoundException("Game Content Code Not Found");
+
+        return mapper.Map<List<Scenario>>(scenarios).Select(scenario => scenario.Summary).ToList();
+    }
+    
     public Scenario GetScenarioDefaults(GAME_TYPE gameCode, string contentCode)
     {
-        using var connection = new NpgsqlConnection(connectionString);
-        Scenario? scenario = null;
-        string gameString = GameUtils.GameTypeString(gameCode);
-        string sqlStringScenario = $"SELECT json_build_object('description', gc.description)::jsonb || gc.contentjson - 'monsters' from \"Game Content\" gc where gc.contentJson->>'kind' = 'scenario' and gc.contentJson->>'contentCode'='{contentCode}' and gc.game='{gameString}'";
-        string sqlStringMonsters = $"SELECT json_build_object('name', gc.contentjson->'name','contentCode', gc.contentjson->'contentCode', 'description', gc.description) from \"Game Content\" gc where gc.contentjson->>'contentCode'::text = ANY(select jsonb_array_elements_text(gc2.contentjson->'monsters') from \"Game Content\" gc2 where gc2.game='{gameString}' and gc2.contentjson->>'contentCode'='{contentCode}')";
-        try
-        {
-            connection.Open();
-            using(NpgsqlCommand command = new NpgsqlCommand(sqlStringScenario, connection))
-            {
-                string? jsonString;
-                NpgsqlDataReader reader = command.ExecuteReader();
-                while(reader.Read())
-                {
-                    jsonString = reader[0].ToString();
-                    if(jsonString != null){
-                        scenario = JsonSerializer.Deserialize<Scenario>(jsonString);
-                    }
-                }
-            }
-            connection.Close();
-            
-            if(scenario == null) throw new ArgumentException("Could Not Find Scenario");
+        var gameString = GameUtils.GameTypeString(gameCode);
+        ScenarioDAO? scenario = context.Scenario
+            .Where(scenario => scenario.Game.ContentCode == gameString && scenario.ContentCode == contentCode)
+            .Include(scenario => scenario.Monsters).ThenInclude(sm => sm.Monster).ThenInclude(monster => monster.BaseStats).ThenInclude(bs => bs.AttackEffects).ThenInclude(ae => ae.Effect)
+            .Include(scenario => scenario.Monsters).ThenInclude(sm => sm.Monster).ThenInclude(monster => monster.BaseStats).ThenInclude(bs => bs.DefenseEffects).ThenInclude(de => de.Effect)
+            .Include(scenario => scenario.Monsters).ThenInclude(sm => sm.Monster).ThenInclude(monster => monster.BaseStats).ThenInclude(bs => bs.DeathEffects).ThenInclude(de => de.Effect)
+            .Include(scenario => scenario.Monsters).ThenInclude(sm => sm.Monster).ThenInclude(monster => monster.BaseStats).ThenInclude(bs => bs.Immunity)
+            .FirstOrDefault();
 
-            connection.Open();
-            using(NpgsqlCommand command = new NpgsqlCommand(sqlStringMonsters, connection))
-            {
-                string? jsonString;
-                NpgsqlDataReader reader = command.ExecuteReader();
-                while(reader.Read())
-                {
-                    Monster? monster = null;
-                    jsonString = reader[0].ToString();
-                    if(jsonString != null){
-                        monster = JsonSerializer.Deserialize<Monster>(jsonString);
-                        if(monster != null) scenario.Monsters.Add(monster);
-                    }
-                }
-            }
+        if(scenario is null) throw new KeyNotFoundException("Scenario Content Code Not Found");
 
-            return scenario;
-        }
-        catch (Exception ex)
-        {
-            throw new ArgumentException("Could Not Pull Game Defaults", ex);
-        }
-        finally
-        {
-            connection.Close();
-        }
+        return mapper.Map<Scenario>(scenario);
     }
 
-    public bool IsValidCode(string kind, string contentCode, string? gameCode)
+    public bool IsValidCode(CONTENT_TYPE contentType, string contentCode, GAME_TYPE? gameCode)
     {
-        using var connection = new NpgsqlConnection(connectionString);
-        string sqlString = $"select exists(select 1 from \"Game Content\" gc where gc.contentJson->>'kind' = '{kind}' and gc.contentjson->>'contentCode' = '{contentCode}'";
-        if(gameCode != null) sqlString += $" and gc.game='{gameCode}'";
-        sqlString += ")";
-
-        try
+        var gameString = GameUtils.GameTypeString(gameCode);
+        switch (contentType)
         {
-            connection.Open();
-            return connection.QuerySingle<bool>(sqlString);
-        }
-        catch (Exception ex)
-        {
-            throw new ArgumentException("Failed to validate code", ex);
-        }
-        finally
-        {
-            connection.Close();
-        }
-    }
-
-    
-    public List<AttackModifier> GetBaseModifierDeck (GAME_TYPE gameCode)
-    {
-        using var connection = new NpgsqlConnection(connectionString);
-        string gameString = GameUtils.GameTypeString(gameCode);
-        string sqlString = $"select json_build_object('description', gc2.description)::jsonb || gc2.contentjson from (select jsonb_array_elements_text(gc.contentjson->'deck') as cardId from \"Game Content\" gc where gc.game = '{gameString}' and gc.contentjson ->> 'kind' = 'deck' and gc.contentjson->>'contentCode' = 'mod_base_deck') cards join \"Game Content\" gc2 on gc2.contentid::text = cards.cardId";
-        try
-        {
-            List<AttackModifier> modDeck = new List<AttackModifier>();
-            connection.Open();
-            using(NpgsqlCommand command = new NpgsqlCommand(sqlString, connection))
+            case(CONTENT_TYPE.game):
             {
-                string? jsonString;
-                NpgsqlDataReader reader = command.ExecuteReader();
-                while(reader.Read())
-                {
-                    jsonString = reader[0].ToString();
-                    if(jsonString != null){
-                        var modCard = JsonSerializer.Deserialize<AttackModifier>(jsonString);
-                        if(modCard != null) modDeck.Add(modCard);
-                    }
-                }
+                var content = context.Game.Where(c => c.ContentCode == contentCode).FirstOrDefault();
+                return content is not null ? true : false;
             }
-            return modDeck;
+            case(CONTENT_TYPE.attackModifier):
+            {
+                var content = context.AttackModifier
+                    .Where(c => c.Game.ContentCode == gameString && c.ContentCode == contentCode)
+                    .FirstOrDefault();
+                return content is not null ? true : false;
+            }
+            case(CONTENT_TYPE.character):
+            {
+                var content = context.Character
+                    .Where(c => c.Game.ContentCode == gameString && c.ContentCode == contentCode)
+                    .FirstOrDefault();
+                return content is not null ? true : false;
+            }
+            case(CONTENT_TYPE.item):
+            {
+                return false;
+            }
+            case(CONTENT_TYPE.monster):
+            {
+                var content = context.Monster
+                    .Where(c => c.Game.ContentCode == gameString && c.ContentCode == contentCode)
+                    .FirstOrDefault();
+                return content is not null ? true : false;
+            }
+            case(CONTENT_TYPE.objective):
+            {
+                var content = context.Objective
+                    .Where(c => c.Game.ContentCode == gameString && c.ContentCode == contentCode)
+                    .FirstOrDefault();
+                return content is not null ? true : false;
+            }
+            case(CONTENT_TYPE.scenario):
+            {
+                var content = context.Scenario
+                    .Where(c => c.Game.ContentCode == gameString && c.ContentCode == contentCode)
+                    .FirstOrDefault();
+                return content is not null ? true : false;
+            }
+            default:
+            {
+                return false;
+            }
         }
-        catch (Exception ex)
-        {
-            throw new ArgumentException("Could Not Pull Scenario Summaries", ex);
-        }
-        finally
-        {
-            connection.Close();
-        }
-
     }
-
-
 }

@@ -130,8 +130,9 @@ public class CampaignServiceImplementation : CampaignService
 
     public void ValidateCampaignCharacters(CampaignDTO campaign)
     {
+        var gameCode = GameUtils.GameType(campaign.Game);
         campaign.Party.ForEach(character => {
-            if(!contentService.IsValidCharacterCode(campaign.Game, character.CharacterContentCode))
+            if(!contentService.IsValidCharacterCode(gameCode, character.CharacterContentCode))
                 throw new ArgumentException("Character type is not valid for game");
         });
 
@@ -141,8 +142,9 @@ public class CampaignServiceImplementation : CampaignService
 
     public void ValidateCampaignScenarios(CampaignDTO campaign)
     {
+        var gameCode = GameUtils.GameType(campaign.Game);
         campaign.Scenarios.ForEach(scenario => {
-            if(!contentService.IsValidScenarioCode(campaign.Game, scenario.ContentCode))
+            if(!contentService.IsValidScenarioCode(gameCode, scenario.ContentCode))
                 throw new ArgumentException("Scenario type is not valid for game");
         });
 

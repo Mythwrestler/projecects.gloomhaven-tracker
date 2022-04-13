@@ -31,9 +31,6 @@ public class AttackModifier
     [JsonPropertyName("description")]
     public string Description { get; set; } = string.Empty;
 
-    [JsonPropertyName("type")]
-    public ATTACK_MODIFIER_TYPE Type { get; set; }
-
     [JsonPropertyName("isCurse")]
     public bool IsCurse { get; set; } = false;
 
@@ -44,7 +41,7 @@ public class AttackModifier
     public bool TriggerShuffle { get; set; } = false;
 
     [JsonPropertyName("value")]
-    public int? Value { get; set; }
+    public string Value { get; set; } = "0";
 
     [JsonPropertyName("effects")]
     public List<Effect> Effects = new List<Effect>();

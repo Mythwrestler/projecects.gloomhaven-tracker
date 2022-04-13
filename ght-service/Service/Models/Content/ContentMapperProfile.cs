@@ -9,9 +9,40 @@ public class ContentMapperProfile : Profile
 {
     public ContentMapperProfile()
     {
-        CreateMap<GameDAO, Game>();
+
 
         CreateMap<EFFECT_TYPE_DAO, EFFECT_TYPE>();
+
+        CreateMap<EffectDAO, Effect>();
+
+
+        #region Attack Modifiers
+        
+        CreateMap<AttackModifierDAO, AttackModifier>()
+            .ConvertUsing((src, dst, ctx) => {
+                return new AttackModifier()
+                {
+                    ContentCode = src.ContentCode,
+                    Name = src.Name,
+                    Description = src.Description,
+                    IsBlessing = src.IsBlessing,
+                    IsCurse = src.IsCurse,
+                    TriggerShuffle = src.TriggerShuffle,
+                    Value = src.Value,
+                    Effects = ctx.Mapper.Map<List<Effect>>(src.Effects.ToList())
+                };
+            });
+
+        #endregion
+
+        #region Game Mapping
+
+        CreateMap<GameBaseAttackModifierDAO, AttackModifier>()
+            .ConvertUsing((src, dst, ctx) => ctx.Mapper.Map<AttackModifier>(src.AttackModifier));
+
+        CreateMap<GameDAO, Game>();
+
+        #endregion
 
 
         #region Monster Mapping

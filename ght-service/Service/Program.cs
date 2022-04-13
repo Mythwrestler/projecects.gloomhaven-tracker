@@ -136,24 +136,20 @@ builder.Services.Configure<JsonOptions>(options =>
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
 });
 
-builder.Services.AddDbContext<ContentContext>(optionsAction => {
-    optionsAction.UseNpgsql(
-        dbConnectionString,
-        assembly => assembly.MigrationsAssembly(typeof(ContentContext).Assembly.FullName)
-    );
-});
 
 builder.Services.AddAutoMapper(cfg => {
     cfg.AddProfile(new ContentMapperProfile());
 });
 
 // Register Content DI
-builder.Services.AddScoped<ContentService, ContentServiceImplementation>();
-builder.Services.AddScoped<ContentRepo, ContentRepoImplementation>(factory =>
-{
-    return new ContentRepoImplementation(dbConnectionString);
+builder.Services.AddDbContext<ContentContext>(optionsAction => {
+    optionsAction.UseNpgsql(
+        dbConnectionString,
+        assembly => assembly.MigrationsAssembly(typeof(ContentContext).Assembly.FullName)
+    );
 });
-builder.Services.AddScoped<ContentEFRepo, ContentEFRepo>();
+builder.Services.AddScoped<ContentService, ContentServiceImplementation>();
+builder.Services.AddScoped<ContentRepo, ContentRepoImplementation>();
 
 
 //  Register Campaign DI
