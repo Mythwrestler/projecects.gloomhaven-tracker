@@ -130,8 +130,14 @@ public class ContentMapperProfile : Profile
                 Description = src.Description,
                 BaseStats = new BaseCharacterStats()
                 {
-                    Levels = src.BaseStats.Select(stat => new CharacterLevel(){Level = stat.Level, Experience = stat.Experience}).ToList(),
-                    Health = src.BaseStats.Select(stat => new BaseCharacterHealth(){Level = stat.Level, Health = stat.Health}).ToList(),
+                    Levels = src.BaseStats.Select(stat => new CharacterLevel(){
+                        Level = stat.Level,
+                        Experience = stat.Experience
+                    }).ToList(),
+                    Health = src.BaseStats.Select(stat => new BaseCharacterHealth(){
+                        Level = stat.Level,
+                        Health = stat.Health
+                    }).ToList(),
                 }
             };
         });

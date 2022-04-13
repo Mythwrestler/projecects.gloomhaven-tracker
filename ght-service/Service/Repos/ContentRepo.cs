@@ -58,6 +58,11 @@ public class ContentRepoImplementation : ContentRepo
         var gameString = GameUtils.GameTypeString(gameCode);
         switch (contentType)
         {
+            case(CONTENT_TYPE.game):
+            {
+                List<GameDAO> gameDAOs = context.Game.ToList();
+                return mapper.Map<List<Game>>(gameDAOs).Select(g => g.Summary).ToList();
+            }
             case(CONTENT_TYPE.attackModifier):
             {
                 List<AttackModifierDAO> modifierDAOs = context.AttackModifier

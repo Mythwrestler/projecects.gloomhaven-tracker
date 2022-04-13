@@ -20,11 +20,11 @@ public interface ContentService
 
 public partial class ContentServiceImplementation : ContentService
 {
-    private readonly ContentRepoImplementation repo;
+    private readonly ContentRepo repo;
 
-    public ContentServiceImplementation(ContentRepoImplementation efRepo)
+    public ContentServiceImplementation(ContentRepo repo)
     {
-        this.repo = efRepo;
+        this.repo = repo;
     }
 
     public List<ContentSummary> GetContentSummary(CONTENT_TYPE kind, GAME_TYPE? gameCode = null)
