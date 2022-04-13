@@ -13,6 +13,7 @@ public static partial class EntityDefinitions
             scenarioTable.HasIndex(scenarioTable => new { scenarioTable.GameId, scenarioTable.ScenarioNumber });
             scenarioTable.HasMany(sm => sm.Monsters).WithOne(sm => sm.Scenario).OnDelete(DeleteBehavior.Restrict);
             scenarioTable.HasMany(so => so.Objectives).WithOne(so => so.Scenario).OnDelete(DeleteBehavior.Restrict);
+            scenarioTable.HasMany(sc => sc.ScenarioCampaigns).WithOne(sc => sc.ScenarioContent).OnDelete(DeleteBehavior.Restrict);
         });
 
         builder.Entity<ScenarioMonsterDAO>(scenarioMonsterTable =>
@@ -45,6 +46,7 @@ public class ScenarioDAO
     [Required]
     public Guid GameId { get; set; }
     public GameDAO? Game { get; set; }
+    public virtual ICollection<Campaign.ScenarioDAO> ScenarioCampaigns { get; set; } = new HashSet<Campaign.ScenarioDAO>();
 }
 
 public class ScenarioMonsterDAO

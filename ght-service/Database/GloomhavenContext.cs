@@ -34,6 +34,7 @@ public partial class GloomhavenContext : DbContext
     public DbSet<Models.Campaign.CharacterDAO> CharacterCampaign => Set<Models.Campaign.CharacterDAO>();
     public DbSet<CharacterPerkDAO> AppliedPerk => Set<CharacterPerkDAO>();
     public DbSet<CharacterItemDAO> CharacterItem => Set<CharacterItemDAO>();
+    public DbSet<Models.Campaign.ScenarioDAO> ScenarioCampaign => Set<Models.Campaign.ScenarioDAO>();
     #endregion
 
 
@@ -53,6 +54,7 @@ public partial class GloomhavenContext : DbContext
 
         #region Campaign Entity Definitions
         builder.DefineCharacterCampaignEntities();
+        builder.DefineScenarioCampaignEntities();
         #endregion
     }
 }
