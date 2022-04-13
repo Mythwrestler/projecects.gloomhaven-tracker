@@ -13,6 +13,7 @@ public static partial class EntityDefinitions
             characterTable.HasOne(character => character.CharacterContent).WithMany(character => character.CampaignCharacters).OnDelete(DeleteBehavior.Restrict);
             characterTable.HasMany(character => character.AppliedPerks).WithOne(ap => ap.Character).OnDelete(DeleteBehavior.Restrict);
             characterTable.HasMany(character => character.Items).WithOne(ci => ci.Character).OnDelete(DeleteBehavior.Restrict);
+            characterTable.HasOne(character => character.Campaign).WithMany(campaign => campaign.Party).OnDelete(DeleteBehavior.Restrict);
         });
 
         builder.Entity<CharacterPerkDAO>(appliedPerkTable => {
@@ -33,11 +34,13 @@ public class CharacterDAO
     public int Experience { get; set; }
     public int Gold { get; set; }
     public int PerkPoints { get; set; }
-    public ICollection<CharacterPerkDAO> AppliedPerks { get; set; } = new HashSet<CharacterPerkDAO>();
-    public ICollection<CharacterItemDAO> Items { get; set; } = new HashSet<CharacterItemDAO>();
+    public virtual ICollection<CharacterPerkDAO> AppliedPerks { get; set; } = new HashSet<CharacterPerkDAO>();
+    public virtual ICollection<CharacterItemDAO> Items { get; set; } = new HashSet<CharacterItemDAO>();
     [Required]
     public Guid CharacterContentId { get; set; }
     public Content.CharacterDAO? CharacterContent { get; set; }
+    public Guid CampaignId { get; set; }
+    public CampaignDAO? Campaign { get; set; }
 }
 
 public class CharacterPerkDAO

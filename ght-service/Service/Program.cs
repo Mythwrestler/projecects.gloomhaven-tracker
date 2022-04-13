@@ -139,6 +139,7 @@ builder.Services.Configure<JsonOptions>(options =>
 
 builder.Services.AddAutoMapper(cfg => {
     cfg.AddProfile(new ContentMapperProfile());
+    cfg.AddProfile(new CampaignMapperProfile());
 });
 
 

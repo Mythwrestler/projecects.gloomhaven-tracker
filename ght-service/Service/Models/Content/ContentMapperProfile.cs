@@ -10,13 +10,15 @@ public class ContentMapperProfile : Profile
     public ContentMapperProfile()
     {
 
+        #region Effect Mapping
 
         CreateMap<EFFECT_TYPE_DAO, EFFECT_TYPE>();
 
         CreateMap<EffectDAO, Effect>();
 
+        #endregion
 
-        #region Attack Modifiers
+        #region Attack Modifier Mapping
         
         CreateMap<AttackModifierDAO, AttackModifier>()
             .ConvertUsing((src, dst, ctx) => {
@@ -43,7 +45,6 @@ public class ContentMapperProfile : Profile
         CreateMap<GameDAO, Game>();
 
         #endregion
-
 
         #region Monster Mapping
 
@@ -145,14 +146,11 @@ public class ContentMapperProfile : Profile
 
         #endregion
 
-
         #region Objective Mapping
 
         CreateMap<ObjectiveDAO, Objective>();
 
         #endregion
-
-
 
         #region Scenario Mapping
 
@@ -163,7 +161,6 @@ public class ContentMapperProfile : Profile
         CreateMap<ScenarioDAO, Scenario>();
 
         #endregion
-
 
     }
 }

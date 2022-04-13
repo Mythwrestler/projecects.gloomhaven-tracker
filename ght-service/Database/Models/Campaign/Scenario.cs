@@ -11,6 +11,7 @@ public static partial class EntityDefinitions
         builder.Entity<ScenarioDAO>(scenarioTable =>
         {
             scenarioTable.HasOne(scenario => scenario.ScenarioContent).WithMany(scenario => scenario.ScenarioCampaigns).OnDelete(DeleteBehavior.Restrict);
+            scenarioTable.HasOne(scenario => scenario.Campaign).WithMany(campaign => campaign.Scenarios).OnDelete(DeleteBehavior.Restrict);
         });
     }
 }
@@ -23,4 +24,6 @@ public class ScenarioDAO
     public bool IsCompleted { get; set; }
     public Guid ScenarioContentId { get; set; }
     public Content.ScenarioDAO? ScenarioContent { get; set; }
+    public Guid CampaignId { get; set; }
+    public CampaignDAO? Campaign { get; set; }
 }
