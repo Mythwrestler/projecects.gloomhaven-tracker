@@ -5,7 +5,7 @@ namespace GloomhavenTracker.Database.Models.Content;
 
 public static partial class EntityDefinitions
 {
-    public static void DefineScenarioEntities(this ModelBuilder builder)
+    public static void DefineScenarioContentEntities(this ModelBuilder builder)
     {
         builder.Entity<ScenarioDAO>(scenarioTable =>
         {

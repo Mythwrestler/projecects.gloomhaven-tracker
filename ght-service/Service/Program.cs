@@ -141,13 +141,15 @@ builder.Services.AddAutoMapper(cfg => {
     cfg.AddProfile(new ContentMapperProfile());
 });
 
-// Register Content DI
-builder.Services.AddDbContext<ContentContext>(optionsAction => {
+
+builder.Services.AddDbContext<GloomhavenContext>(optionsAction => {
     optionsAction.UseNpgsql(
         dbConnectionString,
-        assembly => assembly.MigrationsAssembly(typeof(ContentContext).Assembly.FullName)
+        assembly => assembly.MigrationsAssembly(typeof(GloomhavenContext).Assembly.FullName)
     );
 });
+
+// Register Content DI
 builder.Services.AddScoped<ContentService, ContentServiceImplementation>();
 builder.Services.AddScoped<ContentRepo, ContentRepoImplementation>();
 

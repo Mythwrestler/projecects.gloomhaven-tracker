@@ -22,10 +22,10 @@ public interface ContentRepo
 
 public class ContentRepoImplementation : ContentRepo
 {
-    private readonly ContentContext context;
+    private readonly GloomhavenContext context;
     private readonly IMapper mapper;
 
-    public ContentRepoImplementation (ContentContext context, IMapper mapper)
+    public ContentRepoImplementation (GloomhavenContext context, IMapper mapper)
     {
         this.context = context;
         this.mapper = mapper;
@@ -44,7 +44,7 @@ public class ContentRepoImplementation : ContentRepo
     public Character GetCharacterDefaults(GAME_TYPE gameCode, string contentCode)
     {
         var gameString = GameUtils.GameTypeString(gameCode);
-        CharacterDAO? character = context.Character
+        CharacterDAO? character = context.CharacterContent
             .Where(character => character.Game.ContentCode == gameString && character.ContentCode == contentCode)
             .Include(character => character.BaseStats)
             .FirstOrDefault();
@@ -72,7 +72,7 @@ public class ContentRepoImplementation : ContentRepo
             }
             case(CONTENT_TYPE.character):
             {
-                List<CharacterDAO> characterDAOs = context.Character
+                List<CharacterDAO> characterDAOs = context.CharacterContent
                     .Where(character => character.Game.ContentCode == gameString)
                     .ToList();
                 return mapper.Map<List<Character>>(characterDAOs).Select(c => c.Summary).ToList();
@@ -131,7 +131,7 @@ public class ContentRepoImplementation : ContentRepo
     public List<ScenarioSummary> GetScenarios(GAME_TYPE gameCode)
     {
         var gameString = GameUtils.GameTypeString(gameCode);
-        List<ScenarioDAO> scenarios = context.Scenario
+        List<ScenarioDAO> scenarios = context.ScenarioContent
             .Where(scenario => scenario.Game.ContentCode == gameString)
             .ToList();
         if(scenarios.Count() == 0) throw new KeyNotFoundException("Game Content Code Not Found");
@@ -142,7 +142,7 @@ public class ContentRepoImplementation : ContentRepo
     public Scenario GetScenarioDefaults(GAME_TYPE gameCode, string contentCode)
     {
         var gameString = GameUtils.GameTypeString(gameCode);
-        ScenarioDAO? scenario = context.Scenario
+        ScenarioDAO? scenario = context.ScenarioContent
             .Where(scenario => scenario.Game.ContentCode == gameString && scenario.ContentCode == contentCode)
             .Include(scenario => scenario.Monsters).ThenInclude(sm => sm.Monster).ThenInclude(monster => monster.BaseStats).ThenInclude(bs => bs.AttackEffects).ThenInclude(ae => ae.Effect)
             .Include(scenario => scenario.Monsters).ThenInclude(sm => sm.Monster).ThenInclude(monster => monster.BaseStats).ThenInclude(bs => bs.DefenseEffects).ThenInclude(de => de.Effect)
@@ -174,7 +174,7 @@ public class ContentRepoImplementation : ContentRepo
             }
             case(CONTENT_TYPE.character):
             {
-                var content = context.Character
+                var content = context.CharacterContent
                     .Where(c => c.Game.ContentCode == gameString && c.ContentCode == contentCode)
                     .FirstOrDefault();
                 return content is not null ? true : false;
@@ -199,7 +199,7 @@ public class ContentRepoImplementation : ContentRepo
             }
             case(CONTENT_TYPE.scenario):
             {
-                var content = context.Scenario
+                var content = context.ScenarioContent
                     .Where(c => c.Game.ContentCode == gameString && c.ContentCode == contentCode)
                     .FirstOrDefault();
                 return content is not null ? true : false;

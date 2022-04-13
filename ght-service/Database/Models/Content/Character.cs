@@ -5,12 +5,13 @@ namespace GloomhavenTracker.Database.Models.Content;
 
 public static partial class EntityDefinitions
 {
-    public static void DefineCharacterEntities(this ModelBuilder builder)
+    public static void DefineCharacterContentEntities(this ModelBuilder builder)
     {
         builder.Entity<CharacterDAO>(characterTable =>
         {
             characterTable.HasIndex(characterTable => new { characterTable.GameId, characterTable.ContentCode });
             characterTable.HasMany(character => character.BaseStats).WithOne(stat => stat.Character).OnDelete(DeleteBehavior.Cascade);
+            characterTable.HasMany(character => character.CampaignCharacters).WithOne(character => character.CharacterContent).OnDelete(DeleteBehavior.Cascade);
         });
 
         builder.Entity<CharacterBaseStatsDAO>(characterBaseStatsTable =>
@@ -32,6 +33,7 @@ public class CharacterDAO
     [Required]
     public Guid GameId { get; set; }
     public GameDAO? Game { get; set; }
+    public virtual ICollection<Campaign.CharacterDAO> CampaignCharacters { get; set; } = new HashSet<Campaign.CharacterDAO>();
 }
 
 public class CharacterBaseStatsDAO

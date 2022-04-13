@@ -1,7 +1,7 @@
 DELETE FROM public."ScenarioObjective";
 DELETE FROM public."ScenarioMonster";
 DELETE FROM public."Objective";
-DELETE FROM public."Scenario";
+DELETE FROM public."ScenarioContent";
 DELETE FROM public."MonsterBaseStatImmunity";
 DELETE FROM public."MonsterAttackEffect";
 DELETE FROM public."MonsterDefenseEffect";
@@ -9,7 +9,7 @@ DELETE FROM public."MonsterDeathEffect";
 DELETE FROM public."MonsterStatSet";
 DELETE FROM public."Monster";
 DELETE FROM public."CharacterBaseStats";
-DELETE FROM public."Character";
+DELETE FROM public."CharacterContent";
 DELETE FROM public."GameBaseAttackModifiers";
 DELETE FROM public."AttackModifierEffect";
 DELETE FROM public."AttackModifier";
@@ -76,7 +76,7 @@ INSERT INTO public."GameBaseAttackModifiers" ("Id", "GameId", "AttackModifierId"
 ,('f6659877-b9f6-d4f2-d0da-a82de40fb9ff', '153dad18-1725-4a91-b337-521c52aaccd1', '03d414d0-e186-48f3-87dc-b109f989e79b') --Jaws of The Lion - Base Deck - Attack Cancel
 ;
 
-INSERT INTO public."Character" ("Id", "ContentCode", "Name", "Description", "GameId") VALUES
+INSERT INTO public."CharacterContent" ("Id", "ContentCode", "Name", "Description", "GameId") VALUES
  ('219fc817-afce-5ffb-fac3-0534a9af5bc7', 'voidwarden', 'Voidwarden', 'Character - Void Warden', '153dad18-1725-4a91-b337-521c52aaccd1') --Jaws of The Lion - Voidwarden
 ,('450631fd-d6a1-946b-0745-2332b4152567', 'red_guard', 'Red Guard', 'Character - Red Guard', '153dad18-1725-4a91-b337-521c52aaccd1') --Jaws of The Lion - Red Guard
 ,('a198b73c-a605-032b-dba5-fcf73b494a3d', 'hatchet', 'Hatchet', 'Character - Hatchet', '153dad18-1725-4a91-b337-521c52aaccd1') --Jaws of The Lion - Hatchet
@@ -681,7 +681,7 @@ INSERT INTO public."MonsterBaseStatImmunity" ("MonsterStatSetId", "Effect") VALU
 ,('dec4b990-fb0d-4e6b-a5df-9296d00325e5', 'stun') --Jaws of The Lion - First Of The Order - Standard - Level 7 | stun
 ;
 
-INSERT INTO public."Scenario" ("Id", "ContentCode", "Name", "Description", "ScenarioNumber", "Goal", "CityMapLocation", "ScenarioBookPages", "SupplementalBookPages", "GameId") VALUES
+INSERT INTO public."ScenarioContent" ("Id", "ContentCode", "Name", "Description", "ScenarioNumber", "Goal", "CityMapLocation", "ScenarioBookPages", "SupplementalBookPages", "GameId") VALUES
  ('0c1e5d5b-e6f4-a62a-8d26-15b50ba346ce', 'roadside_ambush', 'Roadside Ambush', 'Scenario: Roadside Ambush', 1, 'Kill all enemies', 'B1', '{2,3}', '{}', '153dad18-1725-4a91-b337-521c52aaccd1') --Jaws of The Lion - Roadside Ambush
 ,('5397e29d-9eb5-ed44-9579-d0846a51a40d', 'a_hole_in_the_wall', 'A Hole in the Wall', 'Scenario: A Hole in the Wall', 2, 'Kill all enemies', 'B1', '{4,5}', '{}', '153dad18-1725-4a91-b337-521c52aaccd1') --Jaws of The Lion - A Hole in the Wall
 ,('117bce00-3466-5802-de5e-95ea037a9ae1', 'the_black_ship', 'The Black Ship', 'Scenario: The Black Ship', 3, 'Kill all enemies', 'D5', '{6,7}', '{2}', '153dad18-1725-4a91-b337-521c52aaccd1') --Jaws of The Lion - The Black Ship
