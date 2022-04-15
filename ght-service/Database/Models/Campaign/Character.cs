@@ -34,8 +34,8 @@ public class CharacterDAO : AuditableEntityBase
     public int Experience { get; set; }
     public int Gold { get; set; }
     public int PerkPoints { get; set; }
-    public virtual ICollection<CharacterPerkDAO> Perks { get; set; } = new HashSet<CharacterPerkDAO>();
-    public virtual ICollection<CharacterItemDAO> Items { get; set; } = new HashSet<CharacterItemDAO>();
+    public ICollection<CharacterPerkDAO> Perks { get; set; } = new HashSet<CharacterPerkDAO>();
+    public ICollection<CharacterItemDAO> Items { get; set; } = new HashSet<CharacterItemDAO>();
     [Required]
     public Guid CharacterContentId { get; set; }
     public Content.CharacterDAO? CharacterContent { get; set; }

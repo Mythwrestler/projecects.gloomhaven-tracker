@@ -34,7 +34,7 @@ public class ContentRepoImplementation : ContentRepo
     public List<AttackModifier> GetBaseModifierDeck(GAME_TYPE gameCode)
     {
         var gameString = GameUtils.GameTypeString(gameCode);
-        List<GameBaseAttackModifierDAO> baseDeck = context.GameBaseAttackModifiers
+        List<GameBaseAttackModifierDAO> baseDeck = context.ContentGameBaseAttackModifiers
             .Where(baseDeck => baseDeck.Game.ContentCode == gameString)
             .Include(baseDeck => baseDeck.AttackModifier)
             .ToList();
@@ -44,7 +44,7 @@ public class ContentRepoImplementation : ContentRepo
     public Character GetCharacterDefaults(GAME_TYPE gameCode, string contentCode)
     {
         var gameString = GameUtils.GameTypeString(gameCode);
-        CharacterDAO? character = context.CharacterContent
+        CharacterDAO? character = context.ContentCharacter
             .Where(character => character.Game.ContentCode == gameString && character.ContentCode == contentCode)
             .Include(character => character.BaseStats)
             .FirstOrDefault();
@@ -60,19 +60,19 @@ public class ContentRepoImplementation : ContentRepo
         {
             case(CONTENT_TYPE.game):
             {
-                List<GameDAO> gameDAOs = context.Game.ToList();
+                List<GameDAO> gameDAOs = context.ContentGame.ToList();
                 return mapper.Map<List<Game>>(gameDAOs).Select(g => g.Summary).ToList();
             }
             case(CONTENT_TYPE.attackModifier):
             {
-                List<AttackModifierDAO> modifierDAOs = context.AttackModifier
+                List<AttackModifierDAO> modifierDAOs = context.ContentAttackModifier
                     .Where(modifier => modifier.Game.ContentCode == gameString)
                     .ToList();
                 return mapper.Map<List<AttackModifier>>(modifierDAOs).Select(am => am.Summary).ToList();
             }
             case(CONTENT_TYPE.character):
             {
-                List<CharacterDAO> characterDAOs = context.CharacterContent
+                List<CharacterDAO> characterDAOs = context.ContentCharacter
                     .Where(character => character.Game.ContentCode == gameString)
                     .ToList();
                 return mapper.Map<List<Character>>(characterDAOs).Select(c => c.Summary).ToList();
@@ -83,14 +83,14 @@ public class ContentRepoImplementation : ContentRepo
             }
             case(CONTENT_TYPE.monster):
             {
-                List<MonsterDAO> monsterDAOs = context.Monster
+                List<MonsterDAO> monsterDAOs = context.ContentMonster
                     .Where(monster => monster.Game.ContentCode == gameString)
                     .ToList();
                 return mapper.Map<List<Monster>>(monsterDAOs).Select(m => m.Summary).ToList();
             }
             case(CONTENT_TYPE.objective):
             {
-                List<ObjectiveDAO> objectiveDAOs = context.Objective
+                List<ObjectiveDAO> objectiveDAOs = context.ContentObjective
                     .Where(monster => monster.Game.ContentCode == gameString)
                     .ToList();
                 return mapper.Map<List<Objective>>(objectiveDAOs).Select(m => m.Summary).ToList();
@@ -105,7 +105,7 @@ public class ContentRepoImplementation : ContentRepo
     public Game GetGameDefaults(GAME_TYPE gameCode)
     {
         var gameString = GameUtils.GameTypeString(gameCode);
-        GameDAO? game = context.Game
+        GameDAO? game = context.ContentGame
             .Where(game => game.ContentCode == gameString)
             .Include(game => game.BaseModifierDeck)
             .FirstOrDefault();
@@ -116,7 +116,7 @@ public class ContentRepoImplementation : ContentRepo
     public Monster GetMonsterDefaults(GAME_TYPE gameCode, string contentCode)
     {
         var gameString = GameUtils.GameTypeString(gameCode);
-        MonsterDAO? monster = context.Monster
+        MonsterDAO? monster = context.ContentMonster
             .Where(monster => monster.Game.ContentCode == gameString && monster.ContentCode == contentCode)
             .Include(monster => monster.BaseStats).ThenInclude(bs => bs.AttackEffects).ThenInclude(ae => ae.Effect)
             .Include(monster => monster.BaseStats).ThenInclude(bs => bs.DefenseEffects).ThenInclude(de => de.Effect)
@@ -131,7 +131,7 @@ public class ContentRepoImplementation : ContentRepo
     public List<ScenarioSummary> GetScenarios(GAME_TYPE gameCode)
     {
         var gameString = GameUtils.GameTypeString(gameCode);
-        List<ScenarioDAO> scenarios = context.ScenarioContent
+        List<ScenarioDAO> scenarios = context.ContentScenario
             .Where(scenario => scenario.Game.ContentCode == gameString)
             .ToList();
         if(scenarios.Count() == 0) throw new KeyNotFoundException("Game Content Code Not Found");
@@ -142,7 +142,7 @@ public class ContentRepoImplementation : ContentRepo
     public Scenario GetScenarioDefaults(GAME_TYPE gameCode, string contentCode)
     {
         var gameString = GameUtils.GameTypeString(gameCode);
-        ScenarioDAO? scenario = context.ScenarioContent
+        ScenarioDAO? scenario = context.ContentScenario
             .Where(scenario => scenario.Game.ContentCode == gameString && scenario.ContentCode == contentCode)
             .Include(scenario => scenario.Monsters).ThenInclude(sm => sm.Monster).ThenInclude(monster => monster.BaseStats).ThenInclude(bs => bs.AttackEffects).ThenInclude(ae => ae.Effect)
             .Include(scenario => scenario.Monsters).ThenInclude(sm => sm.Monster).ThenInclude(monster => monster.BaseStats).ThenInclude(bs => bs.DefenseEffects).ThenInclude(de => de.Effect)
@@ -162,19 +162,19 @@ public class ContentRepoImplementation : ContentRepo
         {
             case(CONTENT_TYPE.game):
             {
-                var content = context.Game.Where(c => c.ContentCode == contentCode).FirstOrDefault();
+                var content = context.ContentGame.Where(c => c.ContentCode == contentCode).FirstOrDefault();
                 return content is not null ? true : false;
             }
             case(CONTENT_TYPE.attackModifier):
             {
-                var content = context.AttackModifier
+                var content = context.ContentAttackModifier
                     .Where(c => c.Game.ContentCode == gameString && c.ContentCode == contentCode)
                     .FirstOrDefault();
                 return content is not null ? true : false;
             }
             case(CONTENT_TYPE.character):
             {
-                var content = context.CharacterContent
+                var content = context.ContentCharacter
                     .Where(c => c.Game.ContentCode == gameString && c.ContentCode == contentCode)
                     .FirstOrDefault();
                 return content is not null ? true : false;
@@ -185,21 +185,21 @@ public class ContentRepoImplementation : ContentRepo
             }
             case(CONTENT_TYPE.monster):
             {
-                var content = context.Monster
+                var content = context.ContentMonster
                     .Where(c => c.Game.ContentCode == gameString && c.ContentCode == contentCode)
                     .FirstOrDefault();
                 return content is not null ? true : false;
             }
             case(CONTENT_TYPE.objective):
             {
-                var content = context.Objective
+                var content = context.ContentObjective
                     .Where(c => c.Game.ContentCode == gameString && c.ContentCode == contentCode)
                     .FirstOrDefault();
                 return content is not null ? true : false;
             }
             case(CONTENT_TYPE.scenario):
             {
-                var content = context.ScenarioContent
+                var content = context.ContentScenario
                     .Where(c => c.Game.ContentCode == gameString && c.ContentCode == contentCode)
                     .FirstOrDefault();
                 return content is not null ? true : false;

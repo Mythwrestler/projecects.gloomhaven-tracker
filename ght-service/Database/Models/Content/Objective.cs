@@ -25,7 +25,7 @@ public class ObjectiveDAO
     public string Health { get; set; } = string.Empty;
     public bool RangeAttackable { get; set; } = true;
     public bool MeleeAttackable { get; set; } = true;
-    public ICollection<ScenarioObjectiveDAO> ScenarioObjectives { get; set; } = new HashSet<ScenarioObjectiveDAO>();
+    public virtual ICollection<ScenarioObjectiveDAO> ScenarioObjectives { get; set; } = new HashSet<ScenarioObjectiveDAO>();
     [Required]
     public Guid GameId { get; set; }
     public GameDAO? Game { get; set; }

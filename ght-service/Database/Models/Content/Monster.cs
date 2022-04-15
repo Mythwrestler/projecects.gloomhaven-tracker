@@ -54,7 +54,7 @@ public class MonsterDAO
     public string ContentCode { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
-    public virtual ICollection<MonsterStatSetDAO> BaseStats { get; set; } = new HashSet<MonsterStatSetDAO>();
+    public ICollection<MonsterStatSetDAO> BaseStats { get; set; } = new HashSet<MonsterStatSetDAO>();
     public virtual ICollection<ScenarioMonsterDAO> ScenarioMonsters { get; set; } = new HashSet<ScenarioMonsterDAO>();
     [Required]
     public Guid GameId { get; set; }

@@ -11,35 +11,36 @@ public partial class GloomhavenContext : DbContext
 
     #region Content Db Sets
     public GloomhavenContext(DbContextOptions options) : base(options) { }
-    public DbSet<GameDAO> Game => Set<GameDAO>();
-    public DbSet<EffectDAO> Effect => Set<EffectDAO>();
-    public DbSet<AttackModifierDAO> AttackModifier => Set<AttackModifierDAO>();
-    public DbSet<AttackModifierEffectDAO> AttackModifierEffect => Set<AttackModifierEffectDAO>();
-    public DbSet<GameBaseAttackModifierDAO> GameBaseAttackModifiers => Set<GameBaseAttackModifierDAO>();
-    public DbSet<MonsterDAO> Monster => Set<MonsterDAO>();
-    public DbSet<MonsterStatSetDAO> MonsterStatSet => Set<MonsterStatSetDAO>();
-    public DbSet<MonsterDefenseEffectDAO> MonsterDefenseEffect => Set<MonsterDefenseEffectDAO>();
-    public DbSet<MonsterDeathEffectDAO> MonsterDeathEffect => Set<MonsterDeathEffectDAO>();
-    public DbSet<MonsterAttackEffectDAO> MonsterAttackEffect => Set<MonsterAttackEffectDAO>();
-    public DbSet<MonsterBaseStatImmunityDAO> MonsterBaseStatImmunity => Set<MonsterBaseStatImmunityDAO>();
-    public DbSet<ObjectiveDAO> Objective => Set<ObjectiveDAO>();
-    public DbSet<Models.Content.ScenarioDAO> ScenarioContent => Set<Models.Content.ScenarioDAO>();
-    public DbSet<ScenarioMonsterDAO> ScenarioMonster => Set<ScenarioMonsterDAO>();
-    public DbSet<ScenarioObjectiveDAO> ScenarioObjective => Set<ScenarioObjectiveDAO>();
-    public DbSet<Models.Content.CharacterDAO> CharacterContent => Set<Models.Content.CharacterDAO>();
-    public DbSet<CharacterBaseStatsDAO> CharacterBaseStat => Set<CharacterBaseStatsDAO>();
-    public DbSet<PerkDAO> Perk => Set<PerkDAO>();
-    public DbSet<PerkActionDAO> PerkAction => Set<PerkActionDAO>();
-    public DbSet<ItemDAO> Item => Set<ItemDAO>();
+    public DbSet<GameDAO> ContentGame => Set<GameDAO>();
+    public DbSet<EffectDAO> ContentEffect => Set<EffectDAO>();
+    public DbSet<AttackModifierDAO> ContentAttackModifier => Set<AttackModifierDAO>();
+    public DbSet<AttackModifierEffectDAO> ContentAttackModifierEffect => Set<AttackModifierEffectDAO>();
+    public DbSet<GameBaseAttackModifierDAO> ContentGameBaseAttackModifiers => Set<GameBaseAttackModifierDAO>();
+    public DbSet<MonsterDAO> ContentMonster => Set<MonsterDAO>();
+    public DbSet<MonsterStatSetDAO> ContentMonsterStatSet => Set<MonsterStatSetDAO>();
+    public DbSet<MonsterDefenseEffectDAO> ContentMonsterDefenseEffect => Set<MonsterDefenseEffectDAO>();
+    public DbSet<MonsterDeathEffectDAO> ContentMonsterDeathEffect => Set<MonsterDeathEffectDAO>();
+    public DbSet<MonsterAttackEffectDAO> ContentMonsterAttackEffect => Set<MonsterAttackEffectDAO>();
+    public DbSet<MonsterBaseStatImmunityDAO> ContentMonsterBaseStatImmunity => Set<MonsterBaseStatImmunityDAO>();
+    public DbSet<ObjectiveDAO> ContentObjective => Set<ObjectiveDAO>();
+    public DbSet<Models.Content.ScenarioDAO> ContentScenario => Set<Models.Content.ScenarioDAO>();
+    public DbSet<ScenarioMonsterDAO> ContentScenarioMonster => Set<ScenarioMonsterDAO>();
+    public DbSet<ScenarioObjectiveDAO> ContentScenarioObjective => Set<ScenarioObjectiveDAO>();
+    public DbSet<Models.Content.CharacterDAO> ContentCharacter => Set<Models.Content.CharacterDAO>();
+    public DbSet<CharacterBaseStatsDAO> ContentCharacterBaseStat => Set<CharacterBaseStatsDAO>();
+    public DbSet<PerkDAO> ContentPerk => Set<PerkDAO>();
+    public DbSet<PerkActionDAO> ContentPerkAction => Set<PerkActionDAO>();
+    public DbSet<Models.Content.CharacterPerkDAO> ContentCharacterPerk => Set<Models.Content.CharacterPerkDAO>();
+    public DbSet<ItemDAO> ContentItem => Set<ItemDAO>();
     #endregion
 
     #region Campaign Db Sets
-    public DbSet<Models.Campaign.CharacterDAO> CharacterCampaign => Set<Models.Campaign.CharacterDAO>();
-    public DbSet<CharacterPerkDAO> CharacterPerk => Set<CharacterPerkDAO>();
-    public DbSet<CharacterItemDAO> CharacterItem => Set<CharacterItemDAO>();
-    public DbSet<Models.Campaign.ScenarioDAO> ScenarioCampaign => Set<Models.Campaign.ScenarioDAO>();
-    public DbSet<CampaignDAO> Campaign => Set<CampaignDAO>();
-    public DbSet<CampaignItemDAO> CampaignItem => Set<CampaignItemDAO>();
+    public DbSet<Models.Campaign.CharacterDAO> CampaignCharacter => Set<Models.Campaign.CharacterDAO>();
+    public DbSet<Models.Campaign.CharacterPerkDAO> CampaignCharacterPerk => Set<Models.Campaign.CharacterPerkDAO>();
+    public DbSet<CharacterItemDAO> CampaignCharacterItem => Set<CharacterItemDAO>();
+    public DbSet<Models.Campaign.ScenarioDAO> CampaignScenario => Set<Models.Campaign.ScenarioDAO>();
+    public DbSet<CampaignDAO> CampaignCampaign => Set<CampaignDAO>();
+    public DbSet<CampaignItemDAO> CampaignCampaignItem => Set<CampaignItemDAO>();
     #endregion
 
     #region Audit

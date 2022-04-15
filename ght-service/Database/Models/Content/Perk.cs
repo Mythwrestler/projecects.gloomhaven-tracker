@@ -31,7 +31,9 @@ public class PerkDAO
     public string Description { get; set; } = string.Empty;
     public ICollection<PerkActionDAO> Actions { get; set; } = new HashSet<PerkActionDAO>();
     public virtual ICollection<CharacterPerkDAO> CharacterPerks { get; set; } = new HashSet<CharacterPerkDAO>();
-}
+    [Required]
+    public Guid GameId { get; set; }
+    public GameDAO? Game { get; set; }}
 
 public enum PERK_ACTION_DAO
 {

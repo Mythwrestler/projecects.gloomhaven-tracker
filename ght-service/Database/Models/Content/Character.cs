@@ -30,10 +30,11 @@ public class CharacterDAO
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public ICollection<CharacterBaseStatsDAO> BaseStats { get; set; } = new HashSet<CharacterBaseStatsDAO>();
+    public ICollection<CharacterPerkDAO> BasePerks { get; set; } = new HashSet<CharacterPerkDAO>();
+    public virtual ICollection<Campaign.CharacterDAO> CampaignCharacters { get; set; } = new HashSet<Campaign.CharacterDAO>();
     [Required]
     public Guid GameId { get; set; }
     public GameDAO? Game { get; set; }
-    public virtual ICollection<Campaign.CharacterDAO> CampaignCharacters { get; set; } = new HashSet<Campaign.CharacterDAO>();
 }
 
 public class CharacterBaseStatsDAO
@@ -46,4 +47,12 @@ public class CharacterBaseStatsDAO
     [Required]
     public Guid CharacterId { get; set; }
     public CharacterDAO? Character { get; set; }
+}
+
+public class CharacterPerkDAO
+{
+    public Guid CharacterId {get; set;}
+    public CharacterDAO? Character {get; set;}
+    public Guid PerkId {get; set;}
+    public PerkDAO? Perk {get; set;}
 }

@@ -48,4 +48,7 @@ public class ItemDAO
     public FREQUENCY_DAO Frequency { get; set; }
     public virtual ICollection<CharacterItemDAO> CharacterItems { get; set; } = new HashSet<CharacterItemDAO>();
     public virtual ICollection<CampaignItemDAO> CampaginItems { get; set; } = new HashSet<CampaignItemDAO>();
+    [Required]
+    public Guid GameId { get; set; }
+    public GameDAO? Game { get; set; }
 }

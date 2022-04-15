@@ -41,12 +41,12 @@ public class ScenarioDAO
     public string CityMapLocation { get; set; } = string.Empty;
     public List<int> ScenarioBookPages { get; set; } = new List<int>();
     public List<int> SupplementalBookPages { get; set; } = new List<int>();
-    public virtual ICollection<ScenarioMonsterDAO> Monsters { get; set; } = new HashSet<ScenarioMonsterDAO>();
-    public virtual ICollection<ScenarioObjectiveDAO> Objectives { get; set; } = new HashSet<ScenarioObjectiveDAO>();
+    public ICollection<ScenarioMonsterDAO> Monsters { get; set; } = new HashSet<ScenarioMonsterDAO>();
+    public ICollection<ScenarioObjectiveDAO> Objectives { get; set; } = new HashSet<ScenarioObjectiveDAO>();
+    public virtual ICollection<Campaign.ScenarioDAO> ScenarioCampaigns { get; set; } = new HashSet<Campaign.ScenarioDAO>();
     [Required]
     public Guid GameId { get; set; }
     public GameDAO? Game { get; set; }
-    public virtual ICollection<Campaign.ScenarioDAO> ScenarioCampaigns { get; set; } = new HashSet<Campaign.ScenarioDAO>();
 }
 
 public class ScenarioMonsterDAO
