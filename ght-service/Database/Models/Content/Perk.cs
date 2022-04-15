@@ -13,6 +13,7 @@ public static partial class EntityDefinitions
         builder.Entity<PerkDAO>(perkTable =>
         {
             perkTable.HasMany(perk => perk.CharacterPerks).WithOne(ap => ap.Perk).OnDelete(DeleteBehavior.Restrict);
+            perkTable.HasMany(perk => perk.CharacterPerks).WithOne(cp => cp.Perk).OnDelete(DeleteBehavior.Restrict);
         });
 
         builder.Entity<PerkActionDAO>(perkActionTable => {

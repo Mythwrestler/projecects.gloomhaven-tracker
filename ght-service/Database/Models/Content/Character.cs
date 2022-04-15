@@ -12,6 +12,7 @@ public static partial class EntityDefinitions
             characterTable.HasIndex(characterTable => new { characterTable.GameId, characterTable.ContentCode });
             characterTable.HasMany(character => character.BaseStats).WithOne(stat => stat.Character).OnDelete(DeleteBehavior.Restrict);
             characterTable.HasMany(character => character.CampaignCharacters).WithOne(character => character.CharacterContent).OnDelete(DeleteBehavior.Restrict);
+            characterTable.HasMany(character => character.BasePerks).WithOne(cp => cp.Character).OnDelete(DeleteBehavior.Restrict);
         });
 
         builder.Entity<CharacterBaseStatsDAO>(characterBaseStatsTable =>
@@ -19,6 +20,9 @@ public static partial class EntityDefinitions
             characterBaseStatsTable.HasIndex(stat => new { stat.CharacterId, stat.Level });
         });
 
+        builder.Entity<CharacterPerkDAO>(characterPerkTable => {
+            characterPerkTable.HasKey(cp => new {cp.CharacterId, cp.PerkId});
+        });
     }
 }
 

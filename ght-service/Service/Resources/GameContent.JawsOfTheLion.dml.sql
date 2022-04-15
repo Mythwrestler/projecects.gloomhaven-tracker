@@ -1,27 +1,27 @@
-DELETE FROM public."ScenarioObjective";
-DELETE FROM public."ScenarioMonster";
-DELETE FROM public."Objective";
-DELETE FROM public."ScenarioContent";
-DELETE FROM public."MonsterBaseStatImmunity";
-DELETE FROM public."MonsterAttackEffect";
-DELETE FROM public."MonsterDefenseEffect";
-DELETE FROM public."MonsterDeathEffect";
-DELETE FROM public."MonsterStatSet";
-DELETE FROM public."Monster";
-DELETE FROM public."CharacterBaseStat";
-DELETE FROM public."CharacterContent";
-DELETE FROM public."GameBaseAttackModifiers";
-DELETE FROM public."AttackModifierEffect";
-DELETE FROM public."AttackModifier";
-DELETE FROM public."Effect";
-DELETE FROM public."Game";
+DELETE FROM public."ContentScenarioObjective";
+DELETE FROM public."ContentScenarioMonster";
+DELETE FROM public."ContentObjective";
+DELETE FROM public."ContentScenario";
+DELETE FROM public."ContentMonsterBaseStatImmunity";
+DELETE FROM public."ContentMonsterAttackEffect";
+DELETE FROM public."ContentMonsterDefenseEffect";
+DELETE FROM public."ContentMonsterDeathEffect";
+DELETE FROM public."ContentMonsterStatSet";
+DELETE FROM public."ContentMonster";
+DELETE FROM public."ContentCharacterBaseStat";
+DELETE FROM public."ContentCharacter";
+DELETE FROM public."ContentGameBaseAttackModifiers";
+DELETE FROM public."ContentAttackModifierEffect";
+DELETE FROM public."ContentAttackModifier";
+DELETE FROM public."ContentEffect";
+DELETE FROM public."ContentGame";
 
 
-INSERT INTO public."Game" ("Id","ContentCode","Name","Description") VALUES
+INSERT INTO public."ContentGame" ("Id","ContentCode","Name","Description") VALUES
  ('153dad18-1725-4a91-b337-521c52aaccd1', 'jawsOfTheLion', 'Jaws of The Lion', 'Game: Jaws of The Lion') --Game Jaws of the lion
 ;
 
-INSERT INTO public."Effect" ("Id","Type","Value","Duration","Range") VALUES
+INSERT INTO public."ContentEffect" ("Id","Type","Value","Duration","Range") VALUES
  ('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', 'poison', -1, -1, -1) --Type: poison - Value: -1 - Duration: -1 - Range: -1
 ,('58b68f6b-c976-442d-9b15-c654d6f42a7b', 'muddle', -1, 1, -1) --Type: muddle - Value: -1 - Duration: 1 - Range: -1
 ,('6c407028-6e98-47da-bcc1-47b3e7cb8066', 'shield', 1, -1, -1) --Type: shield - Value: 1 - Duration: -1 - Range: -1
@@ -38,7 +38,7 @@ INSERT INTO public."Effect" ("Id","Type","Value","Duration","Range") VALUES
 ,('26f9d0a7-f71e-e17b-0cf6-af7cb914d29d', 'damage', 5, -1, 1) --Type: damage - Value: 5 - Duration: -1 - Range: 1
 ;
 
-INSERT INTO public."AttackModifier" ("Id","ContentCode","Name","Description","IsCurse","IsBlessing","TriggerShuffle","Value","GameId") VALUES
+INSERT INTO public."ContentAttackModifier" ("Id","ContentCode","Name","Description","IsCurse","IsBlessing","TriggerShuffle","Value","GameId") VALUES
  ('03d414d0-e186-48f3-87dc-b109f989e79b', 'mod_cancel', 'Attack Cancel', 'Attack Modifier: Cancel', FALSE, FALSE, TRUE, 'A * 0', '153dad18-1725-4a91-b337-521c52aaccd1') --Attack Modifier: Cancel
 ,('428e5822-dd63-4daf-b947-e9835348f955', 'mod_*2', 'Attack * 2', 'Attack Modifier: *2', FALSE, FALSE, TRUE, 'A * 2', '153dad18-1725-4a91-b337-521c52aaccd1') --Attack Modifier: *2
 ,('42ef417c-31d0-4981-97fe-931a36bddfa1', 'mod_curse', 'Attack Cancel (Curse)', 'Attack Modifier: Cancel (Curse)', TRUE, FALSE, TRUE, 'A * 0', '153dad18-1725-4a91-b337-521c52aaccd1') --Attack Modifier: Cancel (Curse)
@@ -51,11 +51,11 @@ INSERT INTO public."AttackModifier" ("Id","ContentCode","Name","Description","Is
 ,('71291998-346d-4ed5-a770-e8ea78661187', 'mod_+1_muddle', 'Attack + 1 | Muddle', 'Attack Modifier: + 1 | Muddle', FALSE, FALSE, FALSE, 'A + 1', '153dad18-1725-4a91-b337-521c52aaccd1') --Attack Modifier: + 1 | Muddle
 ;
 
-INSERT INTO public."AttackModifierEffect" ("EffectId","AttackModifierId") VALUES
+INSERT INTO public."ContentAttackModifierEffect" ("EffectId","AttackModifierId") VALUES
  ('58b68f6b-c976-442d-9b15-c654d6f42a7b', '71291998-346d-4ed5-a770-e8ea78661187') --Modifier: Attack Modifier: + 1 | Muddle - Effect: Type: muddle - Value: -1 - Duration: 1
 ;
 
-INSERT INTO public."GameBaseAttackModifiers" ("Id", "GameId", "AttackModifierId") VALUES
+INSERT INTO public."ContentGameBaseAttackModifiers" ("Id", "GameId", "AttackModifierId") VALUES
  ('e43dce52-6b17-47ab-bea7-1816075691fe', '153dad18-1725-4a91-b337-521c52aaccd1', '428e5822-dd63-4daf-b947-e9835348f955') --Jaws of The Lion - Base Deck - Attack * 2
 ,('6a3ff216-36e7-1a8d-92c5-bd1482bf0992', '153dad18-1725-4a91-b337-521c52aaccd1', '9730bd5f-8093-4a47-854c-4e47753e73a3') --Jaws of The Lion - Base Deck - Attack + 2
 ,('7bc951a2-79d8-1136-acb6-f452c2967daf', '153dad18-1725-4a91-b337-521c52aaccd1', '9730bd5f-8093-4a47-854c-4e47753e73a3') --Jaws of The Lion - Base Deck - Attack + 2
@@ -76,14 +76,14 @@ INSERT INTO public."GameBaseAttackModifiers" ("Id", "GameId", "AttackModifierId"
 ,('f6659877-b9f6-d4f2-d0da-a82de40fb9ff', '153dad18-1725-4a91-b337-521c52aaccd1', '03d414d0-e186-48f3-87dc-b109f989e79b') --Jaws of The Lion - Base Deck - Attack Cancel
 ;
 
-INSERT INTO public."CharacterContent" ("Id", "ContentCode", "Name", "Description", "GameId") VALUES
+INSERT INTO public."ContentCharacter" ("Id", "ContentCode", "Name", "Description", "GameId") VALUES
  ('219fc817-afce-5ffb-fac3-0534a9af5bc7', 'voidwarden', 'Voidwarden', 'Character - Void Warden', '153dad18-1725-4a91-b337-521c52aaccd1') --Jaws of The Lion - Voidwarden
 ,('450631fd-d6a1-946b-0745-2332b4152567', 'red_guard', 'Red Guard', 'Character - Red Guard', '153dad18-1725-4a91-b337-521c52aaccd1') --Jaws of The Lion - Red Guard
 ,('a198b73c-a605-032b-dba5-fcf73b494a3d', 'hatchet', 'Hatchet', 'Character - Hatchet', '153dad18-1725-4a91-b337-521c52aaccd1') --Jaws of The Lion - Hatchet
 ,('c2bf284b-b41a-3ab8-dee7-d51510668b84', 'demolitionist', 'Demolitionist', 'Character - Demolitionist', '153dad18-1725-4a91-b337-521c52aaccd1') --Jaws of The Lion - Demolitionist
 ;
 
-INSERT INTO public."CharacterBaseStat" ("Id", "CharacterId", "Level", "Experience", "Health") VALUES
+INSERT INTO public."ContentCharacterBaseStat" ("Id", "CharacterId", "Level", "Experience", "Health") VALUES
  ('9d9f358e-0d7e-df45-7011-51e64f730121', '219fc817-afce-5ffb-fac3-0534a9af5bc7', 1, 0, 6) --Voidwarden - Level 1
 ,('b0ee1d9f-ddc4-f303-cb84-9c831befe080', '219fc817-afce-5ffb-fac3-0534a9af5bc7', 2, 45, 7) --Voidwarden - Level 2
 ,('e6cc43b9-fffd-d2a0-2772-1e99acd8b877', '219fc817-afce-5ffb-fac3-0534a9af5bc7', 3, 95, 8) --Voidwarden - Level 3
@@ -122,7 +122,7 @@ INSERT INTO public."CharacterBaseStat" ("Id", "CharacterId", "Level", "Experienc
 ,('7c5032a5-4603-f96f-a58f-ab023de2e237', 'c2bf284b-b41a-3ab8-dee7-d51510668b84', 9, 500, 20) --Demolitionist - Level 9
 ;
 
-INSERT INTO public."Monster" ("Id", "ContentCode", "Name", "Description", "GameId") VALUES
+INSERT INTO public."ContentMonster" ("Id", "ContentCode", "Name", "Description", "GameId") VALUES
  ('15fb31da-55d3-48cc-8dcc-e98c329f8bee', 'blood_horror', 'Blood Horror', 'Boss: Blood Horror', '153dad18-1725-4a91-b337-521c52aaccd1') --Jaws of The Lion - Blood Horror
 ,('3c5ee40c-1118-4f09-a733-c19bb73e9f69', 'blood_tumor', 'Blood Tumor', 'Boss: Blood Tumor', '153dad18-1725-4a91-b337-521c52aaccd1') --Jaws of The Lion - Blood Tumor
 ,('4775e3b4-3ee3-4d66-8d9b-c250700962f3', 'first_of_the_order', 'First Of The Order', 'Boss: First Of The Order', '153dad18-1725-4a91-b337-521c52aaccd1') --Jaws of The Lion - First Of The Order
@@ -141,7 +141,7 @@ INSERT INTO public."Monster" ("Id", "ContentCode", "Name", "Description", "GameI
 ,('01d2606d-8269-4e83-a6c4-4fb870e37ca0', 'zealot', 'Zealot', 'Monster: Zealot', '153dad18-1725-4a91-b337-521c52aaccd1') --Jaws of The Lion - Zealot
 ;
 
-INSERT INTO public."MonsterStatSet" ("Id",  "MonsterId", "IsElite", "Level", "Health", "Movement", "Attack", "RangeAttackable", "MeleeAttackable") VALUES
+INSERT INTO public."ContentMonsterStatSet" ("Id",  "MonsterId", "IsElite", "Level", "Health", "Movement", "Attack", "RangeAttackable", "MeleeAttackable") VALUES
  ('f512e56e-2067-4df3-9894-1650664d8a93', '15fb31da-55d3-48cc-8dcc-e98c329f8bee', FALSE, '0', 'C * 7', '3', 'C - 1', TRUE, TRUE) --Jaws of The Lion - Blood Horror - Standard - Level 0
 ,('384e42c4-66c1-48d0-af7f-6ed6f53de3fd', '15fb31da-55d3-48cc-8dcc-e98c329f8bee', FALSE, '1', 'C * 10', '3', 'C', TRUE, TRUE) --Jaws of The Lion - Blood Horror - Standard - Level 1
 ,('446be22b-3d69-4ac4-9941-71b28e7fca39', '15fb31da-55d3-48cc-8dcc-e98c329f8bee', FALSE, '2', 'C * 12', '4', 'C', TRUE, TRUE) --Jaws of The Lion - Blood Horror - Standard - Level 2
@@ -376,7 +376,7 @@ INSERT INTO public."MonsterStatSet" ("Id",  "MonsterId", "IsElite", "Level", "He
 ,('243dcf9e-e1bd-4e24-aa8b-8d817ad98c55', '01d2606d-8269-4e83-a6c4-4fb870e37ca0', TRUE, '7', '26', '4', '7', TRUE, TRUE) --Jaws of The Lion - Zealot - Elite - Level 7
 ;
 
-INSERT INTO public."MonsterAttackEffect" ("EffectId", "MonsterStatSetId") VALUES
+INSERT INTO public."ContentMonsterAttackEffect" ("EffectId", "MonsterStatSetId") VALUES
  ('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '05ac4103-b890-f93a-bace-a528a49b4e61') --Jaws of The Lion - Black Imp - Standard - Level 0 | Type: poison - Value: -1 - Duration: -1
 ,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '213b19ce-caf9-3c5d-842c-28b712a18b13') --Jaws of The Lion - Black Imp - Standard - Level 1 | Type: poison - Value: -1 - Duration: -1
 ,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', 'e981b583-563b-e41e-23be-8a78afad3e70') --Jaws of The Lion - Black Imp - Standard - Level 2 | Type: poison - Value: -1 - Duration: -1
@@ -466,7 +466,7 @@ INSERT INTO public."MonsterAttackEffect" ("EffectId", "MonsterStatSetId") VALUES
 ,('eb92eff2-35ed-4e1a-9480-f527445f3ef4', 'fb6cdd3c-a980-4efb-bc06-e0cfd1a0a02f') --Jaws of The Lion - Zealot - Standard - Level 7 | Type: wound - Value: -1 - Duration: -1
 ;
 
-INSERT INTO public."MonsterDefenseEffect" ("EffectId", "MonsterStatSetId") VALUES
+INSERT INTO public."ContentMonsterDefenseEffect" ("EffectId", "MonsterStatSetId") VALUES
  ('0ac1f965-80e8-bbec-69b4-128f0a6fb320', '26300d09-a752-2561-e7c3-ed012446a4b5') --Jaws of The Lion - Black Imp - Elite - Level 3 | Type: disadvantage - Value: -1 - Duration: -1
 ,('0ac1f965-80e8-bbec-69b4-128f0a6fb320', '72ac5762-defd-0acf-af37-a525e65491bd') --Jaws of The Lion - Black Imp - Elite - Level 4 | Type: disadvantage - Value: -1 - Duration: -1
 ,('0ac1f965-80e8-bbec-69b4-128f0a6fb320', 'e4530315-2031-a83b-a024-6c1f5f503b4e') --Jaws of The Lion - Black Imp - Elite - Level 5 | Type: disadvantage - Value: -1 - Duration: -1
@@ -530,7 +530,7 @@ INSERT INTO public."MonsterDefenseEffect" ("EffectId", "MonsterStatSetId") VALUE
 ,('84d679fa-3745-577a-4351-d0edd839d327', 'f3a18f7b-2bb1-1e7a-43b1-daa1f339a77e') --Jaws of The Lion - Stone Golem - Elite - Level 7 | Type: shield - Value: 4 - Duration: -1
 ;
 
-INSERT INTO public."MonsterDeathEffect" ("EffectId", "MonsterStatSetId") VALUES
+INSERT INTO public."ContentMonsterDeathEffect" ("EffectId", "MonsterStatSetId") VALUES
  ('ae850bb6-26fb-0d22-684d-0ab3d0f43280', '04d14299-955f-8c38-8709-2553cddaee83') --Jaws of The Lion - Blood Monstrosity - Standard - Level 0 | Type: damage - Value: 1 - Duration: -1 - Range: 1
 ,('04977de7-6ea7-fff7-4e69-de45cbac49b5', 'b6d5836c-6df6-cd9f-7ac6-a2cb91bef6fc') --Jaws of The Lion - Blood Monstrosity - Standard - Level 1 | Type: damage - Value: 2 - Duration: -1 - Range: 1
 ,('04977de7-6ea7-fff7-4e69-de45cbac49b5', 'da937dc6-6711-8fc0-999f-571fcd43b335') --Jaws of The Lion - Blood Monstrosity - Standard - Level 2 | Type: damage - Value: 2 - Duration: -1 - Range: 1
@@ -566,7 +566,7 @@ INSERT INTO public."MonsterDeathEffect" ("EffectId", "MonsterStatSetId") VALUES
 ;
 
 
-INSERT INTO public."MonsterBaseStatImmunity" ("MonsterStatSetId", "Effect") VALUES
+INSERT INTO public."ContentMonsterBaseStatImmunity" ("MonsterStatSetId", "Effect") VALUES
  ('f512e56e-2067-4df3-9894-1650664d8a93', 'disarm') --Jaws of The Lion - Blood Horror - Standard - Level 0 | disarm
 ,('f512e56e-2067-4df3-9894-1650664d8a93', 'immobilize') --Jaws of The Lion - Blood Horror - Standard - Level 0 | immobilize
 ,('f512e56e-2067-4df3-9894-1650664d8a93', 'muddle') --Jaws of The Lion - Blood Horror - Standard - Level 0 | muddle
@@ -681,7 +681,7 @@ INSERT INTO public."MonsterBaseStatImmunity" ("MonsterStatSetId", "Effect") VALU
 ,('dec4b990-fb0d-4e6b-a5df-9296d00325e5', 'stun') --Jaws of The Lion - First Of The Order - Standard - Level 7 | stun
 ;
 
-INSERT INTO public."ScenarioContent" ("Id", "ContentCode", "Name", "Description", "ScenarioNumber", "Goal", "CityMapLocation", "ScenarioBookPages", "SupplementalBookPages", "GameId") VALUES
+INSERT INTO public."ContentScenario" ("Id", "ContentCode", "Name", "Description", "ScenarioNumber", "Goal", "CityMapLocation", "ScenarioBookPages", "SupplementalBookPages", "GameId") VALUES
  ('0c1e5d5b-e6f4-a62a-8d26-15b50ba346ce', 'roadside_ambush', 'Roadside Ambush', 'Scenario: Roadside Ambush', 1, 'Kill all enemies', 'B1', '{2,3}', '{}', '153dad18-1725-4a91-b337-521c52aaccd1') --Jaws of The Lion - Roadside Ambush
 ,('5397e29d-9eb5-ed44-9579-d0846a51a40d', 'a_hole_in_the_wall', 'A Hole in the Wall', 'Scenario: A Hole in the Wall', 2, 'Kill all enemies', 'B1', '{4,5}', '{}', '153dad18-1725-4a91-b337-521c52aaccd1') --Jaws of The Lion - A Hole in the Wall
 ,('117bce00-3466-5802-de5e-95ea037a9ae1', 'the_black_ship', 'The Black Ship', 'Scenario: The Black Ship', 3, 'Kill all enemies', 'D5', '{6,7}', '{2}', '153dad18-1725-4a91-b337-521c52aaccd1') --Jaws of The Lion - The Black Ship
@@ -709,7 +709,7 @@ INSERT INTO public."ScenarioContent" ("Id", "ContentCode", "Name", "Description"
 ,('bed28a5c-2fdc-7dbe-702a-70263a71bccc', 'the_greatest_job_in_the_world', 'The Greatest Job in the World', 'Scenario: The Greatest Job in the World', 25, 'Destroy all pillars, then all characters must escape', 'C7', '{50,51}', '{16}', '153dad18-1725-4a91-b337-521c52aaccd1') --Jaws of The Lion - The Greatest Job in the World
 ;
 
-INSERT INTO public."Objective" ("Id", "ContentCode", "Name", "Description", "Health","RangeAttackable", "MeleeAttackable", "GameId") VALUES
+INSERT INTO public."ContentObjective" ("Id", "ContentCode", "Name", "Description", "Health","RangeAttackable", "MeleeAttackable", "GameId") VALUES
  ('1e5e60f5-39bd-7fe1-f907-96b56557f54d', 'summoning_stone', 'Summoning Stone', 'Objective: Summoning Stone', 'C + 1', FALSE, TRUE, '153dad18-1725-4a91-b337-521c52aaccd1') --Jaws of The Lion - Summoning Stone
 ,('2b5e88bf-b6d7-7389-b08d-a43cb8ba1f2b', 'growth', 'Growth', 'Objective: Growth', '(1 + L) x C', TRUE, TRUE, '153dad18-1725-4a91-b337-521c52aaccd1') --Jaws of The Lion - Growth
 ,('80ae22f2-83b7-46a9-d6b0-712a34df42ff', 'sewer_pillar', 'Sewer Pillar', 'Objective: Sewer Pillar', '(1 + L) x C', TRUE, TRUE, '153dad18-1725-4a91-b337-521c52aaccd1') --Jaws of The Lion - Sewer Pillar
@@ -718,7 +718,7 @@ INSERT INTO public."Objective" ("Id", "ContentCode", "Name", "Description", "Hea
 ,('8ae90114-e00e-cb49-3a86-453543699c84', 'pillar', 'Pillar', 'Objective: Pillar', 'L + C', TRUE, TRUE, '153dad18-1725-4a91-b337-521c52aaccd1') --Jaws of The Lion - Pillar
 ;
 
-INSERT INTO public."ScenarioObjective" ("ScenarioId", "ObjectiveId") VALUES
+INSERT INTO public."ContentScenarioObjective" ("ScenarioId", "ObjectiveId") VALUES
  ('98cb3d1e-0dc8-d1c6-9d59-025e69b29f12', '1e5e60f5-39bd-7fe1-f907-96b56557f54d') --Jaws of The Lion - A Ritual in Stone - Jaws of The Lion - Summoning Stone
 ,('5d0c2238-19de-7aeb-f8db-971289354a38', '2b5e88bf-b6d7-7389-b08d-a43cb8ba1f2b') --Jaws of The Lion - Corrupted Research - Jaws of The Lion - Growth
 ,('27ebd92d-c0b7-b85e-4ab4-88e457b4e3a0', '80ae22f2-83b7-46a9-d6b0-712a34df42ff') --Jaws of The Lion - Beguiling Sewers - Jaws of The Lion - Sewer Pillar
@@ -727,7 +727,7 @@ INSERT INTO public."ScenarioObjective" ("ScenarioId", "ObjectiveId") VALUES
 ,('bed28a5c-2fdc-7dbe-702a-70263a71bccc', '8ae90114-e00e-cb49-3a86-453543699c84') --Jaws of The Lion - The Greatest Job in the World - Jaws of The Lion - Pillar
 ;
 
-INSERT INTO public."ScenarioMonster" ("ScenarioId", "MonsterId") VALUES
+INSERT INTO public."ContentScenarioMonster" ("ScenarioId", "MonsterId") VALUES
  ('0c1e5d5b-e6f4-a62a-8d26-15b50ba346ce', 'abc857ec-2b99-4189-a2df-b5cfb98c3c31') --Jaws of The Lion - Roadside Ambush - Jaws of The Lion - Vermling Raider
 ,('5397e29d-9eb5-ed44-9579-d0846a51a40d', 'abc857ec-2b99-4189-a2df-b5cfb98c3c31') --Jaws of The Lion - A Hole in the Wall - Jaws of The Lion - Vermling Raider
 ,('117bce00-3466-5802-de5e-95ea037a9ae1', '75b4da15-43a4-46da-a410-6f90e8f9e9db') --Jaws of The Lion - The Black Ship - Jaws of The Lion - Giant Viper
