@@ -41,7 +41,7 @@ public static partial class EntityDefinitions
         builder.Entity<MonsterBaseStatImmunityDAO>(monsterBaseStatImmunityTable =>
         {
             monsterBaseStatImmunityTable.HasKey(mi => new {mi.MonsterStatSetId, mi.Effect});
-            monsterBaseStatImmunityTable.Property(mi => mi.Effect).HasConversion(effectType);
+            monsterBaseStatImmunityTable.Property(mi => mi.Effect).HasConversion(effectTypeConverter);
         });
 
     }
