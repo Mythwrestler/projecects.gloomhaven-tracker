@@ -21,21 +21,21 @@ INSERT INTO public."ContentGame" ("Id","ContentCode","Name","Description") VALUE
  ('153dad18-1725-4a91-b337-521c52aaccd1', 'jawsOfTheLion', 'Jaws of The Lion', 'Game: Jaws of The Lion') --Game Jaws of the lion
 ;
 
-INSERT INTO public."ContentEffect" ("Id","Type","Value","Duration","Range") VALUES
- ('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', 'poison', -1, -1, -1) --Type: poison - Value: -1 - Duration: -1 - Range: -1
-,('58b68f6b-c976-442d-9b15-c654d6f42a7b', 'muddle', -1, 1, -1) --Type: muddle - Value: -1 - Duration: 1 - Range: -1
-,('6c407028-6e98-47da-bcc1-47b3e7cb8066', 'shield', 1, -1, -1) --Type: shield - Value: 1 - Duration: -1 - Range: -1
-,('b41f91aa-5d40-0935-6545-876f4c6213e7', 'shield', 2, -1, -1) --Type: shield - Value: 2 - Duration: -1 - Range: -1
-,('15e43b68-8db9-5781-559e-24c6bee9fbf1', 'shield', 3, -1, -1) --Type: shield - Value: 3 - Duration: -1 - Range: -1
-,('84d679fa-3745-577a-4351-d0edd839d327', 'shield', 4, -1, -1) --Type: shield - Value: 4 - Duration: -1 - Range: -1
-,('eb92eff2-35ed-4e1a-9480-f527445f3ef4', 'wound', -1, -1, -1) --Type: wound - Value: -1 - Duration: -1 - Range: -1
-,('0ac1f965-80e8-bbec-69b4-128f0a6fb320', 'disadvantage', -1, -1, -1) --Type: disadvantage - Value: -1 - Duration: -1 - Range: -1
-,('67119d3e-d9fd-3da2-7981-c1c82d3935e3', 'advantage', -1, -1, -1) --Type: advantage - Value: -1 - Duration: -1 - Range: -1
-,('ae850bb6-26fb-0d22-684d-0ab3d0f43280', 'damage', 1, -1, 1) --Type: damage - Value: 1 - Duration: -1 - Range: 1
-,('04977de7-6ea7-fff7-4e69-de45cbac49b5', 'damage', 2, -1, 1) --Type: damage - Value: 2 - Duration: -1 - Range: 1
-,('fbbb6c2c-10f1-879f-edbb-2fb95d7bd7a5', 'damage', 3, -1, 1) --Type: damage - Value: 3 - Duration: -1 - Range: 1
-,('2d692b7f-9f97-37ff-b622-1a2071027053', 'damage', 4, -1, 1) --Type: damage - Value: 4 - Duration: -1 - Range: 1
-,('26f9d0a7-f71e-e17b-0cf6-af7cb914d29d', 'damage', 5, -1, 1) --Type: damage - Value: 5 - Duration: -1 - Range: 1
+INSERT INTO public."ContentEffect" ("Id","Type","Value","Duration","Range","Element") VALUES
+ ('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', 'poison', null, null, null, null) --Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('58b68f6b-c976-442d-9b15-c654d6f42a7b', 'muddle', null, 1, null, null) --Type: muddle - Value: null - Duration: 1 - Range: null - Element: null
+,('6c407028-6e98-47da-bcc1-47b3e7cb8066', 'shield', 1, null, null, null) --Type: shield - Value: 1 - Duration: null - Range: null - Element: null
+,('b41f91aa-5d40-0935-6545-876f4c6213e7', 'shield', 2, null, null, null) --Type: shield - Value: 2 - Duration: null - Range: null - Element: null
+,('15e43b68-8db9-5781-559e-24c6bee9fbf1', 'shield', 3, null, null, null) --Type: shield - Value: 3 - Duration: null - Range: null - Element: null
+,('84d679fa-3745-577a-4351-d0edd839d327', 'shield', 4, null, null, null) --Type: shield - Value: 4 - Duration: null - Range: null - Element: null
+,('eb92eff2-35ed-4e1a-9480-f527445f3ef4', 'wound', null, null, null, null) --Type: wound - Value: null - Duration: null - Range: null - Element: null
+,('0ac1f965-80e8-bbec-69b4-128f0a6fb320', 'disadvantage', null, null, null, null) --Type: disadvantage - Value: null - Duration: null - Range: null - Element: null
+,('67119d3e-d9fd-3da2-7981-c1c82d3935e3', 'advantage', null, null, null, null) --Type: advantage - Value: null - Duration: null - Range: null - Element: null
+,('ae850bb6-26fb-0d22-684d-0ab3d0f43280', 'damage', 1, null, 1, null) --Type: damage - Value: 1 - Duration: null - Range: 1 - Element: null
+,('04977de7-6ea7-fff7-4e69-de45cbac49b5', 'damage', 2, null, 1, null) --Type: damage - Value: 2 - Duration: null - Range: 1 - Element: null
+,('fbbb6c2c-10f1-879f-edbb-2fb95d7bd7a5', 'damage', 3, null, 1, null) --Type: damage - Value: 3 - Duration: null - Range: 1 - Element: null
+,('2d692b7f-9f97-37ff-b622-1a2071027053', 'damage', 4, null, 1, null) --Type: damage - Value: 4 - Duration: null - Range: 1 - Element: null
+,('26f9d0a7-f71e-e17b-0cf6-af7cb914d29d', 'damage', 5, null, 1, null) --Type: damage - Value: 5 - Duration: null - Range: 1 - Element: null
 ;
 
 INSERT INTO public."ContentAttackModifier" ("Id","ContentCode","Name","Description","IsCurse","IsBlessing","TriggerShuffle","Value","GameId") VALUES
@@ -377,192 +377,199 @@ INSERT INTO public."ContentMonsterStatSet" ("Id",  "MonsterId", "IsElite", "Leve
 ;
 
 INSERT INTO public."ContentMonsterAttackEffect" ("EffectId", "MonsterStatSetId") VALUES
- ('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '05ac4103-b890-f93a-bace-a528a49b4e61') --Jaws of The Lion - Black Imp - Standard - Level 0 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '213b19ce-caf9-3c5d-842c-28b712a18b13') --Jaws of The Lion - Black Imp - Standard - Level 1 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', 'e981b583-563b-e41e-23be-8a78afad3e70') --Jaws of The Lion - Black Imp - Standard - Level 2 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', 'b03e0c27-6cbd-6da6-d1bb-025dd267ddd9') --Jaws of The Lion - Black Imp - Standard - Level 3 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '5af26922-1e1f-965e-2eca-644b112c4415') --Jaws of The Lion - Black Imp - Standard - Level 4 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', 'f1d84540-a7a5-2c0b-c39b-4a8b3e3bb39a') --Jaws of The Lion - Black Imp - Standard - Level 5 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '729186cf-cd3f-6ddf-3841-b409081fa274') --Jaws of The Lion - Black Imp - Standard - Level 6 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '861ec268-9726-b12d-db06-2574bfbef56a') --Jaws of The Lion - Black Imp - Standard - Level 7 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '466c942b-2646-fd20-b64e-0daf748ab3d6') --Jaws of The Lion - Black Imp - Elite - Level 0 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', 'b3b6ff71-c904-5f37-819e-8c9f00ac0763') --Jaws of The Lion - Black Imp - Elite - Level 1 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '9650b42a-345d-160e-de14-ba807edaa72b') --Jaws of The Lion - Black Imp - Elite - Level 2 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '26300d09-a752-2561-e7c3-ed012446a4b5') --Jaws of The Lion - Black Imp - Elite - Level 3 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '72ac5762-defd-0acf-af37-a525e65491bd') --Jaws of The Lion - Black Imp - Elite - Level 4 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', 'e4530315-2031-a83b-a024-6c1f5f503b4e') --Jaws of The Lion - Black Imp - Elite - Level 5 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', 'da937599-a7f0-c06f-7a12-0321d801fb94') --Jaws of The Lion - Black Imp - Elite - Level 6 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', 'ec943b8b-f0a3-0981-1bb7-31edfab2b02f') --Jaws of The Lion - Black Imp - Elite - Level 7 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', 'fa028ad0-5937-4d12-b586-806a92e2ebc2') --Jaws of The Lion - Black Sludge - Elite - Level 5 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '334dc3de-4926-4970-ac8f-09325af9f031') --Jaws of The Lion - Black Sludge - Elite - Level 6 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '655dc49b-b24e-4b6f-81f0-9aeb7db5d4d0') --Jaws of The Lion - Black Sludge - Elite - Level 7 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '725e2771-83ec-4079-a242-13d0d5764cb9') --Jaws of The Lion - Black Sludge - Standard - Level 5 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '0b1a0437-f9c5-48bf-a7ca-44753816edf5') --Jaws of The Lion - Black Sludge - Standard - Level 6 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '64c31849-040f-4b05-a2e2-60701b7191a0') --Jaws of The Lion - Black Sludge - Standard - Level 7 | Type: poison - Value: -1 - Duration: -1
-,('58b68f6b-c976-442d-9b15-c654d6f42a7b', '86e46e9f-f336-6996-25a1-61b9b9ea06dc') --Jaws of The Lion - Blood Imp - Standard - Level 1 | Type: muddle - Value: -1 - Duration: 1
-,('58b68f6b-c976-442d-9b15-c654d6f42a7b', '95cd864f-16bd-d64a-b529-e4660654f6d5') --Jaws of The Lion - Blood Imp - Standard - Level 2 | Type: muddle - Value: -1 - Duration: 1
-,('58b68f6b-c976-442d-9b15-c654d6f42a7b', 'e79eb90d-e293-1073-870d-2b4e9905e9e0') --Jaws of The Lion - Blood Imp - Standard - Level 3 | Type: muddle - Value: -1 - Duration: 1
-,('58b68f6b-c976-442d-9b15-c654d6f42a7b', 'cdd64a26-2021-22e7-9902-dd4503767033') --Jaws of The Lion - Blood Imp - Standard - Level 4 | Type: muddle - Value: -1 - Duration: 1
-,('58b68f6b-c976-442d-9b15-c654d6f42a7b', '3d6ed739-03c1-c7e6-80a8-a4a43e57de18') --Jaws of The Lion - Blood Imp - Standard - Level 5 | Type: muddle - Value: -1 - Duration: 1
-,('58b68f6b-c976-442d-9b15-c654d6f42a7b', '995ec60c-abc6-d30a-17c9-2551cc2a48aa') --Jaws of The Lion - Blood Imp - Standard - Level 6 | Type: muddle - Value: -1 - Duration: 1
-,('58b68f6b-c976-442d-9b15-c654d6f42a7b', 'ad344817-5be8-ae1b-675e-558a19c34ae7') --Jaws of The Lion - Blood Imp - Standard - Level 7 | Type: muddle - Value: -1 - Duration: 1
-,('58b68f6b-c976-442d-9b15-c654d6f42a7b', '8364cdb0-9c6e-d42c-2d26-9c4973a30a12') --Jaws of The Lion - Blood Imp - Elite - Level 0 | Type: muddle - Value: -1 - Duration: 1
-,('58b68f6b-c976-442d-9b15-c654d6f42a7b', '568d8b5a-1169-ed0e-9571-c80ac1dcc598') --Jaws of The Lion - Blood Imp - Elite - Level 1 | Type: muddle - Value: -1 - Duration: 1
-,('58b68f6b-c976-442d-9b15-c654d6f42a7b', '65f09f40-05d8-f222-6406-584540868c0e') --Jaws of The Lion - Blood Imp - Elite - Level 2 | Type: muddle - Value: -1 - Duration: 1
-,('58b68f6b-c976-442d-9b15-c654d6f42a7b', '566e9ca6-3985-4a8b-6fda-59363e2aef05') --Jaws of The Lion - Blood Imp - Elite - Level 3 | Type: muddle - Value: -1 - Duration: 1
-,('58b68f6b-c976-442d-9b15-c654d6f42a7b', '7983e416-58c4-13b2-9e66-aa879090f5e3') --Jaws of The Lion - Blood Imp - Elite - Level 4 | Type: muddle - Value: -1 - Duration: 1
-,('58b68f6b-c976-442d-9b15-c654d6f42a7b', 'c3032197-b6c4-72a3-0030-f8ef751bad62') --Jaws of The Lion - Blood Imp - Elite - Level 5 | Type: muddle - Value: -1 - Duration: 1
-,('58b68f6b-c976-442d-9b15-c654d6f42a7b', 'da03f0c1-999e-7900-8acf-5edb62bf5ff5') --Jaws of The Lion - Blood Imp - Elite - Level 6 | Type: muddle - Value: -1 - Duration: 1
-,('58b68f6b-c976-442d-9b15-c654d6f42a7b', '703addb5-d906-ecae-5791-2770708e7602') --Jaws of The Lion - Blood Imp - Elite - Level 7 | Type: muddle - Value: -1 - Duration: 1
-,('58b68f6b-c976-442d-9b15-c654d6f42a7b', 'f5580f7a-0d1a-0551-f821-1b4c72a20b0a') --Jaws of The Lion - Chaos Demon - Standard - Level 0 | Type: muddle - Value: -1 - Duration: 1
-,('58b68f6b-c976-442d-9b15-c654d6f42a7b', '06d975a9-c866-af97-ccd1-39af332c6a9e') --Jaws of The Lion - Chaos Demon - Standard - Level 1 | Type: muddle - Value: -1 - Duration: 1
-,('58b68f6b-c976-442d-9b15-c654d6f42a7b', '9a3ec149-3a14-e6c6-3e35-49fb505fa7e4') --Jaws of The Lion - Chaos Demon - Standard - Level 2 | Type: muddle - Value: -1 - Duration: 1
-,('58b68f6b-c976-442d-9b15-c654d6f42a7b', '8171c1eb-9fbd-77dd-9cc8-346aec57dc3d') --Jaws of The Lion - Chaos Demon - Standard - Level 3 | Type: muddle - Value: -1 - Duration: 1
-,('58b68f6b-c976-442d-9b15-c654d6f42a7b', '3bff934f-ccbd-feab-ae63-5e6dd42bcf56') --Jaws of The Lion - Chaos Demon - Standard - Level 4 | Type: muddle - Value: -1 - Duration: 1
-,('58b68f6b-c976-442d-9b15-c654d6f42a7b', 'e61f5084-19c3-2f4a-f810-a74a4b76acc3') --Jaws of The Lion - Chaos Demon - Standard - Level 5 | Type: muddle - Value: -1 - Duration: 1
-,('58b68f6b-c976-442d-9b15-c654d6f42a7b', '8e578566-bcee-7755-5e18-335ec2ece224') --Jaws of The Lion - Chaos Demon - Standard - Level 6 | Type: muddle - Value: -1 - Duration: 1
-,('58b68f6b-c976-442d-9b15-c654d6f42a7b', 'b4c028b6-505a-7cdf-320d-f1965720585c') --Jaws of The Lion - Chaos Demon - Standard - Level 7 | Type: muddle - Value: -1 - Duration: 1
-,('58b68f6b-c976-442d-9b15-c654d6f42a7b', 'c3b19dde-134d-b1df-5594-a8ffd022fcba') --Jaws of The Lion - Chaos Demon - Elite - Level 0 | Type: muddle - Value: -1 - Duration: 1
-,('58b68f6b-c976-442d-9b15-c654d6f42a7b', 'b89c8f08-0382-a763-549e-3a3f99cf0a43') --Jaws of The Lion - Chaos Demon - Elite - Level 1 | Type: muddle - Value: -1 - Duration: 1
-,('58b68f6b-c976-442d-9b15-c654d6f42a7b', 'ec8c81c5-27db-afba-a99f-1ecbff039282') --Jaws of The Lion - Chaos Demon - Elite - Level 2 | Type: muddle - Value: -1 - Duration: 1
-,('58b68f6b-c976-442d-9b15-c654d6f42a7b', 'fce5b4c9-444b-9f09-4b38-bd8c978f59bc') --Jaws of The Lion - Chaos Demon - Elite - Level 3 | Type: muddle - Value: -1 - Duration: 1
-,('58b68f6b-c976-442d-9b15-c654d6f42a7b', '052933ac-7607-8b87-2ced-78cf41e6b1a9') --Jaws of The Lion - Chaos Demon - Elite - Level 4 | Type: muddle - Value: -1 - Duration: 1
-,('58b68f6b-c976-442d-9b15-c654d6f42a7b', '2a4e2e1e-5248-79bb-cce6-be44bed38bc5') --Jaws of The Lion - Chaos Demon - Elite - Level 5 | Type: muddle - Value: -1 - Duration: 1
-,('58b68f6b-c976-442d-9b15-c654d6f42a7b', '3950f9cc-68c9-f652-0a7f-f1c89ba56bdf') --Jaws of The Lion - Chaos Demon - Elite - Level 6 | Type: muddle - Value: -1 - Duration: 1
-,('58b68f6b-c976-442d-9b15-c654d6f42a7b', 'c73c1be5-eaf6-04a3-bb97-ec9ae16d2fa2') --Jaws of The Lion - Chaos Demon - Elite - Level 7 | Type: muddle - Value: -1 - Duration: 1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', 'e57351ea-ada0-4070-9038-d36cd85baa62') --Jaws of The Lion - Giant Viper - Elite - Level 0 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '05e328af-b0ce-46bb-9bc5-864377bf3c63') --Jaws of The Lion - Giant Viper - Elite - Level 1 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '36eebd0c-e40d-4216-a00c-902bcc8634b5') --Jaws of The Lion - Giant Viper - Elite - Level 2 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '09ad2203-2505-4ab7-88ad-bab52dcc1eeb') --Jaws of The Lion - Giant Viper - Elite - Level 3 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '4f41c2cb-0ad2-4469-bda4-d8bc9ec0d032') --Jaws of The Lion - Giant Viper - Elite - Level 4 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', 'f9741e49-a9f4-4e82-b6ba-7c776cf09e9e') --Jaws of The Lion - Giant Viper - Elite - Level 5 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '2a546c99-9ab4-4f75-ac20-0c966d9ee786') --Jaws of The Lion - Giant Viper - Elite - Level 6 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '12250e57-0598-4535-b8ca-65c96c586b02') --Jaws of The Lion - Giant Viper - Elite - Level 7 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', 'cec73721-3c25-4dec-baf8-5a8572f690b7') --Jaws of The Lion - Giant Viper - Standard - Level 0 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '886716df-8792-4738-8732-3d427b24e655') --Jaws of The Lion - Giant Viper - Standard - Level 1 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '696aeb13-b176-4e7f-af59-ec9ac739a7ea') --Jaws of The Lion - Giant Viper - Standard - Level 2 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', 'ab18e350-f139-42a7-ad7e-89db32bd384f') --Jaws of The Lion - Giant Viper - Standard - Level 3 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', 'f74c3482-2a4a-4e34-8834-d75e309b024d') --Jaws of The Lion - Giant Viper - Standard - Level 4 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', 'fd5a799a-3dd1-4498-9143-0a7493ce45df') --Jaws of The Lion - Giant Viper - Standard - Level 5 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '309aa084-7b3a-45f1-aa93-38efcd4abead') --Jaws of The Lion - Giant Viper - Standard - Level 6 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '4f70db4f-6d01-49c5-9e49-cbe5188aa4ff') --Jaws of The Lion - Giant Viper - Standard - Level 7 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', 'b79bebac-00ef-873b-5965-a9fe60964390') --Jaws of The Lion - Living Corpse - Standard - Level 6 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', 'b58f993d-719b-7435-a8c5-8deb315d94e2') --Jaws of The Lion - Living Corpse - Standard - Level 7 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', 'e66b14b3-e3bb-e39e-e442-a89ea41c6c83') --Jaws of The Lion - Living Corpse - Elite - Level 4 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '0ef7b0a8-3782-1454-6e56-c1771ff76771') --Jaws of The Lion - Living Corpse - Elite - Level 5 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '72ccf30d-fb8c-c04f-2831-167166b92c60') --Jaws of The Lion - Living Corpse - Elite - Level 6 | Type: poison - Value: -1 - Duration: -1
-,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '0c25406f-923e-60e2-94d9-3ac68687411b') --Jaws of The Lion - Living Corpse - Elite - Level 7 | Type: poison - Value: -1 - Duration: -1
-,('eb92eff2-35ed-4e1a-9480-f527445f3ef4', '2895d7e7-19c5-4394-add4-e073cdbd272a') --Jaws of The Lion - Zealot - Elite - Level 1 | Type: wound - Value: -1 - Duration: -1
-,('eb92eff2-35ed-4e1a-9480-f527445f3ef4', '9552e506-6387-494c-bb00-321784890beb') --Jaws of The Lion - Zealot - Elite - Level 2 | Type: wound - Value: -1 - Duration: -1
-,('eb92eff2-35ed-4e1a-9480-f527445f3ef4', 'ba221868-3db2-4b29-b540-382fc5fce010') --Jaws of The Lion - Zealot - Elite - Level 3 | Type: wound - Value: -1 - Duration: -1
-,('eb92eff2-35ed-4e1a-9480-f527445f3ef4', '15d56d6f-26f9-43fe-91e5-f6ecccff9635') --Jaws of The Lion - Zealot - Elite - Level 4 | Type: wound - Value: -1 - Duration: -1
-,('eb92eff2-35ed-4e1a-9480-f527445f3ef4', '96da6942-c6f9-4d24-9679-783b3f8205fc') --Jaws of The Lion - Zealot - Elite - Level 5 | Type: wound - Value: -1 - Duration: -1
-,('eb92eff2-35ed-4e1a-9480-f527445f3ef4', 'b778d7e9-61e0-4173-a383-e5aabc671dc8') --Jaws of The Lion - Zealot - Elite - Level 6 | Type: wound - Value: -1 - Duration: -1
-,('eb92eff2-35ed-4e1a-9480-f527445f3ef4', '243dcf9e-e1bd-4e24-aa8b-8d817ad98c55') --Jaws of The Lion - Zealot - Elite - Level 7 | Type: wound - Value: -1 - Duration: -1
-,('eb92eff2-35ed-4e1a-9480-f527445f3ef4', '56486fac-ab93-4ca0-8d4e-4a3e72f3edbe') --Jaws of The Lion - Zealot - Standard - Level 3 | Type: wound - Value: -1 - Duration: -1
-,('eb92eff2-35ed-4e1a-9480-f527445f3ef4', '7a23e2e9-37cc-40d6-a14f-0e0941a9a237') --Jaws of The Lion - Zealot - Standard - Level 4 | Type: wound - Value: -1 - Duration: -1
-,('eb92eff2-35ed-4e1a-9480-f527445f3ef4', '2917c938-13b8-41b1-8e0f-51487f33dae1') --Jaws of The Lion - Zealot - Standard - Level 5 | Type: wound - Value: -1 - Duration: -1
-,('eb92eff2-35ed-4e1a-9480-f527445f3ef4', 'd43259bf-9e24-4927-a527-ad055c23849d') --Jaws of The Lion - Zealot - Standard - Level 6 | Type: wound - Value: -1 - Duration: -1
-,('eb92eff2-35ed-4e1a-9480-f527445f3ef4', 'fb6cdd3c-a980-4efb-bc06-e0cfd1a0a02f') --Jaws of The Lion - Zealot - Standard - Level 7 | Type: wound - Value: -1 - Duration: -1
+ ('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '05ac4103-b890-f93a-bace-a528a49b4e61') --Jaws of The Lion - Black Imp - Standard - Level 0 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '213b19ce-caf9-3c5d-842c-28b712a18b13') --Jaws of The Lion - Black Imp - Standard - Level 1 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', 'e981b583-563b-e41e-23be-8a78afad3e70') --Jaws of The Lion - Black Imp - Standard - Level 2 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', 'b03e0c27-6cbd-6da6-d1bb-025dd267ddd9') --Jaws of The Lion - Black Imp - Standard - Level 3 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '5af26922-1e1f-965e-2eca-644b112c4415') --Jaws of The Lion - Black Imp - Standard - Level 4 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', 'f1d84540-a7a5-2c0b-c39b-4a8b3e3bb39a') --Jaws of The Lion - Black Imp - Standard - Level 5 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '729186cf-cd3f-6ddf-3841-b409081fa274') --Jaws of The Lion - Black Imp - Standard - Level 6 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '861ec268-9726-b12d-db06-2574bfbef56a') --Jaws of The Lion - Black Imp - Standard - Level 7 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '466c942b-2646-fd20-b64e-0daf748ab3d6') --Jaws of The Lion - Black Imp - Elite - Level 0 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', 'b3b6ff71-c904-5f37-819e-8c9f00ac0763') --Jaws of The Lion - Black Imp - Elite - Level 1 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '9650b42a-345d-160e-de14-ba807edaa72b') --Jaws of The Lion - Black Imp - Elite - Level 2 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '26300d09-a752-2561-e7c3-ed012446a4b5') --Jaws of The Lion - Black Imp - Elite - Level 3 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '72ac5762-defd-0acf-af37-a525e65491bd') --Jaws of The Lion - Black Imp - Elite - Level 4 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', 'e4530315-2031-a83b-a024-6c1f5f503b4e') --Jaws of The Lion - Black Imp - Elite - Level 5 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', 'da937599-a7f0-c06f-7a12-0321d801fb94') --Jaws of The Lion - Black Imp - Elite - Level 6 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', 'ec943b8b-f0a3-0981-1bb7-31edfab2b02f') --Jaws of The Lion - Black Imp - Elite - Level 7 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', 'fa028ad0-5937-4d12-b586-806a92e2ebc2') --Jaws of The Lion - Black Sludge - Elite - Level 5 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '334dc3de-4926-4970-ac8f-09325af9f031') --Jaws of The Lion - Black Sludge - Elite - Level 6 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '655dc49b-b24e-4b6f-81f0-9aeb7db5d4d0') --Jaws of The Lion - Black Sludge - Elite - Level 7 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '725e2771-83ec-4079-a242-13d0d5764cb9') --Jaws of The Lion - Black Sludge - Standard - Level 5 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '0b1a0437-f9c5-48bf-a7ca-44753816edf5') --Jaws of The Lion - Black Sludge - Standard - Level 6 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '64c31849-040f-4b05-a2e2-60701b7191a0') --Jaws of The Lion - Black Sludge - Standard - Level 7 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('58b68f6b-c976-442d-9b15-c654d6f42a7b', '86e46e9f-f336-6996-25a1-61b9b9ea06dc') --Jaws of The Lion - Blood Imp - Standard - Level 1 | Type: muddle - Value: null - Duration: 1 - Range: null - Element: null
+,('58b68f6b-c976-442d-9b15-c654d6f42a7b', '95cd864f-16bd-d64a-b529-e4660654f6d5') --Jaws of The Lion - Blood Imp - Standard - Level 2 | Type: muddle - Value: null - Duration: 1 - Range: null - Element: null
+,('58b68f6b-c976-442d-9b15-c654d6f42a7b', 'e79eb90d-e293-1073-870d-2b4e9905e9e0') --Jaws of The Lion - Blood Imp - Standard - Level 3 | Type: muddle - Value: null - Duration: 1 - Range: null - Element: null
+,('58b68f6b-c976-442d-9b15-c654d6f42a7b', 'cdd64a26-2021-22e7-9902-dd4503767033') --Jaws of The Lion - Blood Imp - Standard - Level 4 | Type: muddle - Value: null - Duration: 1 - Range: null - Element: null
+,('58b68f6b-c976-442d-9b15-c654d6f42a7b', '3d6ed739-03c1-c7e6-80a8-a4a43e57de18') --Jaws of The Lion - Blood Imp - Standard - Level 5 | Type: muddle - Value: null - Duration: 1 - Range: null - Element: null
+,('58b68f6b-c976-442d-9b15-c654d6f42a7b', '995ec60c-abc6-d30a-17c9-2551cc2a48aa') --Jaws of The Lion - Blood Imp - Standard - Level 6 | Type: muddle - Value: null - Duration: 1 - Range: null - Element: null
+,('58b68f6b-c976-442d-9b15-c654d6f42a7b', 'ad344817-5be8-ae1b-675e-558a19c34ae7') --Jaws of The Lion - Blood Imp - Standard - Level 7 | Type: muddle - Value: null - Duration: 1 - Range: null - Element: null
+,('58b68f6b-c976-442d-9b15-c654d6f42a7b', '8364cdb0-9c6e-d42c-2d26-9c4973a30a12') --Jaws of The Lion - Blood Imp - Elite - Level 0 | Type: muddle - Value: null - Duration: 1 - Range: null - Element: null
+,('58b68f6b-c976-442d-9b15-c654d6f42a7b', '568d8b5a-1169-ed0e-9571-c80ac1dcc598') --Jaws of The Lion - Blood Imp - Elite - Level 1 | Type: muddle - Value: null - Duration: 1 - Range: null - Element: null
+,('58b68f6b-c976-442d-9b15-c654d6f42a7b', '65f09f40-05d8-f222-6406-584540868c0e') --Jaws of The Lion - Blood Imp - Elite - Level 2 | Type: muddle - Value: null - Duration: 1 - Range: null - Element: null
+,('58b68f6b-c976-442d-9b15-c654d6f42a7b', '566e9ca6-3985-4a8b-6fda-59363e2aef05') --Jaws of The Lion - Blood Imp - Elite - Level 3 | Type: muddle - Value: null - Duration: 1 - Range: null - Element: null
+,('58b68f6b-c976-442d-9b15-c654d6f42a7b', '7983e416-58c4-13b2-9e66-aa879090f5e3') --Jaws of The Lion - Blood Imp - Elite - Level 4 | Type: muddle - Value: null - Duration: 1 - Range: null - Element: null
+,('58b68f6b-c976-442d-9b15-c654d6f42a7b', 'c3032197-b6c4-72a3-0030-f8ef751bad62') --Jaws of The Lion - Blood Imp - Elite - Level 5 | Type: muddle - Value: null - Duration: 1 - Range: null - Element: null
+,('58b68f6b-c976-442d-9b15-c654d6f42a7b', 'da03f0c1-999e-7900-8acf-5edb62bf5ff5') --Jaws of The Lion - Blood Imp - Elite - Level 6 | Type: muddle - Value: null - Duration: 1 - Range: null - Element: null
+,('58b68f6b-c976-442d-9b15-c654d6f42a7b', '703addb5-d906-ecae-5791-2770708e7602') --Jaws of The Lion - Blood Imp - Elite - Level 7 | Type: muddle - Value: null - Duration: 1 - Range: null - Element: null
+,('58b68f6b-c976-442d-9b15-c654d6f42a7b', 'f5580f7a-0d1a-0551-f821-1b4c72a20b0a') --Jaws of The Lion - Chaos Demon - Standard - Level 0 | Type: muddle - Value: null - Duration: 1 - Range: null - Element: null
+,('58b68f6b-c976-442d-9b15-c654d6f42a7b', '06d975a9-c866-af97-ccd1-39af332c6a9e') --Jaws of The Lion - Chaos Demon - Standard - Level 1 | Type: muddle - Value: null - Duration: 1 - Range: null - Element: null
+,('58b68f6b-c976-442d-9b15-c654d6f42a7b', '9a3ec149-3a14-e6c6-3e35-49fb505fa7e4') --Jaws of The Lion - Chaos Demon - Standard - Level 2 | Type: muddle - Value: null - Duration: 1 - Range: null - Element: null
+,('58b68f6b-c976-442d-9b15-c654d6f42a7b', '8171c1eb-9fbd-77dd-9cc8-346aec57dc3d') --Jaws of The Lion - Chaos Demon - Standard - Level 3 | Type: muddle - Value: null - Duration: 1 - Range: null - Element: null
+,('58b68f6b-c976-442d-9b15-c654d6f42a7b', '3bff934f-ccbd-feab-ae63-5e6dd42bcf56') --Jaws of The Lion - Chaos Demon - Standard - Level 4 | Type: muddle - Value: null - Duration: 1 - Range: null - Element: null
+,('58b68f6b-c976-442d-9b15-c654d6f42a7b', 'e61f5084-19c3-2f4a-f810-a74a4b76acc3') --Jaws of The Lion - Chaos Demon - Standard - Level 5 | Type: muddle - Value: null - Duration: 1 - Range: null - Element: null
+,('58b68f6b-c976-442d-9b15-c654d6f42a7b', '8e578566-bcee-7755-5e18-335ec2ece224') --Jaws of The Lion - Chaos Demon - Standard - Level 6 | Type: muddle - Value: null - Duration: 1 - Range: null - Element: null
+,('58b68f6b-c976-442d-9b15-c654d6f42a7b', 'b4c028b6-505a-7cdf-320d-f1965720585c') --Jaws of The Lion - Chaos Demon - Standard - Level 7 | Type: muddle - Value: null - Duration: 1 - Range: null - Element: null
+,('58b68f6b-c976-442d-9b15-c654d6f42a7b', 'c3b19dde-134d-b1df-5594-a8ffd022fcba') --Jaws of The Lion - Chaos Demon - Elite - Level 0 | Type: muddle - Value: null - Duration: 1 - Range: null - Element: null
+,('58b68f6b-c976-442d-9b15-c654d6f42a7b', 'b89c8f08-0382-a763-549e-3a3f99cf0a43') --Jaws of The Lion - Chaos Demon - Elite - Level 1 | Type: muddle - Value: null - Duration: 1 - Range: null - Element: null
+,('58b68f6b-c976-442d-9b15-c654d6f42a7b', 'ec8c81c5-27db-afba-a99f-1ecbff039282') --Jaws of The Lion - Chaos Demon - Elite - Level 2 | Type: muddle - Value: null - Duration: 1 - Range: null - Element: null
+,('58b68f6b-c976-442d-9b15-c654d6f42a7b', 'fce5b4c9-444b-9f09-4b38-bd8c978f59bc') --Jaws of The Lion - Chaos Demon - Elite - Level 3 | Type: muddle - Value: null - Duration: 1 - Range: null - Element: null
+,('58b68f6b-c976-442d-9b15-c654d6f42a7b', '052933ac-7607-8b87-2ced-78cf41e6b1a9') --Jaws of The Lion - Chaos Demon - Elite - Level 4 | Type: muddle - Value: null - Duration: 1 - Range: null - Element: null
+,('58b68f6b-c976-442d-9b15-c654d6f42a7b', '2a4e2e1e-5248-79bb-cce6-be44bed38bc5') --Jaws of The Lion - Chaos Demon - Elite - Level 5 | Type: muddle - Value: null - Duration: 1 - Range: null - Element: null
+,('58b68f6b-c976-442d-9b15-c654d6f42a7b', '3950f9cc-68c9-f652-0a7f-f1c89ba56bdf') --Jaws of The Lion - Chaos Demon - Elite - Level 6 | Type: muddle - Value: null - Duration: 1 - Range: null - Element: null
+,('58b68f6b-c976-442d-9b15-c654d6f42a7b', 'c73c1be5-eaf6-04a3-bb97-ec9ae16d2fa2') --Jaws of The Lion - Chaos Demon - Elite - Level 7 | Type: muddle - Value: null - Duration: 1 - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', 'e57351ea-ada0-4070-9038-d36cd85baa62') --Jaws of The Lion - Giant Viper - Elite - Level 0 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '05e328af-b0ce-46bb-9bc5-864377bf3c63') --Jaws of The Lion - Giant Viper - Elite - Level 1 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '36eebd0c-e40d-4216-a00c-902bcc8634b5') --Jaws of The Lion - Giant Viper - Elite - Level 2 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '09ad2203-2505-4ab7-88ad-bab52dcc1eeb') --Jaws of The Lion - Giant Viper - Elite - Level 3 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '4f41c2cb-0ad2-4469-bda4-d8bc9ec0d032') --Jaws of The Lion - Giant Viper - Elite - Level 4 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', 'f9741e49-a9f4-4e82-b6ba-7c776cf09e9e') --Jaws of The Lion - Giant Viper - Elite - Level 5 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '2a546c99-9ab4-4f75-ac20-0c966d9ee786') --Jaws of The Lion - Giant Viper - Elite - Level 6 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '12250e57-0598-4535-b8ca-65c96c586b02') --Jaws of The Lion - Giant Viper - Elite - Level 7 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', 'cec73721-3c25-4dec-baf8-5a8572f690b7') --Jaws of The Lion - Giant Viper - Standard - Level 0 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '886716df-8792-4738-8732-3d427b24e655') --Jaws of The Lion - Giant Viper - Standard - Level 1 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '696aeb13-b176-4e7f-af59-ec9ac739a7ea') --Jaws of The Lion - Giant Viper - Standard - Level 2 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', 'ab18e350-f139-42a7-ad7e-89db32bd384f') --Jaws of The Lion - Giant Viper - Standard - Level 3 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', 'f74c3482-2a4a-4e34-8834-d75e309b024d') --Jaws of The Lion - Giant Viper - Standard - Level 4 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', 'fd5a799a-3dd1-4498-9143-0a7493ce45df') --Jaws of The Lion - Giant Viper - Standard - Level 5 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '309aa084-7b3a-45f1-aa93-38efcd4abead') --Jaws of The Lion - Giant Viper - Standard - Level 6 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '4f70db4f-6d01-49c5-9e49-cbe5188aa4ff') --Jaws of The Lion - Giant Viper - Standard - Level 7 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', 'b79bebac-00ef-873b-5965-a9fe60964390') --Jaws of The Lion - Living Corpse - Standard - Level 6 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', 'b58f993d-719b-7435-a8c5-8deb315d94e2') --Jaws of The Lion - Living Corpse - Standard - Level 7 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', 'e66b14b3-e3bb-e39e-e442-a89ea41c6c83') --Jaws of The Lion - Living Corpse - Elite - Level 4 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '0ef7b0a8-3782-1454-6e56-c1771ff76771') --Jaws of The Lion - Living Corpse - Elite - Level 5 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '72ccf30d-fb8c-c04f-2831-167166b92c60') --Jaws of The Lion - Living Corpse - Elite - Level 6 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('0b11aaf8-a41f-4c87-a1bb-8b1021220b00', '0c25406f-923e-60e2-94d9-3ac68687411b') --Jaws of The Lion - Living Corpse - Elite - Level 7 | Type: poison - Value: null - Duration: null - Range: null - Element: null
+,('67119d3e-d9fd-3da2-7981-c1c82d3935e3', 'abfc9083-a51d-ceb4-2cd0-63a00037df6b') --Jaws of The Lion - Rat Monstrosity - Elite - Level 1 | Type: advantage - Value: null - Duration: null - Range: null - Element: null
+,('67119d3e-d9fd-3da2-7981-c1c82d3935e3', 'a331d9fb-514b-e837-502f-e9c63f71e8d9') --Jaws of The Lion - Rat Monstrosity - Elite - Level 2 | Type: advantage - Value: null - Duration: null - Range: null - Element: null
+,('67119d3e-d9fd-3da2-7981-c1c82d3935e3', 'f79109df-51db-ac00-f6ef-fe4b7070030b') --Jaws of The Lion - Rat Monstrosity - Elite - Level 3 | Type: advantage - Value: null - Duration: null - Range: null - Element: null
+,('67119d3e-d9fd-3da2-7981-c1c82d3935e3', '8d92e175-9aca-0bb2-0bd1-9fe6ea517145') --Jaws of The Lion - Rat Monstrosity - Elite - Level 4 | Type: advantage - Value: null - Duration: null - Range: null - Element: null
+,('67119d3e-d9fd-3da2-7981-c1c82d3935e3', 'd63dc2b6-feb0-5e74-d5db-68c8840b3783') --Jaws of The Lion - Rat Monstrosity - Elite - Level 5 | Type: advantage - Value: null - Duration: null - Range: null - Element: null
+,('67119d3e-d9fd-3da2-7981-c1c82d3935e3', 'c8cb3cc1-c2b8-9809-3c5a-7b232b483198') --Jaws of The Lion - Rat Monstrosity - Elite - Level 6 | Type: advantage - Value: null - Duration: null - Range: null - Element: null
+,('67119d3e-d9fd-3da2-7981-c1c82d3935e3', '68c70ed9-effb-5c77-27ff-17221d6e6b89') --Jaws of The Lion - Rat Monstrosity - Elite - Level 7 | Type: advantage - Value: null - Duration: null - Range: null - Element: null
+,('eb92eff2-35ed-4e1a-9480-f527445f3ef4', '2895d7e7-19c5-4394-add4-e073cdbd272a') --Jaws of The Lion - Zealot - Elite - Level 1 | Type: wound - Value: null - Duration: null - Range: null - Element: null
+,('eb92eff2-35ed-4e1a-9480-f527445f3ef4', '9552e506-6387-494c-bb00-321784890beb') --Jaws of The Lion - Zealot - Elite - Level 2 | Type: wound - Value: null - Duration: null - Range: null - Element: null
+,('eb92eff2-35ed-4e1a-9480-f527445f3ef4', 'ba221868-3db2-4b29-b540-382fc5fce010') --Jaws of The Lion - Zealot - Elite - Level 3 | Type: wound - Value: null - Duration: null - Range: null - Element: null
+,('eb92eff2-35ed-4e1a-9480-f527445f3ef4', '15d56d6f-26f9-43fe-91e5-f6ecccff9635') --Jaws of The Lion - Zealot - Elite - Level 4 | Type: wound - Value: null - Duration: null - Range: null - Element: null
+,('eb92eff2-35ed-4e1a-9480-f527445f3ef4', '96da6942-c6f9-4d24-9679-783b3f8205fc') --Jaws of The Lion - Zealot - Elite - Level 5 | Type: wound - Value: null - Duration: null - Range: null - Element: null
+,('eb92eff2-35ed-4e1a-9480-f527445f3ef4', 'b778d7e9-61e0-4173-a383-e5aabc671dc8') --Jaws of The Lion - Zealot - Elite - Level 6 | Type: wound - Value: null - Duration: null - Range: null - Element: null
+,('eb92eff2-35ed-4e1a-9480-f527445f3ef4', '243dcf9e-e1bd-4e24-aa8b-8d817ad98c55') --Jaws of The Lion - Zealot - Elite - Level 7 | Type: wound - Value: null - Duration: null - Range: null - Element: null
+,('eb92eff2-35ed-4e1a-9480-f527445f3ef4', '56486fac-ab93-4ca0-8d4e-4a3e72f3edbe') --Jaws of The Lion - Zealot - Standard - Level 3 | Type: wound - Value: null - Duration: null - Range: null - Element: null
+,('eb92eff2-35ed-4e1a-9480-f527445f3ef4', '7a23e2e9-37cc-40d6-a14f-0e0941a9a237') --Jaws of The Lion - Zealot - Standard - Level 4 | Type: wound - Value: null - Duration: null - Range: null - Element: null
+,('eb92eff2-35ed-4e1a-9480-f527445f3ef4', '2917c938-13b8-41b1-8e0f-51487f33dae1') --Jaws of The Lion - Zealot - Standard - Level 5 | Type: wound - Value: null - Duration: null - Range: null - Element: null
+,('eb92eff2-35ed-4e1a-9480-f527445f3ef4', 'd43259bf-9e24-4927-a527-ad055c23849d') --Jaws of The Lion - Zealot - Standard - Level 6 | Type: wound - Value: null - Duration: null - Range: null - Element: null
+,('eb92eff2-35ed-4e1a-9480-f527445f3ef4', 'fb6cdd3c-a980-4efb-bc06-e0cfd1a0a02f') --Jaws of The Lion - Zealot - Standard - Level 7 | Type: wound - Value: null - Duration: null - Range: null - Element: null
 ;
 
 INSERT INTO public."ContentMonsterDefenseEffect" ("EffectId", "MonsterStatSetId") VALUES
- ('0ac1f965-80e8-bbec-69b4-128f0a6fb320', '26300d09-a752-2561-e7c3-ed012446a4b5') --Jaws of The Lion - Black Imp - Elite - Level 3 | Type: disadvantage - Value: -1 - Duration: -1
-,('0ac1f965-80e8-bbec-69b4-128f0a6fb320', '72ac5762-defd-0acf-af37-a525e65491bd') --Jaws of The Lion - Black Imp - Elite - Level 4 | Type: disadvantage - Value: -1 - Duration: -1
-,('0ac1f965-80e8-bbec-69b4-128f0a6fb320', 'e4530315-2031-a83b-a024-6c1f5f503b4e') --Jaws of The Lion - Black Imp - Elite - Level 5 | Type: disadvantage - Value: -1 - Duration: -1
-,('0ac1f965-80e8-bbec-69b4-128f0a6fb320', 'da937599-a7f0-c06f-7a12-0321d801fb94') --Jaws of The Lion - Black Imp - Elite - Level 6 | Type: disadvantage - Value: -1 - Duration: -1
-,('0ac1f965-80e8-bbec-69b4-128f0a6fb320', 'ec943b8b-f0a3-0981-1bb7-31edfab2b02f') --Jaws of The Lion - Black Imp - Elite - Level 7 | Type: disadvantage - Value: -1 - Duration: -1
-,('6c407028-6e98-47da-bcc1-47b3e7cb8066', '2f49c845-c624-4243-a117-54b007580dd7') --Jaws of The Lion - Black Sludge - Elite - Level 1 | Type: shield - Value: 1 - Duration: -1
-,('6c407028-6e98-47da-bcc1-47b3e7cb8066', 'f7268cf2-9d86-4d41-8958-906bf98d7b28') --Jaws of The Lion - Black Sludge - Elite - Level 2 | Type: shield - Value: 1 - Duration: -1
-,('6c407028-6e98-47da-bcc1-47b3e7cb8066', '03791852-b149-4c3e-b163-4cc8be39172d') --Jaws of The Lion - Black Sludge - Elite - Level 3 | Type: shield - Value: 1 - Duration: -1
-,('6c407028-6e98-47da-bcc1-47b3e7cb8066', '02cbda8d-a850-46df-84a3-888fe7b1f3d5') --Jaws of The Lion - Black Sludge - Elite - Level 4 | Type: shield - Value: 1 - Duration: -1
-,('6c407028-6e98-47da-bcc1-47b3e7cb8066', 'fa028ad0-5937-4d12-b586-806a92e2ebc2') --Jaws of The Lion - Black Sludge - Elite - Level 5 | Type: shield - Value: 1 - Duration: -1
-,('6c407028-6e98-47da-bcc1-47b3e7cb8066', '334dc3de-4926-4970-ac8f-09325af9f031') --Jaws of The Lion - Black Sludge - Elite - Level 6 | Type: shield - Value: 1 - Duration: -1
-,('6c407028-6e98-47da-bcc1-47b3e7cb8066', '655dc49b-b24e-4b6f-81f0-9aeb7db5d4d0') --Jaws of The Lion - Black Sludge - Elite - Level 7 | Type: shield - Value: 1 - Duration: -1
-,('6c407028-6e98-47da-bcc1-47b3e7cb8066', '6c2decba-31f5-4029-bbd5-f9ce17f998da') --Jaws of The Lion - Black Sludge - Standard - Level 1 | Type: shield - Value: 1 - Duration: -1
-,('6c407028-6e98-47da-bcc1-47b3e7cb8066', '22eef8ba-9775-4859-aa22-98e0f9f57ccc') --Jaws of The Lion - Black Sludge - Standard - Level 2 | Type: shield - Value: 1 - Duration: -1
-,('6c407028-6e98-47da-bcc1-47b3e7cb8066', 'ac7934c8-a614-48a3-8907-501f1cc303e2') --Jaws of The Lion - Black Sludge - Standard - Level 3 | Type: shield - Value: 1 - Duration: -1
-,('6c407028-6e98-47da-bcc1-47b3e7cb8066', 'daba4a73-d718-492d-bb51-c0093e195d71') --Jaws of The Lion - Black Sludge - Standard - Level 4 | Type: shield - Value: 1 - Duration: -1
-,('6c407028-6e98-47da-bcc1-47b3e7cb8066', '725e2771-83ec-4079-a242-13d0d5764cb9') --Jaws of The Lion - Black Sludge - Standard - Level 5 | Type: shield - Value: 1 - Duration: -1
-,('6c407028-6e98-47da-bcc1-47b3e7cb8066', '0b1a0437-f9c5-48bf-a7ca-44753816edf5') --Jaws of The Lion - Black Sludge - Standard - Level 6 | Type: shield - Value: 1 - Duration: -1
-,('6c407028-6e98-47da-bcc1-47b3e7cb8066', '64c31849-040f-4b05-a2e2-60701b7191a0') --Jaws of The Lion - Black Sludge - Standard - Level 7 | Type: shield - Value: 1 - Duration: -1
-,('6c407028-6e98-47da-bcc1-47b3e7cb8066', '2bb5367e-8a12-8f7d-5495-465136b53e7f') --Jaws of The Lion - Blood Monstrosity - Standard - Level 4 | Type: shield - Value: 1 - Duration: -1
-,('6c407028-6e98-47da-bcc1-47b3e7cb8066', '84d60ec9-2bd6-dcd0-4e9a-595b15876937') --Jaws of The Lion - Blood Monstrosity - Standard - Level 5 | Type: shield - Value: 1 - Duration: -1
-,('6c407028-6e98-47da-bcc1-47b3e7cb8066', '101ad56f-2202-77ed-8eb3-3edde9a1d01a') --Jaws of The Lion - Blood Monstrosity - Standard - Level 6 | Type: shield - Value: 1 - Duration: -1
-,('6c407028-6e98-47da-bcc1-47b3e7cb8066', '3e79d278-4ab5-f7db-33a7-9c51a731101b') --Jaws of The Lion - Blood Monstrosity - Standard - Level 7 | Type: shield - Value: 1 - Duration: -1
-,('6c407028-6e98-47da-bcc1-47b3e7cb8066', '2ba16433-a5aa-ba33-2e6a-ebc38f47b226') --Jaws of The Lion - Blood Monstrosity - Elite - Level 1 | Type: shield - Value: 1 - Duration: -1
-,('6c407028-6e98-47da-bcc1-47b3e7cb8066', '64f58e8b-80f2-f625-d99e-fd15247e8f57') --Jaws of The Lion - Blood Monstrosity - Elite - Level 2 | Type: shield - Value: 1 - Duration: -1
-,('6c407028-6e98-47da-bcc1-47b3e7cb8066', '495ae278-5184-47b3-cc7c-82832c2f75ec') --Jaws of The Lion - Blood Monstrosity - Elite - Level 3 | Type: shield - Value: 1 - Duration: -1
-,('b41f91aa-5d40-0935-6545-876f4c6213e7', 'fbf4e487-45d6-0e10-b1b3-a743f22f134f') --Jaws of The Lion - Blood Monstrosity - Elite - Level 4 | Type: shield - Value: 2 - Duration: -1
-,('b41f91aa-5d40-0935-6545-876f4c6213e7', '4a444dbc-01c3-a651-6e4d-349de6d90afd') --Jaws of The Lion - Blood Monstrosity - Elite - Level 5 | Type: shield - Value: 2 - Duration: -1
-,('b41f91aa-5d40-0935-6545-876f4c6213e7', '81306dea-f035-0d1c-84d1-fabb038fdd07') --Jaws of The Lion - Blood Monstrosity - Elite - Level 6 | Type: shield - Value: 2 - Duration: -1
-,('15e43b68-8db9-5781-559e-24c6bee9fbf1', '5ee01bf2-ceff-3fdd-c4ef-32754c458303') --Jaws of The Lion - Blood Monstrosity - Elite - Level 7 | Type: shield - Value: 3 - Duration: -1
-,('6c407028-6e98-47da-bcc1-47b3e7cb8066', '71cf7cf3-c3d4-53b3-df15-cdcf971c8629') --Jaws of The Lion - Living Spirit - Standard - Level 0 | Type: shield - Value: 1 - Duration: -1
-,('6c407028-6e98-47da-bcc1-47b3e7cb8066', 'dd9ebc9a-c26b-a359-470a-3941959649a4') --Jaws of The Lion - Living Spirit - Standard - Level 1 | Type: shield - Value: 1 - Duration: -1
-,('6c407028-6e98-47da-bcc1-47b3e7cb8066', '561c380e-4745-f68d-8ccd-d73d3d67a621') --Jaws of The Lion - Living Spirit - Standard - Level 2 | Type: shield - Value: 1 - Duration: -1
-,('6c407028-6e98-47da-bcc1-47b3e7cb8066', 'b5585874-2b84-47bd-c76c-90451c45b3e8') --Jaws of The Lion - Living Spirit - Standard - Level 3 | Type: shield - Value: 1 - Duration: -1
-,('b41f91aa-5d40-0935-6545-876f4c6213e7', '5a8a19ab-5958-8744-49e6-587e4a212c52') --Jaws of The Lion - Living Spirit - Standard - Level 4 | Type: shield - Value: 2 - Duration: -1
-,('b41f91aa-5d40-0935-6545-876f4c6213e7', '67fea66b-ea33-c98c-a889-b0809ee76997') --Jaws of The Lion - Living Spirit - Standard - Level 5 | Type: shield - Value: 2 - Duration: -1
-,('b41f91aa-5d40-0935-6545-876f4c6213e7', '0ba50875-d314-5fbd-1ee7-da61a4e90ddd') --Jaws of The Lion - Living Spirit - Standard - Level 6 | Type: shield - Value: 2 - Duration: -1
-,('b41f91aa-5d40-0935-6545-876f4c6213e7', '9c2ffc85-651f-0a50-700f-056b3e3f3568') --Jaws of The Lion - Living Spirit - Standard - Level 7 | Type: shield - Value: 2 - Duration: -1
-,('6c407028-6e98-47da-bcc1-47b3e7cb8066', 'c184e538-d448-165f-6732-625ff84e6c22') --Jaws of The Lion - Living Spirit - Elite - Level 0 | Type: shield - Value: 1 - Duration: -1
-,('b41f91aa-5d40-0935-6545-876f4c6213e7', '1f570c4d-d73c-0166-556c-c5632a0aeac9') --Jaws of The Lion - Living Spirit - Elite - Level 1 | Type: shield - Value: 2 - Duration: -1
-,('b41f91aa-5d40-0935-6545-876f4c6213e7', '54161a46-d97f-6e96-c3bf-0fca9fd3570f') --Jaws of The Lion - Living Spirit - Elite - Level 2 | Type: shield - Value: 2 - Duration: -1
-,('b41f91aa-5d40-0935-6545-876f4c6213e7', '524a14e8-7d9d-e0fc-fa2b-c853c240747d') --Jaws of The Lion - Living Spirit - Elite - Level 3 | Type: shield - Value: 2 - Duration: -1
-,('15e43b68-8db9-5781-559e-24c6bee9fbf1', 'e06d9a0b-9a7e-927d-b8be-644e11a7f0cc') --Jaws of The Lion - Living Spirit - Elite - Level 4 | Type: shield - Value: 3 - Duration: -1
-,('15e43b68-8db9-5781-559e-24c6bee9fbf1', 'bbc76362-0e0f-f76a-64c4-7983987caaf7') --Jaws of The Lion - Living Spirit - Elite - Level 5 | Type: shield - Value: 3 - Duration: -1
-,('15e43b68-8db9-5781-559e-24c6bee9fbf1', '2f624227-5679-5a5d-dc2c-6a50bb47fa78') --Jaws of The Lion - Living Spirit - Elite - Level 6 | Type: shield - Value: 3 - Duration: -1
-,('15e43b68-8db9-5781-559e-24c6bee9fbf1', '031f7089-ac23-6568-4304-a1d98caf21b8') --Jaws of The Lion - Living Spirit - Elite - Level 7 | Type: shield - Value: 3 - Duration: -1
-,('6c407028-6e98-47da-bcc1-47b3e7cb8066', '996cda0b-0ee2-d22e-bf0e-10643d487d6d') --Jaws of The Lion - Stone Golem - Standard - Level 1 | Type: shield - Value: 1 - Duration: -1
-,('6c407028-6e98-47da-bcc1-47b3e7cb8066', 'fba262b9-745f-2f74-f6b1-7e810b246a09') --Jaws of The Lion - Stone Golem - Standard - Level 2 | Type: shield - Value: 1 - Duration: -1
-,('b41f91aa-5d40-0935-6545-876f4c6213e7', '8ed9a6f8-78c6-b2af-e799-9a665d087ed3') --Jaws of The Lion - Stone Golem - Standard - Level 3 | Type: shield - Value: 2 - Duration: -1
-,('b41f91aa-5d40-0935-6545-876f4c6213e7', '573454c6-1b58-ff37-1e5c-d52150a19084') --Jaws of The Lion - Stone Golem - Standard - Level 4 | Type: shield - Value: 2 - Duration: -1
-,('b41f91aa-5d40-0935-6545-876f4c6213e7', '80712257-505e-ecae-a197-dfd19793a705') --Jaws of The Lion - Stone Golem - Standard - Level 5 | Type: shield - Value: 2 - Duration: -1
-,('b41f91aa-5d40-0935-6545-876f4c6213e7', 'be810fee-e207-8375-c015-98897d148095') --Jaws of The Lion - Stone Golem - Standard - Level 6 | Type: shield - Value: 2 - Duration: -1
-,('15e43b68-8db9-5781-559e-24c6bee9fbf1', '2d8657d9-fa76-cab4-0f1d-2c06450d007d') --Jaws of The Lion - Stone Golem - Standard - Level 7 | Type: shield - Value: 3 - Duration: -1
-,('6c407028-6e98-47da-bcc1-47b3e7cb8066', 'd12efba7-8788-445f-0284-7bd9c56ce304') --Jaws of The Lion - Stone Golem - Elite - Level 0 | Type: shield - Value: 1 - Duration: -1
-,('b41f91aa-5d40-0935-6545-876f4c6213e7', 'a39e0067-6abd-0c6a-2d4a-5972186143a5') --Jaws of The Lion - Stone Golem - Elite - Level 1 | Type: shield - Value: 2 - Duration: -1
-,('b41f91aa-5d40-0935-6545-876f4c6213e7', 'cb93b4ed-b54d-ac25-b23f-b2576a8d16dd') --Jaws of The Lion - Stone Golem - Elite - Level 2 | Type: shield - Value: 2 - Duration: -1
-,('15e43b68-8db9-5781-559e-24c6bee9fbf1', '1166924d-3846-d54e-0387-2a7f0ce07694') --Jaws of The Lion - Stone Golem - Elite - Level 3 | Type: shield - Value: 3 - Duration: -1
-,('15e43b68-8db9-5781-559e-24c6bee9fbf1', 'a8ac821d-9536-7ebe-882f-f03da4059932') --Jaws of The Lion - Stone Golem - Elite - Level 4 | Type: shield - Value: 3 - Duration: -1
-,('15e43b68-8db9-5781-559e-24c6bee9fbf1', 'f167c962-8f0c-c9b0-7edf-0df6db965b60') --Jaws of The Lion - Stone Golem - Elite - Level 5 | Type: shield - Value: 3 - Duration: -1
-,('15e43b68-8db9-5781-559e-24c6bee9fbf1', '90f15f6e-1531-ff43-291e-125e60e5e852') --Jaws of The Lion - Stone Golem - Elite - Level 6 | Type: shield - Value: 3 - Duration: -1
-,('84d679fa-3745-577a-4351-d0edd839d327', 'f3a18f7b-2bb1-1e7a-43b1-daa1f339a77e') --Jaws of The Lion - Stone Golem - Elite - Level 7 | Type: shield - Value: 4 - Duration: -1
+ ('0ac1f965-80e8-bbec-69b4-128f0a6fb320', '26300d09-a752-2561-e7c3-ed012446a4b5') --Jaws of The Lion - Black Imp - Elite - Level 3 | Type: disadvantage - Value: null - Duration: null - Range: null - Element: null
+,('0ac1f965-80e8-bbec-69b4-128f0a6fb320', '72ac5762-defd-0acf-af37-a525e65491bd') --Jaws of The Lion - Black Imp - Elite - Level 4 | Type: disadvantage - Value: null - Duration: null - Range: null - Element: null
+,('0ac1f965-80e8-bbec-69b4-128f0a6fb320', 'e4530315-2031-a83b-a024-6c1f5f503b4e') --Jaws of The Lion - Black Imp - Elite - Level 5 | Type: disadvantage - Value: null - Duration: null - Range: null - Element: null
+,('0ac1f965-80e8-bbec-69b4-128f0a6fb320', 'da937599-a7f0-c06f-7a12-0321d801fb94') --Jaws of The Lion - Black Imp - Elite - Level 6 | Type: disadvantage - Value: null - Duration: null - Range: null - Element: null
+,('0ac1f965-80e8-bbec-69b4-128f0a6fb320', 'ec943b8b-f0a3-0981-1bb7-31edfab2b02f') --Jaws of The Lion - Black Imp - Elite - Level 7 | Type: disadvantage - Value: null - Duration: null - Range: null - Element: null
+,('6c407028-6e98-47da-bcc1-47b3e7cb8066', '2f49c845-c624-4243-a117-54b007580dd7') --Jaws of The Lion - Black Sludge - Elite - Level 1 | Type: shield - Value: 1 - Duration: null - Range: null - Element: null
+,('6c407028-6e98-47da-bcc1-47b3e7cb8066', 'f7268cf2-9d86-4d41-8958-906bf98d7b28') --Jaws of The Lion - Black Sludge - Elite - Level 2 | Type: shield - Value: 1 - Duration: null - Range: null - Element: null
+,('6c407028-6e98-47da-bcc1-47b3e7cb8066', '03791852-b149-4c3e-b163-4cc8be39172d') --Jaws of The Lion - Black Sludge - Elite - Level 3 | Type: shield - Value: 1 - Duration: null - Range: null - Element: null
+,('6c407028-6e98-47da-bcc1-47b3e7cb8066', '02cbda8d-a850-46df-84a3-888fe7b1f3d5') --Jaws of The Lion - Black Sludge - Elite - Level 4 | Type: shield - Value: 1 - Duration: null - Range: null - Element: null
+,('6c407028-6e98-47da-bcc1-47b3e7cb8066', 'fa028ad0-5937-4d12-b586-806a92e2ebc2') --Jaws of The Lion - Black Sludge - Elite - Level 5 | Type: shield - Value: 1 - Duration: null - Range: null - Element: null
+,('6c407028-6e98-47da-bcc1-47b3e7cb8066', '334dc3de-4926-4970-ac8f-09325af9f031') --Jaws of The Lion - Black Sludge - Elite - Level 6 | Type: shield - Value: 1 - Duration: null - Range: null - Element: null
+,('6c407028-6e98-47da-bcc1-47b3e7cb8066', '655dc49b-b24e-4b6f-81f0-9aeb7db5d4d0') --Jaws of The Lion - Black Sludge - Elite - Level 7 | Type: shield - Value: 1 - Duration: null - Range: null - Element: null
+,('6c407028-6e98-47da-bcc1-47b3e7cb8066', '6c2decba-31f5-4029-bbd5-f9ce17f998da') --Jaws of The Lion - Black Sludge - Standard - Level 1 | Type: shield - Value: 1 - Duration: null - Range: null - Element: null
+,('6c407028-6e98-47da-bcc1-47b3e7cb8066', '22eef8ba-9775-4859-aa22-98e0f9f57ccc') --Jaws of The Lion - Black Sludge - Standard - Level 2 | Type: shield - Value: 1 - Duration: null - Range: null - Element: null
+,('6c407028-6e98-47da-bcc1-47b3e7cb8066', 'ac7934c8-a614-48a3-8907-501f1cc303e2') --Jaws of The Lion - Black Sludge - Standard - Level 3 | Type: shield - Value: 1 - Duration: null - Range: null - Element: null
+,('6c407028-6e98-47da-bcc1-47b3e7cb8066', 'daba4a73-d718-492d-bb51-c0093e195d71') --Jaws of The Lion - Black Sludge - Standard - Level 4 | Type: shield - Value: 1 - Duration: null - Range: null - Element: null
+,('6c407028-6e98-47da-bcc1-47b3e7cb8066', '725e2771-83ec-4079-a242-13d0d5764cb9') --Jaws of The Lion - Black Sludge - Standard - Level 5 | Type: shield - Value: 1 - Duration: null - Range: null - Element: null
+,('6c407028-6e98-47da-bcc1-47b3e7cb8066', '0b1a0437-f9c5-48bf-a7ca-44753816edf5') --Jaws of The Lion - Black Sludge - Standard - Level 6 | Type: shield - Value: 1 - Duration: null - Range: null - Element: null
+,('6c407028-6e98-47da-bcc1-47b3e7cb8066', '64c31849-040f-4b05-a2e2-60701b7191a0') --Jaws of The Lion - Black Sludge - Standard - Level 7 | Type: shield - Value: 1 - Duration: null - Range: null - Element: null
+,('6c407028-6e98-47da-bcc1-47b3e7cb8066', '2bb5367e-8a12-8f7d-5495-465136b53e7f') --Jaws of The Lion - Blood Monstrosity - Standard - Level 4 | Type: shield - Value: 1 - Duration: null - Range: null - Element: null
+,('6c407028-6e98-47da-bcc1-47b3e7cb8066', '84d60ec9-2bd6-dcd0-4e9a-595b15876937') --Jaws of The Lion - Blood Monstrosity - Standard - Level 5 | Type: shield - Value: 1 - Duration: null - Range: null - Element: null
+,('6c407028-6e98-47da-bcc1-47b3e7cb8066', '101ad56f-2202-77ed-8eb3-3edde9a1d01a') --Jaws of The Lion - Blood Monstrosity - Standard - Level 6 | Type: shield - Value: 1 - Duration: null - Range: null - Element: null
+,('6c407028-6e98-47da-bcc1-47b3e7cb8066', '3e79d278-4ab5-f7db-33a7-9c51a731101b') --Jaws of The Lion - Blood Monstrosity - Standard - Level 7 | Type: shield - Value: 1 - Duration: null - Range: null - Element: null
+,('6c407028-6e98-47da-bcc1-47b3e7cb8066', '2ba16433-a5aa-ba33-2e6a-ebc38f47b226') --Jaws of The Lion - Blood Monstrosity - Elite - Level 1 | Type: shield - Value: 1 - Duration: null - Range: null - Element: null
+,('6c407028-6e98-47da-bcc1-47b3e7cb8066', '64f58e8b-80f2-f625-d99e-fd15247e8f57') --Jaws of The Lion - Blood Monstrosity - Elite - Level 2 | Type: shield - Value: 1 - Duration: null - Range: null - Element: null
+,('6c407028-6e98-47da-bcc1-47b3e7cb8066', '495ae278-5184-47b3-cc7c-82832c2f75ec') --Jaws of The Lion - Blood Monstrosity - Elite - Level 3 | Type: shield - Value: 1 - Duration: null - Range: null - Element: null
+,('b41f91aa-5d40-0935-6545-876f4c6213e7', 'fbf4e487-45d6-0e10-b1b3-a743f22f134f') --Jaws of The Lion - Blood Monstrosity - Elite - Level 4 | Type: shield - Value: 2 - Duration: null - Range: null - Element: null
+,('b41f91aa-5d40-0935-6545-876f4c6213e7', '4a444dbc-01c3-a651-6e4d-349de6d90afd') --Jaws of The Lion - Blood Monstrosity - Elite - Level 5 | Type: shield - Value: 2 - Duration: null - Range: null - Element: null
+,('b41f91aa-5d40-0935-6545-876f4c6213e7', '81306dea-f035-0d1c-84d1-fabb038fdd07') --Jaws of The Lion - Blood Monstrosity - Elite - Level 6 | Type: shield - Value: 2 - Duration: null - Range: null - Element: null
+,('15e43b68-8db9-5781-559e-24c6bee9fbf1', '5ee01bf2-ceff-3fdd-c4ef-32754c458303') --Jaws of The Lion - Blood Monstrosity - Elite - Level 7 | Type: shield - Value: 3 - Duration: null - Range: null - Element: null
+,('6c407028-6e98-47da-bcc1-47b3e7cb8066', '71cf7cf3-c3d4-53b3-df15-cdcf971c8629') --Jaws of The Lion - Living Spirit - Standard - Level 0 | Type: shield - Value: 1 - Duration: null - Range: null - Element: null
+,('6c407028-6e98-47da-bcc1-47b3e7cb8066', 'dd9ebc9a-c26b-a359-470a-3941959649a4') --Jaws of The Lion - Living Spirit - Standard - Level 1 | Type: shield - Value: 1 - Duration: null - Range: null - Element: null
+,('6c407028-6e98-47da-bcc1-47b3e7cb8066', '561c380e-4745-f68d-8ccd-d73d3d67a621') --Jaws of The Lion - Living Spirit - Standard - Level 2 | Type: shield - Value: 1 - Duration: null - Range: null - Element: null
+,('6c407028-6e98-47da-bcc1-47b3e7cb8066', 'b5585874-2b84-47bd-c76c-90451c45b3e8') --Jaws of The Lion - Living Spirit - Standard - Level 3 | Type: shield - Value: 1 - Duration: null - Range: null - Element: null
+,('b41f91aa-5d40-0935-6545-876f4c6213e7', '5a8a19ab-5958-8744-49e6-587e4a212c52') --Jaws of The Lion - Living Spirit - Standard - Level 4 | Type: shield - Value: 2 - Duration: null - Range: null - Element: null
+,('b41f91aa-5d40-0935-6545-876f4c6213e7', '67fea66b-ea33-c98c-a889-b0809ee76997') --Jaws of The Lion - Living Spirit - Standard - Level 5 | Type: shield - Value: 2 - Duration: null - Range: null - Element: null
+,('b41f91aa-5d40-0935-6545-876f4c6213e7', '0ba50875-d314-5fbd-1ee7-da61a4e90ddd') --Jaws of The Lion - Living Spirit - Standard - Level 6 | Type: shield - Value: 2 - Duration: null - Range: null - Element: null
+,('b41f91aa-5d40-0935-6545-876f4c6213e7', '9c2ffc85-651f-0a50-700f-056b3e3f3568') --Jaws of The Lion - Living Spirit - Standard - Level 7 | Type: shield - Value: 2 - Duration: null - Range: null - Element: null
+,('6c407028-6e98-47da-bcc1-47b3e7cb8066', 'c184e538-d448-165f-6732-625ff84e6c22') --Jaws of The Lion - Living Spirit - Elite - Level 0 | Type: shield - Value: 1 - Duration: null - Range: null - Element: null
+,('b41f91aa-5d40-0935-6545-876f4c6213e7', '1f570c4d-d73c-0166-556c-c5632a0aeac9') --Jaws of The Lion - Living Spirit - Elite - Level 1 | Type: shield - Value: 2 - Duration: null - Range: null - Element: null
+,('b41f91aa-5d40-0935-6545-876f4c6213e7', '54161a46-d97f-6e96-c3bf-0fca9fd3570f') --Jaws of The Lion - Living Spirit - Elite - Level 2 | Type: shield - Value: 2 - Duration: null - Range: null - Element: null
+,('b41f91aa-5d40-0935-6545-876f4c6213e7', '524a14e8-7d9d-e0fc-fa2b-c853c240747d') --Jaws of The Lion - Living Spirit - Elite - Level 3 | Type: shield - Value: 2 - Duration: null - Range: null - Element: null
+,('15e43b68-8db9-5781-559e-24c6bee9fbf1', 'e06d9a0b-9a7e-927d-b8be-644e11a7f0cc') --Jaws of The Lion - Living Spirit - Elite - Level 4 | Type: shield - Value: 3 - Duration: null - Range: null - Element: null
+,('15e43b68-8db9-5781-559e-24c6bee9fbf1', 'bbc76362-0e0f-f76a-64c4-7983987caaf7') --Jaws of The Lion - Living Spirit - Elite - Level 5 | Type: shield - Value: 3 - Duration: null - Range: null - Element: null
+,('15e43b68-8db9-5781-559e-24c6bee9fbf1', '2f624227-5679-5a5d-dc2c-6a50bb47fa78') --Jaws of The Lion - Living Spirit - Elite - Level 6 | Type: shield - Value: 3 - Duration: null - Range: null - Element: null
+,('15e43b68-8db9-5781-559e-24c6bee9fbf1', '031f7089-ac23-6568-4304-a1d98caf21b8') --Jaws of The Lion - Living Spirit - Elite - Level 7 | Type: shield - Value: 3 - Duration: null - Range: null - Element: null
+,('6c407028-6e98-47da-bcc1-47b3e7cb8066', '996cda0b-0ee2-d22e-bf0e-10643d487d6d') --Jaws of The Lion - Stone Golem - Standard - Level 1 | Type: shield - Value: 1 - Duration: null - Range: null - Element: null
+,('6c407028-6e98-47da-bcc1-47b3e7cb8066', 'fba262b9-745f-2f74-f6b1-7e810b246a09') --Jaws of The Lion - Stone Golem - Standard - Level 2 | Type: shield - Value: 1 - Duration: null - Range: null - Element: null
+,('b41f91aa-5d40-0935-6545-876f4c6213e7', '8ed9a6f8-78c6-b2af-e799-9a665d087ed3') --Jaws of The Lion - Stone Golem - Standard - Level 3 | Type: shield - Value: 2 - Duration: null - Range: null - Element: null
+,('b41f91aa-5d40-0935-6545-876f4c6213e7', '573454c6-1b58-ff37-1e5c-d52150a19084') --Jaws of The Lion - Stone Golem - Standard - Level 4 | Type: shield - Value: 2 - Duration: null - Range: null - Element: null
+,('b41f91aa-5d40-0935-6545-876f4c6213e7', '80712257-505e-ecae-a197-dfd19793a705') --Jaws of The Lion - Stone Golem - Standard - Level 5 | Type: shield - Value: 2 - Duration: null - Range: null - Element: null
+,('b41f91aa-5d40-0935-6545-876f4c6213e7', 'be810fee-e207-8375-c015-98897d148095') --Jaws of The Lion - Stone Golem - Standard - Level 6 | Type: shield - Value: 2 - Duration: null - Range: null - Element: null
+,('15e43b68-8db9-5781-559e-24c6bee9fbf1', '2d8657d9-fa76-cab4-0f1d-2c06450d007d') --Jaws of The Lion - Stone Golem - Standard - Level 7 | Type: shield - Value: 3 - Duration: null - Range: null - Element: null
+,('6c407028-6e98-47da-bcc1-47b3e7cb8066', 'd12efba7-8788-445f-0284-7bd9c56ce304') --Jaws of The Lion - Stone Golem - Elite - Level 0 | Type: shield - Value: 1 - Duration: null - Range: null - Element: null
+,('b41f91aa-5d40-0935-6545-876f4c6213e7', 'a39e0067-6abd-0c6a-2d4a-5972186143a5') --Jaws of The Lion - Stone Golem - Elite - Level 1 | Type: shield - Value: 2 - Duration: null - Range: null - Element: null
+,('b41f91aa-5d40-0935-6545-876f4c6213e7', 'cb93b4ed-b54d-ac25-b23f-b2576a8d16dd') --Jaws of The Lion - Stone Golem - Elite - Level 2 | Type: shield - Value: 2 - Duration: null - Range: null - Element: null
+,('15e43b68-8db9-5781-559e-24c6bee9fbf1', '1166924d-3846-d54e-0387-2a7f0ce07694') --Jaws of The Lion - Stone Golem - Elite - Level 3 | Type: shield - Value: 3 - Duration: null - Range: null - Element: null
+,('15e43b68-8db9-5781-559e-24c6bee9fbf1', 'a8ac821d-9536-7ebe-882f-f03da4059932') --Jaws of The Lion - Stone Golem - Elite - Level 4 | Type: shield - Value: 3 - Duration: null - Range: null - Element: null
+,('15e43b68-8db9-5781-559e-24c6bee9fbf1', 'f167c962-8f0c-c9b0-7edf-0df6db965b60') --Jaws of The Lion - Stone Golem - Elite - Level 5 | Type: shield - Value: 3 - Duration: null - Range: null - Element: null
+,('15e43b68-8db9-5781-559e-24c6bee9fbf1', '90f15f6e-1531-ff43-291e-125e60e5e852') --Jaws of The Lion - Stone Golem - Elite - Level 6 | Type: shield - Value: 3 - Duration: null - Range: null - Element: null
+,('84d679fa-3745-577a-4351-d0edd839d327', 'f3a18f7b-2bb1-1e7a-43b1-daa1f339a77e') --Jaws of The Lion - Stone Golem - Elite - Level 7 | Type: shield - Value: 4 - Duration: null - Range: null - Element: null
 ;
 
 INSERT INTO public."ContentMonsterDeathEffect" ("EffectId", "MonsterStatSetId") VALUES
- ('ae850bb6-26fb-0d22-684d-0ab3d0f43280', '04d14299-955f-8c38-8709-2553cddaee83') --Jaws of The Lion - Blood Monstrosity - Standard - Level 0 | Type: damage - Value: 1 - Duration: -1 - Range: 1
-,('04977de7-6ea7-fff7-4e69-de45cbac49b5', 'b6d5836c-6df6-cd9f-7ac6-a2cb91bef6fc') --Jaws of The Lion - Blood Monstrosity - Standard - Level 1 | Type: damage - Value: 2 - Duration: -1 - Range: 1
-,('04977de7-6ea7-fff7-4e69-de45cbac49b5', 'da937dc6-6711-8fc0-999f-571fcd43b335') --Jaws of The Lion - Blood Monstrosity - Standard - Level 2 | Type: damage - Value: 2 - Duration: -1 - Range: 1
-,('fbbb6c2c-10f1-879f-edbb-2fb95d7bd7a5', '611186c0-eaa4-0f3a-6cd4-e6fecd9fe40d') --Jaws of The Lion - Blood Monstrosity - Standard - Level 3 | Type: damage - Value: 3 - Duration: -1 - Range: 1
-,('fbbb6c2c-10f1-879f-edbb-2fb95d7bd7a5', '2bb5367e-8a12-8f7d-5495-465136b53e7f') --Jaws of The Lion - Blood Monstrosity - Standard - Level 4 | Type: damage - Value: 3 - Duration: -1 - Range: 1
-,('fbbb6c2c-10f1-879f-edbb-2fb95d7bd7a5', '84d60ec9-2bd6-dcd0-4e9a-595b15876937') --Jaws of The Lion - Blood Monstrosity - Standard - Level 5 | Type: damage - Value: 3 - Duration: -1 - Range: 1
-,('fbbb6c2c-10f1-879f-edbb-2fb95d7bd7a5', '101ad56f-2202-77ed-8eb3-3edde9a1d01a') --Jaws of The Lion - Blood Monstrosity - Standard - Level 6 | Type: damage - Value: 3 - Duration: -1 - Range: 1
-,('2d692b7f-9f97-37ff-b622-1a2071027053', '3e79d278-4ab5-f7db-33a7-9c51a731101b') --Jaws of The Lion - Blood Monstrosity - Standard - Level 7 | Type: damage - Value: 4 - Duration: -1 - Range: 1
-,('04977de7-6ea7-fff7-4e69-de45cbac49b5', '9fafddb1-b700-4cf0-d783-06ea4f4fb44c') --Jaws of The Lion - Blood Monstrosity - Elite - Level 0 | Type: damage - Value: 2 - Duration: -1 - Range: 1
-,('fbbb6c2c-10f1-879f-edbb-2fb95d7bd7a5', '2ba16433-a5aa-ba33-2e6a-ebc38f47b226') --Jaws of The Lion - Blood Monstrosity - Elite - Level 1 | Type: damage - Value: 3 - Duration: -1 - Range: 1
-,('fbbb6c2c-10f1-879f-edbb-2fb95d7bd7a5', '64f58e8b-80f2-f625-d99e-fd15247e8f57') --Jaws of The Lion - Blood Monstrosity - Elite - Level 2 | Type: damage - Value: 3 - Duration: -1 - Range: 1
-,('2d692b7f-9f97-37ff-b622-1a2071027053', '495ae278-5184-47b3-cc7c-82832c2f75ec') --Jaws of The Lion - Blood Monstrosity - Elite - Level 3 | Type: damage - Value: 4 - Duration: -1 - Range: 1
-,('2d692b7f-9f97-37ff-b622-1a2071027053', 'fbf4e487-45d6-0e10-b1b3-a743f22f134f') --Jaws of The Lion - Blood Monstrosity - Elite - Level 4 | Type: damage - Value: 4 - Duration: -1 - Range: 1
-,('26f9d0a7-f71e-e17b-0cf6-af7cb914d29d', '4a444dbc-01c3-a651-6e4d-349de6d90afd') --Jaws of The Lion - Blood Monstrosity - Elite - Level 5 | Type: damage - Value: 5 - Duration: -1 - Range: 1
-,('26f9d0a7-f71e-e17b-0cf6-af7cb914d29d', '81306dea-f035-0d1c-84d1-fabb038fdd07') --Jaws of The Lion - Blood Monstrosity - Elite - Level 6 | Type: damage - Value: 5 - Duration: -1 - Range: 1
-,('26f9d0a7-f71e-e17b-0cf6-af7cb914d29d', '5ee01bf2-ceff-3fdd-c4ef-32754c458303') --Jaws of The Lion - Blood Monstrosity - Elite - Level 7 | Type: damage - Value: 5 - Duration: -1 - Range: 1
-,('ae850bb6-26fb-0d22-684d-0ab3d0f43280', '30aac56c-9d4f-2716-437e-4ca73d0e1a9d') --Jaws of The Lion - Rat Monstrosity - Standard - Level 0 | Type: damage - Value: 1 - Duration: -1 - Range: 1
-,('ae850bb6-26fb-0d22-684d-0ab3d0f43280', 'adfc81b1-3c4e-f0fe-ee51-d77e248d9f48') --Jaws of The Lion - Rat Monstrosity - Standard - Level 1 | Type: damage - Value: 1 - Duration: -1 - Range: 1
-,('ae850bb6-26fb-0d22-684d-0ab3d0f43280', 'cc2e6eb5-67ce-a800-2ab5-90be793bf7a5') --Jaws of The Lion - Rat Monstrosity - Standard - Level 2 | Type: damage - Value: 1 - Duration: -1 - Range: 1
-,('04977de7-6ea7-fff7-4e69-de45cbac49b5', '5e1ccc50-bec7-8070-1d6f-2f06c21f95bd') --Jaws of The Lion - Rat Monstrosity - Standard - Level 3 | Type: damage - Value: 2 - Duration: -1 - Range: 1
-,('04977de7-6ea7-fff7-4e69-de45cbac49b5', '3eb95261-628f-c422-bd2e-d42b31f5f74c') --Jaws of The Lion - Rat Monstrosity - Standard - Level 4 | Type: damage - Value: 2 - Duration: -1 - Range: 1
-,('04977de7-6ea7-fff7-4e69-de45cbac49b5', '5298d826-21d1-8ae9-1071-dff47dccf12b') --Jaws of The Lion - Rat Monstrosity - Standard - Level 5 | Type: damage - Value: 2 - Duration: -1 - Range: 1
-,('fbbb6c2c-10f1-879f-edbb-2fb95d7bd7a5', 'f55b9e84-bae6-dbb0-8d59-863505580810') --Jaws of The Lion - Rat Monstrosity - Standard - Level 6 | Type: damage - Value: 3 - Duration: -1 - Range: 1
-,('fbbb6c2c-10f1-879f-edbb-2fb95d7bd7a5', '48e15926-ea48-2067-42ac-dc6566498cc2') --Jaws of The Lion - Rat Monstrosity - Standard - Level 7 | Type: damage - Value: 3 - Duration: -1 - Range: 1
-,('ae850bb6-26fb-0d22-684d-0ab3d0f43280', '39911167-d318-8dc6-c56b-0e378f337d32') --Jaws of The Lion - Rat Monstrosity - Elite - Level 0 | Type: damage - Value: 1 - Duration: -1 - Range: 1
-,('04977de7-6ea7-fff7-4e69-de45cbac49b5', 'abfc9083-a51d-ceb4-2cd0-63a00037df6b') --Jaws of The Lion - Rat Monstrosity - Elite - Level 1 | Type: damage - Value: 2 - Duration: -1 - Range: 1
-,('04977de7-6ea7-fff7-4e69-de45cbac49b5', 'a331d9fb-514b-e837-502f-e9c63f71e8d9') --Jaws of The Lion - Rat Monstrosity - Elite - Level 2 | Type: damage - Value: 2 - Duration: -1 - Range: 1
-,('04977de7-6ea7-fff7-4e69-de45cbac49b5', 'f79109df-51db-ac00-f6ef-fe4b7070030b') --Jaws of The Lion - Rat Monstrosity - Elite - Level 3 | Type: damage - Value: 2 - Duration: -1 - Range: 1
-,('fbbb6c2c-10f1-879f-edbb-2fb95d7bd7a5', '8d92e175-9aca-0bb2-0bd1-9fe6ea517145') --Jaws of The Lion - Rat Monstrosity - Elite - Level 4 | Type: damage - Value: 3 - Duration: -1 - Range: 1
-,('fbbb6c2c-10f1-879f-edbb-2fb95d7bd7a5', 'd63dc2b6-feb0-5e74-d5db-68c8840b3783') --Jaws of The Lion - Rat Monstrosity - Elite - Level 5 | Type: damage - Value: 3 - Duration: -1 - Range: 1
-,('fbbb6c2c-10f1-879f-edbb-2fb95d7bd7a5', 'c8cb3cc1-c2b8-9809-3c5a-7b232b483198') --Jaws of The Lion - Rat Monstrosity - Elite - Level 6 | Type: damage - Value: 3 - Duration: -1 - Range: 1
-,('2d692b7f-9f97-37ff-b622-1a2071027053', '68c70ed9-effb-5c77-27ff-17221d6e6b89') --Jaws of The Lion - Rat Monstrosity - Elite - Level 7 | Type: damage - Value: 4 - Duration: -1 - Range: 1
+ ('ae850bb6-26fb-0d22-684d-0ab3d0f43280', '04d14299-955f-8c38-8709-2553cddaee83') --Jaws of The Lion - Blood Monstrosity - Standard - Level 0 | Type: damage - Value: 1 - Duration: null - Range: 1 - Element: null
+,('04977de7-6ea7-fff7-4e69-de45cbac49b5', 'b6d5836c-6df6-cd9f-7ac6-a2cb91bef6fc') --Jaws of The Lion - Blood Monstrosity - Standard - Level 1 | Type: damage - Value: 2 - Duration: null - Range: 1 - Element: null
+,('04977de7-6ea7-fff7-4e69-de45cbac49b5', 'da937dc6-6711-8fc0-999f-571fcd43b335') --Jaws of The Lion - Blood Monstrosity - Standard - Level 2 | Type: damage - Value: 2 - Duration: null - Range: 1 - Element: null
+,('fbbb6c2c-10f1-879f-edbb-2fb95d7bd7a5', '611186c0-eaa4-0f3a-6cd4-e6fecd9fe40d') --Jaws of The Lion - Blood Monstrosity - Standard - Level 3 | Type: damage - Value: 3 - Duration: null - Range: 1 - Element: null
+,('fbbb6c2c-10f1-879f-edbb-2fb95d7bd7a5', '2bb5367e-8a12-8f7d-5495-465136b53e7f') --Jaws of The Lion - Blood Monstrosity - Standard - Level 4 | Type: damage - Value: 3 - Duration: null - Range: 1 - Element: null
+,('fbbb6c2c-10f1-879f-edbb-2fb95d7bd7a5', '84d60ec9-2bd6-dcd0-4e9a-595b15876937') --Jaws of The Lion - Blood Monstrosity - Standard - Level 5 | Type: damage - Value: 3 - Duration: null - Range: 1 - Element: null
+,('fbbb6c2c-10f1-879f-edbb-2fb95d7bd7a5', '101ad56f-2202-77ed-8eb3-3edde9a1d01a') --Jaws of The Lion - Blood Monstrosity - Standard - Level 6 | Type: damage - Value: 3 - Duration: null - Range: 1 - Element: null
+,('2d692b7f-9f97-37ff-b622-1a2071027053', '3e79d278-4ab5-f7db-33a7-9c51a731101b') --Jaws of The Lion - Blood Monstrosity - Standard - Level 7 | Type: damage - Value: 4 - Duration: null - Range: 1 - Element: null
+,('04977de7-6ea7-fff7-4e69-de45cbac49b5', '9fafddb1-b700-4cf0-d783-06ea4f4fb44c') --Jaws of The Lion - Blood Monstrosity - Elite - Level 0 | Type: damage - Value: 2 - Duration: null - Range: 1 - Element: null
+,('fbbb6c2c-10f1-879f-edbb-2fb95d7bd7a5', '2ba16433-a5aa-ba33-2e6a-ebc38f47b226') --Jaws of The Lion - Blood Monstrosity - Elite - Level 1 | Type: damage - Value: 3 - Duration: null - Range: 1 - Element: null
+,('fbbb6c2c-10f1-879f-edbb-2fb95d7bd7a5', '64f58e8b-80f2-f625-d99e-fd15247e8f57') --Jaws of The Lion - Blood Monstrosity - Elite - Level 2 | Type: damage - Value: 3 - Duration: null - Range: 1 - Element: null
+,('2d692b7f-9f97-37ff-b622-1a2071027053', '495ae278-5184-47b3-cc7c-82832c2f75ec') --Jaws of The Lion - Blood Monstrosity - Elite - Level 3 | Type: damage - Value: 4 - Duration: null - Range: 1 - Element: null
+,('2d692b7f-9f97-37ff-b622-1a2071027053', 'fbf4e487-45d6-0e10-b1b3-a743f22f134f') --Jaws of The Lion - Blood Monstrosity - Elite - Level 4 | Type: damage - Value: 4 - Duration: null - Range: 1 - Element: null
+,('26f9d0a7-f71e-e17b-0cf6-af7cb914d29d', '4a444dbc-01c3-a651-6e4d-349de6d90afd') --Jaws of The Lion - Blood Monstrosity - Elite - Level 5 | Type: damage - Value: 5 - Duration: null - Range: 1 - Element: null
+,('26f9d0a7-f71e-e17b-0cf6-af7cb914d29d', '81306dea-f035-0d1c-84d1-fabb038fdd07') --Jaws of The Lion - Blood Monstrosity - Elite - Level 6 | Type: damage - Value: 5 - Duration: null - Range: 1 - Element: null
+,('26f9d0a7-f71e-e17b-0cf6-af7cb914d29d', '5ee01bf2-ceff-3fdd-c4ef-32754c458303') --Jaws of The Lion - Blood Monstrosity - Elite - Level 7 | Type: damage - Value: 5 - Duration: null - Range: 1 - Element: null
+,('ae850bb6-26fb-0d22-684d-0ab3d0f43280', '30aac56c-9d4f-2716-437e-4ca73d0e1a9d') --Jaws of The Lion - Rat Monstrosity - Standard - Level 0 | Type: damage - Value: 1 - Duration: null - Range: 1 - Element: null
+,('ae850bb6-26fb-0d22-684d-0ab3d0f43280', 'adfc81b1-3c4e-f0fe-ee51-d77e248d9f48') --Jaws of The Lion - Rat Monstrosity - Standard - Level 1 | Type: damage - Value: 1 - Duration: null - Range: 1 - Element: null
+,('ae850bb6-26fb-0d22-684d-0ab3d0f43280', 'cc2e6eb5-67ce-a800-2ab5-90be793bf7a5') --Jaws of The Lion - Rat Monstrosity - Standard - Level 2 | Type: damage - Value: 1 - Duration: null - Range: 1 - Element: null
+,('04977de7-6ea7-fff7-4e69-de45cbac49b5', '5e1ccc50-bec7-8070-1d6f-2f06c21f95bd') --Jaws of The Lion - Rat Monstrosity - Standard - Level 3 | Type: damage - Value: 2 - Duration: null - Range: 1 - Element: null
+,('04977de7-6ea7-fff7-4e69-de45cbac49b5', '3eb95261-628f-c422-bd2e-d42b31f5f74c') --Jaws of The Lion - Rat Monstrosity - Standard - Level 4 | Type: damage - Value: 2 - Duration: null - Range: 1 - Element: null
+,('04977de7-6ea7-fff7-4e69-de45cbac49b5', '5298d826-21d1-8ae9-1071-dff47dccf12b') --Jaws of The Lion - Rat Monstrosity - Standard - Level 5 | Type: damage - Value: 2 - Duration: null - Range: 1 - Element: null
+,('fbbb6c2c-10f1-879f-edbb-2fb95d7bd7a5', 'f55b9e84-bae6-dbb0-8d59-863505580810') --Jaws of The Lion - Rat Monstrosity - Standard - Level 6 | Type: damage - Value: 3 - Duration: null - Range: 1 - Element: null
+,('fbbb6c2c-10f1-879f-edbb-2fb95d7bd7a5', '48e15926-ea48-2067-42ac-dc6566498cc2') --Jaws of The Lion - Rat Monstrosity - Standard - Level 7 | Type: damage - Value: 3 - Duration: null - Range: 1 - Element: null
+,('ae850bb6-26fb-0d22-684d-0ab3d0f43280', '39911167-d318-8dc6-c56b-0e378f337d32') --Jaws of The Lion - Rat Monstrosity - Elite - Level 0 | Type: damage - Value: 1 - Duration: null - Range: 1 - Element: null
+,('04977de7-6ea7-fff7-4e69-de45cbac49b5', 'abfc9083-a51d-ceb4-2cd0-63a00037df6b') --Jaws of The Lion - Rat Monstrosity - Elite - Level 1 | Type: damage - Value: 2 - Duration: null - Range: 1 - Element: null
+,('04977de7-6ea7-fff7-4e69-de45cbac49b5', 'a331d9fb-514b-e837-502f-e9c63f71e8d9') --Jaws of The Lion - Rat Monstrosity - Elite - Level 2 | Type: damage - Value: 2 - Duration: null - Range: 1 - Element: null
+,('04977de7-6ea7-fff7-4e69-de45cbac49b5', 'f79109df-51db-ac00-f6ef-fe4b7070030b') --Jaws of The Lion - Rat Monstrosity - Elite - Level 3 | Type: damage - Value: 2 - Duration: null - Range: 1 - Element: null
+,('fbbb6c2c-10f1-879f-edbb-2fb95d7bd7a5', '8d92e175-9aca-0bb2-0bd1-9fe6ea517145') --Jaws of The Lion - Rat Monstrosity - Elite - Level 4 | Type: damage - Value: 3 - Duration: null - Range: 1 - Element: null
+,('fbbb6c2c-10f1-879f-edbb-2fb95d7bd7a5', 'd63dc2b6-feb0-5e74-d5db-68c8840b3783') --Jaws of The Lion - Rat Monstrosity - Elite - Level 5 | Type: damage - Value: 3 - Duration: null - Range: 1 - Element: null
+,('fbbb6c2c-10f1-879f-edbb-2fb95d7bd7a5', 'c8cb3cc1-c2b8-9809-3c5a-7b232b483198') --Jaws of The Lion - Rat Monstrosity - Elite - Level 6 | Type: damage - Value: 3 - Duration: null - Range: 1 - Element: null
+,('2d692b7f-9f97-37ff-b622-1a2071027053', '68c70ed9-effb-5c77-27ff-17221d6e6b89') --Jaws of The Lion - Rat Monstrosity - Elite - Level 7 | Type: damage - Value: 4 - Duration: null - Range: 1 - Element: null
 ;
 
 
