@@ -13,6 +13,7 @@ public static partial class EntityDefinitions
         builder.Entity<ItemDAO>(itemTable =>
         {
             itemTable.HasMany(item => item.CharacterItems).WithOne(ci => ci.Item).OnDelete(DeleteBehavior.Restrict);
+            itemTable.HasMany(item => item.CampaginItems).WithOne(ci => ci.Item).OnDelete(DeleteBehavior.Restrict);
             itemTable.Property(item => item.Location).HasConversion(itemLocation);
             itemTable.Property(item => item.Frequency).HasConversion(itemFrequency);
         });
@@ -45,5 +46,6 @@ public class ItemDAO
     public int Number { get; set; }
     public LOCATION_DAO Location { get; set; }
     public FREQUENCY_DAO Frequency { get; set; }
-    public ICollection<CharacterItemDAO> CharacterItems { get; set; } = new HashSet<CharacterItemDAO>();
+    public virtual ICollection<CharacterItemDAO> CharacterItems { get; set; } = new HashSet<CharacterItemDAO>();
+    public virtual ICollection<CampaignItemDAO> CampaginItems { get; set; } = new HashSet<CampaignItemDAO>();
 }

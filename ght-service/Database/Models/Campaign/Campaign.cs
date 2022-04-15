@@ -12,6 +12,11 @@ public static partial class EntityDefinitions
         builder.Entity<CampaignDAO>(campaignTable => {
             campaignTable.HasMany(campaign => campaign.Scenarios).WithOne(scenario => scenario.Campaign).OnDelete(DeleteBehavior.Restrict);
             campaignTable.HasMany(campaign => campaign.Party).WithOne(character => character.Campaign).OnDelete(DeleteBehavior.Restrict);
+            campaignTable.HasMany(campaign => campaign.Items).WithOne(ci => ci.Campaign).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<CampaignItemDAO>(campaignItemTable => {
+            campaignItemTable.HasKey(ci => new {ci.CampaignId, ci.ItemId});
         });
     }
 }
@@ -24,6 +29,19 @@ public class CampaignDAO : AuditableEntityBase
     public string Name {get; set;} = string.Empty;
     public Guid GameId {get; set;}
     public GameDAO? Game {get; set;}
-    public virtual ICollection<ScenarioDAO> Scenarios {get; set;} = new HashSet<ScenarioDAO>();
-    public virtual ICollection<CharacterDAO> Party {get; set;} = new HashSet<CharacterDAO>();
+    public ICollection<ScenarioDAO> Scenarios {get; set;} = new HashSet<ScenarioDAO>();
+    public ICollection<CharacterDAO> Party {get; set;} = new HashSet<CharacterDAO>();
+    public ICollection<CampaignItemDAO> Items {get; set;} = new HashSet<CampaignItemDAO>();
+}
+
+
+public class CampaignItemDAO : AuditableEntityBase
+{
+    [Required]
+    public Guid ItemId { get; set; }
+    public ItemDAO? Item { get; set; }
+    [Required]
+    public Guid CampaignId { get; set; }
+    public CampaignDAO? Campaign { get; set; }
+    public bool InUse { get; set; }
 }

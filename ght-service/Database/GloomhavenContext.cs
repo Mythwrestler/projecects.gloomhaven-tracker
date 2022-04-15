@@ -39,6 +39,7 @@ public partial class GloomhavenContext : DbContext
     public DbSet<CharacterItemDAO> CharacterItem => Set<CharacterItemDAO>();
     public DbSet<Models.Campaign.ScenarioDAO> ScenarioCampaign => Set<Models.Campaign.ScenarioDAO>();
     public DbSet<CampaignDAO> Campaign => Set<CampaignDAO>();
+    public DbSet<CampaignItemDAO> CampaignItem => Set<CampaignItemDAO>();
     #endregion
 
     #region Audit

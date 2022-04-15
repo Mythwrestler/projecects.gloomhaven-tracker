@@ -11,16 +11,16 @@ public static partial class EntityDefinitions
         builder.Entity<MonsterDAO>(monsterTable =>
         {
             monsterTable.HasIndex(monster => new { monster.GameId, monster.ContentCode }).IsUnique();
-            monsterTable.HasMany(monster => monster.BaseStats).WithOne(bs => bs.Monster).OnDelete(DeleteBehavior.Cascade);
+            monsterTable.HasMany(monster => monster.BaseStats).WithOne(bs => bs.Monster).OnDelete(DeleteBehavior.Restrict);
             monsterTable.HasMany(monster => monster.ScenarioMonsters).WithOne(sm => sm.Monster).OnDelete(DeleteBehavior.Restrict);
         });
 
         builder.Entity<MonsterStatSetDAO>(monsterStatTable =>
         {
-            monsterStatTable.HasMany(ae => ae.AttackEffects).WithOne(me => me.MonsterStatSet).OnDelete(DeleteBehavior.Cascade);
-            monsterStatTable.HasMany(ae => ae.DefenseEffects).WithOne(me => me.MonsterStatSet).OnDelete(DeleteBehavior.Cascade);
-            monsterStatTable.HasMany(ae => ae.DeathEffects).WithOne(me => me.MonsterStatSet).OnDelete(DeleteBehavior.Cascade);
-            monsterStatTable.HasMany(mi => mi.Immunity).WithOne(me => me.MonsterStatSet).OnDelete(DeleteBehavior.Cascade);
+            monsterStatTable.HasMany(ae => ae.AttackEffects).WithOne(me => me.MonsterStatSet).OnDelete(DeleteBehavior.Restrict);
+            monsterStatTable.HasMany(ae => ae.DefenseEffects).WithOne(me => me.MonsterStatSet).OnDelete(DeleteBehavior.Restrict);
+            monsterStatTable.HasMany(ae => ae.DeathEffects).WithOne(me => me.MonsterStatSet).OnDelete(DeleteBehavior.Restrict);
+            monsterStatTable.HasMany(mi => mi.Immunity).WithOne(me => me.MonsterStatSet).OnDelete(DeleteBehavior.Restrict);
         });
 
         builder.Entity<MonsterAttackEffectDAO>(monsterAttackEffectTable =>

@@ -10,8 +10,8 @@ public static partial class EntityDefinitions
         builder.Entity<CharacterDAO>(characterTable =>
         {
             characterTable.HasIndex(characterTable => new { characterTable.GameId, characterTable.ContentCode });
-            characterTable.HasMany(character => character.BaseStats).WithOne(stat => stat.Character).OnDelete(DeleteBehavior.Cascade);
-            characterTable.HasMany(character => character.CampaignCharacters).WithOne(character => character.CharacterContent).OnDelete(DeleteBehavior.Cascade);
+            characterTable.HasMany(character => character.BaseStats).WithOne(stat => stat.Character).OnDelete(DeleteBehavior.Restrict);
+            characterTable.HasMany(character => character.CampaignCharacters).WithOne(character => character.CharacterContent).OnDelete(DeleteBehavior.Restrict);
         });
 
         builder.Entity<CharacterBaseStatsDAO>(characterBaseStatsTable =>
