@@ -39,7 +39,8 @@ public enum EFFECT_TYPE_DAO
     damage,
     healAlly,
     chargeElement,
-    spendElement
+    spendElement,
+    push
 }
 
 public enum ELEMENT_DAO

@@ -50,7 +50,10 @@ public enum EFFECT_TYPE
     chargeElement,
     
     [EnumMember(Value = "spendElement")]
-    spendElement
+    spendElement,
+    
+    [EnumMember(Value = "push")]
+    push
 }
 
 

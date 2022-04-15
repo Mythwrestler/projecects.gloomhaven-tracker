@@ -47,6 +47,7 @@ public class ContentRepoImplementation : ContentRepo
         CharacterDAO? character = context.ContentCharacter
             .Where(character => character.Game.ContentCode == gameString && character.ContentCode == contentCode)
             .Include(character => character.BaseStats)
+            .Include(character => character.BasePerks).ThenInclude(perk => perk.Actions).ThenInclude(action => action.AttackModifier)
             .FirstOrDefault();
         if(character is null) throw new KeyNotFoundException("Character Content Code Not Found");
         

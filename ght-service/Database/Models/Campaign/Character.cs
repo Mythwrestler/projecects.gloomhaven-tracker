@@ -11,13 +11,13 @@ public static partial class EntityDefinitions
         builder.Entity<CharacterDAO>(characterTable =>
         {
             characterTable.HasOne(character => character.CharacterContent).WithMany(character => character.CampaignCharacters).OnDelete(DeleteBehavior.Restrict);
-            characterTable.HasMany(character => character.Perks).WithOne(ap => ap.Character).OnDelete(DeleteBehavior.Restrict);
+            characterTable.HasMany(character => character.AppliedPerks).WithOne(ap => ap.Character).OnDelete(DeleteBehavior.Restrict);
             characterTable.HasMany(character => character.Items).WithOne(ci => ci.Character).OnDelete(DeleteBehavior.Restrict);
             characterTable.HasOne(character => character.Campaign).WithMany(campaign => campaign.Party).OnDelete(DeleteBehavior.Restrict);
         });
 
-        builder.Entity<CharacterPerkDAO>(appliedPerkTable => {
-            appliedPerkTable.HasKey(appliedPerk => new { appliedPerk.CharacterId, appliedPerk.PerkId } );
+        builder.Entity<CharacterPerkDAO>(characterPerkTable => {
+            characterPerkTable.HasKey(cp => new {cp.CharacterId, cp.PerkId});
         });
 
         builder.Entity<CharacterItemDAO>(characterItemTable => {
@@ -34,7 +34,7 @@ public class CharacterDAO : AuditableEntityBase
     public int Experience { get; set; }
     public int Gold { get; set; }
     public int PerkPoints { get; set; }
-    public ICollection<CharacterPerkDAO> Perks { get; set; } = new HashSet<CharacterPerkDAO>();
+    public ICollection<CharacterPerkDAO> AppliedPerks { get; set; } = new HashSet<CharacterPerkDAO>();
     public ICollection<CharacterItemDAO> Items { get; set; } = new HashSet<CharacterItemDAO>();
     [Required]
     public Guid CharacterContentId { get; set; }
@@ -51,7 +51,6 @@ public class CharacterPerkDAO : AuditableEntityBase
     [Required]
     public Guid CharacterId { get; set; }
     public CharacterDAO? Character { get; set; }
-    public bool Applied { get; set; }
 }
 
 public class CharacterItemDAO : AuditableEntityBase

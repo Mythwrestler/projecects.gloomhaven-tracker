@@ -30,13 +30,12 @@ public partial class GloomhavenContext : DbContext
     public DbSet<CharacterBaseStatsDAO> ContentCharacterBaseStat => Set<CharacterBaseStatsDAO>();
     public DbSet<PerkDAO> ContentPerk => Set<PerkDAO>();
     public DbSet<PerkActionDAO> ContentPerkAction => Set<PerkActionDAO>();
-    public DbSet<Models.Content.CharacterPerkDAO> ContentCharacterPerk => Set<Models.Content.CharacterPerkDAO>();
     public DbSet<ItemDAO> ContentItem => Set<ItemDAO>();
     #endregion
 
     #region Campaign Db Sets
     public DbSet<Models.Campaign.CharacterDAO> CampaignCharacter => Set<Models.Campaign.CharacterDAO>();
-    public DbSet<Models.Campaign.CharacterPerkDAO> CampaignCharacterPerk => Set<Models.Campaign.CharacterPerkDAO>();
+    public DbSet<Models.Campaign.CharacterPerkDAO> CampaignCharacterAppliedPerk => Set<Models.Campaign.CharacterPerkDAO>();
     public DbSet<CharacterItemDAO> CampaignCharacterItem => Set<CharacterItemDAO>();
     public DbSet<Models.Campaign.ScenarioDAO> CampaignScenario => Set<Models.Campaign.ScenarioDAO>();
     public DbSet<CampaignDAO> CampaignCampaign => Set<CampaignDAO>();

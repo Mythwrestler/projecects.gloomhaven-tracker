@@ -19,10 +19,6 @@ public static partial class EntityDefinitions
         {
             characterBaseStatsTable.HasIndex(stat => new { stat.CharacterId, stat.Level });
         });
-
-        builder.Entity<CharacterPerkDAO>(characterPerkTable => {
-            characterPerkTable.HasKey(cp => new {cp.CharacterId, cp.PerkId});
-        });
     }
 }
 
@@ -34,7 +30,7 @@ public class CharacterDAO
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public ICollection<CharacterBaseStatsDAO> BaseStats { get; set; } = new HashSet<CharacterBaseStatsDAO>();
-    public ICollection<CharacterPerkDAO> BasePerks { get; set; } = new HashSet<CharacterPerkDAO>();
+    public ICollection<PerkDAO> BasePerks { get; set; } = new HashSet<PerkDAO>();
     public virtual ICollection<Campaign.CharacterDAO> CampaignCharacters { get; set; } = new HashSet<Campaign.CharacterDAO>();
     [Required]
     public Guid GameId { get; set; }
@@ -51,12 +47,4 @@ public class CharacterBaseStatsDAO
     [Required]
     public Guid CharacterId { get; set; }
     public CharacterDAO? Character { get; set; }
-}
-
-public class CharacterPerkDAO
-{
-    public Guid CharacterId {get; set;}
-    public CharacterDAO? Character {get; set;}
-    public Guid PerkId {get; set;}
-    public PerkDAO? Perk {get; set;}
 }
