@@ -42,20 +42,21 @@ public class CampaignController : Controller
     [Consumes("application/json")]
     public IActionResult CreateNewCampaign([FromBody] NewCampaignRequestBody body)
     {
-        try
-        {
-            var campaign = service.NewCampaign(
-                Guid.Empty.ToString() == body.Id.ToString() ? Guid.NewGuid() : body.Id,
-                body.Game,
-                body.Description
-            );
-            return Ok(campaign);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(new EventId(), ex, "Failed to create new campaign");
-            return UnprocessableEntity("Issue processing request");
-        }
+        throw new NotImplementedException();
+        // try
+        // {
+        //     var campaign = service.NewCampaign(
+        //         Guid.Empty.ToString() == body.Id.ToString() ? Guid.NewGuid() : body.Id,
+        //         body.Game//,
+        //         //body.Description
+        //     );
+        //     return Ok(campaign);
+        // }
+        // catch (Exception ex)
+        // {
+        //     logger.LogError(new EventId(), ex, "Failed to create new campaign");
+        //     return UnprocessableEntity("Issue processing request");
+        // }
     }
 
     [Route("{campaignId}")]

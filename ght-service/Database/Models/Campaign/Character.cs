@@ -11,7 +11,7 @@ public static partial class EntityDefinitions
         builder.Entity<CharacterDAO>(characterTable =>
         {
             characterTable.HasOne(character => character.CharacterContent).WithMany(character => character.CampaignCharacters).OnDelete(DeleteBehavior.Restrict);
-            characterTable.HasMany(character => character.AppliedPerks).WithOne(ap => ap.Character).OnDelete(DeleteBehavior.Restrict);
+            characterTable.HasMany(character => character.Perks).WithOne(ap => ap.Character).OnDelete(DeleteBehavior.Restrict);
             characterTable.HasMany(character => character.Items).WithOne(ci => ci.Character).OnDelete(DeleteBehavior.Restrict);
             characterTable.HasOne(character => character.Campaign).WithMany(campaign => campaign.Party).OnDelete(DeleteBehavior.Restrict);
         });
@@ -34,7 +34,7 @@ public class CharacterDAO : AuditableEntityBase
     public int Experience { get; set; }
     public int Gold { get; set; }
     public int PerkPoints { get; set; }
-    public virtual ICollection<CharacterPerkDAO> AppliedPerks { get; set; } = new HashSet<CharacterPerkDAO>();
+    public virtual ICollection<CharacterPerkDAO> Perks { get; set; } = new HashSet<CharacterPerkDAO>();
     public virtual ICollection<CharacterItemDAO> Items { get; set; } = new HashSet<CharacterItemDAO>();
     [Required]
     public Guid CharacterContentId { get; set; }
@@ -51,6 +51,7 @@ public class CharacterPerkDAO : AuditableEntityBase
     [Required]
     public Guid CharacterId { get; set; }
     public CharacterDAO? Character { get; set; }
+    public bool Applied { get; set; }
 }
 
 public class CharacterItemDAO : AuditableEntityBase

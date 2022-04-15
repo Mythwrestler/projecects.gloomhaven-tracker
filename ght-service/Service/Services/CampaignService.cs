@@ -23,28 +23,28 @@ public class CampaignServiceImplementation : CampaignService
     private Dictionary<Guid, Campaign> campaigns = new Dictionary<Guid, Campaign>();
     private ContentService contentService;
     private ILogger<CampaignServiceImplementation> logger;
-    private CampaignRepo repo;
+    // private CampaignRepo repo;
 
-    public CampaignServiceImplementation(CampaignRepo repo, ContentService contentService, ILogger<CampaignServiceImplementation> logger)
+    public CampaignServiceImplementation(ContentService contentService, ILogger<CampaignServiceImplementation> logger)
     {
         this.logger = logger;
         this.contentService = contentService;
-        this.repo = repo;
+        // this.repo = repo;
     }
 
     public Campaign GetCampaignById(Guid campaignId)
     {
         if (!campaigns.ContainsKey(campaignId))
         {
-            CampaignDO? campaignFromRepo = repo.GetCampaign(campaignId);
-            if (campaignFromRepo == null)
-            {
-                throw new ArgumentException("Could not find campaign with that id.");
-            }
-            else
-            {
-                campaigns.Add(campaignId, new Campaign(campaignFromRepo ?? new CampaignDO()));
-            }
+            // CampaignDO? campaignFromRepo = repo.GetCampaign(campaignId);
+            // if (campaignFromRepo == null)
+            // {
+            //     throw new ArgumentException("Could not find campaign with that id.");
+            // }
+            // else
+            // {
+            //     campaigns.Add(campaignId, new Campaign(campaignFromRepo ?? new CampaignDO()));
+            // }
         }
 
         var campaign = campaigns.GetValueOrDefault(campaignId);
@@ -58,67 +58,70 @@ public class CampaignServiceImplementation : CampaignService
 
     public List<CampaignSummary> GetCampaignList()
     {
-        return repo.GetCampaignList();
+        throw new NotImplementedException();
+        // return repo.GetCampaignList();
     }
 
     public CampaignDTO GetCampaignDTO(Guid campaignId)
     {
-        return GetCampaignById(campaignId).ToDTO();
+        throw new NotImplementedException();
+        // return GetCampaignById(campaignId).ToDTO();
     }
 
 
     public CampaignDTO NewCampaign(Guid id, string game, string Description)
     {
+        throw new NotImplementedException();
+        // CampaignDO newCampaignDO = new CampaignDO()
+        // {
+        //     Game = GameUtils.GameTypeString(GameUtils.GameType(game)),
+        //     Description = Description,
+        //     Id = id.ToString(),
+        //     Scenarios = new List<ScenarioDO>(),
+        //     Party = new List<CharacterDO>()
+        // };
 
-        CampaignDO newCampaignDO = new CampaignDO()
-        {
-            Game = GameUtils.GameTypeString(GameUtils.GameType(game)),
-            Description = Description,
-            Id = id.ToString(),
-            Scenarios = new List<ScenarioDO>(),
-            Party = new List<CharacterDO>()
-        };
+        // Campaign campaign = new Campaign(newCampaignDO);
 
-        Campaign campaign = new Campaign(newCampaignDO);
+        // campaigns.Add(campaign.Id, campaign);
 
-        campaigns.Add(campaign.Id, campaign);
+        // repo.NewCampaign(campaign.ToDO());
 
-        repo.NewCampaign(campaign.ToDO());
-
-        return campaign.ToDTO();
+        // return campaign.ToDTO();
     }
 
     public void UpdateCampaign(Guid campaignId, CampaignDTO campaign)
     {
-        ValidateCampaign(campaignId, campaign);
-        ValidateCampaignCharacters(campaign);
-        CampaignDO updatedCampaignDO = new CampaignDO()
-        {
-            Game = GameUtils.GameTypeString(GameUtils.GameType(campaign.Game)),
-            Description = campaign.Description,
-            Id = campaign.Id,
-            Scenarios = campaign.Scenarios.Select(s => new ScenarioDO() {
-                        ContentCode = s.ContentCode,
-                        IsClosed = s.IsClosed,
-                        IsCompleted = s.IsCompleted,
-                    }).ToList()
-            ,
-            Party = campaign.Party.Select(c => new CharacterDO() {
-                        Id = c.Id ?? Guid.NewGuid().ToString(),
-                        CharacterContentCode = c.CharacterContentCode,
-                        AppliedPerks = c.AppliedPerks,
-                        Experience = c.Experience,
-                        Gold = c.Gold,
-                        Items = c.Items,
-                        Name = c.Name,
-                        PerkPoints = c.PerkPoints
-                    }).ToList()
-        };
+        throw new NotImplementedException();
+        // ValidateCampaign(campaignId, campaign);
+        // ValidateCampaignCharacters(campaign);
+        // CampaignDO updatedCampaignDO = new CampaignDO()
+        // {
+        //     Game = GameUtils.GameTypeString(GameUtils.GameType(campaign.Game)),
+        //     Description = campaign.Description,
+        //     Id = campaign.Id,
+        //     Scenarios = campaign.Scenarios.Select(s => new ScenarioDO() {
+        //                 ContentCode = s.ContentCode,
+        //                 IsClosed = s.IsClosed,
+        //                 IsCompleted = s.IsCompleted,
+        //             }).ToList()
+        //     ,
+        //     Party = campaign.Party.Select(c => new CharacterDO() {
+        //                 Id = c.Id ?? Guid.NewGuid().ToString(),
+        //                 CharacterContentCode = c.CharacterContentCode,
+        //                 AppliedPerks = c.AppliedPerks,
+        //                 Experience = c.Experience,
+        //                 Gold = c.Gold,
+        //                 Items = c.Items,
+        //                 Name = c.Name,
+        //                 PerkPoints = c.PerkPoints
+        //             }).ToList()
+        // };
 
-        var updatedCampaign = new Campaign(updatedCampaignDO);
-        campaigns[campaignId] = updatedCampaign;
+        // var updatedCampaign = new Campaign(updatedCampaignDO);
+        // campaigns[campaignId] = updatedCampaign;
 
-        repo.UpdateCampaign(updatedCampaignDO);
+        // repo.UpdateCampaign(updatedCampaignDO);
 
     }
 

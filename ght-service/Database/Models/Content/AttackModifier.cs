@@ -36,7 +36,8 @@ public class AttackModifierDAO
     public bool TriggerShuffle { get; set; } = false;
     public string Value { get; set; } = string.Empty;
     public ICollection<AttackModifierEffectDAO> Effects { get; set; } = new HashSet<AttackModifierEffectDAO>();
-    public ICollection<GameBaseAttackModifierDAO> GameBaseAttackModifiers { get; set; } = new HashSet<GameBaseAttackModifierDAO>();
+    public virtual ICollection<GameBaseAttackModifierDAO> GameBaseAttackModifiers { get; set; } = new HashSet<GameBaseAttackModifierDAO>();
+    public virtual ICollection<PerkActionDAO> PerkActions { get; set; } = new HashSet<PerkActionDAO>();
     [Required]
     public Guid GameId { get; set; }
     public GameDAO? Game { get; set; }

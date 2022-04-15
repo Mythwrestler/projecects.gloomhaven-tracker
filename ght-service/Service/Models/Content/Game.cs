@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
@@ -9,6 +10,7 @@ public enum GAME_TYPE
     jawsOfTheLion
 }
 
+[Serializable]
 public class Game
 {
 

@@ -44,10 +44,10 @@ public class AuditEntry
     }
     public EntityEntry Entry { get; }
     public string? UserId { get; set; }
-    public string TableName { get; set; }
-    public Dictionary<string, object> KeyValues { get; } = new Dictionary<string, object>();
-    public Dictionary<string, object> OldValues { get; } = new Dictionary<string, object>();
-    public Dictionary<string, object> NewValues { get; } = new Dictionary<string, object>();
+    public string TableName { get; set; } = string.Empty;
+    public Dictionary<string, object?> KeyValues { get; } = new Dictionary<string, object?>();
+    public Dictionary<string, object?> OldValues { get; } = new Dictionary<string, object?>();
+    public Dictionary<string, object?> NewValues { get; } = new Dictionary<string, object?>();
     public AUDIT_ACTION Action { get; set; }
     public List<string> ChangedColumns { get; } = new List<string>();
     public DateTime DateTimeUTC { get; set; }
@@ -58,9 +58,9 @@ public class AuditEntry
         audit.Action = Action;
         audit.TableName = TableName;
         audit.DateTimeUTC = DateTimeUTC;
-        audit.PrimaryKey = KeyValues.Count == 0 ? null : JsonSerializer.Serialize(KeyValues);
-        audit.OldValues = OldValues.Count == 0 ? null : JsonSerializer.Serialize(OldValues);
-        audit.NewValues = NewValues.Count == 0 ? null : JsonSerializer.Serialize(NewValues);
+        audit.PrimaryKey = KeyValues.Count == 0 ? null : JsonSerializer.Serialize(KeyValues.Where(v => v.Value != null));
+        audit.OldValues = OldValues.Count == 0 ? null : JsonSerializer.Serialize(OldValues.Where(v => v.Value != null));
+        audit.NewValues = NewValues.Count == 0 ? null : JsonSerializer.Serialize(NewValues.Where(v => v.Value != null));
         audit.AffectedColumns = ChangedColumns.Count == 0 ? null : JsonSerializer.Serialize(ChangedColumns);
         return audit;
     }

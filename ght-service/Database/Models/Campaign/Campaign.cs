@@ -21,7 +21,7 @@ public class CampaignDAO : AuditableEntityBase
 {
     [Key]
     public Guid Id {get; set;}
-    public string Description {get; set;} = string.Empty;
+    public string Name {get; set;} = string.Empty;
     public Guid GameId {get; set;}
     public GameDAO? Game {get; set;}
     public virtual ICollection<ScenarioDAO> Scenarios {get; set;} = new HashSet<ScenarioDAO>();

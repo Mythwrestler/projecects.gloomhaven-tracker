@@ -8,7 +8,7 @@ DELETE FROM public."MonsterDefenseEffect";
 DELETE FROM public."MonsterDeathEffect";
 DELETE FROM public."MonsterStatSet";
 DELETE FROM public."Monster";
-DELETE FROM public."CharacterBaseStats";
+DELETE FROM public."CharacterBaseStat";
 DELETE FROM public."CharacterContent";
 DELETE FROM public."GameBaseAttackModifiers";
 DELETE FROM public."AttackModifierEffect";
@@ -83,7 +83,7 @@ INSERT INTO public."CharacterContent" ("Id", "ContentCode", "Name", "Description
 ,('c2bf284b-b41a-3ab8-dee7-d51510668b84', 'demolitionist', 'Demolitionist', 'Character - Demolitionist', '153dad18-1725-4a91-b337-521c52aaccd1') --Jaws of The Lion - Demolitionist
 ;
 
-INSERT INTO public."CharacterBaseStats" ("Id", "CharacterId", "Level", "Experience", "Health") VALUES
+INSERT INTO public."CharacterBaseStat" ("Id", "CharacterId", "Level", "Experience", "Health") VALUES
  ('9d9f358e-0d7e-df45-7011-51e64f730121', '219fc817-afce-5ffb-fac3-0534a9af5bc7', 1, 0, 6) --Voidwarden - Level 1
 ,('b0ee1d9f-ddc4-f303-cb84-9c831befe080', '219fc817-afce-5ffb-fac3-0534a9af5bc7', 2, 45, 7) --Voidwarden - Level 2
 ,('e6cc43b9-fffd-d2a0-2772-1e99acd8b877', '219fc817-afce-5ffb-fac3-0534a9af5bc7', 3, 95, 8) --Voidwarden - Level 3

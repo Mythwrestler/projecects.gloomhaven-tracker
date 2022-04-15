@@ -157,9 +157,10 @@ builder.Services.AddScoped<ContentRepo, ContentRepoImplementation>();
 
 //  Register Campaign DI
 builder.Services.AddScoped<CampaignService, CampaignServiceImplementation>();
-builder.Services.AddScoped<CampaignRepo, CampaignRepoImplementation>(factory => {
-    return new CampaignRepoImplementation(dbConnectionString, factory.GetRequiredService<ILogger<CampaignRepoImplementation>>());
-});
+builder.Services.AddScoped<CampaignEFRepo, CampaignEFRepoImplementation>();
+// builder.Services.AddScoped<CampaignRepo, CampaignRepoImplementation>(factory => {
+//     return new CampaignRepoImplementation(dbConnectionString, factory.GetRequiredService<ILogger<CampaignRepoImplementation>>());
+// });
 
 //  Register Combat DI
 builder.Services.AddScoped<CombatService, CombatServiceImplentation>();
