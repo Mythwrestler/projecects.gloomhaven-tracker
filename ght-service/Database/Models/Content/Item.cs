@@ -50,5 +50,5 @@ public class ItemDAO
     public virtual ICollection<CampaignItemDAO> CampaginItems { get; set; } = new HashSet<CampaignItemDAO>();
     [Required]
     public Guid GameId { get; set; }
-    public GameDAO? Game { get; set; }
+    public GameDAO Game { get; set; } = new GameDAO();
 }

@@ -52,13 +52,14 @@ public struct BaseCharacterStats
 [Serializable]
 public struct Character : ContentItem
 {
-    public Character(Guid id, string contentCode, string name, string description, BaseCharacterStats baseStats)
+    public Character(Guid id, string contentCode, string name, string description, BaseCharacterStats baseStats, string gameContentCode)
     {
         Id = id;
         ContentCode = contentCode;
         Name = name;
         Description = description;
         BaseStats = baseStats;
+        GameContentCode = gameContentCode;
     }
 
     [JsonIgnore]
@@ -76,6 +77,9 @@ public struct Character : ContentItem
     [JsonPropertyName("baseStats")]
     public BaseCharacterStats BaseStats { get; }
 
+    [JsonPropertyName("game")]
+    public string GameContentCode { get; }
+
     [JsonIgnore]
     public ContentSummary Summary
     {
@@ -84,7 +88,8 @@ public struct Character : ContentItem
             return new ContentSummary(
                 ContentCode,
                 Name,
-                Description
+                Description,
+                Game: GameContentCode
             );
         }
     }

@@ -36,6 +36,7 @@ public class ContentRepoImplementation : ContentRepo
         List<GameBaseAttackModifierDAO> baseDeck = context.ContentGameBaseAttackModifiers
             .Where(baseDeck => baseDeck.Game.ContentCode == gameString)
             .Include(baseDeck => baseDeck.AttackModifier)
+            .Include(c => c.Game)
             .ToList();
         return mapper.Map<List<AttackModifier>>(baseDeck);
     }
@@ -47,6 +48,7 @@ public class ContentRepoImplementation : ContentRepo
             .Where(character => character.Game.ContentCode == gameString && character.ContentCode == contentCode)
             .Include(character => character.BaseStats)
             .Include(character => character.BasePerks).ThenInclude(perk => perk.Actions).ThenInclude(action => action.AttackModifier)
+            .Include(c => c.Game)
             .FirstOrDefault();
         if(character is null) throw new KeyNotFoundException("Character Content Code Not Found");
         
@@ -67,14 +69,14 @@ public class ContentRepoImplementation : ContentRepo
             {
                 List<AttackModifierDAO> modifierDAOs = context.ContentAttackModifier
                     .Where(modifier => modifier.Game.ContentCode == gameString)
-                    .ToList();
+                    .Include(c => c.Game).ToList();
                 return mapper.Map<List<AttackModifier>>(modifierDAOs).Select(am => am.Summary).ToList();
             }
             case(CONTENT_TYPE.character):
             {
                 List<CharacterDAO> characterDAOs = context.ContentCharacter
                     .Where(character => character.Game.ContentCode == gameString)
-                    .ToList();
+                    .Include(c => c.Game).ToList();
                 return mapper.Map<List<Character>>(characterDAOs).Select(c => c.Summary).ToList();
             }
             case(CONTENT_TYPE.item):
@@ -85,20 +87,21 @@ public class ContentRepoImplementation : ContentRepo
             {
                 List<MonsterDAO> monsterDAOs = context.ContentMonster
                     .Where(monster => monster.Game.ContentCode == gameString)
-                    .ToList();
+                    .Include(c => c.Game).ToList();
                 return mapper.Map<List<Monster>>(monsterDAOs).Select(m => m.Summary).ToList();
             }
             case(CONTENT_TYPE.objective):
             {
                 List<ObjectiveDAO> objectiveDAOs = context.ContentObjective
                     .Where(monster => monster.Game.ContentCode == gameString)
-                    .ToList();
+                    .Include(c => c.Game).ToList();
                 return mapper.Map<List<Objective>>(objectiveDAOs).Select(m => m.Summary).ToList();
             }
             case(CONTENT_TYPE.scenario):
             {
                 List<ScenarioDAO> scenarioDAOs = context.ContentScenario
-                    .Where(scenario => scenario.Game.ContentCode == gameString).ToList();
+                    .Where(scenario => scenario.Game.ContentCode == gameString)
+                    .Include(c => c.Game).ToList();
                 return mapper.Map<List<Scenario>>(scenarioDAOs).Select(s => s.Summary).ToList();
             }
             default:
@@ -128,6 +131,7 @@ public class ContentRepoImplementation : ContentRepo
             .Include(monster => monster.BaseStats).ThenInclude(bs => bs.DefenseEffects).ThenInclude(de => de.Effect)
             .Include(monster => monster.BaseStats).ThenInclude(bs => bs.DeathEffects).ThenInclude(de => de.Effect)
             .Include(monster => monster.BaseStats).ThenInclude(bs => bs.Immunity)
+            .Include(monster => monster.Game)
             .FirstOrDefault();
         if(monster is null) throw new KeyNotFoundException("Monster Content Code Not Found");
 
@@ -144,6 +148,7 @@ public class ContentRepoImplementation : ContentRepo
             .Include(scenario => scenario.Monsters).ThenInclude(sm => sm.Monster).ThenInclude(monster => monster.BaseStats).ThenInclude(bs => bs.DefenseEffects).ThenInclude(de => de.Effect)
             .Include(scenario => scenario.Monsters).ThenInclude(sm => sm.Monster).ThenInclude(monster => monster.BaseStats).ThenInclude(bs => bs.DeathEffects).ThenInclude(de => de.Effect)
             .Include(scenario => scenario.Monsters).ThenInclude(sm => sm.Monster).ThenInclude(monster => monster.BaseStats).ThenInclude(bs => bs.Immunity)
+            .Include(scenario => scenario.Game)
             .FirstOrDefault();
 
         if(scenario is null) throw new KeyNotFoundException("Scenario Content Code Not Found");

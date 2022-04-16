@@ -58,7 +58,7 @@ public class MonsterDAO
     public virtual ICollection<ScenarioMonsterDAO> ScenarioMonsters { get; set; } = new HashSet<ScenarioMonsterDAO>();
     [Required]
     public Guid GameId { get; set; }
-    public GameDAO? Game { get; set; }
+    public GameDAO Game { get; set; } = new GameDAO();
 }
 
 public class MonsterStatSetDAO
@@ -78,43 +78,43 @@ public class MonsterStatSetDAO
     public Boolean IsElite { get; set; }
     [Required]
     public Guid MonsterId { get; set; }
-    public MonsterDAO? Monster { get; set; }
+    public MonsterDAO Monster { get; set; } = new MonsterDAO();
 }
 
 public class MonsterAttackEffectDAO
 {
     [Required]
     public Guid EffectId { get; set; }
-    public EffectDAO? Effect { get; set; }
+    public EffectDAO Effect { get; set; } = new EffectDAO();
     [Required]
     public Guid MonsterStatSetId { get; set; }
-    public MonsterStatSetDAO? MonsterStatSet { get; set; }
+    public MonsterStatSetDAO MonsterStatSet { get; set; } = new MonsterStatSetDAO();
 }
 
 public class MonsterDefenseEffectDAO
 {
     [Required]
     public Guid EffectId { get; set; }
-    public EffectDAO? Effect { get; set; }
+    public EffectDAO Effect { get; set; } = new EffectDAO();
     [Required]
     public Guid MonsterStatSetId { get; set; }
-    public MonsterStatSetDAO? MonsterStatSet { get; set; }
+    public MonsterStatSetDAO MonsterStatSet { get; set; } = new MonsterStatSetDAO();
 }
 
 public class MonsterDeathEffectDAO
 {
     [Required]
     public Guid EffectId { get; set; }
-    public EffectDAO? Effect { get; set; }
+    public EffectDAO Effect { get; set; } = new EffectDAO();
     [Required]
     public Guid MonsterStatSetId { get; set; }
-    public MonsterStatSetDAO? MonsterStatSet { get; set; }
+    public MonsterStatSetDAO MonsterStatSet { get; set; } = new MonsterStatSetDAO();
 }
 
 public class MonsterBaseStatImmunityDAO
 {
     [Required]
     public Guid MonsterStatSetId { get; set; }
-    public MonsterStatSetDAO? MonsterStatSet { get; set; }
+    public MonsterStatSetDAO MonsterStatSet { get; set; } = new MonsterStatSetDAO();
     public EFFECT_TYPE_DAO Effect { get; set; }
 }

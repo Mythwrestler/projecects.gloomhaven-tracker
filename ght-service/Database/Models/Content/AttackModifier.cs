@@ -40,15 +40,15 @@ public class AttackModifierDAO
     public virtual ICollection<PerkActionDAO> PerkActions { get; set; } = new HashSet<PerkActionDAO>();
     [Required]
     public Guid GameId { get; set; }
-    public GameDAO? Game { get; set; }
+    public GameDAO Game { get; set; } = new GameDAO();
 }
 
 public class AttackModifierEffectDAO
 {
     [Required]
     public Guid EffectId { get; set; }
-    public EffectDAO? Effect { get; set; }
+    public EffectDAO Effect { get; set; } = new EffectDAO();
     [Required]
     public Guid AttackModifierId { get; set; }
-    public AttackModifierDAO? AttackModifier { get; set; }
+    public AttackModifierDAO AttackModifier { get; set; } = new AttackModifierDAO();
 }

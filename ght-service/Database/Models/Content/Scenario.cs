@@ -46,25 +46,25 @@ public class ScenarioDAO
     public virtual ICollection<Campaign.ScenarioDAO> ScenarioCampaigns { get; set; } = new HashSet<Campaign.ScenarioDAO>();
     [Required]
     public Guid GameId { get; set; }
-    public GameDAO? Game { get; set; }
+    public GameDAO Game { get; set; } = new GameDAO();
 }
 
 public class ScenarioMonsterDAO
 {
     [Required]
     public Guid ScenarioId { get; set; }
-    public ScenarioDAO? Scenario { get; set; }
+    public ScenarioDAO Scenario { get; set; } = new ScenarioDAO();
     [Required]
     public Guid MonsterId { get; set; }
-    public MonsterDAO? Monster { get; set; }
+    public MonsterDAO Monster { get; set; } = new MonsterDAO();
 }
 
 public class ScenarioObjectiveDAO
 {
     [Required]
     public Guid ScenarioId { get; set; }
-    public ScenarioDAO? Scenario { get; set; }
+    public ScenarioDAO Scenario { get; set; } = new ScenarioDAO();
     [Required]
     public Guid ObjectiveId { get; set; }
-    public ObjectiveDAO? Objective { get; set; }
+    public ObjectiveDAO Objective { get; set; } = new ObjectiveDAO();
 }

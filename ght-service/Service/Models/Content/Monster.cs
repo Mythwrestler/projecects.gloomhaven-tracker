@@ -73,13 +73,14 @@ public struct BaseMonsterStatSet
 [Serializable]
 public struct Monster : ContentItem
 {
-    public Monster(Guid id, string contentCode, string name, string description, BaseMonsterStatSet baseStats)
+    public Monster(Guid id, string contentCode, string name, string description, BaseMonsterStatSet baseStats, string gameContentCode)
     {
         Id = id;
         ContentCode = contentCode;
         Name = name;
         Description = description;
         BaseStats = baseStats;
+        GameContentCode = gameContentCode;
     }
 
     [JsonIgnore]
@@ -97,6 +98,9 @@ public struct Monster : ContentItem
     [JsonPropertyName("baseStats")]
     public BaseMonsterStatSet BaseStats { get; }
 
+    [JsonPropertyName("game")]
+    public string GameContentCode { get; }
+
     [JsonIgnore]
     public ContentSummary Summary
     {
@@ -105,7 +109,8 @@ public struct Monster : ContentItem
             return new ContentSummary(
                 ContentCode,
                 Name,
-                Description
+                Description,
+                Game: GameContentCode
             );
         }
     }

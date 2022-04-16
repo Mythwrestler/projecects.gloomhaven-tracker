@@ -48,8 +48,8 @@ public class GameBaseAttackModifierDAO
     public Guid Id { get; set; }
     [Required]
     public Guid GameId { get; set; }
-    public GameDAO? Game { get; set; }
+    public GameDAO Game { get; set; } = new GameDAO();
     [Required]
     public Guid AttackModifierId { get; set; }
-    public AttackModifierDAO? AttackModifier { get; set; }
+    public AttackModifierDAO AttackModifier { get; set; } = new AttackModifierDAO();
 }

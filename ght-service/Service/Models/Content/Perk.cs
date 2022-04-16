@@ -39,13 +39,14 @@ public struct PerkAction
 [Serializable]
 public struct Perk : ContentItem
 {
-    public Perk(Guid id, string contentCode, string name, string description, List<PerkAction> actions)
+    public Perk(Guid id, string contentCode, string name, string description, List<PerkAction> actions, string gameContentCode)
     {
         Id = id;
         ContentCode = contentCode;
         Name = name;
         Description = description;
         Actions = actions;
+        GameContentCode = gameContentCode;
     }
 
     [JsonIgnore]
@@ -63,6 +64,9 @@ public struct Perk : ContentItem
     [JsonPropertyName("actions")]
     public List<PerkAction> Actions { get; }
 
+    [JsonPropertyName("game")]
+    public string GameContentCode { get; }
+
     [JsonIgnore]
     public ContentSummary Summary
     {
@@ -71,7 +75,8 @@ public struct Perk : ContentItem
             return new ContentSummary(
                 ContentCode,
                 Name,
-                Description
+                Description,
+                Game: GameContentCode
             );
         }
     }

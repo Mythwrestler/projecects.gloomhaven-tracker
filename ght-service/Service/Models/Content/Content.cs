@@ -23,17 +23,19 @@ public interface ContentItem
     public string ContentCode { get; }
     public string Name { get; }
     public string Description { get; }
+    public string GameContentCode { get; }
     public ContentSummary Summary { get; }
 }
 
 [Serializable]
 public struct ContentSummary
 {
-    public ContentSummary(string ContentCode, string Name, string Description, int? SortOrder = null)
+    public ContentSummary(string ContentCode, string Name, string Description, string Game, int? SortOrder = null)
     {
         this.ContentCode = ContentCode;
         this.Name = Name;
         this.Description = Description;
+        this.Game = Game;
         this.SortOrder = SortOrder;
     }
     [JsonPropertyName("contentCode")]
@@ -48,6 +50,9 @@ public struct ContentSummary
     [JsonPropertyName("sortOrder")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public int? SortOrder { get; }
+
+    [JsonPropertyName("game")]
+    public string Game { get; }
 }
 
 

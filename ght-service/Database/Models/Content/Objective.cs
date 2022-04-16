@@ -28,5 +28,5 @@ public class ObjectiveDAO
     public virtual ICollection<ScenarioObjectiveDAO> ScenarioObjectives { get; set; } = new HashSet<ScenarioObjectiveDAO>();
     [Required]
     public Guid GameId { get; set; }
-    public GameDAO? Game { get; set; }
+    public GameDAO Game { get; set; } = new GameDAO();
 }

@@ -6,7 +6,7 @@ namespace GloomhavenTracker.Service.Models.Content;
 
 public struct Scenario : ContentItem
 {
-    public Scenario(Guid id, string contentCode, string name, string description, int scenarioNumber, string goal, string cityMapLocation, List<int> scenarioBook, List<int> supplementalBook, List<Monster> monsters, List<Objective> objectives)
+    public Scenario(Guid id, string contentCode, string name, string description, int scenarioNumber, string goal, string cityMapLocation, List<int> scenarioBook, List<int> supplementalBook, List<Monster> monsters, List<Objective> objectives, string gameContentCode)
     {
         Id = id;
         ContentCode = contentCode;
@@ -19,6 +19,7 @@ public struct Scenario : ContentItem
         SupplementalBook = supplementalBook;
         Monsters = monsters;
         Objectives = objectives;
+        GameContentCode = gameContentCode;
     }
 
     [JsonIgnore]
@@ -54,6 +55,9 @@ public struct Scenario : ContentItem
     [JsonPropertyName("objectives")]
     public List<Objective> Objectives { get; }
 
+    [JsonPropertyName("game")]
+    public string GameContentCode { get; }
+
     [JsonIgnore]
     public ContentSummary Summary
     {
@@ -63,7 +67,8 @@ public struct Scenario : ContentItem
                 ContentCode,
                 Name,
                 Description,
-                ScenarioNumber
+                Game: GameContentCode,
+                SortOrder: ScenarioNumber
             );
         }
     }

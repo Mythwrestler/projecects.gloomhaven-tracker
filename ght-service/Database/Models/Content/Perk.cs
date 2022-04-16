@@ -32,7 +32,7 @@ public class PerkDAO
     public virtual ICollection<Models.Campaign.CharacterPerkDAO> CharacterPerks { get; set; } = new HashSet<Models.Campaign.CharacterPerkDAO>();
     [Required]
     public Guid GameId { get; set; }
-    public GameDAO? Game { get; set; }
+    public GameDAO Game { get; set; } = new GameDAO();
     public Guid CharacterId { get; set; }
     public CharacterDAO? Character { get; set; }
 }
@@ -52,5 +52,5 @@ public class PerkActionDAO
     public PERK_ACTION_DAO Action { get; set; }
     public int Count { get; set; }
     public Guid PerkId { get; set; }
-    public PerkDAO? Perk { get; set; }
+    public PerkDAO Perk { get; set; } = new PerkDAO();
 }

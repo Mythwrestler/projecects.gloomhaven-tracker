@@ -22,7 +22,7 @@ public enum ATTACK_MODIFIER_TYPE
 [Serializable]
 public struct AttackModifier : ContentItem
 {
-    public AttackModifier(Guid id, string contentCode, string name, string description, bool isCurse, bool isBlessing, bool triggerShuffle, string value, List<Effect> effects)
+    public AttackModifier(Guid id, string contentCode, string name, string description, bool isCurse, bool isBlessing, bool triggerShuffle, string value, List<Effect> effects, string gameContentCode)
     {
         Id = id;
         ContentCode = contentCode;
@@ -33,6 +33,7 @@ public struct AttackModifier : ContentItem
         TriggerShuffle = triggerShuffle;
         Value = value;
         Effects = effects;
+        GameContentCode = gameContentCode;
     }
 
     [JsonIgnore]
@@ -62,6 +63,9 @@ public struct AttackModifier : ContentItem
     [JsonPropertyName("effects")]
     public List<Effect> Effects { get; }
 
+    [JsonPropertyName("game")]
+    public string GameContentCode { get; }
+
     [JsonIgnore]
     public ContentSummary Summary
     {
@@ -70,7 +74,8 @@ public struct AttackModifier : ContentItem
             return new ContentSummary(
                 ContentCode,
                 Name,
-                Description
+                Description,
+                Game: GameContentCode
             );
         }
     }

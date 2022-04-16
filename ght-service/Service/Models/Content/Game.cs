@@ -20,6 +20,7 @@ public struct Game : ContentItem
         Name = name;
         Description = description;
         BaseModifierDeck = baseModifierDeck;
+        GameContentCode = contentCode;
     }
 
     [JsonIgnore]
@@ -36,6 +37,9 @@ public struct Game : ContentItem
 
     public List<AttackModifier> BaseModifierDeck { get; }
 
+    [JsonPropertyName("game")]
+    public string GameContentCode { get; }
+
     [JsonIgnore]
     public ContentSummary Summary
     {
@@ -44,7 +48,8 @@ public struct Game : ContentItem
             return new ContentSummary(
                 ContentCode,
                 Name,
-                Description
+                Description,
+                Game: GameContentCode
             );
         }
     }

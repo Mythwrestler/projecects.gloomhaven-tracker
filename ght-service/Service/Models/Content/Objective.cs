@@ -6,7 +6,7 @@ namespace GloomhavenTracker.Service.Models.Content;
 [Serializable]
 public struct Objective : ContentItem
 {
-    public Objective(Guid id, string contentCode, string name, string description, bool rangeAttackable, bool meleeAttackable, string health)
+    public Objective(Guid id, string contentCode, string name, string description, bool rangeAttackable, bool meleeAttackable, string health, string gameContentCode)
     {
         Id = id;
         ContentCode = contentCode;
@@ -15,6 +15,7 @@ public struct Objective : ContentItem
         RangeAttackable = rangeAttackable;
         MeleeAttackable = meleeAttackable;
         Health = health;
+        GameContentCode = gameContentCode;
     }
 
     [JsonIgnore]
@@ -38,6 +39,9 @@ public struct Objective : ContentItem
     [JsonPropertyName("health")]
     public string Health { get; }
 
+    [JsonPropertyName("game")]
+    public string GameContentCode { get; }
+
     [JsonIgnore]
     public ContentSummary Summary
     {
@@ -46,7 +50,8 @@ public struct Objective : ContentItem
             return new ContentSummary(
                 ContentCode,
                 Name,
-                Description
+                Description,
+                Game: GameContentCode
             );
         }
     }

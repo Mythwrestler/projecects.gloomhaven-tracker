@@ -34,7 +34,7 @@ public class CharacterDAO
     public virtual ICollection<Campaign.CharacterDAO> CampaignCharacters { get; set; } = new HashSet<Campaign.CharacterDAO>();
     [Required]
     public Guid GameId { get; set; }
-    public GameDAO? Game { get; set; }
+    public GameDAO Game { get; set; } = new GameDAO();
 }
 
 public class CharacterBaseStatsDAO
@@ -46,5 +46,5 @@ public class CharacterBaseStatsDAO
     public int Health { get; set; }
     [Required]
     public Guid CharacterId { get; set; }
-    public CharacterDAO? Character { get; set; }
+    public CharacterDAO Character { get; set; } = new CharacterDAO();
 }
