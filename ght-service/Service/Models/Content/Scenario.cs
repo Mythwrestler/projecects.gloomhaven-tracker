@@ -1,60 +1,70 @@
+using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace GloomhavenTracker.Service.Models.Content;
 
-public class ScenarioSummary: ContentSummary
+public struct Scenario : ContentItem
 {
-
-    [JsonPropertyName("scenarioNumber")]
-    public int ScenarioNumber { get; set; }    
-}
-
-public class Scenario
-{
-
-    [JsonPropertyName("contentCode")]
-    public string ContentCode { get; set; } = string.Empty;
-
-    [JsonPropertyName("name")]
-    public string Name { get; set; } = string.Empty;
-
-    [JsonPropertyName("description")]
-    public string Description { get; set; } = string.Empty;
-
-    [JsonPropertyName("scenarioNumber")]
-    public int ScenarioNumber { get; set; }
-
-    [JsonPropertyName("goal")]
-    public string Goal { get; set; } = string.Empty;
-
-    [JsonPropertyName("cityMapLocation")]
-    public string CityMapLocation { get; set; } = string.Empty;
-
-    [JsonPropertyName("scenarioBook")]
-    public List<int> ScenarioBook { get; set; } = new List<int>();
-
-    [JsonPropertyName("supplementalBook")]
-    public List<int> SupplementalBook { get; set; } = new List<int>();
-
-    [JsonPropertyName("monsters")]
-    public List<Monster> Monsters { get; set; } = new List<Monster>();
-
-    [JsonPropertyName("objectives")]
-    public List<Objective> Objectives { get; set; } = new List<Objective>();
+    public Scenario(Guid id, string contentCode, string name, string description, int scenarioNumber, string goal, string cityMapLocation, List<int> scenarioBook, List<int> supplementalBook, List<Monster> monsters, List<Objective> objectives)
+    {
+        Id = id;
+        ContentCode = contentCode;
+        Name = name;
+        Description = description;
+        ScenarioNumber = scenarioNumber;
+        Goal = goal;
+        CityMapLocation = cityMapLocation;
+        ScenarioBook = scenarioBook;
+        SupplementalBook = supplementalBook;
+        Monsters = monsters;
+        Objectives = objectives;
+    }
 
     [JsonIgnore]
-    public ScenarioSummary Summary
+    public Guid Id { get; set; }
+
+    [JsonPropertyName("contentCode")]
+    public string ContentCode { get; } 
+
+    [JsonPropertyName("name")]
+    public string Name { get; }
+
+    [JsonPropertyName("description")]
+    public string Description { get; }
+
+    [JsonPropertyName("scenarioNumber")]
+    public int ScenarioNumber { get; }
+
+    [JsonPropertyName("goal")]
+    public string Goal { get; }
+
+    [JsonPropertyName("cityMapLocation")]
+    public string CityMapLocation { get; }
+
+    [JsonPropertyName("scenarioBook")]
+    public List<int> ScenarioBook { get; }
+
+    [JsonPropertyName("supplementalBook")]
+    public List<int> SupplementalBook { get; }
+
+    [JsonPropertyName("monsters")]
+    public List<Monster> Monsters { get; }
+
+    [JsonPropertyName("objectives")]
+    public List<Objective> Objectives { get; }
+
+    [JsonIgnore]
+    public ContentSummary Summary
     {
         get
         {
-            return new ScenarioSummary()
-            {
-                ContentCode = ContentCode,
-                Name = Name,
-                Description = Description,
-                ScenarioNumber = ScenarioNumber,
-            };
+            return new ContentSummary(
+                ContentCode,
+                Name,
+                Description,
+                ScenarioNumber
+            );
         }
     }
 }

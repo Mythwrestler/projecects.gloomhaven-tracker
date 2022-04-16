@@ -80,19 +80,33 @@ public enum ELEMENT
 }
 
 [Serializable]
-public class Effect
+public struct Effect
 {
+    public Effect(EFFECT_TYPE type, int? value, int? duration, int? range, ELEMENT? element)
+    {
+        Type = type;
+        Value = value;
+        Duration = duration;
+        Range = range;
+        Element = element;
+    }
 
     [JsonPropertyName("type")]
-    public EFFECT_TYPE Type { get; set; }
+    public EFFECT_TYPE Type { get; }
 
     [JsonPropertyName("value")]
-    public int? Value { get; set; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? Value { get; }
 
     [JsonPropertyName("duration")]
-    public int? Duration { get; set; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? Duration { get; }
 
-    public int? Range { get; set; }
+    [JsonPropertyName("range")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? Range { get; }
 
-    public ELEMENT? Element { get; set; }
+    [JsonPropertyName("element")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public ELEMENT? Element { get; }
 }

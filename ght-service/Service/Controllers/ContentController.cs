@@ -138,7 +138,7 @@ public class ContentController : Controller
     {
         try
         {
-            var scenarioList = service.GetScenarioSummary(gameCode);
+            var scenarioList = service.GetContentSummary(CONTENT_TYPE.scenario, gameCode);
             return new OkObjectResult(scenarioList);
         }
         catch (Exception ex)

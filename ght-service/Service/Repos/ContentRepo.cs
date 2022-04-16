@@ -11,7 +11,6 @@ namespace GloomhavenTracker.Service.Repos;
 public interface ContentRepo
 {
     public List<ContentSummary> GetContentSummary(CONTENT_TYPE contentType, GAME_TYPE? gameCode);
-    public List<ScenarioSummary> GetScenarios(GAME_TYPE gameCode);
     public Game GetGameDefaults(GAME_TYPE gameCode);
     public Character GetCharacterDefaults(GAME_TYPE gameCode, string contentCode);
     public Monster GetMonsterDefaults(GAME_TYPE gameCode, string contentCode);
@@ -96,6 +95,12 @@ public class ContentRepoImplementation : ContentRepo
                     .ToList();
                 return mapper.Map<List<Objective>>(objectiveDAOs).Select(m => m.Summary).ToList();
             }
+            case(CONTENT_TYPE.scenario):
+            {
+                List<ScenarioDAO> scenarioDAOs = context.ContentScenario
+                    .Where(scenario => scenario.Game.ContentCode == gameString).ToList();
+                return mapper.Map<List<Scenario>>(scenarioDAOs).Select(s => s.Summary).ToList();
+            }
             default:
             {
                 return new List<ContentSummary>();
@@ -129,22 +134,12 @@ public class ContentRepoImplementation : ContentRepo
         return mapper.Map<Monster>(monster);
     }
 
-    public List<ScenarioSummary> GetScenarios(GAME_TYPE gameCode)
-    {
-        var gameString = GameUtils.GameTypeString(gameCode);
-        List<ScenarioDAO> scenarios = context.ContentScenario
-            .Where(scenario => scenario.Game.ContentCode == gameString)
-            .ToList();
-        if(scenarios.Count() == 0) throw new KeyNotFoundException("Game Content Code Not Found");
-
-        return mapper.Map<List<Scenario>>(scenarios).Select(scenario => scenario.Summary).ToList();
-    }
-    
     public Scenario GetScenarioDefaults(GAME_TYPE gameCode, string contentCode)
     {
         var gameString = GameUtils.GameTypeString(gameCode);
         ScenarioDAO? scenario = context.ContentScenario
             .Where(scenario => scenario.Game.ContentCode == gameString && scenario.ContentCode == contentCode)
+            .Include(scenario => scenario.Objectives).ThenInclude(so => so.Objective)
             .Include(scenario => scenario.Monsters).ThenInclude(sm => sm.Monster).ThenInclude(monster => monster.BaseStats).ThenInclude(bs => bs.AttackEffects).ThenInclude(ae => ae.Effect)
             .Include(scenario => scenario.Monsters).ThenInclude(sm => sm.Monster).ThenInclude(monster => monster.BaseStats).ThenInclude(bs => bs.DefenseEffects).ThenInclude(de => de.Effect)
             .Include(scenario => scenario.Monsters).ThenInclude(sm => sm.Monster).ThenInclude(monster => monster.BaseStats).ThenInclude(bs => bs.DeathEffects).ThenInclude(de => de.Effect)

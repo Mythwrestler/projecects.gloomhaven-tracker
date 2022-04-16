@@ -17,25 +17,37 @@ public enum CONTENT_TYPE
     perk
 }
 
-public abstract class ContentItem
+public interface ContentItem
 {
-    public Guid Id { get; set; } = new Guid();
-    public string ContentCode { get; set; } = string.Empty;
-    public string Name { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
+    public Guid Id { get; }
+    public string ContentCode { get; }
+    public string Name { get; }
+    public string Description { get; }
+    public ContentSummary Summary { get; }
 }
 
 [Serializable]
-public class ContentSummary
+public struct ContentSummary
 {
+    public ContentSummary(string ContentCode, string Name, string Description, int? SortOrder = null)
+    {
+        this.ContentCode = ContentCode;
+        this.Name = Name;
+        this.Description = Description;
+        this.SortOrder = SortOrder;
+    }
     [JsonPropertyName("contentCode")]
-    public string ContentCode { get; set; } = string.Empty;
+    public string ContentCode { get; }
 
     [JsonPropertyName("name")]
-    public string Name { get; set; } = string.Empty;
+    public string Name { get; }
 
     [JsonPropertyName("description")]
-    public string Description { get; set; } = string.Empty;
+    public string Description { get; }
+
+    [JsonPropertyName("sortOrder")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? SortOrder { get; }
 }
 
 
@@ -97,7 +109,7 @@ public static class GameUtils
         return character.BaseStats.Levels
             .Where(lvl => lvl.Experience <= experience)
             .OrderByDescending(lvl => lvl.Experience)
-            .FirstOrDefault()?.Level ?? 0;
+            .FirstOrDefault().Level;
     }
 
     public static int GetPlayerBaseHealth(Character character, int experience)
@@ -106,7 +118,7 @@ public static class GameUtils
         return character.BaseStats.Health
             .Where(hl => hl.Level <= level)
             .OrderByDescending(hl => hl.Level)
-            .FirstOrDefault()?.Health ?? 0;
+            .FirstOrDefault().Health;
     }
 
     public static int ResolveModifierValue(string expression, int attackValue)

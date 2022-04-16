@@ -5,8 +5,14 @@ using System.Text.Json.Serialization;
 namespace GloomhavenTracker.Service.Models.Content;
 
 [Serializable]
-public class BaseCharacterHealth
+public struct BaseCharacterHealth
 {
+    public BaseCharacterHealth(int level, int health)
+    {
+        Level = level;
+        Health = health;
+    }
+
     [JsonPropertyName("level")]
     public int Level { get; set; }
     [JsonPropertyName("health")]
@@ -14,48 +20,72 @@ public class BaseCharacterHealth
 }
 
 [Serializable]
-public class CharacterLevel
+public struct CharacterLevel
 {
+    public CharacterLevel(int experience, int level)
+    {
+        Experience = experience;
+        Level = level;
+    }
+
     [JsonPropertyName("experience")]
-    public int Experience { get; set; }
+    public int Experience { get; }
     [JsonPropertyName("level")]
-    public int Level { get; set; }
+    public int Level { get; }
 }
 
 [Serializable]
-public class BaseCharacterStats
+public struct BaseCharacterStats
 {
+    public BaseCharacterStats(List<CharacterLevel> levels, List<BaseCharacterHealth> health)
+    {
+        Levels = levels;
+        Health = health;
+    }
+
     [JsonPropertyName("levels")]
-    public List<CharacterLevel> Levels { get; set; } = new List<CharacterLevel>();
+    public List<CharacterLevel> Levels { get; }
     [JsonPropertyName("health")]
-    public List<BaseCharacterHealth> Health { get; set; } = new List<BaseCharacterHealth>();
+    public List<BaseCharacterHealth> Health { get; }
 }
 
 [Serializable]
-public class Character
+public struct Character : ContentItem
 {
+    public Character(Guid id, string contentCode, string name, string description, BaseCharacterStats baseStats)
+    {
+        Id = id;
+        ContentCode = contentCode;
+        Name = name;
+        Description = description;
+        BaseStats = baseStats;
+    }
+
+    [JsonIgnore]
+    public Guid Id { get; }
+
     [JsonPropertyName("contentCode")]
-    public string ContentCode { get; set; } = string.Empty;
+    public string ContentCode { get; }
 
     [JsonPropertyName("name")]
-    public string Name { get; set; } = string.Empty;
+    public string Name { get; }
 
     [JsonPropertyName("description")]
-    public string Description { get; set; } = string.Empty;
+    public string Description { get; }
 
     [JsonPropertyName("baseStats")]
-    public BaseCharacterStats BaseStats { get; set; } = new BaseCharacterStats();
+    public BaseCharacterStats BaseStats { get; }
 
+    [JsonIgnore]
     public ContentSummary Summary
     {
         get
         {
-            return new ContentSummary()
-            {
-                ContentCode = ContentCode,
-                Name = Name,
-                Description = Description
-            };
+            return new ContentSummary(
+                ContentCode,
+                Name,
+                Description
+            );
         }
     }
 

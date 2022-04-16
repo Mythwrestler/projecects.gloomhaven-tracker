@@ -7,7 +7,6 @@ namespace GloomhavenTracker.Service.Services;
 public interface ContentService
 {
     public List<ContentSummary> GetContentSummary(CONTENT_TYPE kind, GAME_TYPE? gameCode);
-    public List<ScenarioSummary> GetScenarioSummary(GAME_TYPE gameCode);
     public Game GetGameDefaults(GAME_TYPE gameCode);
     public Character GetCharacterDefaults(GAME_TYPE gameCode, string contentCode);
     public Monster GetMonsterDefaults(GAME_TYPE gameCode, string contentCode);
@@ -30,12 +29,6 @@ public partial class ContentServiceImplementation : ContentService
     public List<ContentSummary> GetContentSummary(CONTENT_TYPE kind, GAME_TYPE? gameCode = null)
     {
         return repo.GetContentSummary(kind, gameCode);
-    }
-
-    public List<ScenarioSummary> GetScenarioSummary(GAME_TYPE gameCode)
-    {
-        //return _repo.GetScenarioSummary(gameCode);
-        return repo.GetScenarios(gameCode);
     }
 
     public Game GetGameDefaults(GAME_TYPE gameCode)

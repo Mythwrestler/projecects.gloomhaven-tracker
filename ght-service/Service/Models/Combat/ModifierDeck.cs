@@ -101,7 +101,8 @@ public class AttackModifierDeck
 
     public List<AttackModifier> GetFlippedCards()
     {
-        return _flippedCards.Select(k => _deck.GetValueOrDefault(k, new AttackModifier())).ToList();
+        throw new NotImplementedException();
+        // return _flippedCards.Select(k => _deck.GetValueOrDefault(k, new AttackModifier())).ToList();
     }
 
     public void AddNewCardsToRandomPostionsOfDeck(List<AttackModifier> newCards)
@@ -236,11 +237,11 @@ public class AttackModifierDeck
         updatedDeck.Keys.OrderBy(k => k).ToList().ForEach(k =>
         {
             var cardForAdd = updatedDeck.GetValueOrDefault(k);
-            if (cardForAdd != null)
-            {
-                deckForReturn.TryAdd(cardPos, cardForAdd);
-                cardPos++;
-            }
+            // if (cardForAdd != null)
+            // {
+            //     deckForReturn.TryAdd(cardPos, cardForAdd);
+            //     cardPos++;
+            // }
         });
 
         return deckForReturn;

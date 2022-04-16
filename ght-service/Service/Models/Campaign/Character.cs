@@ -9,10 +9,11 @@ public class Character
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;
-    public Models.Content.Character CharacterContent { get; set; } = new Content.Character();
+    public Models.Content.Character CharacterContent { get; set; }
     public int Experience { get; set; }
     public int Gold { get; set; }
     public int PerkPoints {get; set; }
+    
     // public List<string> Items {get;}
     // public List<string> AppliedPerks {get;}
 

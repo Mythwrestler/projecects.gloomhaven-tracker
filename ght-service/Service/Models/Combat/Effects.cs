@@ -20,12 +20,12 @@ public class Effects
 
     public List<Effect> ReduceEffectDurations(int roundCount = 1)
     {
-        effects.Where(a => a.Value.Duration > 0).Select(a => a.Value).ToList().ForEach(effect =>
-        {
-            effect.Duration -= roundCount;
-            if (effect.Duration < 0)
-                effects.Remove(effect.Type);
-        });
+        // effects.Where(a => a.Value.Duration > 0).Select(a => a.Value).ToList().ForEach(effect =>
+        // {
+        //     effect.Duration -= roundCount;
+        //     if (effect.Duration < 0)
+        //         effects.Remove(effect.Type);
+        // });
 
         return ActiveEffects;
 
@@ -36,15 +36,15 @@ public class Effects
         effectsToApply.ForEach(ne =>
         {
             var effectToUpdate = effects.GetValueOrDefault(ne.Type);
-            if (effectToUpdate != null)
-            {
-                effectToUpdate.Duration = ne.Duration;
-                effectToUpdate.Value = ne.Value;
-            }
-            else
-            {
-                effects.Add(ne.Type, ne);
-            }
+            // if (effectToUpdate != null)
+            // {
+            //     // effectToUpdate.Duration = ne.Duration;
+            //     // effectToUpdate.Value = ne.Value;
+            // }
+            // else
+            // {
+            //     effects.Add(ne.Type, ne);
+            // }
         });
 
         return ActiveEffects;
