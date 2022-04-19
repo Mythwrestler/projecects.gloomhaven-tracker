@@ -10,23 +10,34 @@ public class ContentMapperProfile : Profile
     public ContentMapperProfile()
     {
         #region Element Mapping
-        CreateMap<ELEMENT_DAO, ELEMENT>();
+        CreateMap<ELEMENT_DAO, ELEMENT>().ReverseMap();
         #endregion
 
         #region Effect Mapping
 
-        CreateMap<EFFECT_TYPE_DAO, EFFECT_TYPE>();
+        CreateMap<EFFECT_TYPE_DAO, EFFECT_TYPE>().ReverseMap();
 
         CreateMap<EffectDAO, Effect>()
             .ConvertUsing((src, dst, ctx) =>
             {
                 return new Effect(
+                    id: src.Id,
                     type: ctx.Mapper.Map<EFFECT_TYPE>(src.Type),
                     value: src.Value,
                     duration: src.Duration,
                     range: src.Range,
                     element: ctx.Mapper.Map<ELEMENT?>(src.Element)
                 );
+            });
+
+        CreateMap<Effect, EffectDAO>()
+            .ConvertUsing((src, dst, ctx) => new EffectDAO(){
+                Id = src.Id,
+                Type = ctx.Mapper.Map<EFFECT_TYPE_DAO>(src.Type),
+                Value = src.Value,
+                Duration = src.Duration,
+                Range = src.Range,
+                Element = ctx.Mapper.Map<ELEMENT_DAO?>(src.Element)
             });
 
         #endregion
@@ -53,7 +64,7 @@ public class ContentMapperProfile : Profile
 
         CreateMap<GameBaseAttackModifierDAO, AttackModifier>().ConvertUsing((src, dst, ctx) => ctx.Mapper.Map<AttackModifier>(src.AttackModifier));
 
-        CreateMap<GameDAO, Game>();
+        CreateMap<GameDAO, Game>().ReverseMap();
 
         #endregion
 
@@ -162,6 +173,21 @@ public class ContentMapperProfile : Profile
             objectives: ctx.Mapper.Map<List<Objective>>(src.Objectives),
             gameContentCode: src.Game.ContentCode
         ));
+
+        CreateMap<Scenario, ScenarioDAO>().ConvertUsing((src, dst, ctx) => {
+            ScenarioDAO scenarioDAO = new ScenarioDAO(){
+                Id = src.Id,
+                ContentCode = src.ContentCode,
+                Name = src.Name,
+                Description = src.Description,
+                ScenarioNumber = src.ScenarioNumber,
+                Goal = src.Goal,
+                CityMapLocation = src.CityMapLocation,
+                ScenarioBookPages = src.ScenarioBook,
+                SupplementalBookPages = src.SupplementalBook,
+            };
+            return scenarioDAO;
+        });
 
         #endregion
 

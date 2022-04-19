@@ -91,6 +91,7 @@ public partial class GloomhavenContext : DbContext
 
                 }
             });
+        auditEntries.ForEach(entry => AuditLog.Add(entry.ToAudit()));
     }
 
     private AuditEntry GenerateAuditEntry(EntityEntry changedEntity, DateTime dateTime)

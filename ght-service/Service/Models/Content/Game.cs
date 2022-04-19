@@ -13,13 +13,14 @@ public enum GAME_TYPE
 [Serializable]
 public struct Game : ContentItem
 {
-    public Game(Guid id, string contentCode, string name, string description, List<AttackModifier> baseModifierDeck)
+    public Game(Guid id, string contentCode, string name, string description, List<Scenario> scenarios, List<AttackModifier> baseModifierDeck)
     {
         Id = id;
         ContentCode = contentCode;
         Name = name;
         Description = description;
         BaseModifierDeck = baseModifierDeck;
+        Scenarios = scenarios;
         GameContentCode = contentCode;
     }
 
@@ -35,6 +36,10 @@ public struct Game : ContentItem
     [JsonPropertyName("description")]
     public string Description { get; }
 
+    [JsonPropertyName("scenarios")]
+    public List<Scenario> Scenarios { get; }
+
+    [JsonPropertyName("baseModifierDeck")]
     public List<AttackModifier> BaseModifierDeck { get; }
 
     [JsonPropertyName("game")]

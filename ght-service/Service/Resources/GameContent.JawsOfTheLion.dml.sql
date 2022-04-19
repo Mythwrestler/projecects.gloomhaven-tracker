@@ -1,3 +1,9 @@
+DELETE FROM public."AuditLog";
+
+DELETE FROM public."CampaignCharacter";
+DELETE FROM public."CampaignScenario";
+DELETE FROM public."CampaignCampaign";
+
 DELETE FROM public."ContentScenarioObjective";
 DELETE FROM public."ContentScenarioMonster";
 DELETE FROM public."ContentObjective";

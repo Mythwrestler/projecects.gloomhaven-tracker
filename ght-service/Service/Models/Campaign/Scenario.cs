@@ -5,106 +5,84 @@ using System.Text.Json.Serialization;
 
 namespace GloomhavenTracker.Service.Models.Campaign;
 
-public class Scenarios {
-    private Dictionary<string, Scenario> ScenarioDictionary;
+// public class Scenarios {
+//     private Dictionary<string, Scenario> ScenarioDictionary;
 
-    public Scenarios(List<ScenarioDO> scenarios) {
-        this.ScenarioDictionary = scenarios.ToDictionary(scn => scn.ContentCode, scn => new Scenario(scn));
-    }
+//     public Scenarios(List<ScenarioDO> scenarios) {
+//         this.ScenarioDictionary = scenarios.ToDictionary(scn => scn.ContentCode, scn => new Scenario(scn));
+//     }
     
-    public Scenarios(List<ScenarioDTO> scenarios) {
-        this.ScenarioDictionary = scenarios.ToDictionary(scn => scn.ContentCode, scn => new Scenario(scn));
-    }
+//     public Scenarios(List<ScenarioDTO> scenarios) {
+//         this.ScenarioDictionary = scenarios.ToDictionary(scn => scn.ContentCode, scn => new Scenario(scn));
+//     }
 
-    public Scenario AddScenario(Scenario newScenario)
-    {
-        if(ScenarioDictionary.ContainsKey(newScenario.ContentCode)) throw new ArgumentException("Scenario Already In Campaign");
-        ScenarioDictionary.Add(newScenario.ContentCode, newScenario);
-        return ScenarioDictionary[newScenario.ContentCode];
-    }
+//     public Scenario AddScenario(Scenario newScenario)
+//     {
+//         if(ScenarioDictionary.ContainsKey(newScenario.ContentCode)) throw new ArgumentException("Scenario Already In Campaign");
+//         ScenarioDictionary.Add(newScenario.ContentCode, newScenario);
+//         return ScenarioDictionary[newScenario.ContentCode];
+//     }
 
-    public Scenario UpdateScenario(Scenario updateScenario)
-    {
-        if(!ScenarioDictionary.ContainsKey(updateScenario.ContentCode)) throw new ArgumentException("Scenario Not In Campaign");
-        ScenarioDictionary[updateScenario.ContentCode] = updateScenario;
-        return ScenarioDictionary[updateScenario.ContentCode];
-    }
+//     public Scenario UpdateScenario(Scenario updateScenario)
+//     {
+//         if(!ScenarioDictionary.ContainsKey(updateScenario.ContentCode)) throw new ArgumentException("Scenario Not In Campaign");
+//         ScenarioDictionary[updateScenario.ContentCode] = updateScenario;
+//         return ScenarioDictionary[updateScenario.ContentCode];
+//     }
 
-    public List<ScenarioDTO> ToDTO()
-    {
-        return this.ScenarioDictionary.Select(kvp => kvp.Value.ToDTO()).ToList();
-    }
+//     public List<ScenarioDTO> ToDTO()
+//     {
+//         return this.ScenarioDictionary.Select(kvp => kvp.Value.ToDTO()).ToList();
+//     }
 
-    public List<ScenarioDO> ToDO()
-    {
-        return this.ScenarioDictionary.Select(kvp => kvp.Value.ToDO()).ToList();
-    }
-}
+//     public List<ScenarioDO> ToDO()
+//     {
+//         return this.ScenarioDictionary.Select(kvp => kvp.Value.ToDO()).ToList();
+//     }
+// }
 
 
 public class Scenario {
-    public string ContentCode {get;}
+    public Scenario(Guid id, Content.Scenario contentScenario, bool isClosed, bool isCompleted)
+    {
+        Id = id;
+        ContentScenario = contentScenario;
+        IsClosed = isClosed;
+        IsCompleted = isCompleted;
+    }
+    public Guid Id { get; }
+    public Content.Scenario ContentScenario { get; }
     public bool IsClosed {get;}
     public bool IsCompleted {get;}
-
-    public Scenario(ScenarioDTO scenario)
-    {
-        this.ContentCode = scenario.ContentCode;
-        this.IsClosed = scenario.IsClosed;
-        this.IsCompleted = scenario.IsCompleted;
-    }
-
-    public Scenario(ScenarioDO scenario)
-    {
-        this.ContentCode = scenario.ContentCode;
-        this.IsClosed = scenario.IsClosed;
-        this.IsCompleted = scenario.IsCompleted;
-    }
-
-    public ScenarioDTO ToDTO()
-    {
-        return new ScenarioDTO()
-        {
-            ContentCode = this.ContentCode,
-            IsClosed = this.IsClosed,
-            IsCompleted = this.IsCompleted,
-        };
-    }
-    public ScenarioDO ToDO()
-    {
-        return new ScenarioDO()
-        {
-            ContentCode = this.ContentCode,
-            IsClosed = this.IsClosed,
-            IsCompleted = this.IsCompleted,
-        };
-    }
-
 }
-
 
 [Serializable]
 public struct ScenarioDTO
 {
-    [JsonPropertyName("contentCode")]
-    public string ContentCode {get; set;}
+    public ScenarioDTO(string scenarioContentCode, int scenarioNumber, bool isClosed, bool isCompleted)
+    {
+        ScenarioContentCode = scenarioContentCode;
+        ScenarioNumber = scenarioNumber;
+        IsClosed = isClosed;
+        IsCompleted = isCompleted;
+    }
+
+    [JsonPropertyName("scenarioContentCode")]
+    public string ScenarioContentCode { get; }
+
+    [JsonPropertyName("scenarioNumber")]
+    public int ScenarioNumber { get; }
     
     [JsonPropertyName("isClosed")]
-    public bool IsClosed {get; set;}
+    public bool IsClosed { get; }
 
     [JsonPropertyName("isCompleted")]
-    public bool IsCompleted {get; set;}
+    public bool IsCompleted { get; }
 }
 
-[Serializable]
-public struct ScenarioDO
+public struct ScenarioUpdateRequestBody
 {
-    [JsonPropertyName("contentCode")]
-    public string ContentCode {get; set;}
-    
-    [JsonPropertyName("isClosed")]
-    public bool IsClosed {get; set;}
-
-    [JsonPropertyName("isCompleted")]
-    public bool IsCompleted {get; set;}
+    public string ScenarioContentCode { get; set; }
+    public bool? isClosed { get; set; }
+    public bool? isCompleted { get; set; }
 }

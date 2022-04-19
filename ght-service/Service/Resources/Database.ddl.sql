@@ -25,17 +25,17 @@
 
 
 
-DROP TABLE IF EXISTS public."Campaign";
+-- DROP TABLE IF EXISTS public."Campaign";
 
-CREATE TABLE public."Campaign" (
-	id bigint NOT NULL GENERATED ALWAYS AS IDENTITY,
-	campaignId uuid NOT NULL,
-	game varchar NOT NULL,
-	description varchar NOT NULL,
-	campaignJson jsonb NOT NULL
-);
+-- CREATE TABLE public."Campaign" (
+-- 	id bigint NOT NULL GENERATED ALWAYS AS IDENTITY,
+-- 	campaignId uuid NOT NULL,
+-- 	game varchar NOT NULL,
+-- 	description varchar NOT NULL,
+-- 	campaignJson jsonb NOT NULL
+-- );
 
-ALTER TABLE public."Campaign" ADD CONSTRAINT campaign_unique_identifier_campaignid UNIQUE (campaignId);
+-- ALTER TABLE public."Campaign" ADD CONSTRAINT campaign_unique_identifier_campaignid UNIQUE (campaignId);
 
 
 DROP TABLE IF EXISTS public."Combat";

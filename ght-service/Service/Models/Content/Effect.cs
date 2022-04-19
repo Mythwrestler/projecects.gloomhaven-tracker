@@ -82,14 +82,18 @@ public enum ELEMENT
 [Serializable]
 public struct Effect
 {
-    public Effect(EFFECT_TYPE type, int? value, int? duration, int? range, ELEMENT? element)
+    public Effect(Guid id, EFFECT_TYPE type, int? value, int? duration, int? range, ELEMENT? element)
     {
+        Id = id;
         Type = type;
         Value = value;
         Duration = duration;
         Range = range;
         Element = element;
     }
+
+    [JsonIgnore]
+    public Guid Id { get; }
 
     [JsonPropertyName("type")]
     public EFFECT_TYPE Type { get; }

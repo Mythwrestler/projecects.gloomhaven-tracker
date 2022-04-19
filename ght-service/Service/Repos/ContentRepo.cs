@@ -117,6 +117,7 @@ public class ContentRepoImplementation : ContentRepo
         GameDAO? game = context.ContentGame
             .Where(game => game.ContentCode == gameString)
             .Include(game => game.BaseModifierDeck)
+            .Include(game => game.Scenarios)
             .FirstOrDefault();
         if(game is null) throw new KeyNotFoundException("Game Content Code Not Found");
         return mapper.Map<Game>(game);

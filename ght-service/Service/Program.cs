@@ -157,7 +157,7 @@ builder.Services.AddScoped<ContentRepo, ContentRepoImplementation>();
 
 //  Register Campaign DI
 builder.Services.AddScoped<CampaignService, CampaignServiceImplementation>();
-builder.Services.AddScoped<CampaignEFRepo, CampaignEFRepoImplementation>();
+builder.Services.AddScoped<CampaignRepo, CampaignRepoImplementation>();
 // builder.Services.AddScoped<CampaignRepo, CampaignRepoImplementation>(factory => {
 //     return new CampaignRepoImplementation(dbConnectionString, factory.GetRequiredService<ILogger<CampaignRepoImplementation>>());
 // });
@@ -213,7 +213,7 @@ if (app.Environment.IsDevelopment())
 app.UseCors((config) =>
 {
     config
-        .WithMethods("POST", "PUT", "GET")
+        .WithMethods("POST", "PUT", "GET", "PATCH")
         .AllowAnyHeader()
         .AllowCredentials()
         .WithOrigins(allowedCORSOrigins);
