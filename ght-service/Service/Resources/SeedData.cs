@@ -22,7 +22,7 @@ namespace GloomhavenTracker.Service.SeedData
             try
             {
                 _connection.Open();
-                LoadDatabaseStructure(_connection);
+                ClearDatabase(_connection);
                 LoadContent(_connection);
                 _connection.Close();
             }
@@ -37,10 +37,10 @@ namespace GloomhavenTracker.Service.SeedData
 
         }
 
-        private static void LoadDatabaseStructure(NpgsqlConnection connection)
+        private static void ClearDatabase(NpgsqlConnection connection)
         {
             var workingDirectory = Directory.GetCurrentDirectory();
-            var sqlFileString = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "Database.ddl.sql");
+            var sqlFileString = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "DML.ClearDatabase.sql");
             var sqlString = File.OpenText(sqlFileString).ReadToEnd();
             var command = new NpgsqlCommand(sqlString, connection);
             command.ExecuteNonQuery();
@@ -49,7 +49,7 @@ namespace GloomhavenTracker.Service.SeedData
         private static void LoadContent(NpgsqlConnection connection)
         {
             var workingDirectory = Directory.GetCurrentDirectory();
-            var jsonFileString = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "GameContent.JawsOfTheLion.dml.sql");
+            var jsonFileString = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "DML.AddContent.JawsOfTheLion.sql");
             var sqlString = File.OpenText(jsonFileString).ReadToEnd();
             var command = new NpgsqlCommand(sqlString, connection);
             command.ExecuteNonQuery();

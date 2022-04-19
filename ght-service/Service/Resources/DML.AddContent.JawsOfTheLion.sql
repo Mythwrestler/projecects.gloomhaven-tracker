@@ -1,31 +1,3 @@
-DELETE FROM public."AuditLog";
-
-DELETE FROM public."CampaignCharacter";
-DELETE FROM public."CampaignScenario";
-DELETE FROM public."CampaignCampaign";
-
-DELETE FROM public."ContentScenarioObjective";
-DELETE FROM public."ContentScenarioMonster";
-DELETE FROM public."ContentObjective";
-DELETE FROM public."ContentScenario";
-DELETE FROM public."ContentMonsterBaseStatImmunity";
-DELETE FROM public."ContentMonsterAttackEffect";
-DELETE FROM public."ContentMonsterDefenseEffect";
-DELETE FROM public."ContentMonsterDeathEffect";
-DELETE FROM public."ContentMonsterStatSet";
-DELETE FROM public."ContentMonster";
-DELETE FROM public."ContentPerkAction";
-DELETE FROM public."ContentPerk";
-DELETE FROM public."ContentCharacterBaseStat";
-DELETE FROM public."ContentCharacter";
-DELETE FROM public."ContentGameBaseAttackModifiers";
-DELETE FROM public."ContentAttackModifierEffect";
-DELETE FROM public."ContentAttackModifier";
-DELETE FROM public."ContentEffect";
-DELETE FROM public."ContentItem";
-DELETE FROM public."ContentGame";
-
-
 INSERT INTO public."ContentGame" ("Id","ContentCode","Name","Description") VALUES
  ('153dad18-1725-4a91-b337-521c52aaccd1', 'jawsOfTheLion', 'Jaws of The Lion', 'Game: Jaws of The Lion') --Game Jaws of the lion
 ;
