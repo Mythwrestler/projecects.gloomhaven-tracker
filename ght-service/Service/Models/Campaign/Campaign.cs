@@ -9,7 +9,7 @@ namespace GloomhavenTracker.Service.Models.Campaign;
 public class Campaign
 {
 
-    public Campaign(Guid id, string name, string description, Game game, Dictionary<Guid, Scenario> scenarios, Dictionary<Guid, Character> party)
+    public Campaign(Guid id, string name, string description, Game game, Dictionary<string, Scenario> scenarios, Dictionary<string, Character> party)
     {
         Id = id;
         Name = name;
@@ -23,8 +23,8 @@ public class Campaign
     public string Name { get; }
     public string Description { get; }
     public Game Game { get; }
-    public Dictionary<Guid, Scenario> Scenarios { get; }
-    public Dictionary<Guid, Character> Party { get; }
+    public Dictionary<string, Scenario> Scenarios { get; }
+    public Dictionary<string, Character> Party { get; }
 }
 
 

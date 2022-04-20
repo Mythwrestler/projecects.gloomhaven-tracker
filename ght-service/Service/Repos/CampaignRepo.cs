@@ -17,6 +17,8 @@ public interface CampaignRepo
     public Campaign SaveCampaign(Campaign campaign);
     public Campaign CreateCharacterForCampaign(Guid campaignId, Character character);
     public Campaign UpdateCharacterForCampaign(Guid campaignId, Character character);
+    public Campaign CreateScenarioForCampaign(Guid campaignId, Scenario scenario);
+    public Campaign UpdateScenarioForCampaign(Guid campaignId, Scenario scenario);
 }
 
 public class CampaignRepoImplementation : CampaignRepo
@@ -107,6 +109,37 @@ public class CampaignRepoImplementation : CampaignRepo
         if(characterToUpdate.PerkPoints != character.PerkPoints)
             characterToUpdate.PerkPoints = character.PerkPoints;
         
+        context.SaveChanges();
+
+        return GetCampaign(campaignId);
+    }
+
+    public Campaign CreateScenarioForCampaign(Guid campaignId, Scenario scenario)
+    {
+        CampaignDAO campaign = GetCampaignDAO(campaignId);
+
+        ScenarioDAO scenarioForUpdate = mapper.Map<ScenarioDAO>(scenario);
+        scenarioForUpdate.CampaignId = campaignId;
+
+        campaign.Scenarios.Add(scenarioForUpdate);
+
+        context.CampaignScenario.Add(scenarioForUpdate);
+
+        context.SaveChanges();
+
+        return GetCampaign(campaignId);
+    }
+
+    public Campaign UpdateScenarioForCampaign(Guid campaignId, Scenario scenario)
+    {
+        ScenarioDAO scenarioToUpdate = context.CampaignScenario.Where(scn => scn.Id == scenario.Id).First();
+
+        if(scenarioToUpdate.IsClosed != scenario.IsClosed)
+            scenarioToUpdate.IsClosed = scenario.IsClosed;
+
+        if(scenarioToUpdate.IsCompleted != scenario.IsCompleted)
+            scenarioToUpdate.IsCompleted = scenario.IsCompleted;
+
         context.SaveChanges();
 
         return GetCampaign(campaignId);

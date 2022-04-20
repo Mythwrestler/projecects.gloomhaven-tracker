@@ -15,8 +15,11 @@ public interface CampaignService
     public CampaignDTO NewCampaign(NewCampaignRequestBody requestBody);
     public CampaignDTO GetCampaign(Guid campaignId);
     public CharacterDTO AddCharacterToCampaign(Guid campaignId, CharacterRequestBody newCharacterRequest);
-    public CharacterDTO GetCharacterFromCampaign(Guid campaignId, Guid characterId);
-    public CharacterDTO UpdateCharacterInCampaign(Guid campaignId, Guid characterId, CharacterRequestBody updateCharacterRequest);
+    public CharacterDTO GetCharacterFromCampaign(Guid campaignId, string characterContentCode);
+    public CharacterDTO UpdateCharacterInCampaign(Guid campaignId, string characterContentCode, CharacterRequestBody updateCharacterRequest);
+    public ScenarioDTO AddScenarioToCampaign(Guid campaignId, ScenarioRequestBody newScenarioRequest);
+    public ScenarioDTO GetScenarioFromCampaign(Guid campaignId, string scenarioContentCode);
+    public ScenarioDTO UpdateScenarioInCampaign(Guid campaignId, string scenarioContentCode, ScenarioRequestBody updateScenarioRequest);
 }
 
 public class CampaignServiceImplementation : CampaignService
@@ -58,25 +61,14 @@ public class CampaignServiceImplementation : CampaignService
             GameUtils.GameType(requestBody.GameContentCode)
         );
 
-        Dictionary<Guid, Models.Campaign.Scenario> scenarios = new Dictionary<Guid, Models.Campaign.Scenario>();
-        game.Scenarios.ForEach(contentScenario => {
-            Models.Campaign.Scenario scenario = new Models.Campaign.Scenario(
-                Guid.NewGuid(),
-                contentScenario,
-                false,
-                false
-            );
-            scenarios[scenario.Id] = scenario;
-        });
-
         var campaign = new Campaign
         (
             Guid.NewGuid(),
             requestBody.Name,
             requestBody.Description,
             game,
-            scenarios,
-            new Dictionary<Guid, Models.Campaign.Character>()
+            new Dictionary<string, Models.Campaign.Scenario>(),
+            new Dictionary<string, Models.Campaign.Character>()
         );
 
         var savedCampaign = repo.SaveCampaign(campaign);
@@ -88,26 +80,26 @@ public class CampaignServiceImplementation : CampaignService
     public CharacterDTO AddCharacterToCampaign(Guid campaignId, CharacterRequestBody newCharacterRequest)
     {
 
-        if(newCharacterRequest.CharacterContentCode is null)
+        if (newCharacterRequest.CharacterContentCode is null)
             throw new ArgumentException("Character Content Code is in null");
 
-        if(newCharacterRequest.Name is null)
+        if (newCharacterRequest.Name is null)
             throw new ArgumentException("Character Name is in null");
 
-        if(newCharacterRequest.Experience is null)
+        if (newCharacterRequest.Experience is null)
             throw new ArgumentException("Character Experience is in null");
 
-        if(newCharacterRequest.Gold is null)
+        if (newCharacterRequest.Gold is null)
             throw new ArgumentException("Character Gold is in null");
 
-        if(newCharacterRequest.PerkPoints is null)
+        if (newCharacterRequest.PerkPoints is null)
             throw new ArgumentException("Character Perk Points is in null");
 
         var campaign = GetCampaignById(campaignId);
 
-        if(campaign.Party.Select(kvp => kvp.Value.CharacterContent.ContentCode).ToList().Contains(newCharacterRequest.CharacterContentCode))
+        if (campaign.Party.ContainsKey(newCharacterRequest.CharacterContentCode))
             throw new ArgumentException("Character Content Code is in use");
-        
+
         var characterContent = contentService.GetCharacterDefaults(GameUtils.GameType(campaign.Game.ContentCode), newCharacterRequest.CharacterContentCode);
 
         var character = new Models.Campaign.Character(
@@ -128,34 +120,34 @@ public class CampaignServiceImplementation : CampaignService
 
         return mapper.Map<CharacterDTO>(character);
     }
-    
-    public CharacterDTO GetCharacterFromCampaign(Guid campaignId, Guid characterId)
+
+    public CharacterDTO GetCharacterFromCampaign(Guid campaignId, string characterContentCode)
     {
         var campaign = GetCampaignById(campaignId);
-        
-        var character = campaign.Party.GetValueOrDefault(characterId);
 
-        if(character is null) 
-            throw new ArgumentException("Character Id was not found");
+        var character = campaign.Party.GetValueOrDefault(characterContentCode);
+
+        if (character is null)
+            throw new ArgumentException("Character content was not found");
 
         return mapper.Map<CharacterDTO>(character);
     }
 
-    public CharacterDTO UpdateCharacterInCampaign(Guid campaignId, Guid characterId, CharacterRequestBody updateCharacterRequest)
+    public CharacterDTO UpdateCharacterInCampaign(Guid campaignId, string characterContentCode, CharacterRequestBody updateCharacterRequest)
     {
 
-        if(updateCharacterRequest.CharacterContentCode is not null)
+        if (updateCharacterRequest.CharacterContentCode is not null)
             throw new ArgumentException("Character Content Code cannot be updated");
 
-        if(updateCharacterRequest.Name is not null)
+        if (updateCharacterRequest.Name is not null)
             throw new ArgumentException("Character Name cannot be updated");
-            
+
         var campaign = GetCampaignById(campaignId);
 
-        var character = campaign.Party.GetValueOrDefault(characterId);
+        var character = campaign.Party.GetValueOrDefault(characterContentCode);
 
-        if(character is null) 
-            throw new ArgumentException("Character Id was not found");
+        if (character is null)
+            throw new ArgumentException("Character Content was not found");
 
         character.Experience = updateCharacterRequest.Experience ?? character.Experience;
         character.Gold = updateCharacterRequest.Gold ?? character.Gold;
@@ -165,78 +157,83 @@ public class CampaignServiceImplementation : CampaignService
 
         var savedCharacter = savedCampaign.Party
             .Select(kvp => kvp.Value)
-            .Where(chr => chr.Id == characterId)
+            .Where(chr => chr.Id == character.Id)
             .First();
 
         return mapper.Map<CharacterDTO>(character);
     }
 
+    public ScenarioDTO AddScenarioToCampaign(Guid campaignId, ScenarioRequestBody newScenarioRequest)
+    {
 
-    // public void UpdateCampaign(Guid campaignId, CampaignDTO campaign)
-    // {
-    //     throw new NotImplementedException();
-    //     // ValidateCampaign(campaignId, campaign);
-    //     // ValidateCampaignCharacters(campaign);
-    //     // CampaignDO updatedCampaignDO = new CampaignDO()
-    //     // {
-    //     //     Game = GameUtils.GameTypeString(GameUtils.GameType(campaign.Game)),
-    //     //     Description = campaign.Description,
-    //     //     Id = campaign.Id,
-    //     //     Scenarios = campaign.Scenarios.Select(s => new ScenarioDO() {
-    //     //                 ContentCode = s.ContentCode,
-    //     //                 IsClosed = s.IsClosed,
-    //     //                 IsCompleted = s.IsCompleted,
-    //     //             }).ToList()
-    //     //     ,
-    //     //     Party = campaign.Party.Select(c => new CharacterDO() {
-    //     //                 Id = c.Id ?? Guid.NewGuid().ToString(),
-    //     //                 CharacterContentCode = c.CharacterContentCode,
-    //     //                 AppliedPerks = c.AppliedPerks,
-    //     //                 Experience = c.Experience,
-    //     //                 Gold = c.Gold,
-    //     //                 Items = c.Items,
-    //     //                 Name = c.Name,
-    //     //                 PerkPoints = c.PerkPoints
-    //     //             }).ToList()
-    //     // };
+        if (newScenarioRequest.ScenarioContentCode is null)
+            throw new ArgumentException("Scenario Content Code is in null");
 
-    //     // var updatedCampaign = new Campaign(updatedCampaignDO);
-    //     // campaigns[campaignId] = updatedCampaign;
+        if (newScenarioRequest.isClosed is null)
+            throw new ArgumentException("Scenario isClosed is in null");
 
-    //     // repo.UpdateCampaign(updatedCampaignDO);
+        if (newScenarioRequest.isCompleted is null)
+            throw new ArgumentException("Scenario isCompleted is in null");
 
-    // }
+        var campaign = GetCampaignById(campaignId);
 
-    // public void ValidateCampaign(Guid campaignId, CampaignDTO campaign)
-    // {
-    //     throw new NotImplementedException();
-    //     // if(campaign.Id != campaignId.ToString()) throw new ArgumentException("Campaign Id Mismatch");
-    //     // var campaignToReplace = GetCampaignById(campaignId);
-    // }
+        if (campaign.Scenarios.ContainsKey(newScenarioRequest.ScenarioContentCode))
+            throw new ArgumentException("Scenario Content Code is in use");
 
-    // public void ValidateCampaignCharacters(CampaignDTO campaign)
-    // {
-    //     throw new NotImplementedException();
-    //     // var gameCode = GameUtils.GameType(campaign.Game);
-    //     // campaign.Party.ForEach(character => {
-    //     //     if(!contentService.IsValidCharacterCode(gameCode, character.CharacterContentCode))
-    //     //         throw new ArgumentException("Character type is not valid for game");
-    //     // });
+        var scenarioContent = contentService.GetScenarioDefaults(GameUtils.GameType(campaign.Game.ContentCode), newScenarioRequest.ScenarioContentCode);
 
-    //     // if(campaign.Party.Select(c => c.CharacterContentCode).Distinct().Count() != campaign.Party.Count())
-    //     //     throw new ArgumentException("Character appears more than once in a campaign");
-    // }
+        var scenario = new Models.Campaign.Scenario(
+            Guid.NewGuid(),
+            scenarioContent,
+            newScenarioRequest.isClosed ?? false,
+            newScenarioRequest.isCompleted ?? false
+        );
 
-    // public void ValidateCampaignScenarios(CampaignDTO campaign)
-    // {
-    // // throw new NotImplementedException();
-    // // var gameCode = GameUtils.GameType(campaign.Game);
-    // // campaign.Scenarios.ForEach(scenario => {
-    // //     if(!contentService.IsValidScenarioCode(gameCode, scenario.ContentCode))
-    // //         throw new ArgumentException("Scenario type is not valid for game");
-    // // });
+        var savedCampaign = repo.CreateScenarioForCampaign(campaignId, scenario);
 
-    // // if(campaign.Scenarios.Select(c => c.ContentCode).Distinct().Count() != campaign.Scenarios.Count())
-    // //     throw new ArgumentException("Scenario appears more than once in a campaign");
-    // }
+        var savedScenario = savedCampaign.Scenarios
+            .Select(kvp => kvp.Value)
+            .Where(scn => scn.Id == scenario.Id)
+            .First();
+
+        return mapper.Map<ScenarioDTO>(savedScenario);
+    }
+
+    public ScenarioDTO GetScenarioFromCampaign(Guid campaignId, string scenarioContentCode)
+    {
+        var campaign = GetCampaignById(campaignId);
+
+        var scenario = campaign.Scenarios.GetValueOrDefault(scenarioContentCode);
+
+        if (scenario is null)
+            throw new ArgumentException("Scenario content code was not found");
+
+        return mapper.Map<ScenarioDTO>(scenario);
+    }
+
+    public ScenarioDTO UpdateScenarioInCampaign(Guid campaignId, string scenarioContentCode, ScenarioRequestBody updateScenarioRequest)
+    {
+
+        if (updateScenarioRequest.ScenarioContentCode is not null)
+            throw new ArgumentException("Scenario Content Code cannot be updated");
+
+        var campaign = GetCampaignById(campaignId);
+
+        var scenario = campaign.Scenarios.GetValueOrDefault(scenarioContentCode);
+
+        if (scenario is null)
+            throw new ArgumentException("Character Content was not found");
+
+        scenario.IsClosed = updateScenarioRequest.isClosed ?? scenario.IsClosed;
+        scenario.IsCompleted = updateScenarioRequest.isCompleted ?? scenario.IsCompleted;
+
+        var savedCampaign = repo.UpdateScenarioForCampaign(campaignId, scenario);
+
+        var savedScenario = savedCampaign.Scenarios
+            .Select(kvp => kvp.Value)
+            .Where(chr => chr.Id == scenario.Id)
+            .First();
+
+        return mapper.Map<ScenarioDTO>(savedScenario);
+    }
 }

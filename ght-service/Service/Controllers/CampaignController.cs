@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using GloomhavenTracker.Service.Models.Campaign;
 using GloomhavenTracker.Service.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -86,172 +85,84 @@ public class CampaignController : Controller
         }
     }
 
-    [Route("{campaignId}/characters/{characterId}")]
+    [Route("{campaignId}/characters/{characterContentCode}")]
     [HttpGet]
-    public IActionResult GetCharacter(Guid campaignId, Guid characterId)
+    public IActionResult GetCharacter(Guid campaignId, string characterContentCode)
     {
         try
         {
-            var character = service.GetCharacterFromCampaign(campaignId, characterId);
+            var character = service.GetCharacterFromCampaign(campaignId, characterContentCode);
             return Ok(character);
         }
         catch (Exception ex)
         {
-            logger.LogError(new EventId(), ex, $"Failed to get character {characterId}");
+            logger.LogError(new EventId(), ex, $"Failed to get character {characterContentCode}");
             return UnprocessableEntity("Issue processing request");
         }
     }
     
-    [Route("{campaignId}/characters/{characterId}")]
+    [Route("{campaignId}/characters/{characterContentCode}")]
     [HttpPatch]
     [Consumes("application/json")]
-    public IActionResult UpdateCharacterInCampaign(Guid campaignId, Guid characterId, [FromBody] CharacterRequestBody newCharacterRequest)
+    public IActionResult UpdateCharacterInCampaign(Guid campaignId, string characterContentCode, [FromBody] CharacterRequestBody updateCharacterRequest)
     {
         try
         {
-            var character = service.UpdateCharacterInCampaign(campaignId, characterId, newCharacterRequest);
+            var character = service.UpdateCharacterInCampaign(campaignId, characterContentCode, updateCharacterRequest);
             return Ok(character);
         }
         catch (Exception ex)
         {
-            logger.LogError(new EventId(), ex, $"Failed to update character {characterId} in {campaignId}");
+            logger.LogError(new EventId(), ex, $"Failed to update character {characterContentCode} in {campaignId}");
             return UnprocessableEntity("Issue processing request");
         }
     }
 
+    [Route("{campaignId}/scenarios/")]
+    [HttpPut]
+    public IActionResult AddScenarioToCampaign(Guid campaignId, string scenarioContentCode, [FromBody] ScenarioRequestBody newScenarioRequest)
+    {
+        try
+        {
+            var scenario = service.AddScenarioToCampaign(campaignId, newScenarioRequest);
+            return Ok(scenario);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(new EventId(), ex, $"Failed to update scenario {scenarioContentCode} in {campaignId}");
+            return UnprocessableEntity("Issue processing request");
+        }
+    }
 
+    [Route("{campaignId}/scenarios/{scenarioContentCode}")]
+    [HttpGet]
+    public IActionResult GetScenario(Guid campaignId, string scenarioContentCode)
+    {
+        try
+        {
+            var scenario = service.GetScenarioFromCampaign(campaignId, scenarioContentCode);
+            return Ok(scenario);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(new EventId(), ex, $"Failed to get scenario {scenarioContentCode} in {campaignId}");
+            return UnprocessableEntity("Issue processing request");
+        }
+    }
 
-    // [Route("{campaignId}")]
-    // [HttpPut]
-    // public IActionResult UpdateCampaign(Guid campaignId, [FromBody] CampaignDTO campaign)
-    // {
-    //     try
-    //     {
-    //         service.UpdateCampaign(campaignId, campaign);
-    //         return new NoContentResult();
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         logger.LogError(new EventId(), ex, "Failed to update Campaign");
-    //         return UnprocessableEntity("Issue processing request");
-    //     }
-    // }
-
-
-    // [Route("{campaignId}/characters")]
-    // [HttpPost]
-    // public IActionResult AddCharacterToCampaign(Guid campaignId, [FromBody] CharacterDTO characterForAdd)
-    // {
-    //     try
-    //     {
-    //         var characterForReturn = service.AddCharacterToCampaign(campaignId, characterForAdd);
-    //         return Ok(characterForReturn);
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         logger.LogError(new EventId(), ex, "Failed to add a character to the campaign");
-    //         return UnprocessableEntity("Issue processing request");
-    //     }
-    // }
-
-    // [Route("{campaignId}/characters/{characterCode}")]
-    // [HttpPut]
-    // public IActionResult UpdateCharacterInCampaign(Guid campaignId, string characterCode, [FromBody] CharacterDTO characterForAdd)
-    // {
-    //     try
-    //     {
-    //         var characterForReturn = service.UpdateCharacter(campaignId, characterForAdd);
-    //         return Ok(characterForReturn);
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         logger.LogError(new EventId(), ex, "Failed to update a character in the campaign");
-    //         return UnprocessableEntity("Issue processing request");
-    //     }
-    // }
-    
-
-    
-    // [Route("{campaignId}/characters")]
-    // [HttpGet]
-    // public IActionResult GetCharacterForCampaign(Guid campaignId, string characterCode)
-    // {
-    //     try
-    //     {
-    //         var characterForReturn = service.GetCharacterForCampaign(campaignId, characterCode);
-    //         return Ok(characterForReturn);
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         logger.LogError(new EventId(), ex, "Failed to get character for the campaign");
-    //         return UnprocessableEntity("Issue processing request");
-    //     }
-    // }
-
-
-    // [Route("{campaignId}/characters")]
-    // [HttpGet]
-    // public IActionResult GetCharactersForCampaign(Guid campaignId)
-    // {
-    //     try
-    //     {
-    //         var charactersForReturn = service.GetCharactersForCampaign(campaignId);
-    //         return Ok(charactersForReturn);
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         logger.LogError(new EventId(), ex, "Failed to get characters for the campaign");
-    //         return UnprocessableEntity("Issue processing request");
-    //     }
-    // }
-
-
-    // [Route("{campaignId}/scenarios")]
-    // [HttpPut]
-    // public IActionResult AddScenarioToCampaign(Guid campaignId, [FromBody] ScenarioDTO scenarioForAdd)
-    // {
-    //     try
-    //     {
-    //         var scenarioForReturn = service.AddScenarioToCampaign(campaignId, scenarioForAdd);
-    //         return Ok(scenarioForReturn);
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         logger.LogError(new EventId(), ex, "Failed to add scenario to the campaign");
-    //         return UnprocessableEntity("Issue processing request");
-    //     }
-    // }
-    
-    // [Route("{campaignId}/scenarios/{scenarioCode}")]
-    // [HttpPut]
-    // public IActionResult UpdateScenarioInCampaign(Guid campaignId, string scenarioCode, [FromBody] ScenarioDTO scenarioForUpdate)
-    // {
-    //     try
-    //     {
-    //         if(scenarioCode != scenarioForUpdate.ContentCode) throw new ArgumentException("Content Code Mismatch between request and body.");
-    //         var scenarioForReturn = service.UpdateScenarioInCampaign(campaignId, scenarioForUpdate);
-    //         return Ok(scenarioForReturn);
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         logger.LogError(new EventId(), ex, "Failed to add scenario to the campaign");
-    //         return UnprocessableEntity("Issue processing request");
-    //     }
-    // }
-
-    // [Route("{campaignId}/scenarios")]
-    // [HttpGet]
-    // public IActionResult GetScenariosForCampaign(Guid campaignId)
-    // {
-        
-    //     try
-    //     {
-    //         throw new NotImplementedException();
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         logger.LogError(new EventId(), ex, "Failed to get scenarios for the campaign");
-    //         return UnprocessableEntity("Issue processing request");
-    //     }
-    // }
+    [Route("{campaignId}/scenarios/{scenarioContentCode}")]
+    [HttpPatch]
+    public IActionResult UpdateScenario(Guid campaignId, string scenarioContentCode, [FromBody] ScenarioRequestBody scenarioUpdateRequest)
+    {
+        try
+        {
+            var scenario = service.UpdateScenarioInCampaign(campaignId, scenarioContentCode, scenarioUpdateRequest);
+            return Ok(scenario);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(new EventId(), ex, $"Failed to update scenario {scenarioContentCode} in {campaignId}");
+            return UnprocessableEntity("Issue processing request");
+        }
+    }
 }

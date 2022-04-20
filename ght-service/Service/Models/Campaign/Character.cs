@@ -28,9 +28,8 @@ public class Character
 [Serializable]
 public struct CharacterDTO
 {
-    public CharacterDTO(Guid id, string name, string characterContentCode, int experience, int gold, List<string> items, int perkPoints)
+    public CharacterDTO(string name, string characterContentCode, int experience, int gold, List<string> items, int perkPoints)
     {
-        Id = id;
         Name = name;
         CharacterContentCode = characterContentCode;
         Experience = experience;
@@ -38,9 +37,6 @@ public struct CharacterDTO
         Items = items;
         PerkPoints = perkPoints;
     }
-
-    [JsonPropertyName("id")]
-    public Guid Id { get; }
 
     [JsonPropertyName("name")]
     public string Name { get; }
@@ -65,16 +61,12 @@ public struct CharacterDTO
 [Serializable]
 public struct CharacterSummary
 {
-    public CharacterSummary(Guid id, string name, string characterContentCode, int level)
+    public CharacterSummary(string name, string characterContentCode, int level)
     {
-        Id = id;
         Name = name;
         CharacterContentCode = characterContentCode;
         Level = level;
     }
-
-    [JsonPropertyName("id")]
-    public Guid Id { get; }
 
     [JsonPropertyName("name")]
     public string Name { get; }

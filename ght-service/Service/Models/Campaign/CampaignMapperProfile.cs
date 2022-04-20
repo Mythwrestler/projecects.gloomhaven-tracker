@@ -14,6 +14,12 @@ public class CampaignMapperProfile : Profile
 {
     public CampaignMapperProfile()
     {
+        CreateMap<CampaignScenario, ScenarioDAO>().ConvertUsing((src, dst, ctx) => new ScenarioDAO(){
+            Id = src.Id,
+            ScenarioContentId = src.ContentScenario.Id,
+            IsClosed = src.IsClosed,
+            IsCompleted = src.IsCompleted
+        });
 
         CreateMap<ScenarioDAO, CampaignScenario>().ConvertUsing((src, dst, ctx) => new CampaignScenario(
             id: src.Id,
@@ -48,14 +54,12 @@ public class CampaignMapperProfile : Profile
         ));
 
         CreateMap<CampaignCharacter, CharacterSummary>().ConvertUsing((src, dst, ctx) => new CharacterSummary(
-            id: src.Id,
             name: src.Name,
             characterContentCode: src.CharacterContent.ContentCode,
             level: GameUtils.GetPlayerLevel(src.CharacterContent, src.Experience)
         ));
 
         CreateMap<CampaignCharacter, CharacterDTO>().ConvertUsing((src, dst, ctx) => new CharacterDTO(
-            id: src.Id,
             name: src.Name,
             characterContentCode: src.CharacterContent.ContentCode,
             experience: src.Experience,
@@ -103,13 +107,13 @@ public class CampaignMapperProfile : Profile
 
         CreateMap<CampaignDAO, Campaign>().ConvertUsing((src, dst, ctx) => {
 
-            Dictionary<Guid, CampaignScenario> scenarios = src.Scenarios.ToDictionary(
-                scn => scn.Id,
+            Dictionary<string, CampaignScenario> scenarios = src.Scenarios.ToDictionary(
+                scn => scn.ScenarioContent?.ContentCode ?? "",
                 scn => ctx.Mapper.Map<CampaignScenario>(scn)
             );
 
-            Dictionary<Guid, CampaignCharacter> party = src.Party.ToDictionary(
-                chr => chr.Id,
+            Dictionary<string, CampaignCharacter> party = src.Party.ToDictionary(
+                chr => chr.CharacterContent?.ContentCode ?? "",
                 chr => ctx.Mapper.Map<CampaignCharacter>(chr)
             );
 
