@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using GloomhavenTracker.Database;
 using GloomhavenTracker.Database.Models;
+using GloomhavenTracker.Service.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 
@@ -17,8 +18,7 @@ namespace GloomhavenTracker.Service.Repos;
 
 public interface UserRepo
 {
-    public Guid GetUserId();
-    public string GetUserName();
+    public User GetUser();
 }
 
 public class UserRepoImplementation : UserRepo
@@ -27,8 +27,7 @@ public class UserRepoImplementation : UserRepo
     private readonly IMapper mapper;
     private readonly string baseAuthURL;
     private readonly IHttpContextAccessor httpContextAccessor;
-
-    private UserIdentity? user;
+    private UserDAO? userDAO;
 
     private HttpContext httpContext
     {
@@ -47,7 +46,14 @@ public class UserRepoImplementation : UserRepo
         this.httpContextAccessor = httpContextAccessor;
     }
 
-    private void GetUser()
+    public User GetUser()
+    {
+        if(userDAO is null) GetUserDAO();
+        return mapper.Map<User>(userDAO);
+    }
+
+
+    private void GetUserDAO()
     {
         UserIdentity? userIdentity = null;
         using(var client = new HttpClient())
@@ -74,32 +80,20 @@ public class UserRepoImplementation : UserRepo
         if(userDAO is null) {
             userDAO = new UserDAO()
             {
-                UserId = userIdentity.UserId,
+                UserId = userIdentity.UserId
             };
+            dbContext.Add(userDAO);
         }
+        userDAO.UserName = userIdentity.UserName;
+        userDAO.FirstName = userIdentity.FirstName;
+        userDAO.LastName = userIdentity.LastName;
+        userDAO.Email = userIdentity.Email;
 
-
-
-
-    }
-
-    public Guid GetUserId()
-    {
-        if(user is null) GetUser();
-
-        if(user is null) throw new ArgumentException("Could Not Retrieve user Information");
+        dbContext.SaveChanges();
         
-        return user.UserId;
+        this.userDAO = userDAO;
     }
 
-    public string GetUserName()
-    {
-        if(user is null) GetUser();
-
-        if(user is null) throw new ArgumentException("Could Not Retrieve user Information");
-        
-        return user.UserName;
-    }
 
     [Serializable]
     private class UserIdentity
@@ -107,9 +101,16 @@ public class UserRepoImplementation : UserRepo
         [JsonPropertyName("sub")]
         public Guid UserId { get; set; }
 
-        [JsonPropertyName("preferred_username")]
+        [JsonPropertyName("userName")]
         public string UserName { get; set; } = string.Empty;
+
+        [JsonPropertyName("firstName")]
+        public string FirstName { get; set; } = string.Empty;
+
+        [JsonPropertyName("lastName")]
+        public string LastName { get; set; } = string.Empty;
+
+        [JsonPropertyName("email")]
+        public string Email { get; set; } = string.Empty;
     }
-
-
 }

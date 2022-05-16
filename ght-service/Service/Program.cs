@@ -20,6 +20,7 @@ using Microsoft.OpenApi.Models;
 using GloomhavenTracker.Service.Models.Content;
 using Microsoft.AspNetCore.Http;
 using AutoMapper;
+using GloomhavenTracker.Service.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -141,6 +142,7 @@ builder.Services.Configure<JsonOptions>(options =>
 builder.Services.AddAutoMapper(cfg => {
     cfg.AddProfile(new ContentMapperProfile());
     cfg.AddProfile(new CampaignMapperProfile());
+    cfg.AddProfile(new UserMapperProfile());
 });
 
 

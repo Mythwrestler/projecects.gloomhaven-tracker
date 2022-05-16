@@ -55,24 +55,24 @@ public class CampaignServiceImplementation : CampaignService
 
     public List<CampaignSummary> GetCampaignList()
     {
-        var userId = identityRepo.GetUserId();
+        var user = identityRepo.GetUser();
 
         List<Campaign> campaigns = repo.GetCampaignList();
         List<CampaignSummary> summaries = mapper.Map<List<CampaignSummary>>(campaigns);
         return summaries.Select(s => {
-            s.Editable = campaigns.First(c => c.Id == s.Id).Managers.Contains(userId);
+            s.Editable = campaigns.First(c => c.Id == s.Id).Managers.Contains(user.UserId);
             return s;
         }).ToList();
     }
 
     public CampaignDTO GetCampaign(Guid campaignId)
     {
-        var userId = identityRepo.GetUserId();
+        var user = identityRepo.GetUser();
 
         Campaign campaign = GetCampaignById(campaignId);
         CampaignDTO campaignDTO = mapper.Map<CampaignDTO>(campaign);
 
-        campaignDTO.Editable = campaign.Managers.Contains(userId);
+        campaignDTO.Editable = campaign.Managers.Contains(user.UserId);
         return campaignDTO;
     }
 
@@ -82,7 +82,7 @@ public class CampaignServiceImplementation : CampaignService
             GameUtils.GameType(requestBody.GameContentCode)
         );
 
-        var userId = identityRepo.GetUserId();
+        var user = identityRepo.GetUser();
 
         var campaign = new Campaign
         (
@@ -92,13 +92,13 @@ public class CampaignServiceImplementation : CampaignService
             game,
             new Dictionary<string, Models.Campaign.Scenario>(),
             new Dictionary<string, Models.Campaign.Character>(),
-            new List<Guid>(){userId}
+            new List<Guid>(){user.UserId}
         );
 
         var savedCampaign = repo.SaveCampaign(campaign);
 
         var campaignDTO = mapper.Map<CampaignDTO>(savedCampaign);
-        campaignDTO.Editable = savedCampaign.Managers.Contains(userId);
+        campaignDTO.Editable = savedCampaign.Managers.Contains(user.UserId);
         return campaignDTO;
     }
 

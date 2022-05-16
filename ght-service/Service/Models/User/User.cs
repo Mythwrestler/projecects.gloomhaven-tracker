@@ -5,17 +5,11 @@ namespace GloomhavenTracker.Service.Models;
 
 public class User
 {
-    public User(Guid userId, string userName, string firstName, string lastName)
-    {
-        UserId = userId;
-        UserName = userName;
-        FirstName = firstName;
-        LastName = lastName;
-    }
     public Guid UserId { get; set; }
     public string UserName { get; set; } = string.Empty;
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
 }
 
 [Serializable]

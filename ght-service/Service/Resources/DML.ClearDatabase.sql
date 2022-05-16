@@ -1,6 +1,10 @@
 -- Clear Audit
 DELETE FROM public."AuditLog";
 
+-- Clear User
+DELETE FROM public."UserCampaign";
+DELETE FROM public."User";
+
 -- Clear Campaigns
 DELETE FROM public."CampaignCharacter";
 DELETE FROM public."CampaignScenario";

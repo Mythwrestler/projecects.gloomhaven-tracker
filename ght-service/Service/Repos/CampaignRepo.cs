@@ -37,7 +37,10 @@ public class CampaignRepoImplementation : CampaignRepo
 
     public List<Campaign> GetCampaignList()
     {
-        List<CampaignDAO> campaignDAOs = context.CampaignCampaign.Include(c => c.Game).ToList();
+        List<CampaignDAO> campaignDAOs = context.CampaignCampaign
+            .Include(c => c.Game)
+            .Include(c => c.Managers).ThenInclude(mng => mng.User)
+            .ToList();
         return mapper.Map<List<Campaign>>(campaignDAOs);
     }
     
@@ -54,6 +57,7 @@ public class CampaignRepoImplementation : CampaignRepo
                 .Include(campaign => campaign.Game)
                 .Include(campaign => campaign.Party).ThenInclude(chr => chr.CharacterContent)
                 .Include(campaign => campaign.Scenarios).ThenInclude(scn => scn.ScenarioContent)
+                .Include(campaign => campaign.Managers).ThenInclude(mng => mng.User)
                 .FirstOrDefault();
             
             if(campaignDAO is null) throw new KeyNotFoundException("Could not find campaign.");
