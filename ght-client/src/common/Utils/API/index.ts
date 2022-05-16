@@ -1,17 +1,16 @@
 import ENV_VARS from "../../Environment";
-import { get } from "svelte/store";
-import { authToken as authTokenStore } from "@dopry/svelte-auth0";
 
 const baseUrl = `${ENV_VARS.API.BaseURL()}api/`;
 
 const request = async <T>(
   url: string,
   method: "POST" | "GET" | "PUT",
+  accessToken: string | undefined = undefined,
   body: unknown = undefined
 ): Promise<T> => {
   const headers: string[][] = [["Content-Type", "application/json"]];
-  const authToken = get(authTokenStore);
-  if (authToken != undefined) headers.push(["Bearer", authToken]);
+  if (accessToken != undefined)
+    headers.push(["Authorization", `Bearer ${accessToken}`]);
 
   const requestInit: RequestInit = {
     method: method,
@@ -51,18 +50,23 @@ const request = async <T>(
 
 export const postAPI = async <T>(
   path: string,
+  accessToken: string | undefined = undefined,
   body: unknown = undefined
 ): Promise<T> => {
-  return await request<T>(`${baseUrl}${path}`, "POST", body);
+  return await request<T>(`${baseUrl}${path}`, "POST", accessToken, body);
 };
 
 export const putAPI = async <T>(
   path: string,
+  accessToken: string | undefined = undefined,
   body: unknown = undefined
 ): Promise<T> => {
-  return await request<T>(`${baseUrl}${path}`, "PUT", body);
+  return await request<T>(`${baseUrl}${path}`, "PUT", accessToken, body);
 };
 
-export const getAPI = async <T>(path: string): Promise<T> => {
-  return await request<T>(`${baseUrl}${path}`, "GET");
+export const getAPI = async <T>(
+  path: string,
+  accessToken: string | undefined = undefined
+): Promise<T> => {
+  return await request<T>(`${baseUrl}${path}`, "GET", accessToken);
 };

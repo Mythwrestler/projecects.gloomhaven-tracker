@@ -39,7 +39,7 @@
   const scenarioListing = writable<ScenarioSummary[]>([]);
   const scenarioListingProcessed = writable<boolean>(false);
   const handleGetScenarios = async (gameCode: string) => {
-    if (($scenarioListing as ScenarioSummary[]).length === 0) {
+    if ($scenarioListing.length === 0) {
       const listing = await GetScenariosForGame(gameCode);
       scenarioListing.set(listing);
     }
@@ -51,7 +51,7 @@
     if (campaign) {
       campaignScenarios = (campaign.scenarios ?? [])
         .map((cs) => {
-          let scenarioForLoad = ($scenarioListing as ScenarioSummary[]).find(
+          let scenarioForLoad = $scenarioListing.find(
             (ss) => ss.contentCode === cs.contentCode
           ) as ScenarioSummary;
           return {
@@ -67,11 +67,9 @@
         .sort((a: Scenario, b: Scenario) =>
           a.scenarioNumber > b.scenarioNumber ? 1 : -1
         );
-      fullScenarioListOptions = ($scenarioListing as ScenarioSummary[]).map(
-        (scenario) => {
-          return { label: scenario.name, value: scenario.contentCode };
-        }
-      );
+      fullScenarioListOptions = $scenarioListing.map((scenario) => {
+        return { label: scenario.name, value: scenario.contentCode };
+      });
       unusedScenarioOptions = fullScenarioListOptions.filter(
         (scenario) =>
           campaign?.scenarios.findIndex(
@@ -131,9 +129,8 @@
         isClosed: selectedScenarioStatus === "closed",
         isCompleted: selectedScenarioStatus === "completed",
         scenarioNumber:
-          ($scenarioListing as ScenarioSummary[]).find(
-            (ss) => ss.contentCode === selectedScenario
-          )?.scenarioNumber ?? 0,
+          $scenarioListing.find((ss) => ss.contentCode === selectedScenario)
+            ?.scenarioNumber ?? 0,
       });
       handleCloseScenarioEdit();
     }
@@ -178,10 +175,7 @@
   $: disableSave = shouldDisableSave(selectedScenario, selectedScenarioStatus);
 
   $: if (campaign?.game) void handleGetScenarios(campaign.game);
-  $: if (
-    ($scenarioListing as ScenarioSummary[]).length !== 0 &&
-    campaign?.scenarios
-  )
+  $: if ($scenarioListing.length !== 0 && campaign?.scenarios)
     handleProcessScenarios();
 </script>
 
@@ -208,7 +202,10 @@
                 <div class="mx-auto flex flex-row">
                   <div>
                     <button
-                      on:click={() => handleScenarioClick(scenario.contentCode)}
+                      on:click={() => {
+                        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+                        handleScenarioClick(scenario.contentCode);
+                      }}
                     >
                       {scenarioName(scenario)}
                     </button>

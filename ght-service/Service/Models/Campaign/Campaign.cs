@@ -9,7 +9,7 @@ namespace GloomhavenTracker.Service.Models.Campaign;
 public class Campaign
 {
 
-    public Campaign(Guid id, string name, string description, Game game, Dictionary<string, Scenario> scenarios, Dictionary<string, Character> party)
+    public Campaign(Guid id, string name, string description, Game game, Dictionary<string, Scenario> scenarios, Dictionary<string, Character> party, List<Guid> managers)
     {
         Id = id;
         Name = name;
@@ -17,6 +17,7 @@ public class Campaign
         Game = game;
         Scenarios = scenarios;
         Party = party;
+        Managers = managers;
     }
 
     public Guid Id { get; }
@@ -25,6 +26,7 @@ public class Campaign
     public Game Game { get; }
     public Dictionary<string, Scenario> Scenarios { get; }
     public Dictionary<string, Character> Party { get; }
+    public List<Guid> Managers { get; }
 }
 
 
@@ -50,6 +52,9 @@ public struct CampaignSummary
 
     [JsonPropertyName("game")]
     public string GameContentCode { get; }
+
+    [JsonPropertyName("editable")]
+    public bool Editable { get; set; } = false;
 }
 
 
@@ -83,6 +88,9 @@ public struct CampaignDTO
 
     [JsonPropertyName("party")]
     public List<CharacterSummary> Party { get; }
+
+    [JsonPropertyName("editable")]
+    public bool Editable { get; set; } = false;
 }
 
 

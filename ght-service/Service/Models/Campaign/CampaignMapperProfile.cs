@@ -9,6 +9,7 @@ using ContentCharacter = GloomhavenTracker.Service.Models.Content.Character;
 using CampaignScenario = GloomhavenTracker.Service.Models.Campaign.Scenario;
 using CampaignCharacter = GloomhavenTracker.Service.Models.Campaign.Character;
 using System;
+using GloomhavenTracker.Database.Models;
 
 public class CampaignMapperProfile : Profile
 {
@@ -91,6 +92,14 @@ public class CampaignMapperProfile : Profile
                         PerkPoints = chr.PerkPoints
                     }).ToList();
 
+
+                List<UserCampaignDAO> managers = src.Managers
+                    .Select(user => new UserCampaignDAO()
+                    {
+                        UserId = user,
+                        CampaignId = src.Id
+                    }).ToList();
+
                 CampaignDAO campaign = new CampaignDAO()
                 {
                     Id = src.Id,
@@ -100,6 +109,7 @@ public class CampaignMapperProfile : Profile
                     Scenarios = campaignScenarios,
                     Items = new List<CampaignItemDAO>(),
                     GameId = src.Game.Id,
+                    Managers = managers
                 };
 
                 return campaign;
@@ -123,7 +133,8 @@ public class CampaignMapperProfile : Profile
                 description: src.Description,
                 game: ctx.Mapper.Map<Game>(src.Game),
                 scenarios: scenarios,
-                party: party
+                party: party,
+                managers: src.Managers.Select(manager => manager.UserId).ToList()
             );
         });
         

@@ -1,4 +1,5 @@
 using System;
+using System.Security.Claims;
 using GloomhavenTracker.Service.Models.Content;
 using GloomhavenTracker.Service.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -8,7 +9,6 @@ using Microsoft.Extensions.Logging;
 namespace GloomhavenTracker.Service.Controllers;
 
 [Authorize(Policy = "authenticated")]
-[Authorize(Policy = "superuser")]
 [Route("api/content/games")]
 public class ContentController : Controller
 {
@@ -26,6 +26,7 @@ public class ContentController : Controller
     {
         try
         {
+            Console.WriteLine(this.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "");
             var gameDefaults = service.GetContentSummary(CONTENT_TYPE.game, null);
             return new OkObjectResult(gameDefaults);
         }

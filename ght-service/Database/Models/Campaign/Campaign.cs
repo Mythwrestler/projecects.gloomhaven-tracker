@@ -13,6 +13,7 @@ public static partial class EntityDefinitions
             campaignTable.HasMany(campaign => campaign.Scenarios).WithOne(scenario => scenario.Campaign).OnDelete(DeleteBehavior.Restrict);
             campaignTable.HasMany(campaign => campaign.Party).WithOne(character => character.Campaign).OnDelete(DeleteBehavior.Restrict);
             campaignTable.HasMany(campaign => campaign.Items).WithOne(ci => ci.Campaign).OnDelete(DeleteBehavior.Restrict);
+            campaignTable.HasMany(campaign => campaign.Managers).WithOne(manager => manager.Campaign).OnDelete(DeleteBehavior.Restrict);
         });
 
         builder.Entity<CampaignItemDAO>(campaignItemTable => {
@@ -33,6 +34,9 @@ public class CampaignDAO : AuditableEntityBase
     public ICollection<ScenarioDAO> Scenarios {get; set;} = new HashSet<ScenarioDAO>();
     public ICollection<CharacterDAO> Party {get; set;} = new HashSet<CharacterDAO>();
     public ICollection<CampaignItemDAO> Items {get; set;} = new HashSet<CampaignItemDAO>();
+    public Guid CreatedBy { get; set; }
+    public Guid UpdatedBy { get; set; }
+    public ICollection<UserCampaignDAO> Managers {get; set;} = new HashSet<UserCampaignDAO>();
 }
 
 

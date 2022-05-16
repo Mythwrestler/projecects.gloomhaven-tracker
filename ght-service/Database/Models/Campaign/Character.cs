@@ -41,6 +41,8 @@ public class CharacterDAO : AuditableEntityBase
     public Content.CharacterDAO? CharacterContent { get; set; }
     public Guid CampaignId { get; set; }
     public CampaignDAO? Campaign { get; set; }
+    public Guid CreatedBy { get; set; }
+    public Guid UpdatedBy { get; set; }
 }
 
 public class CharacterPerkDAO : AuditableEntityBase

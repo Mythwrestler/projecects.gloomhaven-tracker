@@ -19,9 +19,10 @@
   import { useContentService } from "../../../Service/ContentService";
   import { useCampaignService } from "../../../Service/CampaignService";
   import { v4 as uuid } from "uuid";
+  import { accessToken } from "@dopry/svelte-oidc";
   const navigate = useNavigate();
 
-  const { GetAvailableGames } = useContentService();
+  const { GetAvailableGames } = useContentService(accessToken);
   const { State: campaignState, createNewCampaign } = useCampaignService();
 
   export let newDialogOpen = false;

@@ -6,8 +6,6 @@
   import { useCampaignService } from "../../../Service/CampaignService";
   import CampaignParty from "./CampaignParty.svelte";
   import { useLocation } from "svelte-navigator";
-  import type { NavigatorLocation } from "svelte-navigator";
-  import type AnyObject from "svelte-navigator/types/AnyObject";
   import CampaignScenarios from "./CampaignScenarios.svelte";
   import { onMount } from "svelte";
 

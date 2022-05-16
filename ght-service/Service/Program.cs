@@ -18,6 +18,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using GloomhavenTracker.Service.Models.Content;
+using Microsoft.AspNetCore.Http;
+using AutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -88,14 +90,13 @@ if (authEnabled)
     });
 }
 
-builder.Services.AddAuthorization(options =>
-{
+builder.Services.AddAuthorization(options => {
     options.AddPolicy("authenticated", new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
-    options.AddPolicy("superuser", new AuthorizationPolicyBuilder().RequireRole("superuser").Build());
 });
 
 // Add Anonoymous Authentication Handler is auth is disabled
 if(!authEnabled) builder.Services.AddSingleton<IAuthorizationHandler, AllowAnonymous>();
+builder.Services.AddHttpContextAccessor();
 
 # endregion
 
@@ -147,6 +148,17 @@ builder.Services.AddDbContext<GloomhavenContext>(optionsAction => {
     optionsAction.UseNpgsql(
         dbConnectionString,
         assembly => assembly.MigrationsAssembly(typeof(GloomhavenContext).Assembly.FullName)
+    );
+});
+
+// Register Identity Repo
+builder.Services.AddScoped<UserRepo, UserRepoImplementation>(factory => 
+{
+    return new UserRepoImplementation(
+        factory.GetRequiredService<GloomhavenContext>(),
+        factory.GetRequiredService<IMapper>(),
+        authAuthority,
+        factory.GetRequiredService<IHttpContextAccessor>()
     );
 });
 

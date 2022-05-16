@@ -45,6 +45,7 @@
   },
   "dependencies": {
     "@dopry/svelte-auth0": "^2.0.0",
+    "@dopry/svelte-oidc": "^1.0.1",
     "@microsoft/signalr": "^6.0.1",
     "clsx": "^1.1.1",
     "history": "^5.2.0",

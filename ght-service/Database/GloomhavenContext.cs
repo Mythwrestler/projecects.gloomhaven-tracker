@@ -42,9 +42,16 @@ public partial class GloomhavenContext : DbContext
     public DbSet<CampaignItemDAO> CampaignCampaignItem => Set<CampaignItemDAO>();
     #endregion
 
+    #region User
+    public DbSet<UserDAO> User => Set<UserDAO>();
+    public DbSet<UserCampaignDAO> UserCampaign => Set<UserCampaignDAO>();
+    #endregion
+
     #region Audit
     public DbSet<Audit> AuditLog => Set<Audit>();
     #endregion
+
+
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -64,6 +71,10 @@ public partial class GloomhavenContext : DbContext
         builder.DefineCharacterCampaignEntities();
         builder.DefineScenarioCampaignEntities();
         builder.DefineCampaignEntities();
+        #endregion
+
+        #region User Entity Definitions
+        builder.DefineUserEntities();
         #endregion
     }
 

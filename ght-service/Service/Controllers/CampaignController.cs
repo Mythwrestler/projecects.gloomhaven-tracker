@@ -7,8 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace GloomhavenTracker.Service.Controllers;
 
-[Authorize(Policy = "authenticated")]
-[Authorize(Policy = "superuser")]
+[Authorize(Roles="user,superuser")]
 [Route("api/campaigns")]
 public class CampaignController : Controller
 {

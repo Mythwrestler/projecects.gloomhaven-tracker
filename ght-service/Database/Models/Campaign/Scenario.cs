@@ -26,4 +26,6 @@ public class ScenarioDAO : AuditableEntityBase
     public Content.ScenarioDAO? ScenarioContent { get; set; }
     public Guid CampaignId { get; set; }
     public CampaignDAO? Campaign { get; set; }
+    public Guid CreatedBy { get; set; }
+    public Guid UpdatedBy { get; set; }
 }

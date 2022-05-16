@@ -1,3 +1,4 @@
+import type { Readable, Writable } from "svelte/store";
 import { getAPI } from "../../common/Utils/API";
 import type {
   Character,
@@ -8,7 +9,13 @@ import type {
 import * as GlobalError from "../Error";
 
 class ContentServiceImplementation {
-  // Available Games
+  private authToken?: string;
+
+  constructor(authTokenStore: Readable<string>) {
+    authTokenStore.subscribe((token) => (this.authToken = token));
+  }
+
+  // Available Games95
   availableGames: ContentItemSummary[] = [];
 
   // Scenario Summary
@@ -101,7 +108,10 @@ class ContentServiceImplementation {
 
     let result: ContentItemSummary[] = [];
     try {
-      result = await getAPI<ContentItemSummary[]>(`content/games/`);
+      result = await getAPI<ContentItemSummary[]>(
+        `content/games/`,
+        this.authToken
+      );
       if (result) {
         this.availableGames = result;
       }
@@ -120,7 +130,8 @@ class ContentServiceImplementation {
     let result: ScenarioSummary[] = [];
     try {
       result = await getAPI<ScenarioSummary[]>(
-        `content/games/${gameCode}/scenarios`
+        `content/games/${gameCode}/scenarios`,
+        this.authToken
       );
       if (result) {
         this.setScenarioSummaries(gameCode, result);
@@ -144,7 +155,8 @@ class ContentServiceImplementation {
     let result: Scenario | undefined = undefined;
     try {
       result = await getAPI<Scenario>(
-        `content/games/${gameCode}/scenarios/${contentCode}`
+        `content/games/${gameCode}/scenarios/${contentCode}`,
+        this.authToken
       );
       if (result) {
         gameScenarios = this.addScenarioDefault(gameCode, result);
@@ -167,7 +179,8 @@ class ContentServiceImplementation {
     let result: ContentItemSummary[] = [];
     try {
       result = await getAPI<ContentItemSummary[]>(
-        `content/games/${gameCode}/characters`
+        `content/games/${gameCode}/characters`,
+        this.authToken
       );
       if (result) {
         this.setCharacterSummaries(gameCode, result);
@@ -191,7 +204,8 @@ class ContentServiceImplementation {
     let result: Character | undefined = undefined;
     try {
       result = await getAPI<Character>(
-        `content/games/${gameCode}/characters/${contentCode}`
+        `content/games/${gameCode}/characters/${contentCode}`,
+        this.authToken
       );
       if (result) {
         gameCharacters = this.addCharacterDefault(gameCode, result);
@@ -207,8 +221,11 @@ class ContentServiceImplementation {
 }
 
 let contentService: ContentServiceImplementation | undefined = undefined;
-const useContentService = (): ContentServiceImplementation => {
-  if (!contentService) contentService = new ContentServiceImplementation();
+const useContentService = (
+  authTokenStore: Readable<string>
+): ContentServiceImplementation => {
+  if (!contentService)
+    contentService = new ContentServiceImplementation(authTokenStore);
   return contentService;
 };
 

@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using AutoMapper;
 using GloomhavenTracker.Service.Models.Campaign;
 using GloomhavenTracker.Service.Models.Content;
 using GloomhavenTracker.Service.Repos;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
 namespace GloomhavenTracker.Service.Services;
@@ -25,16 +27,25 @@ public interface CampaignService
 public class CampaignServiceImplementation : CampaignService
 {
     private readonly CampaignRepo repo;
+    private readonly UserRepo identityRepo;
     private readonly ContentService contentService;
     private readonly IMapper mapper;
     private readonly ILogger<CampaignServiceImplementation> logger;
 
-    public CampaignServiceImplementation(CampaignRepo repo, ContentService contentService, IMapper mapper, ILogger<CampaignServiceImplementation> logger)
+
+    public CampaignServiceImplementation(
+        CampaignRepo repo,
+        UserRepo identityRepo,
+        ContentService contentService,
+        IMapper mapper,
+        ILogger<CampaignServiceImplementation> logger
+    )
     {
-        this.logger = logger;
         this.repo = repo;
-        this.mapper = mapper;
+        this.identityRepo = identityRepo;
         this.contentService = contentService;
+        this.mapper = mapper;
+        this.logger = logger;
     }
 
     private Campaign GetCampaignById(Guid campaignId)
@@ -44,22 +55,34 @@ public class CampaignServiceImplementation : CampaignService
 
     public List<CampaignSummary> GetCampaignList()
     {
+        var userId = identityRepo.GetUserId();
+
         List<Campaign> campaigns = repo.GetCampaignList();
-        return mapper.Map<List<CampaignSummary>>(campaigns);
+        List<CampaignSummary> summaries = mapper.Map<List<CampaignSummary>>(campaigns);
+        return summaries.Select(s => {
+            s.Editable = campaigns.First(c => c.Id == s.Id).Managers.Contains(userId);
+            return s;
+        }).ToList();
     }
 
     public CampaignDTO GetCampaign(Guid campaignId)
     {
+        var userId = identityRepo.GetUserId();
+
         Campaign campaign = GetCampaignById(campaignId);
-        return mapper.Map<CampaignDTO>(campaign);
+        CampaignDTO campaignDTO = mapper.Map<CampaignDTO>(campaign);
+
+        campaignDTO.Editable = campaign.Managers.Contains(userId);
+        return campaignDTO;
     }
 
     public CampaignDTO NewCampaign(NewCampaignRequestBody requestBody)
     {
-
         Models.Content.Game game = contentService.GetGameDefaults(
             GameUtils.GameType(requestBody.GameContentCode)
         );
+
+        var userId = identityRepo.GetUserId();
 
         var campaign = new Campaign
         (
@@ -68,13 +91,15 @@ public class CampaignServiceImplementation : CampaignService
             requestBody.Description,
             game,
             new Dictionary<string, Models.Campaign.Scenario>(),
-            new Dictionary<string, Models.Campaign.Character>()
+            new Dictionary<string, Models.Campaign.Character>(),
+            new List<Guid>(){userId}
         );
 
         var savedCampaign = repo.SaveCampaign(campaign);
 
-        return mapper.Map<CampaignDTO>(savedCampaign);
-
+        var campaignDTO = mapper.Map<CampaignDTO>(savedCampaign);
+        campaignDTO.Editable = savedCampaign.Managers.Contains(userId);
+        return campaignDTO;
     }
 
     public CharacterDTO AddCharacterToCampaign(Guid campaignId, CharacterRequestBody newCharacterRequest)

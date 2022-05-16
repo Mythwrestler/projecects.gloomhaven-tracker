@@ -15,7 +15,7 @@
   const { addUpdatePartyMember } = useCampaignService();
 
   const getContentSummary = (contentCode: string) => {
-    return ($characterListing as ContentItemSummary[]).find((character) => {
+    return $characterListing.find((character) => {
       return character.contentCode === contentCode;
     });
   };
@@ -69,7 +69,7 @@
   const characterListingProcessed = writable<boolean>(false);
 
   const handleGetCharacters = async (gameCode: string) => {
-    if (($characterListing as ContentItemSummary[]).length === 0) {
+    if ($characterListing.length === 0) {
       const listing = await GetCharactersForGame(gameCode);
       characterListing.set(listing);
     }
@@ -126,6 +126,7 @@
                 <span class="ml-2">
                   {`(
                     ${
+                      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                       getContentSummary(character.characterContentCode)?.name ??
                       ""
                     }

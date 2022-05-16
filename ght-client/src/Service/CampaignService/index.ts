@@ -19,9 +19,11 @@ class CampaignServiceImplementation {
     []
   );
 
-  public getCampaignListing = async () => {
+  public getCampaignListing = async (
+    accessToken: string | undefined = undefined
+  ) => {
     try {
-      const result = await getAPI<CampaignSummary[]>(`campaigns`);
+      const result = await getAPI<CampaignSummary[]>(`campaigns`, accessToken);
       if (result && result.length > 0) this.campaignListingStore.set(result);
     } catch (err: unknown) {
       GlobalError.showErrorMessage("Failed to get Campaign Listing");
@@ -113,6 +115,7 @@ class CampaignServiceImplementation {
       try {
         await putAPI<void>(
           `campaigns/${get(this.campaignStore).id}`,
+          undefined,
           campaignToSave
         );
         this.savedCampaign.set(cloneDeep(campaignToSave));
@@ -124,7 +127,7 @@ class CampaignServiceImplementation {
 
   public createNewCampaign = async (campaign: Campaign): Promise<void> => {
     try {
-      const result = await postAPI<Campaign>("campaigns/new", {
+      const result = await postAPI<Campaign>("campaigns/new", undefined, {
         id: campaign.id,
         description: campaign.description,
         game: campaign.game,
