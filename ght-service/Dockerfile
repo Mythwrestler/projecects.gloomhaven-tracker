@@ -1,4 +1,4 @@
-FROM registry.casperinc.net/dotnet/sdk:6.0 AS builder
+FROM dotnet/sdk:6.0 AS builder
 
 WORKDIR /app
 
@@ -13,7 +13,7 @@ RUN dotnet restore
 COPY . ./
 RUN dotnet publish -c Release -o out
 
-FROM registry.casperinc.net/dotnet/aspnet:6.0
+FROM dotnet/aspnet:6.0
 
 WORKDIR /app
 

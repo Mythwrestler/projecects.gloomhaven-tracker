@@ -6,10 +6,10 @@
   import { useCampaignService } from "../../../Service/CampaignService";
   import CampaignParty from "./CampaignParty.svelte";
   import { useLocation } from "svelte-navigator";
-  import type { NavigatorLocation } from "svelte-navigator";
-  import type AnyObject from "svelte-navigator/types/AnyObject";
   import CampaignScenarios from "./CampaignScenarios.svelte";
-  import { onMount } from "svelte";
+  import { onDestroy, onMount } from "svelte";
+  import { accessToken } from "@dopry/svelte-oidc";
+  import { writable } from "svelte/store";
 
   // your script goes here
   export let campaignId = "";
@@ -20,7 +20,9 @@
     saveCampaign,
     addUpdateScenario,
     updateCampaignDescription,
-  } = useCampaignService();
+    updateCampaignName,
+    clearCampaign,
+  } = useCampaignService(accessToken);
   const { campaignNotSaved } = campaignState;
 
   let newGameCode = "";
@@ -33,7 +35,9 @@
     campaign = c;
   });
 
+  const requestCampaign = writable<boolean>(false);
   const handleGetCampaign = async (campaignId: string) => {
+    if ($accessToken == undefined || $accessToken.trim() == "") return;
     campaign = undefined;
     try {
       await getCampaign(campaignId);
@@ -41,6 +45,14 @@
       GlobalError.showErrorMessage("Failed to get campaign");
     }
   };
+
+  requestCampaign.subscribe(() => {
+    void handleGetCampaign(campaignId);
+  });
+
+  accessToken.subscribe(() => {
+    void handleGetCampaign(campaignId);
+  });
 
   const handleSaveCampaign = () => {
     void saveCampaign();
@@ -50,11 +62,20 @@
     updateCampaignDescription(campaign?.description ?? "");
   };
 
+  const handleUpdateCampaignName = () => {
+    updateCampaignName(campaign?.name ?? "");
+  };
+
   $: if ($location.search) getNewGameCode();
-  $: if (campaignId !== campaign?.id) void handleGetCampaign(campaignId);
+  $: if (campaignId !== campaign?.id) requestCampaign.set(true);
 
   onMount(() => {
-    void handleGetCampaign(campaignId);
+    clearCampaign();
+    requestCampaign.set(true);
+  });
+
+  onDestroy(() => {
+    clearCampaign();
   });
 </script>
 
@@ -62,6 +83,15 @@
   {#if !campaign}
     <div>Getting Campaign Details</div>
   {:else}
+    <div class="mt-2">
+      <TextField
+        bind:value={campaign.name}
+        onChange={handleUpdateCampaignName}
+        placeholderText="Campaign Name"
+        displayLabel="DescripNametion"
+        `
+      />
+    </div>
     <div class="mt-2">
       <TextField
         bind:value={campaign.description}

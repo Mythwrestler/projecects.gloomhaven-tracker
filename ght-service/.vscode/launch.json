@@ -9,9 +9,9 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/bin/Debug/net6.0/ght-service.dll",
+            "program": "${workspaceFolder}/Service/bin/Debug/net6.0/ght-service.dll",
             "args": [],
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/Service",
             "stopAtEntry": false,
             "env": {
                 "ASPNETCORE_URLS": "http://localhost:5020",
@@ -29,18 +29,18 @@
                 "DB_SEED_DATA": "false"
             },
             "sourceFileMap": {
-                "/Views": "${workspaceFolder}/Views"
+                "/Views": "${workspaceFolder}/Service/Views"
             },
             "justMyCode": true
         },
         {
-            "name": "GTH Service w/ Data Seed",
+            "name": "GTH Service - Data",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/bin/Debug/net6.0/ght-service.dll",
+            "program": "${workspaceFolder}/Service/bin/Debug/net6.0/ght-service.dll",
             "args": [],
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/Service",
             "stopAtEntry": false,
             "env": {
                 "ASPNETCORE_URLS": "http://localhost:5020",
@@ -57,7 +57,64 @@
                 "DB_SEED_DATA": "true"
             },
             "sourceFileMap": {
-                "/Views": "${workspaceFolder}/Views"
+                "/Views": "${workspaceFolder}/Service/Views"
+            },
+            "justMyCode": true
+        },
+        {
+            "name": "GTH Service - Auth",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/Service/bin/Debug/net6.0/ght-service.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/Service",
+            "stopAtEntry": false,
+            "env": {
+                "ASPNETCORE_URLS": "http://localhost:5020",
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "CORS_ALLOWED_ORIGINS": "http://localhost:5025,http://localhost.fiddler:5025",
+                "AUTH_ENABLED": "true",
+                "AUTH_AUTHORITY": "https://iam.casperinc.net/realms/auth-nprd",
+                "AUTH_AUDIENCE": "ght-localhost",
+                "HTTP_LOGGING_ENABLED": "true",     
+                "DB_SERVER": "host.docker.internal",
+                "DB_PORT": "5432",
+                "DB_DATABASE": "ght-db",
+                "DB_USER": "pguser",
+                "DB_PASSWORD": "pguser",
+                "DB_SEED_DATA": "false"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceFolder}/Service/Views"
+            },
+            "justMyCode": true
+        },
+        {
+            "name": "GTH Service - Auth - Data",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/Service/bin/Debug/net6.0/ght-service.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/Service",
+            "stopAtEntry": false,
+            "env": {
+                "ASPNETCORE_URLS": "http://localhost:5020",
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "AUTH_ENABLED": "true",
+                "AUTH_AUTHORITY": "https://iam.casperinc.net/realms/auth-nprd",
+                "AUTH_AUDIENCE": "ght-localhost",
+                "HTTP_LOGGING_ENABLED": "true",
+                "DB_SERVER": "host.docker.internal",
+                "DB_PORT": "5432",
+                "DB_DATABASE": "ght-db",
+                "DB_USER": "pguser",
+                "DB_PASSWORD": "pguser",
+                "DB_SEED_DATA": "true"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceFolder}/Service/Views"
             },
             "justMyCode": true
         }

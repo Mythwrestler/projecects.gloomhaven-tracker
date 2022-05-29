@@ -1,7 +1,7 @@
 
 
 declare module "@dopry/svelte-auth0" {
-  import { SvelteComponentTyped } from 'svelte'
+ import { SvelteComponentTyped } from 'svelte'
  import { Readable } from 'svelte/store'
  import Auth0Client from '@auth0/auth0-spa-js/dist/typings/Auth0Client'
 

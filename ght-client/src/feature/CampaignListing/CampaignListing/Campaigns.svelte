@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import type { Campaign } from "../../../models/Campaign";
   import { AddContainedIcon, Table } from "../../../common/Components";
+  import { accessToken } from "@dopry/svelte-oidc";
   import type {
     ColumnDefinition,
     RowData,
@@ -10,10 +11,17 @@
   import CampaignLink from "./CampaignLink.svelte";
   import CampaignNewDialog from "./CampaignNewDialog.svelte";
   import { useCampaignService } from "../../../Service/CampaignService";
+  import { useContentService } from "../../../Service/ContentService";
   import clsx from "clsx";
+  import type { ContentItemSummary } from "../../../models/Content";
+  import { writable } from "svelte/store";
 
-  const { State, getCampaignListing } = useCampaignService();
-  const { campaignListing } = State;
+  const { State: campaignState, getCampaignListing } =
+    useCampaignService(accessToken);
+  const { campaignListing } = campaignState;
+  const { GetAvailableGames } = useContentService(accessToken);
+
+  const refreshListing = writable<boolean>(false);
 
   const columns: ColumnDefinition[] = [
     {
@@ -39,15 +47,15 @@
 
   let campaignListingLoaded = false;
 
+  let availableGames: ContentItemSummary[] = [];
   campaignListing.subscribe((campaigns) => {
     campaignsRowData = campaigns.map((campaign) => {
       const translateGame = (game: string) => {
-        if (game === "jawsOfTheLion") return "Jaws of the Lion";
-        return "Original";
+        return availableGames.find((g) => g.contentCode === game)?.name ?? "";
       };
       return {
         description: {
-          label: campaign.description,
+          label: campaign.name,
           path: `/campaigns/${campaign.id}`,
         },
         game: translateGame(campaign.game),
@@ -65,8 +73,27 @@
     newDialogOpen = false;
   };
 
+  const handleGetCampaigns = async (
+    token: string | undefined
+  ): Promise<void> => {
+    if (token == undefined || token.trim() == "") return;
+    if ($refreshListing) {
+      await getCampaignListing();
+      availableGames = await GetAvailableGames();
+      refreshListing.set(false);
+    }
+  };
+
+  refreshListing.subscribe(() => {
+    void handleGetCampaigns($accessToken);
+  });
+
+  accessToken.subscribe((token) => {
+    void handleGetCampaigns(token);
+  });
+
   onMount(() => {
-    void getCampaignListing();
+    refreshListing.set(true);
   });
 </script>
 

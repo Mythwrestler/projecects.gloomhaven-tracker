@@ -9,7 +9,13 @@
       "request": "attach",
       "name": "Attach Firefox",
       "url": "http://localhost:5025",
-      "webRoot": "${workspaceFolder}"
+      "webRoot": "${workspaceFolder}",
+      "pathMappings": [
+        {
+          "url": "http://localhost:5025/src/common/Environment",
+          "path": "${workspaceFolder}/src/Service/CampaignService"
+        }
+      ]
     },
     {
       "type": "firefox",

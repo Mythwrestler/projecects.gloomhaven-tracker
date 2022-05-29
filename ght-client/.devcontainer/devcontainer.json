@@ -1,5 +1,5 @@
 {
-  "image": "registry.casperinc.net/vscode/devcontainers/typescript-node:16",
+  "image": "mcr.microsoft.com/vscode/devcontainers/typescript-node:16",
   "remoteUser": "node",
   "forwardPorts": [5025],
   "extensions": [

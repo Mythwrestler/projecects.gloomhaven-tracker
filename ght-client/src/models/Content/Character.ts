@@ -1,4 +1,4 @@
-import { ContentItemSummary } from "./ContentItem";
+import type { ContentItemSummary } from "./ContentItem";
 
 interface BaseCharacterHealth {
   level: number;

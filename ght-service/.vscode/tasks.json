@@ -1,13 +1,77 @@
 {
     "version": "2.0.0",
+    "options": {
+        "env": {
+            "DB_SERVER": "host.docker.internal",
+            "DB_PORT": "5432",
+            "DB_DATABASE": "ght-db",
+            "DB_USER": "pguser",
+            "DB_PASSWORD": "pguser",
+        }
+    },
+    "inputs": [
+        {
+            "id": "migrationName",
+            "default": "Migration Name Here",
+            "description": "Name of Migration",
+            "type": "promptString"
+        }
+    ],
     "tasks": [
+        {
+            "label": "Build EF Core Migration",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "ef",
+                "migrations",
+                "add",
+                "\"${input:migrationName}\"",
+                "--project",
+                "${workspaceFolder}/Database/ght-database.csproj",
+                "--startup-project"
+                ,"${workspaceFolder}/Service"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Update EF Migration Database",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "ef",
+                "database",
+                "update",
+                "--project",
+                "${workspaceFolder}/Database/ght-database.csproj",
+                "--startup-project",
+                "${workspaceFolder}/Service"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Drop EF Migraiton Database",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "ef",
+                "database",
+                "drop",
+                "--project",
+                "${workspaceFolder}/Database/ght-database.csproj",
+                "--startup-project",
+                "${workspaceFolder}/Service",
+                "--force"
+            ],
+            "problemMatcher": "$msCompile"
+        },
         {
             "label": "build",
             "command": "dotnet",
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/ght-service.csproj",
+                "${workspaceFolder}/ght-utility.sln",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -19,7 +83,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/ght-service.csproj",
+                "${workspaceFolder}/ght-utility.sln",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -32,7 +96,7 @@
             "args": [
                 "watch",
                 "run",
-                "${workspaceFolder}/ght-service.csproj",
+                "${workspaceFolder}/ght-utility.sln",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],

@@ -1,7 +1,10 @@
 {
-    "image": "registry.casperinc.net/vscode/devcontainers/dotnet:6.0",
+    "image": "mcr.microsoft.com/vscode/devcontainers/dotnet:6.0",
     "remoteUser": "vscode",
     "forwardPorts": [5020],
+    "onCreateCommand": "dotnet tool install --global dotnet-ef --version 6.0.3",
+    "postStartCommand": "dotnet restore",
+    "remoteEnv": { "PATH": "${containerEnv:PATH}:/home/vscode/.dotnet/tools"},
     "extensions": [
         "streetsidesoftware.code-spell-checker",
         "eamodio.gitlens",

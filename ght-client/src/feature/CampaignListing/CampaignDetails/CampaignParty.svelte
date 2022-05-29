@@ -9,13 +9,14 @@
   import { useCampaignService } from "../../../Service/CampaignService";
   import CampaignCharacterEditor from "./CampaignCharacterEditor.svelte";
   import { useContentService } from "../../../Service/ContentService";
+  import { accessToken } from "@dopry/svelte-oidc";
   export let campaign: Campaign;
 
-  const { GetCharactersForGame } = useContentService();
-  const { addUpdatePartyMember } = useCampaignService();
+  const { GetCharactersForGame } = useContentService(accessToken);
+  const { addUpdatePartyMember } = useCampaignService(accessToken);
 
   const getContentSummary = (contentCode: string) => {
-    return ($characterListing as ContentItemSummary[]).find((character) => {
+    return $characterListing.find((character) => {
       return character.contentCode === contentCode;
     });
   };
@@ -69,7 +70,7 @@
   const characterListingProcessed = writable<boolean>(false);
 
   const handleGetCharacters = async (gameCode: string) => {
-    if (($characterListing as ContentItemSummary[]).length === 0) {
+    if ($characterListing.length === 0) {
       const listing = await GetCharactersForGame(gameCode);
       characterListing.set(listing);
     }
@@ -102,7 +103,7 @@
 </script>
 
 <div
-  class="relative mt-2 px-3 py-1 items-center max-w-md mx-auto bg-gray-50 rounded-md backdrop-blur-sm"
+  class="relative mt-2 px-3 py-1 items-center max-w-md mx-auto bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-md backdrop-blur-sm"
 >
   <div aria-label="Party Members" class="text-center text-xl">Party</div>
   <div class="border-b-2 border-solid" />
@@ -126,6 +127,7 @@
                 <span class="ml-2">
                   {`(
                     ${
+                      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                       getContentSummary(character.characterContentCode)?.name ??
                       ""
                     }
