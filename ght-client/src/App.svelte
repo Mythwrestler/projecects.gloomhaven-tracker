@@ -62,7 +62,7 @@
   extraOptions={{
     mergeClaims: true,
   }}
-  scope={ENV_VARS.AUTH.APIAudience() + " profile openid"}
+  scope={ENV_VARS.AUTH.APIAudience()}
 >
   <Display />
   <div>

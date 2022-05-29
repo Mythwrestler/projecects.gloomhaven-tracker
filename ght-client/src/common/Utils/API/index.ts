@@ -4,11 +4,16 @@ const baseUrl = `${ENV_VARS.API.BaseURL()}api/`;
 
 const request = async <T>(
   url: string,
-  method: "POST" | "GET" | "PUT",
+  method: "POST" | "GET" | "PUT" | "PATCH",
   accessToken: string | undefined = undefined,
   body: unknown = undefined
 ): Promise<T> => {
-  const headers: string[][] = [["Content-Type", "application/json"]];
+  const headers: string[][] = [
+    [
+      "Content-Type",
+      method == "PATCH" ? "application/json+patch" : "application/json",
+    ],
+  ];
   if (accessToken != undefined)
     headers.push(["Authorization", `Bearer ${accessToken}`]);
 
@@ -54,6 +59,14 @@ export const postAPI = async <T>(
   body: unknown = undefined
 ): Promise<T> => {
   return await request<T>(`${baseUrl}${path}`, "POST", accessToken, body);
+};
+
+export const patchAPI = async <T>(
+  path: string,
+  accessToken: string | undefined = undefined,
+  body: unknown = undefined
+): Promise<T> => {
+  return await request<T>(`${baseUrl}${path}`, "PATCH", accessToken, body);
 };
 
 export const putAPI = async <T>(

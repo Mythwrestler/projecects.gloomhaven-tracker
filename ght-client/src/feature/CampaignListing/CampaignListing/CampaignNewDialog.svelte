@@ -23,7 +23,8 @@
   const navigate = useNavigate();
 
   const { GetAvailableGames } = useContentService(accessToken);
-  const { State: campaignState, createNewCampaign } = useCampaignService();
+  const { State: campaignState, createNewCampaign } =
+    useCampaignService(accessToken);
 
   export let newDialogOpen = false;
   export let handleCloseDialog: () => void;
@@ -46,9 +47,11 @@
   const newCampaign: Campaign = {
     id: uuid(),
     description: "",
+    name: "",
     game: "",
     scenarios: [],
     party: [],
+    editable: true,
   };
 
   const handleNewCampaign = async () => {
@@ -56,8 +59,7 @@
   };
 
   campaignState.campaign.subscribe((campaign) => {
-    if (campaign && campaign.id === newCampaign.id)
-      navigate(`/campaigns/${campaign.id}`);
+    if (campaign) navigate(`/campaigns/${campaign.id}`);
   });
 
   onMount(() => {
@@ -76,9 +78,9 @@
         <TextField
           border
           variant="square"
-          bind:value={newCampaign.description}
-          placeholderText="Campaign Description"
-          displayLabel="Description"
+          bind:value={newCampaign.name}
+          placeholderText="Campaign Name"
+          displayLabel="Name"
         />
       </div>
       <DropDown
@@ -93,7 +95,7 @@
   <DialogFooter slot="DialogFooter">
     <div class="bg-white dark:bg-gray-700 w-full py-3 pl-3">
       <Button
-        disabled={newCampaign.game === "" && newCampaign.description !== ""}
+        disabled={newCampaign.game === "" && newCampaign.name !== ""}
         variant="filled"
         onClick={() => void handleNewCampaign()}
       >

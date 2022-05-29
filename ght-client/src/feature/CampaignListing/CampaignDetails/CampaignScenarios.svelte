@@ -22,11 +22,13 @@
     ScenarioSummary,
   } from "../../../models/Content";
   import { useContentService } from "../../../Service/ContentService";
+  import { accessToken } from "@dopry/svelte-oidc";
 
   export let campaign: Campaign | undefined;
   export let saveScenario: (scenario: Scenario) => void | undefined;
 
-  const { GetScenariosForGame, GetScenarioDefault } = useContentService();
+  const { GetScenariosForGame, GetScenarioDefault } =
+    useContentService(accessToken);
 
   const scenarioStatusOptions: RadioOption[] = [
     { label: "Completed", value: "completed" },
@@ -57,7 +59,7 @@
           return {
             contentCode: scenarioForLoad.contentCode,
             description: scenarioForLoad.description,
-            scenarioNumber: scenarioForLoad.scenarioNumber,
+            scenarioNumber: scenarioForLoad.sortOrder,
             name: scenarioForLoad.name,
             isClosed: cs.isClosed,
             isCompleted: cs.isCompleted,
@@ -181,7 +183,7 @@
 
 {#if campaign}
   <div
-    class="relative mt-2 px-3 py-1 items-center max-w-md mx-auto bg-gray-50 rounded-md backdrop-blur-sm"
+    class="relative mt-2 px-3 py-1 items-center max-w-md mx-auto bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-md backdrop-blur-sm"
   >
     <div aria-label="Available Scenarios" class="text-center text-xl">
       Scenarios
@@ -260,7 +262,7 @@
     />
     {#if selectedScenarioDetail}
       <div
-        class="relative mt-2 px-3 py-1 items-center max-w-md mx-auto bg-gray-50 rounded-md backdrop-blur-sm"
+        class="relative mt-2 px-3 py-1 items-center max-w-md mx-auto bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-md backdrop-blur-sm"
       >
         <div aria-label="Scenario Monsters" class="text-center text-xl">
           Monsters

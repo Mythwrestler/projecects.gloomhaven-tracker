@@ -1,5 +1,6 @@
-import type { Readable, Writable } from "svelte/store";
+import { writable, type Readable, type Writable } from "svelte/store";
 import { getAPI } from "../../common/Utils/API";
+import { AsyncQueue } from "../../common/Utils/AsycnQueue";
 import type {
   Character,
   ContentItemSummary,
@@ -103,120 +104,134 @@ class ContentServiceImplementation {
 
   // Exposed Interfaces
 
+  private getGamesQueue = new AsyncQueue<ContentItemSummary[]>();
   public GetAvailableGames = async (): Promise<ContentItemSummary[]> => {
-    if (this.availableGames.length > 0) return this.availableGames;
-
-    let result: ContentItemSummary[] = [];
-    try {
-      result = await getAPI<ContentItemSummary[]>(
-        `content/games/`,
-        this.authToken
-      );
-      if (result) {
-        this.availableGames = result;
+    return this.getGamesQueue.enqueue(async () => {
+      if (this.availableGames.length > 0) return this.availableGames;
+      let result: ContentItemSummary[] = [];
+      try {
+        result = await getAPI<ContentItemSummary[]>(
+          `content/games/`,
+          this.authToken
+        );
+        if (result) {
+          this.availableGames = result;
+        }
+      } catch (err: unknown) {
+        GlobalError.showErrorMessage("Failed to get Scenario Listing");
       }
-    } catch (err: unknown) {
-      GlobalError.showErrorMessage("Failed to get Scenario Listing");
-    }
-    return this.availableGames;
+      return this.availableGames;
+    });
   };
 
+  private getScenariosQueue = new AsyncQueue<ScenarioSummary[]>();
   public GetScenariosForGame = async (
     gameCode: string
   ): Promise<ScenarioSummary[]> => {
-    let gameScenarios = this.getScenarioSummaries(gameCode);
-    if (gameScenarios.length > 0) return gameScenarios;
+    return this.getScenariosQueue.enqueue(async () => {
+      let gameScenarios = this.getScenarioSummaries(gameCode);
+      if (gameScenarios.length > 0) return gameScenarios;
 
-    let result: ScenarioSummary[] = [];
-    try {
-      result = await getAPI<ScenarioSummary[]>(
-        `content/games/${gameCode}/scenarios`,
-        this.authToken
-      );
-      if (result) {
-        this.setScenarioSummaries(gameCode, result);
-        gameScenarios = this.getScenarioSummaries(gameCode);
+      let result: ScenarioSummary[] = [];
+      try {
+        result = await getAPI<ScenarioSummary[]>(
+          `content/games/${gameCode}/scenarios`,
+          this.authToken
+        );
+        if (result) {
+          this.setScenarioSummaries(gameCode, result);
+          gameScenarios = this.getScenarioSummaries(gameCode);
+        }
+      } catch (err: unknown) {
+        GlobalError.showErrorMessage("Failed to get Scenario Listing");
       }
-    } catch (err: unknown) {
-      GlobalError.showErrorMessage("Failed to get Scenario Listing");
-    }
-    return gameScenarios;
+      return gameScenarios;
+    });
   };
 
+  private getScenarioQueue = new AsyncQueue<Scenario | undefined>();
   public GetScenarioDefault = async (
     gameCode: string,
     contentCode: string
   ): Promise<Scenario | undefined> => {
-    let gameScenarios = this.getScenarioDefaults(gameCode);
-    let scenarioDefault: Scenario | undefined = gameScenarios.find(
-      (scn) => scn.contentCode === contentCode
-    );
-    if (scenarioDefault) return scenarioDefault;
-    let result: Scenario | undefined = undefined;
-    try {
-      result = await getAPI<Scenario>(
-        `content/games/${gameCode}/scenarios/${contentCode}`,
-        this.authToken
+    return this.getScenarioQueue.enqueue(async () => {
+      let gameScenarios = this.getScenarioDefaults(gameCode);
+      let scenarioDefault: Scenario | undefined = gameScenarios.find(
+        (scn) => scn.contentCode === contentCode
       );
-      if (result) {
-        gameScenarios = this.addScenarioDefault(gameCode, result);
-        scenarioDefault = gameScenarios.find(
-          (scn) => scn.contentCode === contentCode
+      if (scenarioDefault) return scenarioDefault;
+      let result: Scenario | undefined = undefined;
+      try {
+        result = await getAPI<Scenario>(
+          `content/games/${gameCode}/scenarios/${contentCode}`,
+          this.authToken
         );
+        if (result) {
+          gameScenarios = this.addScenarioDefault(gameCode, result);
+          scenarioDefault = gameScenarios.find(
+            (scn) => scn.contentCode === contentCode
+          );
+        }
+      } catch (err: unknown) {
+        GlobalError.showErrorMessage("Failed to get Scenario Listing");
       }
-    } catch (err: unknown) {
-      GlobalError.showErrorMessage("Failed to get Scenario Listing");
-    }
-    return scenarioDefault;
+      return scenarioDefault;
+    });
   };
 
+  private getCharactersQueue = new AsyncQueue<ContentItemSummary[]>();
   public GetCharactersForGame = async (
     gameCode: string
   ): Promise<ContentItemSummary[]> => {
-    let gameCharacters = this.getCharacterSummaries(gameCode);
-    if (gameCharacters.length > 0) return gameCharacters;
+    return this.getCharactersQueue.enqueue(async () => {
+      let gameCharacters = this.getCharacterSummaries(gameCode);
+      if (gameCharacters.length > 0) return gameCharacters;
 
-    let result: ContentItemSummary[] = [];
-    try {
-      result = await getAPI<ContentItemSummary[]>(
-        `content/games/${gameCode}/characters`,
-        this.authToken
-      );
-      if (result) {
-        this.setCharacterSummaries(gameCode, result);
-        gameCharacters = this.getCharacterSummaries(gameCode);
+      let result: ContentItemSummary[] = [];
+      try {
+        result = await getAPI<ContentItemSummary[]>(
+          `content/games/${gameCode}/characters`,
+          this.authToken
+        );
+        if (result) {
+          this.setCharacterSummaries(gameCode, result);
+          gameCharacters = this.getCharacterSummaries(gameCode);
+        }
+      } catch (err: unknown) {
+        GlobalError.showErrorMessage("Failed to get Scenario Listing");
       }
-    } catch (err: unknown) {
-      GlobalError.showErrorMessage("Failed to get Scenario Listing");
-    }
-    return gameCharacters;
+      return gameCharacters;
+    });
   };
 
+  private getCharacterQueue = new AsyncQueue<Character | undefined>();
   public GetCharacterDefault = async (
     gameCode: string,
     contentCode: string
   ): Promise<Character | undefined> => {
-    let gameCharacters = this.getCharacterDefaults(gameCode);
-    let characterDefault: Character | undefined = gameCharacters.find(
-      (chr) => chr.contentCode === contentCode
-    );
-    if (characterDefault) return characterDefault;
-    let result: Character | undefined = undefined;
-    try {
-      result = await getAPI<Character>(
-        `content/games/${gameCode}/characters/${contentCode}`,
-        this.authToken
+    return this.getCharacterQueue.enqueue(async () => {
+      let gameCharacters = this.getCharacterDefaults(gameCode);
+      let characterDefault: Character | undefined = gameCharacters.find(
+        (chr) => chr.contentCode === contentCode
       );
-      if (result) {
-        gameCharacters = this.addCharacterDefault(gameCode, result);
-        characterDefault = gameCharacters.find(
-          (chr) => chr.contentCode === contentCode
+      if (characterDefault) return characterDefault;
+      let result: Character | undefined = undefined;
+      try {
+        result = await getAPI<Character>(
+          `content/games/${gameCode}/characters/${contentCode}`,
+          this.authToken
         );
+        if (result) {
+          gameCharacters = this.addCharacterDefault(gameCode, result);
+          characterDefault = gameCharacters.find(
+            (chr) => chr.contentCode === contentCode
+          );
+        }
+      } catch (err: unknown) {
+        GlobalError.showErrorMessage("Failed to get Scenario Listing");
       }
-    } catch (err: unknown) {
-      GlobalError.showErrorMessage("Failed to get Scenario Listing");
-    }
-    return characterDefault;
+      return characterDefault;
+    });
   };
 }
 

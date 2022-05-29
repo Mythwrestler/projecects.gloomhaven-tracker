@@ -16,7 +16,8 @@
   import type { ContentItemSummary } from "../../../models/Content";
   import { writable } from "svelte/store";
 
-  const { State: campaignState, getCampaignListing } = useCampaignService();
+  const { State: campaignState, getCampaignListing } =
+    useCampaignService(accessToken);
   const { campaignListing } = campaignState;
   const { GetAvailableGames } = useContentService(accessToken);
 
@@ -54,7 +55,7 @@
       };
       return {
         description: {
-          label: campaign.description,
+          label: campaign.name,
           path: `/campaigns/${campaign.id}`,
         },
         game: translateGame(campaign.game),
@@ -77,7 +78,7 @@
   ): Promise<void> => {
     if (token == undefined || token.trim() == "") return;
     if ($refreshListing) {
-      await getCampaignListing(token);
+      await getCampaignListing();
       availableGames = await GetAvailableGames();
       refreshListing.set(false);
     }
