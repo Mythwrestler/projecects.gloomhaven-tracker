@@ -26,7 +26,7 @@ public class Character
 }
 
 [Serializable]
-public struct CharacterDTO
+public class CharacterDTO
 {
     public CharacterDTO(string name, string characterContentCode, int experience, int gold, List<string> items, int perkPoints)
     {

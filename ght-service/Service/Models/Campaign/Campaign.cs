@@ -9,7 +9,7 @@ namespace GloomhavenTracker.Service.Models.Campaign;
 public class Campaign
 {
 
-    public Campaign(Guid id, string name, string description, Game game, Dictionary<string, Scenario> scenarios, Dictionary<string, Character> party, List<Guid> managers)
+    public Campaign(Guid id, string name, string description, Game game, Dictionary<string, Scenario> scenarios, Dictionary<string, Character> party, Dictionary<Guid, User> managers)
     {
         Id = id;
         Name = name;
@@ -26,7 +26,7 @@ public class Campaign
     public Game Game { get; }
     public Dictionary<string, Scenario> Scenarios { get; }
     public Dictionary<string, Character> Party { get; }
-    public List<Guid> Managers { get; }
+    public Dictionary<Guid, User> Managers { get; }
 }
 
 
@@ -59,7 +59,7 @@ public struct CampaignSummary
 
 
 [Serializable]
-public struct CampaignDTO
+public class CampaignDTO
 {
     public CampaignDTO(Guid id, string name, string description, string gameContentCode, List<ScenarioDTO> scenarios, List<CharacterSummary> party)
     {

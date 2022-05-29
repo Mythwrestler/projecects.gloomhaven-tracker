@@ -2,6 +2,7 @@ using System;
 using GloomhavenTracker.Service.Models.Campaign;
 using GloomhavenTracker.Service.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -67,8 +68,9 @@ public class CampaignController : Controller
         }
     }
 
+
     [Route("{campaignId}/characters")]
-    [HttpPut]
+    [HttpPost]
     [Consumes("application/json")]
     public IActionResult AddCharacterToCampaign(Guid campaignId, [FromBody] CharacterRequestBody newCharacterRequest)
     {
@@ -101,9 +103,9 @@ public class CampaignController : Controller
     }
     
     [Route("{campaignId}/characters/{characterContentCode}")]
-    [HttpPatch]
+    [HttpPut]
     [Consumes("application/json")]
-    public IActionResult UpdateCharacterInCampaign(Guid campaignId, string characterContentCode, [FromBody] CharacterRequestBody updateCharacterRequest)
+    public IActionResult UpdateCharacterInCampaign(Guid campaignId, string characterContentCode, [FromBody] JsonPatchDocument<CharacterDTO> updateCharacterRequest)
     {
         try
         {
@@ -118,7 +120,7 @@ public class CampaignController : Controller
     }
 
     [Route("{campaignId}/scenarios/")]
-    [HttpPut]
+    [HttpPost]
     public IActionResult AddScenarioToCampaign(Guid campaignId, string scenarioContentCode, [FromBody] ScenarioRequestBody newScenarioRequest)
     {
         try
@@ -150,7 +152,7 @@ public class CampaignController : Controller
     }
 
     [Route("{campaignId}/scenarios/{scenarioContentCode}")]
-    [HttpPatch]
+    [HttpPut]
     public IActionResult UpdateScenario(Guid campaignId, string scenarioContentCode, [FromBody] ScenarioRequestBody scenarioUpdateRequest)
     {
         try

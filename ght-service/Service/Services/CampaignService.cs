@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using AutoMapper;
 using GloomhavenTracker.Service.Models.Campaign;
 using GloomhavenTracker.Service.Models.Content;
 using GloomhavenTracker.Service.Repos;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.Extensions.Logging;
 
 namespace GloomhavenTracker.Service.Services;
@@ -18,7 +17,7 @@ public interface CampaignService
     public CampaignDTO GetCampaign(Guid campaignId);
     public CharacterDTO AddCharacterToCampaign(Guid campaignId, CharacterRequestBody newCharacterRequest);
     public CharacterDTO GetCharacterFromCampaign(Guid campaignId, string characterContentCode);
-    public CharacterDTO UpdateCharacterInCampaign(Guid campaignId, string characterContentCode, CharacterRequestBody updateCharacterRequest);
+    public CharacterDTO UpdateCharacterInCampaign(Guid campaignId, string characterContentCode, JsonPatchDocument<CharacterDTO> updateCharacterRequest);
     public ScenarioDTO AddScenarioToCampaign(Guid campaignId, ScenarioRequestBody newScenarioRequest);
     public ScenarioDTO GetScenarioFromCampaign(Guid campaignId, string scenarioContentCode);
     public ScenarioDTO UpdateScenarioInCampaign(Guid campaignId, string scenarioContentCode, ScenarioRequestBody updateScenarioRequest);
@@ -60,7 +59,7 @@ public class CampaignServiceImplementation : CampaignService
         List<Campaign> campaigns = repo.GetCampaignList();
         List<CampaignSummary> summaries = mapper.Map<List<CampaignSummary>>(campaigns);
         return summaries.Select(s => {
-            s.Editable = campaigns.First(c => c.Id == s.Id).Managers.Contains(user.UserId);
+            s.Editable = campaigns.First(c => c.Id == s.Id).Managers.ContainsKey(user.UserId);
             return s;
         }).ToList();
     }
@@ -72,7 +71,7 @@ public class CampaignServiceImplementation : CampaignService
         Campaign campaign = GetCampaignById(campaignId);
         CampaignDTO campaignDTO = mapper.Map<CampaignDTO>(campaign);
 
-        campaignDTO.Editable = campaign.Managers.Contains(user.UserId);
+        campaignDTO.Editable = campaign.Managers.ContainsKey(user.UserId);
         return campaignDTO;
     }
 
@@ -88,17 +87,17 @@ public class CampaignServiceImplementation : CampaignService
         (
             Guid.NewGuid(),
             requestBody.Name,
-            requestBody.Description,
+            requestBody.Description ?? "",
             game,
             new Dictionary<string, Models.Campaign.Scenario>(),
             new Dictionary<string, Models.Campaign.Character>(),
-            new List<Guid>(){user.UserId}
+            new Dictionary<Guid, Models.User>(){{user.UserId, user}}
         );
 
         var savedCampaign = repo.SaveCampaign(campaign);
 
         var campaignDTO = mapper.Map<CampaignDTO>(savedCampaign);
-        campaignDTO.Editable = savedCampaign.Managers.Contains(user.UserId);
+        campaignDTO.Editable = savedCampaign.Managers.ContainsKey(user.UserId);
         return campaignDTO;
     }
 
@@ -158,13 +157,13 @@ public class CampaignServiceImplementation : CampaignService
         return mapper.Map<CharacterDTO>(character);
     }
 
-    public CharacterDTO UpdateCharacterInCampaign(Guid campaignId, string characterContentCode, CharacterRequestBody updateCharacterRequest)
+    public CharacterDTO UpdateCharacterInCampaign(Guid campaignId, string characterContentCode, JsonPatchDocument<CharacterDTO> updateCharacterRequest)
     {
 
-        if (updateCharacterRequest.CharacterContentCode is not null)
+        if (updateCharacterRequest.Operations.FindIndex(o => o.path == "characterContentCode") > -1)
             throw new ArgumentException("Character Content Code cannot be updated");
 
-        if (updateCharacterRequest.Name is not null)
+        if (updateCharacterRequest.Operations.FindIndex(o => o.path == "characterContentCode") > -1)
             throw new ArgumentException("Character Name cannot be updated");
 
         var campaign = GetCampaignById(campaignId);
@@ -174,9 +173,15 @@ public class CampaignServiceImplementation : CampaignService
         if (character is null)
             throw new ArgumentException("Character Content was not found");
 
-        character.Experience = updateCharacterRequest.Experience ?? character.Experience;
-        character.Gold = updateCharacterRequest.Gold ?? character.Gold;
-        character.PerkPoints = updateCharacterRequest.PerkPoints ?? character.PerkPoints;
+        var characterDTO = mapper.Map<CharacterDTO>(character);
+
+        updateCharacterRequest.ApplyTo(characterDTO);
+
+        // character.Experience = updateCharacterRequest.Experience ?? character.Experience;
+        // character.Gold = updateCharacterRequest.Gold ?? character.Gold;
+        // character.PerkPoints = updateCharacterRequest.PerkPoints ?? character.PerkPoints;
+
+        character = mapper.Map<Models.Campaign.Character>(characterDTO);
 
         var savedCampaign = repo.UpdateCharacterForCampaign(campaignId, character);
 

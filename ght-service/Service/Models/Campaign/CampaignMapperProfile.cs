@@ -1,21 +1,23 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
+using GloomhavenTracker.Database.Models;
 using GloomhavenTracker.Database.Models.Campaign;
+using GloomhavenTracker.Service.Models;
 using GloomhavenTracker.Service.Models.Campaign;
 using GloomhavenTracker.Service.Models.Content;
-using ContentScenario = GloomhavenTracker.Service.Models.Content.Scenario;
-using ContentCharacter = GloomhavenTracker.Service.Models.Content.Character;
-using CampaignScenario = GloomhavenTracker.Service.Models.Campaign.Scenario;
 using CampaignCharacter = GloomhavenTracker.Service.Models.Campaign.Character;
-using System;
-using GloomhavenTracker.Database.Models;
+using CampaignScenario = GloomhavenTracker.Service.Models.Campaign.Scenario;
+using ContentCharacter = GloomhavenTracker.Service.Models.Content.Character;
+using ContentScenario = GloomhavenTracker.Service.Models.Content.Scenario;
 
 public class CampaignMapperProfile : Profile
 {
     public CampaignMapperProfile()
     {
-        CreateMap<CampaignScenario, ScenarioDAO>().ConvertUsing((src, dst, ctx) => new ScenarioDAO(){
+        CreateMap<CampaignScenario, ScenarioDAO>().ConvertUsing((src, dst, ctx) => new ScenarioDAO()
+        {
             Id = src.Id,
             ScenarioContentId = src.ContentScenario.Id,
             IsClosed = src.IsClosed,
@@ -29,14 +31,15 @@ public class CampaignMapperProfile : Profile
             isCompleted: src.IsCompleted
         ));
 
-        CreateMap<CampaignScenario, ScenarioDTO>().ConvertUsing((src,dst,ctx) => new ScenarioDTO(
+        CreateMap<CampaignScenario, ScenarioDTO>().ConvertUsing((src, dst, ctx) => new ScenarioDTO(
             scenarioContentCode: src.ContentScenario.ContentCode,
             scenarioNumber: src.ContentScenario.ScenarioNumber,
             src.IsClosed,
             src.IsCompleted
         ));
 
-        CreateMap<CampaignCharacter, CharacterDAO>().ConvertUsing((src, dst, ctx) => new CharacterDAO(){
+        CreateMap<CampaignCharacter, CharacterDAO>().ConvertUsing((src, dst, ctx) => new CharacterDAO()
+        {
             Id = src.Id,
             Name = src.Name,
             Experience = src.Experience,
@@ -69,17 +72,31 @@ public class CampaignMapperProfile : Profile
             perkPoints: src.PerkPoints
         ));
 
+        CreateMap<UserCampaignDAO, User>().ConvertUsing((src, dst, ctx) =>
+        {
+            return new User()
+            {
+                UserId = src.UserId,
+                UserName = src.User?.UserName ?? "",
+                FirstName = src.User?.FirstName ?? "",
+                LastName = src.User?.FirstName ?? "",
+                Email = src.User?.Email ?? ""
+            };
+        });
+
         CreateMap<Campaign, CampaignDAO>()
-            .ConvertUsing((src, dst, ctx) => {
+            .ConvertUsing((src, dst, ctx) =>
+            {
                 List<ScenarioDAO> campaignScenarios = src.Scenarios.Select(kvp => kvp.Value)
-                    .Select(scn => new ScenarioDAO(){
+                    .Select(scn => new ScenarioDAO()
+                    {
                         Id = scn.Id,
                         ScenarioContentId = scn.ContentScenario.Id,
                         CampaignId = src.Id,
                         IsClosed = scn.IsClosed,
                         IsCompleted = scn.IsClosed
                     }).ToList();
-                
+
                 List<CharacterDAO> campaignParty = src.Party.Select(kvp => kvp.Value)
                     .Select(chr => new CharacterDAO()
                     {
@@ -93,10 +110,10 @@ public class CampaignMapperProfile : Profile
                     }).ToList();
 
 
-                List<UserCampaignDAO> managers = src.Managers
+                List<UserCampaignDAO> managers = src.Managers.Values
                     .Select(user => new UserCampaignDAO()
                     {
-                        UserId = user,
+                        UserId = user.UserId,
                         CampaignId = src.Id
                     }).ToList();
 
@@ -115,7 +132,9 @@ public class CampaignMapperProfile : Profile
                 return campaign;
             });
 
-        CreateMap<CampaignDAO, Campaign>().ConvertUsing((src, dst, ctx) => {
+
+        CreateMap<CampaignDAO, Campaign>().ConvertUsing((src, dst, ctx) =>
+        {
 
             Dictionary<string, CampaignScenario> scenarios = src.Scenarios.ToDictionary(
                 scn => scn.ScenarioContent?.ContentCode ?? "",
@@ -127,6 +146,11 @@ public class CampaignMapperProfile : Profile
                 chr => ctx.Mapper.Map<CampaignCharacter>(chr)
             );
 
+            Dictionary<Guid, User> managers = src.Managers.ToDictionary(
+                mgr => mgr.UserId,
+                mgr => ctx.Mapper.Map<User>(mgr)
+            );
+
             return new Campaign(
                 id: src.Id,
                 name: src.Name,
@@ -134,10 +158,10 @@ public class CampaignMapperProfile : Profile
                 game: ctx.Mapper.Map<Game>(src.Game),
                 scenarios: scenarios,
                 party: party,
-                managers: src.Managers.Select(manager => manager.UserId).ToList()
+                managers: managers
             );
         });
-        
+
         CreateMap<Campaign, CampaignSummary>().ConvertUsing((src, dst, ctx) => new CampaignSummary(
             id: src.Id,
             name: src.Name,
