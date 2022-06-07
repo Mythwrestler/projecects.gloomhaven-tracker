@@ -1,9 +1,9 @@
-FROM node:14 as builder
+ARG REGISTRY
+FROM ${REGISTRY}node:14 as builder
 
 WORKDIR /app
 
 # Install Node Modules
-COPY ./.npmrc ./
 COPY ./package.json ./
 RUN npm install
 
@@ -30,7 +30,8 @@ RUN if [ "$BUILD_ENV" = "local" ] ; then npm run build:local ; fi ;
 RUN if [ "$BUILD_ENV" = "nprd" ] ; then npm run build:nprd ; fi ;
 RUN if [ "$BUILD_ENV" = "prod" ] ; then npm run build:prod ; fi ;
 
-FROM nginx:alpine
+ARG REGISTRY
+FROM ${REGISTRY}nginx:alpine
 
 WORKDIR /usr/share/nginx/html
 

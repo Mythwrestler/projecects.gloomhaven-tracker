@@ -1,0 +1,107 @@
+---
+kind: pipeline
+type: kubernetes
+name: Build-Only
+
+trigger:
+  branch:
+    exclude:
+      - master
+      - dev
+
+  event:
+    - push
+    - pr
+
+steps:
+
+  - name: build-only-service
+    image: plugins/docker
+    settings:
+      dry_run: true
+      repo: harbor.casperinc.net/library/ght/ght-service
+      registry: harbor.casperinc.net
+      username:
+        from_secret: registry-username
+      password:
+        from_secret: registry-password
+      context: ./ght-service/
+      dockerfile: ./ght-service/Dockerfile
+      build_args:
+        - REGISTRY=harbor.casperinc.net/microsoft/
+      
+  - name: build-only-client
+    image: plugins/docker
+    settings:
+      dry_run: true
+      repo: harbor.casperinc.net/library/ght/ght-client
+      registry: harbor.casperinc.net
+      username:
+        from_secret: registry-username
+      password:
+        from_secret: registry-password
+      context: ./ght-client/
+      dockerfile: ./ght-client/Dockerfile
+      build_args:
+        - REGISTRY=harbor.casperinc.net/docker-hub/library/
+---
+kind: pipeline
+type: kubernetes
+name: deploy
+
+trigger:
+  branch:
+    include:
+      - dev
+
+  event:
+    - push
+    - pr
+
+steps:
+
+  - name: build-only-service
+    image: plugins/docker
+    settings:
+      dry_run: true
+      repo: harbor.casperinc.net/library/ght/ght-service
+      registry: harbor.casperinc.net
+      tags: 
+        - ${DRONE_BRANCH//\//-}-${DRONE_COMMIT_SHA:0:8}
+      username:
+        from_secret: registry-username
+      password:
+        from_secret: registry-password
+      context: ./ght-service/
+      dockerfile: ./ght-service/Dockerfile
+      build_args:
+        - REGISTRY=harbor.casperinc.net/microsoft/
+      
+  - name: build-only-client
+    image: plugins/docker
+    settings:
+      dry_run: true
+      repo: harbor.casperinc.net/library/ght/ght-client
+      registry: harbor.casperinc.net
+      tags:
+        - ${DRONE_BRANCH//\//-}-${DRONE_COMMIT_SHA:0:8}
+      username:
+        from_secret: registry-username
+      password:
+        from_secret: registry-password
+      context: ./ght-client/
+      dockerfile: ./ght-client/Dockerfile
+      build_args:
+        - REGISTRY=harbor.casperinc.net/docker-hub/library/
+---
+kind: secret
+name: registry-username
+get:
+  path: harbor-registry
+  name: USERNAME
+---
+kind: secret
+name: registry-password
+get:
+  path: harbor-registry
+  name: PASSWORD
