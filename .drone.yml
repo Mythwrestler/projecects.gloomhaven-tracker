@@ -63,7 +63,7 @@ steps:
   - name: build-only-service
     image: plugins/docker
     settings:
-      dry_run: true
+      dry_run: false
       repo: harbor.casperinc.net/library/ght/ght-service
       registry: harbor.casperinc.net
       tags: 
@@ -80,7 +80,7 @@ steps:
   - name: build-only-client
     image: plugins/docker
     settings:
-      dry_run: true
+      dry_run: false
       repo: harbor.casperinc.net/library/ght/ght-client
       registry: harbor.casperinc.net
       tags:
