@@ -60,7 +60,7 @@ trigger:
 
 steps:
 
-  - name: build-only-service
+  - name: build-push-service
     image: plugins/docker
     settings:
       dry_run: false
@@ -68,6 +68,7 @@ steps:
       registry: harbor.casperinc.net
       tags: 
         - ${DRONE_BRANCH//\//-}-${DRONE_COMMIT_SHA:0:8}
+        - ${DRONE_BRANCH//\//-}-latest
       username:
         from_secret: registry-username
       password:
@@ -77,7 +78,7 @@ steps:
       build_args:
         - REGISTRY=harbor.casperinc.net/microsoft/
       
-  - name: build-only-client
+  - name: build-push-client
     image: plugins/docker
     settings:
       dry_run: false
@@ -85,6 +86,7 @@ steps:
       registry: harbor.casperinc.net
       tags:
         - ${DRONE_BRANCH//\//-}-${DRONE_COMMIT_SHA:0:8}
+        - ${DRONE_BRANCH//\//-}-latest
       username:
         from_secret: registry-username
       password:
