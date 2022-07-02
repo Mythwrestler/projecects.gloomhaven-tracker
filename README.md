@@ -1,4 +1,7 @@
-[![Build Status - dev](https://drone.casperinc.net/api/badges/casperm/projects.gloomhaven-tracker/status.svg?ref=refs/heads/dev)](https://drone.casperinc.net/casperm/projects.gloomhaven-tracker)
+# Builds
+| Branch | Status |
+| :-: | :--: |
+|**dev**|[![Build Status - dev](https://drone.casperinc.net/api/badges/casperm/projects.gloomhaven-tracker/status.svg?ref=refs/heads/dev)](https://drone.casperinc.net/casperm/projects.gloomhaven-tracker)|
 
 # Starting Up
 - Using Docker-Compose
