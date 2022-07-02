@@ -56,7 +56,7 @@ trigger:
 
   event:
     - push
-    - pr
+    - merge
 
 steps:
 
