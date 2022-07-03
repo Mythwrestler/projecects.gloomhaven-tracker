@@ -65,12 +65,8 @@ steps:
   - name: send-tags-to-tags-file
     image: bash
     commands:
-      - cd /drone/src/ght-client
-      - echo -e "${DRONE_BRANCH//\//-}-${DRONE_COMMIT_SHA:0:8}, ${DRONE_BRANCH//\//-}-latest, " > .tags
-      - cat /drone/src/version >> /drone/src/ght-client.tags
-      - cd /drone/src/ght-service
-      - echo -e "${DRONE_BRANCH//\//-}-${DRONE_COMMIT_SHA:0:8}, ${DRONE_BRANCH//\//-}-latest, " > .tags
-      - cat /drone/src/version >> /drone/src/ght-client.tags
+      - echo -n "${DRONE_BRANCH//\//-}-${DRONE_COMMIT_SHA:0:8}, ${DRONE_BRANCH//\//-}-latest, " > .tags
+      - cat /drone/src/version >> .tags
 
   - name: "Service: Build and Push Image"
     image: plugins/docker
