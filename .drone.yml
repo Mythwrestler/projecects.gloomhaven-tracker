@@ -116,7 +116,8 @@ steps:
         from_secret: creds-nprd-db-password
     commands:
       - cd /drone/src/ght-service
-      - ls -al
+      - dotnet tool install --global dotnet-ef --version 6.0.3
+      - dotnet restore
       - dotnet ef database update --project ./Database/ght-database.csproj --startup-project ./Service
 
 ---
