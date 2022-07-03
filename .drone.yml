@@ -66,12 +66,11 @@ steps:
     image: bash
     commands:
       - cd /drone/src/ght-client
-      - touch .tags
-      - echo -n ${DRONE_BRANCH//\//-}-${DRONE_COMMIT_SHA:0:8}, ${DRONE_BRANCH//\//-}-latest, " >> .tags
-      - cat ../version >> .tags
+      - echo -e "${DRONE_BRANCH//\//-}-${DRONE_COMMIT_SHA:0:8}, ${DRONE_BRANCH//\//-}-latest, " > .tags
+      - cat /drone/src/version >> /drone/src/ght-client.tags
       - cd /drone/src/ght-service
-      - echo -n ${DRONE_BRANCH//\//-}-${DRONE_COMMIT_SHA:0:8}, ${DRONE_BRANCH//\//-}-latest, " > .tags
-      - cat ../version >> .tags
+      - echo -e "${DRONE_BRANCH//\//-}-${DRONE_COMMIT_SHA:0:8}, ${DRONE_BRANCH//\//-}-latest, " > .tags
+      - cat /drone/src/version >> /drone/src/ght-client.tags
 
   - name: "Service: Build and Push Image"
     image: plugins/docker
