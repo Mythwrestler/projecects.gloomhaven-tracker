@@ -102,9 +102,6 @@ steps:
     when:
       branch:
         - dev
-    depends_on:
-      - "Service: Build and Push Image"
-      - "Client: Build and Push Image"
     image: mcr.microsoft.com/dotnet/sdk:6.0
     environment:
       DB_SERVER:
