@@ -115,8 +115,9 @@ steps:
       DB_PASSWORD:
         from_secret: creds-nprd-db-password
     commands:
-      - cd /drone/src
-      - dotnet ef database update --project ght-service/Database/ght-database.csproj --startup-project ght-service/Service
+      - cd /drone/src/ght-service
+      - ls -al
+      - dotnet ef database update --project ./Database/ght-database.csproj --startup-project ./Service
 
 ---
 kind: secret
