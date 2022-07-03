@@ -44,10 +44,12 @@ steps:
       dockerfile: ./ght-client/Dockerfile
       build_args:
         - REGISTRY=harbor.casperinc.net/docker-hub/library/
+
+
 ---
 kind: pipeline
 type: kubernetes
-name: deploy
+name: Build-Push-Deploy
 
 trigger:
   branch:
@@ -77,7 +79,7 @@ steps:
       dockerfile: ./ght-service/Dockerfile
       build_args:
         - REGISTRY=harbor.casperinc.net/microsoft/
-      
+
   - name: build-push-client
     image: plugins/docker
     settings:
@@ -95,6 +97,27 @@ steps:
       dockerfile: ./ght-client/Dockerfile
       build_args:
         - REGISTRY=harbor.casperinc.net/docker-hub/library/
+
+  - name: "EF: Update NPRD Database"
+    when:
+      branch:
+        - dev
+    image: mcr.microsoft.com/dotnet/sdk:6.0
+    environment:
+      DB_SERVER:
+        from_secret: creds-nprd-db-server
+      DB_PORT:
+        from_secret: creds-nprd-db-port
+      DB_DATABSE:
+        from_secret: creds-nprd-db-database
+      DB_USER:
+        from_secret: creds-nprd-db-user
+      DB_PASSWORD:
+        from_secret: creds-nprd-db-password
+    commands:
+      - cd ght-service
+      - dotnet ef database update --project ght-service/Database/ght-database.csproj --startup-project ght-service/Service
+
 ---
 kind: secret
 name: registry-username
@@ -107,3 +130,33 @@ name: registry-password
 get:
   path: harbor-registry
   name: PASSWORD
+---
+kind: secret
+name: creds-nprd-db-user
+get:
+  path: ght-nprd
+  name: DB_USER
+---
+kind: secret
+name: creds-nprd-db-password
+get:
+  path: ght-nprd
+  name: DB_PASSWORD
+---
+kind: secret
+name: creds-nprd-db-database
+get:
+  path: ght-nprd
+  name: DB_DATABSE
+---
+kind: secret
+name: creds-nprd-db-server
+get:
+  path: ght-nprd
+  name: DB_SERVER
+---
+kind: secret
+name: creds-nprd-db-port
+get:
+  path: ght-nprd
+  name: DB_PORT
