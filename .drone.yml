@@ -62,7 +62,7 @@ trigger:
 
 steps:
 
-  - name: build-push-service
+  - name: "Service: Build and Push Image"
     image: plugins/docker
     settings:
       dry_run: false
@@ -80,7 +80,7 @@ steps:
       build_args:
         - REGISTRY=harbor.casperinc.net/microsoft/
 
-  - name: build-push-client
+  - name: "Client: Build and Push Image"
     image: plugins/docker
     settings:
       dry_run: false
@@ -102,13 +102,16 @@ steps:
     when:
       branch:
         - dev
+    depends_on:
+      - "Service: Build and Push Image"
+      - "Client: Build and Push Image"
     image: mcr.microsoft.com/dotnet/sdk:6.0
     environment:
       DB_SERVER:
         from_secret: creds-nprd-db-server
       DB_PORT:
         from_secret: creds-nprd-db-port
-      DB_DATABSE:
+      DB_DATABASE:
         from_secret: creds-nprd-db-database
       DB_USER:
         from_secret: creds-nprd-db-user
@@ -150,7 +153,7 @@ kind: secret
 name: creds-nprd-db-database
 get:
   path: ght-nprd
-  name: DB_DATABSE
+  name: DB_DATABASE
 ---
 kind: secret
 name: creds-nprd-db-server
