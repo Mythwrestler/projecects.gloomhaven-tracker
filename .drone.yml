@@ -66,7 +66,8 @@ steps:
     image: bash
     commands:
       - cd /drone/src/ght-client
-      - echo -n ${DRONE_BRANCH//\//-}-${DRONE_COMMIT_SHA:0:8}, ${DRONE_BRANCH//\//-}-latest, " > .tags
+      - touch .tags
+      - echo -n ${DRONE_BRANCH//\//-}-${DRONE_COMMIT_SHA:0:8}, ${DRONE_BRANCH//\//-}-latest, " >> .tags
       - cat ../version >> .tags
       - cd /drone/src/ght-service
       - echo -n ${DRONE_BRANCH//\//-}-${DRONE_COMMIT_SHA:0:8}, ${DRONE_BRANCH//\//-}-latest, " > .tags
