@@ -62,6 +62,16 @@ trigger:
 
 steps:
 
+  - name: send-tags-to-tags-file
+    image: bash
+    commands:
+      - cd /drone/src/ght-client
+      - echo -n ${DRONE_BRANCH//\//-}-${DRONE_COMMIT_SHA:0:8}, ${DRONE_BRANCH//\//-}-latest, " > .tags
+      - cat ../version >> .tags
+      - cd /drone/src/ght-service
+      - echo -n ${DRONE_BRANCH//\//-}-${DRONE_COMMIT_SHA:0:8}, ${DRONE_BRANCH//\//-}-latest, " > .tags
+      - cat ../version >> .tags
+
   - name: "Service: Build and Push Image"
     image: plugins/docker
     settings:
@@ -69,8 +79,8 @@ steps:
       repo: harbor.casperinc.net/library/ght/ght-service
       registry: harbor.casperinc.net
       tags: 
-        - ${DRONE_BRANCH//\//-}-${DRONE_COMMIT_SHA:0:8}
-        - ${DRONE_BRANCH//\//-}-latest
+        # - ${DRONE_BRANCH//\//-}-${DRONE_COMMIT_SHA:0:8}
+        # - ${DRONE_BRANCH//\//-}-latest
       username:
         from_secret: registry-username
       password:
@@ -87,8 +97,8 @@ steps:
       repo: harbor.casperinc.net/library/ght/ght-client
       registry: harbor.casperinc.net
       tags:
-        - ${DRONE_BRANCH//\//-}-${DRONE_COMMIT_SHA:0:8}
-        - ${DRONE_BRANCH//\//-}-latest
+        # - ${DRONE_BRANCH//\//-}-${DRONE_COMMIT_SHA:0:8}
+        # - ${DRONE_BRANCH//\//-}-latest
       username:
         from_secret: registry-username
       password:
