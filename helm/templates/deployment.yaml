@@ -1,0 +1,138 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "helm.fullname" . }}-client
+  labels:
+    {{- include "helm.ghtClient.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.ghtClient.autoscaling.enabled }}
+  replicas: {{ .Values.ghtClient.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "helm.ghtClientSelectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.ghtClient.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "helm.ghtClientSelectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.ghtClient.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      # serviceAccountName: {{ include "helm.serviceAccountName" . }}
+      # securityContext:
+      {{/*  {{- toYaml .Values.ghtService.podSecurityContext | nindent 8 }} */}}
+      containers:
+        - name: {{ .Chart.Name }}-client
+          # securityContext:
+          {{/*  {{- toYaml .Values.ghtService.podSecurityContext | nindent 8 }} */}}
+          image: "{{ .Values.ghtClient.image.repository }}:{{ .Values.ghtClient.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.ghtClient.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {{- toYaml .Values.ghtClient.resources | nindent 12 }}
+          {{- if .Values.ghtClient.envFromSecrets }}
+          envFrom:
+          {{- range .Values.ghtClient.envFromSecrets }}
+          - secretRef:
+              name: {{ . }}
+          {{- end}}
+          {{- end}}
+      {{- with .Values.ghtClient.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.ghtClient.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.ghtClient.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "helm.fullname" . }}-service
+  labels:
+    {{- include "helm.ghtService.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.ghtService.autoscaling.enabled }}
+  replicas: {{ .Values.ghtService.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "helm.ghtServiceSelectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.ghtService.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "helm.ghtServiceSelectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.ghtService.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      # serviceAccountName: {{ include "helm.serviceAccountName" . }}
+      # securityContext:
+      {{/*  {{- toYaml .Values.ghtService.podSecurityContext | nindent 8 }} */}}
+      containers:
+        - name: {{ .Chart.Name }}-service
+          # securityContext:
+          {{/*  {{- toYaml .Values.ghtService.podSecurityContext | nindent 8 }} */}}
+          image: "{{ .Values.ghtService.image.repository }}:{{ .Values.ghtService.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.ghtService.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {{- toYaml .Values.ghtService.resources | nindent 12 }}
+          {{- if .Values.ghtService.envFromSecrets }}
+          envFrom:
+          {{- range .Values.ghtService.envFromSecrets }}
+          - secretRef:
+              name: {{ . }}
+          {{- end}}
+          {{- end}}
+      {{- with .Values.ghtService.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.ghtService.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.ghtService.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

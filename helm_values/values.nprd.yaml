@@ -1,0 +1,123 @@
+ght:
+  dopplerSecrets:
+    enabled: true
+    secrets:
+      - dopplerSecretName: doppler-ght-nprd-secrets
+        dopplerSecretToken: doppler-nprd-ght-token
+        deploySecretName: ght-nprd-secrets
+  serviceAccount:
+    create: false
+    annotations: {}
+    name: ""
+
+
+ghtClient:
+  replicaCount: 1
+  image:
+    repository: harbor.casperinc.net/library/ght-client
+    pullPolicy: IfNotPresent
+  imagePullSecrets: 
+    - harbor-regcreds
+  envFromSecrets: []
+
+  resources:
+    limits:
+      cpu: 250m
+      memory: 250Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 2
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+  service:
+    type: ClusterIP
+    port: 80
+
+  ingress:
+    enabled: true
+    className: public
+    annotations:
+      nginx.ingress.kubernetes.io/affinity: "cookie"
+      nginx.ingress.kubernetes.io/affinity-mode: "persistent"
+      nginx.ingress.kubernetes.io/session-cookie-name: "route"
+      nginx.ingress.kubernetes.io/session-cookie-secure: "true"
+      nginx.ingress.kubernetes.io/session-cookie-samesite: "Strict"
+      nginx.ingress.kubernetes.io/session-cookie-change-on-failure: "false"
+      nginx.ingress.kubernetes.io/session-cookie-expires: "172800"
+      nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
+      nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+      cert-manager.io/cluster-issuer: letsencrypt
+    hosts:
+      - host: ght.nprd.casperinc.net
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: ght.nprd.casperinc.net-tls
+        hosts:
+          - ght.nprd.casperinc.net
+
+
+
+ghtService:
+  replicaCount: 1
+  image:
+    repository: harbor.casperinc.net/library/ght-service
+    pullPolicy: IfNotPresent
+  imagePullSecrets:
+    - harbor-regcreds
+  envFromSecrets:
+    - ght-nprd
+
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1024Mi
+    requests:
+      cpu: 250m
+      memory: 248Mi
+
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 2
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+  service:
+    type: ClusterIP
+    port: 80
+
+  ingress:
+    enabled: true
+    className: public
+    annotations:
+      nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+      cert-manager.io/cluster-issuer: letsencrypt
+    hosts:
+      - host: ght.nprd.casperinc.net
+        paths:
+          - path: /api
+            pathType: Prefix
+    tls:
+      - secretName: ght.nprd.casperinc.net-tls
+        hosts:
+          - ght.nprd.casperinc.net
