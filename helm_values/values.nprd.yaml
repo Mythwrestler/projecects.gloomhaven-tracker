@@ -17,7 +17,7 @@ ghtClient:
     repository: harbor.casperinc.net/library/ght-client
     pullPolicy: IfNotPresent
   imagePullSecrets: 
-    - harbor-regcreds
+    - harbor-regcred
   envFromSecrets: []
 
   resources:
@@ -77,7 +77,7 @@ ghtService:
     repository: harbor.casperinc.net/library/ght-service
     pullPolicy: IfNotPresent
   imagePullSecrets:
-    - harbor-regcreds
+    - harbor-regcred
   envFromSecrets:
     - ght-nprd
 
