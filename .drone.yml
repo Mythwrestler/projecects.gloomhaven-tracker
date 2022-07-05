@@ -147,6 +147,8 @@ steps:
       values_files: ./helm_values/values.nprd.yaml
       kube_api_server:
         from_secret: kube_api_server
+      kube_certificate:
+        from_secret: kube_certificate
       kube_token:
         from_secret: kube_token
       kube_service_account:
@@ -212,3 +214,9 @@ name: kube_token
 get:
   path: k8s_auth
   name: TOKEN
+---
+kind: secret
+name: kube_certificate
+get:
+  path: k8s_auth
+  name: CERT_BASE64
