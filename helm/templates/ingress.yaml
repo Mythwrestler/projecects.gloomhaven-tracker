@@ -59,8 +59,8 @@ spec:
           {{- end }}
     {{- end }}
 {{- end }}
----
 {{- if .Values.ghtService.ingress.enabled -}}
+---
 {{- $fullName := include "helm.fullname" . -}}
 {{- $svcPort := .Values.ghtService.service.port -}}
 {{- if and .Values.ghtService.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
