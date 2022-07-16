@@ -127,7 +127,7 @@ steps:
         - dev
     image: pelotech/drone-helm3
     settings:
-      helm_command: lint
+      mode: lint
       chart: ./helm
       values_files: 
         - ./helm_values/values.nprd.yaml
@@ -139,12 +139,14 @@ steps:
         - dev
     image: pelotech/drone-helm3
     settings:
-      helm_command: template
+      mode: upgrade
       chart: ./helm
       release: ght-nprd
+      debug: true
       namespace: nprd
       wait_for_upgrade: true
-      values_files: ./helm_values/values.nprd.yaml
+      values_files: 
+        - ./helm_values/values.nprd.yaml
       kube_api_server:
         from_secret: kube_api_server
       kube_certificate:
