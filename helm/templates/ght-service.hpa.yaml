@@ -1,33 +1,4 @@
-{{- if .Values.ghtClient.autoscaling.enabled }}
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-metadata:
-  name: {{ include "helm.fullname" . }}-client
-  labels:
-    {{- include "helm.ghtClient.labels" . | nindent 4 }}
-spec:
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: {{ include "helm.fullname" . }}-client
-  minReplicas: {{ .Values.ghtClient.autoscaling.minReplicas }}
-  maxReplicas: {{ .Values.ghtClient.autoscaling.maxReplicas }}
-  metrics:
-    {{- if .Values.ghtClient.autoscaling.targetCPUUtilizationPercentage }}
-    - type: Resource
-      resource:
-        name: cpu
-        targetAverageUtilization: {{ .Values.ghtClient.autoscaling.targetCPUUtilizationPercentage }}
-    {{- end }}
-    {{- if .Values.ghtClient.autoscaling.targetMemoryUtilizationPercentage }}
-    - type: Resource
-      resource:
-        name: memory
-        targetAverageUtilization: {{ .Values.ghtClient.autoscaling.targetMemoryUtilizationPercentage }}
-    {{- end }}
-{{- end }}
 {{- if .Values.ghtService.autoscaling.enabled }}
----
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:

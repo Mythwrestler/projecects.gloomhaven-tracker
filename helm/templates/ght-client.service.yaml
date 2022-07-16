@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "helm.fullname" . }}-client
+  labels:
+    {{- include "helm.ghtClient.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.ghtClient.service.type }}
+  ports:
+    - port: {{ .Values.ghtClient.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "helm.ghtClientSelectorLabels" . | nindent 4 }}
