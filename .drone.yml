@@ -128,6 +128,7 @@ steps:
     image: pelotech/drone-helm3
     settings:
       mode: lint
+      debug: true
       chart: ./helm
       values_files: 
         - ./helm_values/values.nprd.yaml
@@ -140,9 +141,9 @@ steps:
     image: pelotech/drone-helm3
     settings:
       mode: upgrade
+      debug: true
       chart: ./helm
       release: ght-nprd
-      debug: true
       namespace: nprd
       wait_for_upgrade: true
       values_files: 
