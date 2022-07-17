@@ -141,6 +141,7 @@ steps:
     image: pelotech/drone-helm3
     settings:
       mode: upgrade
+      force_upgrade: true
       cleanup_failed_upgrade: true
       chart: ./helm
       release: ght-nprd

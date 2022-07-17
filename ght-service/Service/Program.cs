@@ -195,6 +195,8 @@ if (httpLoggingEnabled)
     });
 }
 
+builder.Services.AddHealthChecks();
+
 #endregion
 
 #region App Startup
@@ -243,6 +245,8 @@ app.UseAuthorization();
 app.MapHub<CombatHub>("hub/combatspace").RequireAuthorization("authenticated", "superuser");
 
 app.UseEndpoints(endpoints => endpoints.MapControllers());
+
+app.MapHealthChecks("/healthz");
 
 app.Run();
 
