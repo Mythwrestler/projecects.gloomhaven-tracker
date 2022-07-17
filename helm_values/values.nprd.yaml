@@ -14,7 +14,7 @@ ght:
 ghtClient:
   replicaCount: 1
   image:
-    repository: harbor.casperinc.net/library/ght-client
+    repository: harbor.casperinc.net/library/ght/ght-client
     pullPolicy: IfNotPresent
   imagePullSecrets: 
     - name: harbor-regcred
@@ -74,7 +74,7 @@ ghtClient:
 ghtService:
   replicaCount: 1
   image:
-    repository: harbor.casperinc.net/library/ght-service
+    repository: harbor.casperinc.net/library/ght/ght-service
     pullPolicy: IfNotPresent
   imagePullSecrets:
     - name: harbor-regcred
