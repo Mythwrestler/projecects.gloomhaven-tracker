@@ -22,7 +22,7 @@ spec:
     spec:
       {{- with .Values.ghtService.imagePullSecrets }}
       imagePullSecrets:
-        {{- toYaml . | nindent 6 }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
       # serviceAccountName: {{ include "helm.serviceAccountName" . }}
       # securityContext:
