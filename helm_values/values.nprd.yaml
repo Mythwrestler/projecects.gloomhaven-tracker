@@ -79,7 +79,7 @@ ghtService:
   imagePullSecrets:
     - name: harbor-regcred
   envFromSecrets:
-    - ght-nprd
+    - ght-nprd-secrets
 
   resources:
     limits:
