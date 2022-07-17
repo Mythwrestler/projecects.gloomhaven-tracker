@@ -17,12 +17,16 @@ spec:
     - type: Resource
       resource:
         name: cpu
-        targetAverageUtilization: {{ .Values.ghtService.autoscaling.targetCPUUtilizationPercentage }}
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.ghtService.autoscaling.targetCPUUtilizationPercentage }}
     {{- end }}
     {{- if .Values.ghtService.autoscaling.targetMemoryUtilizationPercentage }}
     - type: Resource
       resource:
         name: memory
-        targetAverageUtilization: {{ .Values.ghtService.autoscaling.targetMemoryUtilizationPercentage }}
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.ghtService.autoscaling.targetMemoryUtilizationPercentage }}
     {{- end }}
 {{- end }}
