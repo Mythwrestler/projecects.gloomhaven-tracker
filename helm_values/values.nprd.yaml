@@ -10,13 +10,12 @@ ght:
     annotations: {}
     name: ""
 
-
 ghtClient:
   replicaCount: 1
   image:
     repository: harbor.casperinc.net/library/ght/ght-client
     pullPolicy: Always
-  imagePullSecrets: 
+  imagePullSecrets:
     - name: harbor-regcred
   envFromSecrets: []
 
@@ -68,8 +67,6 @@ ghtClient:
       - secretName: ght.nprd.casperinc.net-tls
         hosts:
           - ght.nprd.casperinc.net
-
-
 
 ghtService:
   replicaCount: 1
