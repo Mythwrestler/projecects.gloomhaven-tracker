@@ -73,7 +73,7 @@ ghtService:
   replicaCount: 1
   image:
     repository: harbor.casperinc.net/library/ght/ght-service
-    tag: ${DEPLOY_TAG}
+    tag: __DEPLOY_TAG__
     pullPolicy: Always
   imagePullSecrets:
     - name: harbor-regcred
