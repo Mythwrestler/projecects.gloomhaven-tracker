@@ -121,6 +121,15 @@ steps:
       - dotnet restore
       - dotnet ef database update --project ./Database/ght-database.csproj --startup-project ./Service
 
+  - name: "Replace Placeholders in NPRD Helmchart"
+    when:
+      branch:
+        - dev
+    image: bash
+    commands:
+      - export DEPLOY_TAG="${DRONE_BRANCH//\//-}-${DRONE_COMMIT_SHA:0:8}"
+      - sed -i "s/__DEPLOY_TAG__/$DEPLOY_TAG/" ./helm_values/values.nprd.yaml
+
   - name: "Helm: Linting NPRD Values"
     when:
       branch:

@@ -14,6 +14,7 @@ ghtClient:
   replicaCount: 1
   image:
     repository: harbor.casperinc.net/library/ght/ght-client
+    tag: __DEPLOY_TAG__
     pullPolicy: Always
   imagePullSecrets:
     - name: harbor-regcred
@@ -72,6 +73,7 @@ ghtService:
   replicaCount: 1
   image:
     repository: harbor.casperinc.net/library/ght/ght-service
+    tag: ${DEPLOY_TAG}
     pullPolicy: Always
   imagePullSecrets:
     - name: harbor-regcred
