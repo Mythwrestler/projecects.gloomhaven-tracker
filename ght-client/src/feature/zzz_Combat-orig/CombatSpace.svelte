@@ -65,7 +65,6 @@
     currentCenter = panelOrder.get(centerIndex) ?? "";
     currentRight = panelOrder.get(centerIndex + 1) ?? "";
     nextRight = panelOrder.get(centerIndex + 2) ?? "";
-    console.log(`${currentLeft} | ${currentCenter} | ${currentRight}`);
     panelPositions[currentLeft] = movePanelLeft(panelPositions[currentLeft]);
     panelPositions[currentCenter] = movePanelLeft(
       panelPositions[currentCenter]
@@ -87,7 +86,6 @@
     currentLeft = panelOrder.get(centerIndex - 1) ?? "";
     currentCenter = panelOrder.get(centerIndex) ?? "";
     currentRight = panelOrder.get(centerIndex + 1) ?? "";
-    console.log(`${currentLeft} | ${currentCenter} | ${currentRight}`);
     panelPositions[currentLeft] = movePanelRight(panelPositions[currentLeft]);
     panelPositions[currentCenter] = movePanelRight(
       panelPositions[currentCenter]

@@ -19,7 +19,6 @@ export const getCombatSpaces = async (): Promise<void> => {
 //   combatId: string
 // ): Promise<CombatSpace | undefined> => {
 //   try {
-//     console.log(`combatspace/${combatId}`);
 //     const result = await getAPI<CombatSpace>(`combatspace/${combatId}`);
 //     return result;
 //   } catch (err: unknown) {

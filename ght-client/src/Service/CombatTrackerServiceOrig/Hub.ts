@@ -40,7 +40,6 @@ const HUB_METHODS = {
 };
 
 export const joinCombatSpace = async (combatId: string): Promise<void> => {
-  console.log("joinCombatSpace - Start");
   const hubConnected = get(combatHubConnected);
   if (!hubConnected) return;
   const hub = get(combatHub);
@@ -58,7 +57,6 @@ export const joinCombatSpace = async (combatId: string): Promise<void> => {
 };
 
 export const joinCombatSpaceResult = (result: HubRequestResult): void => {
-  console.log("joinCombatSpace - Result");
   if (result.errorMessage || !result.data) {
     requestCombatSpaceConnectionFailure();
   }
@@ -66,7 +64,6 @@ export const joinCombatSpaceResult = (result: HubRequestResult): void => {
 };
 
 export const leaveCombatSpace = async (): Promise<void> => {
-  console.log("leaveCombatSpace - Start");
   const hubConnected = get(combatHubConnected);
   if (!hubConnected) return;
   const hub = get(combatHub);
@@ -81,7 +78,6 @@ export const leaveCombatSpace = async (): Promise<void> => {
 };
 
 export const leaveCombatSpaceResult = (result: HubRequestResult): void => {
-  console.log("leaveCombatSpace - Result");
   if (result.errorMessage) {
     requestCombatSpaceDisconnectFailure();
   }

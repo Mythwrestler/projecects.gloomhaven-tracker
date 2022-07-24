@@ -10,6 +10,12 @@ declare module "@dopry/svelte-oidc" {
     post_logout_redirect_uri: string;
     extraOptions: unknown;
     scope?: string;
+    /** The context key used to retrieve the Auth0 client in Svelte components. */
+    OIDC_CONTEXT_CLIENT_PROMISE: object;
+    /** The context key used to retrieve the Auth0 login callback URL in Svelte components. */
+    OIDC_CONTEXT_CALLBACK_URL: object;
+    /** The context key used to retrieve the Auth0 login callback URL in Svelte components. */
+    OIDC_CONTEXT_LOGOUT_URL: object;
   };
 
   export class OidcContext extends SvelteComponentTyped<
@@ -52,12 +58,6 @@ declare module "@dopry/svelte-oidc" {
   /** The last authentication error encountered. */
   export const authError: Readable<Error | null>;
 
-  /** The context key used to retrieve the Auth0 client in Svelte components. */
-  export const AUTH0_CONTEXT_CLIENT_PROMISE: unknown;
-  /** The context key used to retrieve the Auth0 login callback URL in Svelte components. */
-  export const AUTH0_CONTEXT_CALLBACK_URL: unknown;
-  /** The context key used to retrieve the Auth0 login callback URL in Svelte components. */
-  export const AUTH0_CONTEXT_LOGOUT_URL: unknown;
 
   /**
    * Initiates the Auth0 login process.

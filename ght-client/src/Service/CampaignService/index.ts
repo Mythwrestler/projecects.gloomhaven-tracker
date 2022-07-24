@@ -15,7 +15,7 @@ import type { Operation as PatchOperation } from "fast-json-patch";
 class CampaignServiceImplementation {
   private authToken?: string;
 
-  constructor(authTokenStore: Readable<string>) {
+  constructor(authTokenStore: Readable<string | undefined>) {
     authTokenStore.subscribe((token) => (this.authToken = token));
     this.campaign.subscribe((campaign) => {
       const savedCampaign = get(this.savedCampaign);
@@ -45,7 +45,7 @@ class CampaignServiceImplementation {
     try {
       const result = await getAPI<CampaignSummary[]>(
         `campaigns`,
-        this.authToken
+        this.authToken ?? ""
       );
       if (result && result.length > 0) this.campaignListingStore.set(result);
     } catch (err: unknown) {
@@ -74,7 +74,7 @@ class CampaignServiceImplementation {
     try {
       const result = await getAPI<Campaign>(
         `campaigns/${campaignId}`,
-        this.authToken
+        this.authToken ?? ""
       );
       if (result) {
         this.campaignStore.set(result);
@@ -157,7 +157,7 @@ class CampaignServiceImplementation {
       try {
         await patchAPI<void>(
           `campaigns/${campaignToSave.id}`,
-          this.authToken,
+          this.authToken ?? "",
           patches
         );
         this.savedCampaign.set(cloneDeep(campaignToSave));
@@ -170,11 +170,15 @@ class CampaignServiceImplementation {
 
   public createNewCampaign = async (campaign: Campaign): Promise<void> => {
     try {
-      const result = await postAPI<Campaign>("campaigns", this.authToken, {
-        id: campaign.id,
-        name: campaign.name,
-        game: campaign.game,
-      });
+      const result = await postAPI<Campaign>(
+        "campaigns",
+        this.authToken ?? "",
+        {
+          id: campaign.id,
+          name: campaign.name,
+          game: campaign.game,
+        }
+      );
       if (result) {
         this.campaignStore.set(result);
         this.savedCampaign.set(result);
@@ -202,7 +206,7 @@ class CampaignServiceImplementation {
 
 let campaignService: CampaignServiceImplementation | undefined = undefined;
 const useCampaignService = (
-  accessToken: Readable<string>
+  accessToken: Readable<string | undefined>
 ): CampaignServiceImplementation => {
   if (!campaignService)
     campaignService = new CampaignServiceImplementation(accessToken);

@@ -12,7 +12,7 @@ import * as GlobalError from "../Error";
 class ContentServiceImplementation {
   private authToken?: string;
 
-  constructor(authTokenStore: Readable<string>) {
+  constructor(authTokenStore: Readable<string | undefined>) {
     authTokenStore.subscribe((token) => (this.authToken = token));
   }
 
@@ -237,7 +237,7 @@ class ContentServiceImplementation {
 
 let contentService: ContentServiceImplementation | undefined = undefined;
 const useContentService = (
-  authTokenStore: Readable<string>
+  authTokenStore: Readable<string | undefined>
 ): ContentServiceImplementation => {
   if (!contentService)
     contentService = new ContentServiceImplementation(authTokenStore);
