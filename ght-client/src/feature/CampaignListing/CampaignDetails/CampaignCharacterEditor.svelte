@@ -12,6 +12,7 @@
   import type { Character } from "../../../models/Campaign";
   import * as ContentModel from "../../../models/Content";
 
+  import { accessToken } from "../../../common/Utils/OidcSvelteClient";
   import { useContentService } from "../../../Service/ContentService";
 
   export let gameCode = "";
@@ -23,7 +24,7 @@
   export let handleCloseDialog: () => void;
   export let handleSave: () => void;
 
-  const contentService = useContentService();
+  const contentService = useContentService(accessToken);
 
   let characterDetails: ContentModel.Character | undefined;
 

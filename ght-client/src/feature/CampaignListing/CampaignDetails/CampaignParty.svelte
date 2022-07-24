@@ -9,7 +9,7 @@
   import { useCampaignService } from "../../../Service/CampaignService";
   import CampaignCharacterEditor from "./CampaignCharacterEditor.svelte";
   import { useContentService } from "../../../Service/ContentService";
-  import { accessToken } from "@dopry/svelte-oidc";
+  import { accessToken } from "../../../common/Utils/OidcSvelteClient";
   export let campaign: Campaign;
 
   const { GetCharactersForGame } = useContentService(accessToken);

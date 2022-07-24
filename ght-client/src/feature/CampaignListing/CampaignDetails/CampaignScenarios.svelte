@@ -22,7 +22,7 @@
     ScenarioSummary,
   } from "../../../models/Content";
   import { useContentService } from "../../../Service/ContentService";
-  import { accessToken } from "@dopry/svelte-oidc";
+  import { accessToken } from "../../../common/Utils/OidcSvelteClient";
 
   export let campaign: Campaign | undefined;
   export let saveScenario: (scenario: Scenario) => void | undefined;

@@ -20,10 +20,6 @@
   const { GetScenariosForGame } = useContentService();
 
   const handleGetScenarios = async () => {
-    console.log("handelGetCalled");
-    console.log($scenarioListingLoaded);
-    console.log($scenarioListingLoading);
-    console.log(JSON.stringify($scenarioListing));
     if (
       !$scenarioListingLoaded &&
       !$scenarioListingLoading &&
@@ -40,9 +36,7 @@
       return { label: l.name, value: l.contentCode };
     });
   });
-  const onSecenariSelection = (scenarioCode: string | number) => {
-    console.log(scenarioCode);
-  };
+  const onSecenariSelection = (scenarioCode: string | number) => {};
 
   onMount(() => {
     void handleGetScenarios();

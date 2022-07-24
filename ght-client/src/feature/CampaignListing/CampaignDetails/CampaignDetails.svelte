@@ -8,7 +8,7 @@
   import { useLocation } from "svelte-navigator";
   import CampaignScenarios from "./CampaignScenarios.svelte";
   import { onDestroy, onMount } from "svelte";
-  import { accessToken } from "@dopry/svelte-oidc";
+  import { accessToken } from "../../../common/Utils/OidcSvelteClient";
   import { writable } from "svelte/store";
 
   // your script goes here
@@ -88,8 +88,7 @@
         bind:value={campaign.name}
         onChange={handleUpdateCampaignName}
         placeholderText="Campaign Name"
-        displayLabel="DescripNametion"
-        `
+        displayLabel="Name"
       />
     </div>
     <div class="mt-2">
