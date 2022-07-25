@@ -80,7 +80,6 @@ export default {
       ENV_AUTH_ENABLED: process.env.AUTH_ENABLED ?? "false",
       ENV_AUTH_DOMAIN: process.env.AUTH_DOMAIN ?? "",
       ENV_AUTH_CLIENT_ID: process.env.AUTH_CLIENT_ID ?? "",
-      ENV_AUTH_API_AUDIENCE: process.env.AUTH_API_AUDIENCE ?? "",
       ENV_API_BASE_URL: process.env.API_BASE_URL ?? "",
     }),
 
