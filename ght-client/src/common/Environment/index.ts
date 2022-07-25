@@ -2,7 +2,6 @@ interface AuthEnvVars {
   Enabled: () => boolean;
   Domain: () => string;
   ClientId: () => string;
-  APIAudience: () => string;
 }
 
 interface ApiEnvVars {
@@ -22,9 +21,6 @@ const AUTH: AuthEnvVars = {
   },
   ClientId: () => {
     return "ENV_AUTH_CLIENT_ID";
-  },
-  APIAudience: () => {
-    return "ENV_AUTH_API_AUDIENCE";
   },
 };
 
