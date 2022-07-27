@@ -27,7 +27,7 @@ export interface Character {
 }
 
 export interface Scenario {
-  contentCode: string;
+  scenarioContentCode: string;
   name: string;
   description: string;
   scenarioNumber: number;

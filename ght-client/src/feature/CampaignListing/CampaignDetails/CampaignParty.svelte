@@ -14,12 +14,8 @@
   export let campaign: Campaign;
 
   const { GetCharactersForGame } = useContentService(accessToken);
-  const {
-    addUpdatePartyMember,
-    addPartyMember,
-    updatePartyMember,
-    getPartyMemeberDetails,
-  } = useCampaignService(accessToken);
+  const { addPartyMember, updatePartyMember, getPartyMemberDetails } =
+    useCampaignService(accessToken);
 
   const getContentSummary = (contentCode: string) => {
     return $characterListing.find((character) => {
@@ -33,7 +29,7 @@
   const handleOpenDialog = async (characterContentCode: string | undefined) => {
     isNewCharacter = characterContentCode === undefined;
     if (!isNewCharacter) {
-      await getPartyMemeberDetails(campaign.id, characterContentCode ?? "");
+      await getPartyMemberDetails(campaign.id, characterContentCode ?? "");
       selectedCharacter = deepClone(
         campaign.party.find(
           (chr) => chr.characterContentCode === characterContentCode
