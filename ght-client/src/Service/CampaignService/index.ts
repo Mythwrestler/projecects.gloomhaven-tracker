@@ -20,20 +20,6 @@ class CampaignServiceImplementation {
 
   constructor(authTokenStore: Readable<string | undefined>) {
     authTokenStore.subscribe((token) => (this.authToken = token));
-    // this.campaign.subscribe((campaign) => {
-    //   const savedCampaign = get(this.savedCampaign);
-    //   if (campaign && savedCampaign) {
-    //     const patches = patchCompare(savedCampaign, campaign);
-    //     this.pendingPatches.set(patches);
-    //   }
-    // });
-    // this.savedCampaign.subscribe((saved) => {
-    //   const campaign = get(this.campaignStore);
-    //   if (campaign && saved) {
-    //     const patches = patchCompare(saved, campaign);
-    //     this.pendingPatches.set(patches);
-    //   }
-    // });
   }
 
   //#region Campaign Listing
@@ -63,15 +49,6 @@ class CampaignServiceImplementation {
     this.campaignStore,
     ($store) => $store
   );
-  // private savedCampaign = writable<Campaign | undefined>();
-  // private pendingPatches = writable<PatchOperation[]>([]);
-  // private campaignNotSaved = derived(
-  //   [this.pendingPatches],
-  //   (pendingPatches) => {
-  //     return pendingPatches.length > 0;
-  //   },
-  //   false
-  // );
 
   public getCampaign = async (campaignId: string) => {
     try {
@@ -81,11 +58,30 @@ class CampaignServiceImplementation {
       );
       if (result) {
         this.campaignStore.set(result);
-        // this.savedCampaign.set(cloneDeep(result));
-        // this.pendingPatches.set([]);
       }
     } catch (err: unknown) {
       GlobalError.showErrorMessage("Failed To Retrieve Campaign");
+    }
+  };
+
+  public createNewCampaign = async (campaign: Campaign): Promise<void> => {
+    try {
+      const result = await postAPI<Campaign>(
+        "campaigns",
+        this.authToken ?? "",
+        {
+          id: campaign.id,
+          name: campaign.name,
+          game: campaign.game,
+        }
+      );
+      if (result) {
+        this.campaignStore.set(result);
+        // this.savedCampaign.set(result);
+        await this.getCampaignListing();
+      }
+    } catch (ex) {
+      GlobalError.showErrorMessage("Failed To Create a New Campaign");
     }
   };
 
@@ -134,16 +130,9 @@ class CampaignServiceImplementation {
     }) as Promise<void>;
   };
 
-  // public updateCampaignName = (name: string) => {
-  //   this.campaignStore.update((campaignBeingUpdated) => {
-  //     if (campaignBeingUpdated == undefined) return undefined;
-  //     return {
-  //       ...campaignBeingUpdated,
-  //       name,
-  //     };
-  //   });
-  // };
+  //#endregion
 
+  //#region Campaign Party
   public addPartyMember = async (campaignId: string, character: Character) => {
     return this.requestQueue.enqueue(async () => {
       try {
@@ -211,7 +200,7 @@ class CampaignServiceImplementation {
     });
   };
 
-  public getPartyMemeberDetails = async (
+  public getPartyMemberDetails = async (
     campaignId: string,
     characterContentCode: string
   ) => {
@@ -243,93 +232,59 @@ class CampaignServiceImplementation {
     });
   };
 
-  public addUpdatePartyMember = (character: Character) => {
-    this.campaignStore.update((campaignBeingUpdated) => {
-      if (campaignBeingUpdated == undefined) return undefined;
-      const characters = cloneDeep(campaignBeingUpdated.party);
-      const characterIndex = characters.findIndex(
-        (c) => c.characterContentCode === character.characterContentCode
-      );
-      if (characterIndex === -1) {
-        characters.push(character);
-      } else {
-        characters[characterIndex] = { ...character };
-      }
-      return {
-        ...campaignBeingUpdated,
-        party: characters,
-      };
-    });
-  };
-
-  public addUpdateScenario = (scenario: Scenario) => {
-    this.campaignStore.update((campaignBeingUpdated) => {
-      if (campaignBeingUpdated == undefined) return campaignBeingUpdated;
-      const scenarios = cloneDeep(campaignBeingUpdated.scenarios);
-      const scenarioIndex = scenarios.findIndex(
-        (s) => s.contentCode === scenario.contentCode
-      );
-      if (scenarioIndex === -1) {
-        scenarios.push(scenario);
-      } else {
-        scenarios[scenarioIndex] = { ...scenario };
-      }
-
-      return {
-        ...campaignBeingUpdated,
-        scenarios,
-      };
-    });
-  };
-
   //#endregion
 
-  //#region Create / Save Campaign
-
-  // public saveCampaign = async () => {
-  //   if (get(this.campaignNotSaved)) {
-  //     const campaignToSave = get(this.campaignStore);
-  //     const patches = get(this.pendingPatches);
-  //     if (campaignToSave == undefined) return;
-  //     try {
-  //       await patchAPI<void>(
-  //         `campaigns/${campaignToSave.id}`,
-  //         this.authToken ?? "",
-  //         patches
-  //       );
-  //       this.savedCampaign.set(cloneDeep(campaignToSave));
-  //       this.pendingPatches.set([]);
-  //     } catch (ex) {
-  //       GlobalError.showErrorMessage("Failed To Create a New Campaign");
-  //     }
-  //   }
-  // };
-
-  public createNewCampaign = async (campaign: Campaign): Promise<void> => {
-    try {
-      const result = await postAPI<Campaign>(
-        "campaigns",
-        this.authToken ?? "",
-        {
-          id: campaign.id,
-          name: campaign.name,
-          game: campaign.game,
+  //#region Campaign Scenarios
+  public addScenario = async (campaignId: string, scenario: Scenario) => {
+    return this.requestQueue.enqueue(async () => {
+      try {
+        const result = await postAPI<Scenario>(
+          `campaigns/${campaignId}/scenarios`,
+          this.authToken,
+          scenario
+        );
+        if (result) {
+          this.campaignStore.update((campaign) => {
+            if (campaign === undefined || campaign.id !== campaignId)
+              return campaign;
+            const updatedCampaign = deepClone(campaign) as Campaign;
+            updatedCampaign.scenarios.push(result);
+            return updatedCampaign;
+          });
         }
-      );
-      if (result) {
-        this.campaignStore.set(result);
-        // this.savedCampaign.set(result);
-        await this.getCampaignListing();
+      } catch (err: unknown) {
+        GlobalError.showErrorMessage("Failed to add scenario to campaign");
       }
-    } catch (ex) {
-      GlobalError.showErrorMessage("Failed To Create a New Campaign");
-    }
+    });
   };
 
-  public clearCampaign = () => {
-    this.campaignStore.set(undefined);
-    // this.savedCampaign.set(undefined);
-    // this.pendingPatches.set([]);
+  public updateScenario = async (campaignId: string, scenario: Scenario) => {
+    return this.requestQueue.enqueue(async () => {
+      try {
+        const result = await putAPI<Scenario>(
+          `campaigns/${campaignId}/scenarios/${scenario.scenarioContentCode}`,
+          this.authToken,
+          scenario
+        );
+        if (result) {
+          this.campaignStore.update((campaign) => {
+            if (campaign === undefined || campaign.id !== campaignId)
+              return campaign;
+            const updatedCampaign = deepClone(campaign) as Campaign;
+            updatedCampaign.scenarios.splice(
+              campaign.scenarios.findIndex(
+                (scn) => scn.scenarioContentCode === result.scenarioContentCode
+              ),
+              1,
+              result
+            );
+            return updatedCampaign;
+          });
+        }
+      } catch (err: unknown) {
+        GlobalError.showErrorMessage("Failed to update scenario for campaign");
+      }
+    });
   };
 
   //#endregion
@@ -337,7 +292,6 @@ class CampaignServiceImplementation {
   public State = {
     campaignListing: this.campaignListing,
     campaign: this.campaign,
-    // campaignNotSaved: this.campaignNotSaved,
   };
 }
 

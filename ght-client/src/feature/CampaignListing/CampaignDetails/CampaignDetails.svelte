@@ -17,14 +17,9 @@
   const {
     State: campaignState,
     getCampaign,
-    //saveCampaign,
-    addUpdateScenario,
     updateCampaign,
-    // updateCampaignDescription,
-    // updateCampaignName,
     clearCampaign,
   } = useCampaignService(accessToken);
-  //const { campaignNotSaved } = campaignState;
 
   let newGameCode = "";
   const getNewGameCode = () => {
@@ -58,10 +53,6 @@
   accessToken.subscribe(() => {
     void handleGetCampaign(campaignId);
   });
-
-  // const handleSaveCampaign = () => {
-  //   void saveCampaign();
-  // };
 
   const handleUpdateCampaignDescription = async () => {
     await updateCampaign({
@@ -115,7 +106,7 @@
       />
     </div>
     <CampaignParty bind:campaign />
-    <CampaignScenarios bind:campaign saveScenario={addUpdateScenario} />
+    <CampaignScenarios bind:campaign />
     <!-- <div class="flex max-w-md h-12 mx-auto mt-2">
       <Button
         variant="outlined"

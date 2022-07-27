@@ -22,10 +22,11 @@
     ScenarioSummary,
   } from "../../../models/Content";
   import { useContentService } from "../../../Service/ContentService";
+  import { useCampaignService } from "../../../Service/CampaignService";
   import { accessToken } from "../../../common/Utils/OidcSvelteClient";
+  const { addScenario, updateScenario } = useCampaignService(accessToken);
 
   export let campaign: Campaign | undefined;
-  export let saveScenario: (scenario: Scenario) => void | undefined;
 
   const { GetScenariosForGame, GetScenarioDefault } =
     useContentService(accessToken);
@@ -54,10 +55,10 @@
       campaignScenarios = (campaign.scenarios ?? [])
         .map((cs) => {
           let scenarioForLoad = $scenarioListing.find(
-            (ss) => ss.contentCode === cs.contentCode
+            (ss) => ss.contentCode === cs.scenarioContentCode
           ) as ScenarioSummary;
           return {
-            contentCode: scenarioForLoad.contentCode,
+            scenarioContentCode: scenarioForLoad.contentCode,
             description: scenarioForLoad.description,
             scenarioNumber: scenarioForLoad.sortOrder,
             name: scenarioForLoad.name,
@@ -75,7 +76,7 @@
       unusedScenarioOptions = fullScenarioListOptions.filter(
         (scenario) =>
           campaign?.scenarios.findIndex(
-            (s) => s.contentCode === scenario.value
+            (s) => s.scenarioContentCode === scenario.value
           ) === -1
       );
       scenarioListingProcessed.set(true);
@@ -96,7 +97,7 @@
   const handleScenarioClick = (contentCode: string) => {
     existingScenario = true;
     const scenario = campaign?.scenarios.find(
-      (s) => s.contentCode === contentCode
+      (s) => s.scenarioContentCode === contentCode
     );
     selectedScenario = contentCode;
     if (scenario?.isCompleted) {
@@ -116,26 +117,30 @@
     selectedScenarioStatus = "";
     displayNewScenarioSelection = false;
   };
-  const handleSaveScenario = () => {
-    if (saveScenario) {
-      saveScenario({
-        contentCode: selectedScenario,
-        description:
-          ($scenarioListing as ContentItemSummary[]).find(
-            (li) => li.contentCode === selectedScenario
-          )?.description ?? "",
-        name:
-          ($scenarioListing as ContentItemSummary[]).find(
-            (li) => li.contentCode === selectedScenario
-          )?.name ?? "",
-        isClosed: selectedScenarioStatus === "closed",
-        isCompleted: selectedScenarioStatus === "completed",
-        scenarioNumber:
-          $scenarioListing.find((ss) => ss.contentCode === selectedScenario)
-            ?.scenarioNumber ?? 0,
-      });
-      handleCloseScenarioEdit();
-    }
+  const handleSaveScenario = async () => {
+    if (!campaign) return;
+
+    const scenarioToSave: Scenario = {
+      scenarioContentCode: selectedScenario,
+      description:
+        ($scenarioListing as ContentItemSummary[]).find(
+          (li) => li.contentCode === selectedScenario
+        )?.description ?? "",
+      name:
+        ($scenarioListing as ContentItemSummary[]).find(
+          (li) => li.contentCode === selectedScenario
+        )?.name ?? "",
+      isClosed: selectedScenarioStatus === "closed",
+      isCompleted: selectedScenarioStatus === "completed",
+      scenarioNumber:
+        $scenarioListing.find((ss) => ss.contentCode === selectedScenario)
+          ?.scenarioNumber ?? 0,
+    };
+
+    if (!existingScenario) await addScenario(campaign.id, scenarioToSave);
+    else await updateScenario(campaign.id, scenarioToSave);
+
+    handleCloseScenarioEdit();
   };
 
   const scenarioCompleted = (scenario: Scenario): string => {
@@ -147,8 +152,8 @@
   const scenarioName = (scenario: Scenario): string => {
     return (
       ($scenarioListing as ContentItemSummary[]).find(
-        (item) => item.contentCode === scenario.contentCode
-      )?.name ?? scenario.contentCode
+        (item) => item.contentCode === scenario.scenarioContentCode
+      )?.name ?? scenario.scenarioContentCode
     );
   };
 
@@ -206,7 +211,7 @@
                     <button
                       on:click={() => {
                         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                        handleScenarioClick(scenario.contentCode);
+                        handleScenarioClick(scenario.scenarioContentCode);
                       }}
                     >
                       {scenarioName(scenario)}

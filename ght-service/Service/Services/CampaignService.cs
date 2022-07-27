@@ -270,15 +270,12 @@ public class CampaignServiceImplementation : CampaignService
     public ScenarioDTO UpdateScenarioInCampaign(Guid campaignId, string scenarioContentCode, ScenarioRequestBody updateScenarioRequest)
     {
 
-        if (updateScenarioRequest.ScenarioContentCode is not null)
-            throw new ArgumentException("Scenario Content Code cannot be updated");
-
         var campaign = GetCampaignById(campaignId);
 
         var scenario = campaign.Scenarios.GetValueOrDefault(scenarioContentCode);
 
         if (scenario is null)
-            throw new ArgumentException("Character Content was not found");
+            throw new ArgumentException("Scenario Content was not found");
 
         scenario.IsClosed = updateScenarioRequest.isClosed ?? scenario.IsClosed;
         scenario.IsCompleted = updateScenarioRequest.isCompleted ?? scenario.IsCompleted;
