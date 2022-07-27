@@ -68,6 +68,25 @@ public class CampaignController : Controller
         }
     }
 
+    [Route("{campaignId}")]
+    [HttpPatch]
+    [Consumes("application/json")]
+    // [Produces("application/json")]
+    public IActionResult UpdateCampaign(Guid campaignId, [FromBody] JsonPatchDocument<CampaignSummary> updateCampaignRequest)
+    {
+        try
+        {
+            var campaign = service.UpdateCampaign(campaignId, updateCampaignRequest);
+            return Ok(campaign);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(new EventId(), ex, $"Failed to get campaign {campaignId}");
+            return UnprocessableEntity("Issue processing request");
+        }
+    }
+
+
 
     [Route("{campaignId}/characters")]
     [HttpPost]
@@ -103,8 +122,9 @@ public class CampaignController : Controller
     }
     
     [Route("{campaignId}/characters/{characterContentCode}")]
-    [HttpPut]
-    [Consumes("application/json")]
+    [HttpPatch]
+    [Consumes("application/json+patch")]
+    [Produces("application/json")]
     public IActionResult UpdateCharacterInCampaign(Guid campaignId, string characterContentCode, [FromBody] JsonPatchDocument<CharacterDTO> updateCharacterRequest)
     {
         try

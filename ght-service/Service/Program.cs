@@ -21,6 +21,7 @@ using GloomhavenTracker.Service.Models.Content;
 using Microsoft.AspNetCore.Http;
 using AutoMapper;
 using GloomhavenTracker.Service.Models;
+using GloomhavenTracker.Service.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -129,7 +130,9 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddMemoryCache();
 
 builder.Services.AddSignalR();
-builder.Services.AddControllers();
+builder.Services.AddControllers(options => {
+    options.InputFormatters.Insert(0, JsonPatchInputFormatter.GetJsonPatchInputFormatter());
+});
 
 builder.Services.AddCors();
 

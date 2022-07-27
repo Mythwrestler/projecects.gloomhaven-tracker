@@ -15,6 +15,7 @@ public interface CampaignRepo
     public List<Campaign> GetCampaignList();
     public Campaign GetCampaign(Guid campaignId);
     public Campaign SaveCampaign(Campaign campaign);
+    public Campaign UpdateCampaign(CampaignSummary campaign);
     public Campaign CreateCharacterForCampaign(Guid campaignId, Character character);
     public Campaign UpdateCharacterForCampaign(Guid campaignId, Character character);
     public Campaign CreateScenarioForCampaign(Guid campaignId, Scenario scenario);
@@ -79,6 +80,20 @@ public class CampaignRepoImplementation : CampaignRepo
 
         context.CampaignCampaign.Add(campaignToSave);
 
+        context.SaveChanges();
+
+        return GetCampaign(campaign.Id);
+    }
+
+    public Campaign UpdateCampaign(CampaignSummary campaign)
+    {
+        CampaignDAO campaignToUpdate = GetCampaignDAO(campaign.Id);
+        
+        if(campaignToUpdate.Description != campaign.Description)
+            campaignToUpdate.Description = campaign.Description;
+        if(campaignToUpdate.Name != campaign.Name)
+            campaignToUpdate.Name = campaign.Name;
+        
         context.SaveChanges();
 
         return GetCampaign(campaign.Id);

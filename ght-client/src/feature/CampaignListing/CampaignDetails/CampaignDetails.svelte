@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Button, TextField } from "../../../common/Components";
-  import type { Campaign } from "../../../models/Campaign";
+  import type { Campaign, CampaignSummary } from "../../../models/Campaign";
   import * as GlobalError from "../../../Service/Error";
 
   import { useCampaignService } from "../../../Service/CampaignService";
@@ -17,13 +17,14 @@
   const {
     State: campaignState,
     getCampaign,
-    saveCampaign,
+    //saveCampaign,
     addUpdateScenario,
-    updateCampaignDescription,
-    updateCampaignName,
+    updateCampaign,
+    // updateCampaignDescription,
+    // updateCampaignName,
     clearCampaign,
   } = useCampaignService(accessToken);
-  const { campaignNotSaved } = campaignState;
+  //const { campaignNotSaved } = campaignState;
 
   let newGameCode = "";
   const getNewGameCode = () => {
@@ -31,8 +32,12 @@
   };
 
   let campaign: Campaign | undefined;
-  campaignState.campaign.subscribe((c) => {
-    campaign = c;
+  let campaignName = "";
+  let campaignDescription = "";
+  campaignState.campaign.subscribe((campaignFromStore) => {
+    campaign = campaignFromStore;
+    campaignName = campaignFromStore?.name ?? "";
+    campaignDescription = campaignFromStore?.description ?? "";
   });
 
   const requestCampaign = writable<boolean>(false);
@@ -54,16 +59,26 @@
     void handleGetCampaign(campaignId);
   });
 
-  const handleSaveCampaign = () => {
-    void saveCampaign();
+  // const handleSaveCampaign = () => {
+  //   void saveCampaign();
+  // };
+
+  const handleUpdateCampaignDescription = async () => {
+    await updateCampaign({
+      ...campaign,
+      description: campaignDescription,
+      scenarios: undefined,
+      party: undefined,
+    } as CampaignSummary);
   };
 
-  const handleUpdateCampaignDescription = () => {
-    updateCampaignDescription(campaign?.description ?? "");
-  };
-
-  const handleUpdateCampaignName = () => {
-    updateCampaignName(campaign?.name ?? "");
+  const handleUpdateCampaignName = async () => {
+    await updateCampaign({
+      ...campaign,
+      name: campaignName,
+      scenarios: undefined,
+      party: undefined,
+    } as CampaignSummary);
   };
 
   $: if ($location.search) getNewGameCode();
@@ -85,23 +100,23 @@
   {:else}
     <div class="mt-2">
       <TextField
-        bind:value={campaign.name}
-        onChange={handleUpdateCampaignName}
+        bind:value={campaignName}
+        onBlur={handleUpdateCampaignName}
         placeholderText="Campaign Name"
         displayLabel="Name"
       />
     </div>
     <div class="mt-2">
       <TextField
-        bind:value={campaign.description}
-        onChange={handleUpdateCampaignDescription}
+        bind:value={campaignDescription}
+        onBlur={handleUpdateCampaignDescription}
         placeholderText="Campaign Description"
         displayLabel="Description"
       />
     </div>
     <CampaignParty bind:campaign />
     <CampaignScenarios bind:campaign saveScenario={addUpdateScenario} />
-    <div class="flex max-w-md h-12 mx-auto mt-2">
+    <!-- <div class="flex max-w-md h-12 mx-auto mt-2">
       <Button
         variant="outlined"
         disabled={!$campaignNotSaved}
@@ -110,6 +125,6 @@
       >
         Save Campaign
       </Button>
-    </div>
+    </div> -->
   {/if}
 </section>

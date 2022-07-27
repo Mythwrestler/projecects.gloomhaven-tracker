@@ -14,6 +14,7 @@ public interface CampaignService
 {
     public List<CampaignSummary> GetCampaignList();
     public CampaignDTO NewCampaign(NewCampaignRequestBody requestBody);
+    public CampaignSummary UpdateCampaign(Guid campaignId, JsonPatchDocument<CampaignSummary> updateCampaignRequest);
     public CampaignDTO GetCampaign(Guid campaignId);
     public CharacterDTO AddCharacterToCampaign(Guid campaignId, CharacterRequestBody newCharacterRequest);
     public CharacterDTO GetCharacterFromCampaign(Guid campaignId, string characterContentCode);
@@ -101,6 +102,27 @@ public class CampaignServiceImplementation : CampaignService
         return campaignDTO;
     }
 
+    public CampaignSummary UpdateCampaign(Guid campaignId, JsonPatchDocument<CampaignSummary> updateCampaignRequest)
+    {
+        if (updateCampaignRequest.Operations.FindIndex(o => o.path == "/id") > -1)
+            throw new ArgumentException("Campaign Id cannot be updated");
+
+        if (updateCampaignRequest.Operations.FindIndex(o => o.path == "/editable") > -1)
+            throw new ArgumentException("Editable cannot be updated");
+
+        var campaignToUpdate = mapper.Map<CampaignSummary>(GetCampaignById(campaignId));
+
+        updateCampaignRequest.ApplyTo(campaignToUpdate);
+            
+        var hasNameUpdate = updateCampaignRequest.Operations.FindIndex(o => o.path == "/name") != -1;
+        if(hasNameUpdate && String.IsNullOrWhiteSpace(campaignToUpdate.Name))
+            throw new ArgumentException("Campaign Name cannot be null or whitespace");
+
+        var updatedCampaign = repo.UpdateCampaign(campaignToUpdate);
+
+        return mapper.Map<CampaignSummary>(updatedCampaign);
+    }
+
     public CharacterDTO AddCharacterToCampaign(Guid campaignId, CharacterRequestBody newCharacterRequest)
     {
 
@@ -163,7 +185,7 @@ public class CampaignServiceImplementation : CampaignService
         if (updateCharacterRequest.Operations.FindIndex(o => o.path == "characterContentCode") > -1)
             throw new ArgumentException("Character Content Code cannot be updated");
 
-        if (updateCharacterRequest.Operations.FindIndex(o => o.path == "characterContentCode") > -1)
+        if (updateCharacterRequest.Operations.FindIndex(o => o.path == "characterName") > -1)
             throw new ArgumentException("Character Name cannot be updated");
 
         var campaign = GetCampaignById(campaignId);
