@@ -12,6 +12,7 @@
   export let value: string | number;
   export let placeholderText: string;
   export let type: "text" | "number" = "text";
+  export let disabled = false;
 </script>
 
 <div
@@ -26,6 +27,7 @@
   <div class="w-full relative">
     {#if type === "text"}
       <input
+        {disabled}
         type="text"
         name={textBoxName}
         bind:value
@@ -40,6 +42,7 @@
       />
     {:else if type === "number"}
       <input
+        {disabled}
         type="number"
         name={textBoxName}
         bind:value

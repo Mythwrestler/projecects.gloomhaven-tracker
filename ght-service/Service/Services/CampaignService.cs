@@ -182,11 +182,8 @@ public class CampaignServiceImplementation : CampaignService
     public CharacterDTO UpdateCharacterInCampaign(Guid campaignId, string characterContentCode, JsonPatchDocument<CharacterDTO> updateCharacterRequest)
     {
 
-        if (updateCharacterRequest.Operations.FindIndex(o => o.path == "characterContentCode") > -1)
+        if (updateCharacterRequest.Operations.FindIndex(o => o.path == "/characterContentCode") > -1)
             throw new ArgumentException("Character Content Code cannot be updated");
-
-        if (updateCharacterRequest.Operations.FindIndex(o => o.path == "characterName") > -1)
-            throw new ArgumentException("Character Name cannot be updated");
 
         var campaign = GetCampaignById(campaignId);
 
@@ -203,7 +200,14 @@ public class CampaignServiceImplementation : CampaignService
         // character.Gold = updateCharacterRequest.Gold ?? character.Gold;
         // character.PerkPoints = updateCharacterRequest.PerkPoints ?? character.PerkPoints;
 
-        character = mapper.Map<Models.Campaign.Character>(characterDTO);
+        character = new Models.Campaign.Character(
+            id: character.Id,
+            name: characterDTO.Name,
+            characterContent: character.CharacterContent,
+            experience: characterDTO.Experience,
+            gold: characterDTO.Gold,
+            perkPoints: characterDTO.PerkPoints
+        );
 
         var savedCampaign = repo.UpdateCharacterForCampaign(campaignId, character);
 

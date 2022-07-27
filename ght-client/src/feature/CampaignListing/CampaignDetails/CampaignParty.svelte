@@ -10,10 +10,16 @@
   import CampaignCharacterEditor from "./CampaignCharacterEditor.svelte";
   import { useContentService } from "../../../Service/ContentService";
   import { accessToken } from "../../../common/Utils/OidcSvelteClient";
+  import { deepClone } from "fast-json-patch";
   export let campaign: Campaign;
 
   const { GetCharactersForGame } = useContentService(accessToken);
-  const { addUpdatePartyMember } = useCampaignService(accessToken);
+  const {
+    addUpdatePartyMember,
+    addPartyMember,
+    updatePartyMember,
+    getPartyMemeberDetails,
+  } = useCampaignService(accessToken);
 
   const getContentSummary = (contentCode: string) => {
     return $characterListing.find((character) => {
@@ -24,21 +30,31 @@
   let showPlayerDialog = false;
   let selectedCharacter: Character;
   let isNewCharacter = false;
-  const handleOpenDialog = (character: Character | undefined = undefined) => {
-    selectedCharacter = character ?? {
-      name: "",
-      characterContentCode: "",
-      experience: 0,
-      gold: 0,
-      items: [],
-      perkPoints: 0,
-      appliedPerks: [],
-    };
-    if (!character) {
-      isNewCharacter = true;
+  const handleOpenDialog = async (characterContentCode: string | undefined) => {
+    isNewCharacter = characterContentCode === undefined;
+    if (!isNewCharacter) {
+      await getPartyMemeberDetails(campaign.id, characterContentCode ?? "");
+      selectedCharacter = deepClone(
+        campaign.party.find(
+          (chr) => chr.characterContentCode === characterContentCode
+        )
+      ) as Character;
     } else {
-      isNewCharacter = false;
+      selectedCharacter = {
+        name: "",
+        characterContentCode: characterContentCode ?? "",
+        experience: 0,
+        gold: 0,
+        items: [],
+        perkPoints: 0,
+        appliedPerks: [],
+      };
     }
+    // if (!character) {
+    //   isNewCharacter = true;
+    // } else {
+    //   isNewCharacter = false;
+    // }
     showPlayerDialog = true;
   };
   const handleCloseDialog = () => {
@@ -47,10 +63,11 @@
   };
 
   let saving = false;
-  const handleSaveCharacter = (): void => {
+  const handleSaveCharacter = async (): Promise<void> => {
     // Do Stuff
     saving = true;
-    addUpdatePartyMember(selectedCharacter);
+    if (isNewCharacter) await addPartyMember(campaign.id, selectedCharacter);
+    else await updatePartyMember(campaign.id, selectedCharacter);
     saving = false;
     handleCloseDialog();
   };
@@ -79,9 +96,9 @@
   // let availableCharacterOptions: DropDownOption[] = [];
   let fullListOfPossibleCharacterOptions: DropDownOption[] = [];
   let usedCharacters: string[] = [];
-  const determineUsedCharacters = (campaignCharacters: Character[]) => {
-    usedCharacters = campaignCharacters.map((c) => c.characterContentCode);
-  };
+  // const determineUsedCharacters = (campaignCharacters: Character[]) => {
+  //   usedCharacters = campaignCharacters.map((c) => c.characterContentCode);
+  // };
 
   characterListing.subscribe((characterContentList) => {
     if (characterContentList && characterContentList.length > 0) {
@@ -111,7 +128,8 @@
     <div class="absolute top-1 right-1">
       <button
         aria-label="Add New Party Member"
-        on:click={() => handleOpenDialog()}><AddContainedIcon /></button
+        on:click={() => void handleOpenDialog(undefined)}
+        ><AddContainedIcon /></button
       >
     </div>
     <ul aria-label="Scenario Listing">
@@ -120,7 +138,8 @@
           <div class="flex flex-col">
             <div class="mx-auto">
               <button
-                on:click={() => handleOpenDialog(character)}
+                on:click={() =>
+                  void handleOpenDialog(character.characterContentCode)}
                 class="flex flex-row"
               >
                 <span>{character.name}</span>

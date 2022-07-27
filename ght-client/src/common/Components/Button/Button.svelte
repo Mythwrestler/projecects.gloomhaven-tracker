@@ -7,6 +7,7 @@
 </script>
 
 <button
+  {disabled}
   class={clsx(
     "rounded-md",
     "px-3 py-1",
