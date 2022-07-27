@@ -130,6 +130,10 @@ class CampaignServiceImplementation {
     }) as Promise<void>;
   };
 
+  public clearCampaign = () => {
+    this.campaignStore.set(undefined);
+  };
+
   //#endregion
 
   //#region Campaign Party
