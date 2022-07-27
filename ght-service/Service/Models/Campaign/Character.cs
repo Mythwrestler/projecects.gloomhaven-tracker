@@ -39,22 +39,22 @@ public class CharacterDTO
     }
 
     [JsonPropertyName("name")]
-    public string Name { get; }
+    public string Name { get; set; }
 
     [JsonPropertyName("characterContentCode")]
-    public string CharacterContentCode { get; }
+    public string CharacterContentCode { get; set; }
 
     [JsonPropertyName("experience")]
-    public int Experience { get; }
+    public int Experience { get; set; }
 
     [JsonPropertyName("gold")]
-    public int Gold { get; }
+    public int Gold { get; set; }
 
     [JsonPropertyName("items")]
-    public List<string> Items { get; }
+    public List<string> Items { get; set; }
 
     [JsonPropertyName("perkPoints")]
-    public int PerkPoints { get; }
+    public int PerkPoints { get; set; }
 }
 
 

@@ -123,8 +123,6 @@ public class CampaignController : Controller
     
     [Route("{campaignId}/characters/{characterContentCode}")]
     [HttpPatch]
-    [Consumes("application/json+patch")]
-    [Produces("application/json")]
     public IActionResult UpdateCharacterInCampaign(Guid campaignId, string characterContentCode, [FromBody] JsonPatchDocument<CharacterDTO> updateCharacterRequest)
     {
         try

@@ -8,15 +8,15 @@ import type {
   Character,
   Scenario,
 } from "../../models/Campaign";
-import { cloneDeep, compact, isEqual } from "lodash";
-import { compare as patchCompare } from "fast-json-patch";
+import { cloneDeep, compact, isEqual, update } from "lodash";
+import { compare as patchCompare, deepClone } from "fast-json-patch";
 import type { Operation as PatchOperation } from "fast-json-patch";
 import { AsyncQueue } from "../../common/Utils/AsycnQueue";
 
 class CampaignServiceImplementation {
   private authToken?: string;
 
-  private saveQueue = new AsyncQueue<unknown>();
+  private requestQueue = new AsyncQueue<unknown>();
 
   constructor(authTokenStore: Readable<string | undefined>) {
     authTokenStore.subscribe((token) => (this.authToken = token));
@@ -107,7 +107,7 @@ class CampaignServiceImplementation {
       campaignSummaryToReview
     );
     if (patchUpdatesToApply.length == 0) return;
-    return this.saveQueue.enqueue(async () => {
+    return this.requestQueue.enqueue(async () => {
       try {
         const result = await patchAPI<CampaignSummary>(
           `campaigns/${currentCampaign.id}`,
@@ -116,12 +116,14 @@ class CampaignServiceImplementation {
         );
         if (result) {
           this.campaignStore.update((campaign) => {
-            if (campaign == undefined) return undefined;
-            const updatedCampaign = {
-              ...campaign,
-              name: result.name,
-              description: result.description,
-            };
+            if (
+              campaign == undefined ||
+              campaign.id !== campaignSummaryToReview.id
+            )
+              return campaign;
+            const updatedCampaign = { ...campaign };
+            updatedCampaign.name = result.name;
+            updatedCampaign.description = result.description;
             return updatedCampaign;
           });
         }
@@ -141,6 +143,105 @@ class CampaignServiceImplementation {
   //     };
   //   });
   // };
+
+  public addPartyMember = async (campaignId: string, character: Character) => {
+    return this.requestQueue.enqueue(async () => {
+      try {
+        const result = await postAPI<Character>(
+          `campaigns/${campaignId}/characters`,
+          this.authToken,
+          character
+        );
+        if (result) {
+          this.campaignStore.update((campaign) => {
+            if (campaign === undefined || campaign.id != campaignId)
+              return campaign;
+            const updatedCampaign = deepClone(campaign) as Campaign;
+            updatedCampaign.party.push(result);
+            return updatedCampaign;
+          });
+        }
+      } catch (err: unknown) {
+        GlobalError.showErrorMessage("Failed to update Campaign Summary");
+      }
+    });
+  };
+
+  public updatePartyMember = async (
+    campaignId: string,
+    character: Character
+  ) => {
+    const campaign = get(this.campaign);
+    if (!campaign) return;
+    const { party } = campaign;
+    const currentCharacter = party.find(
+      (chr) => (chr.characterContentCode = character.characterContentCode)
+    );
+    if (!currentCharacter) return;
+
+    const patchUpdatesToApply = patchCompare(currentCharacter, character);
+    if (patchUpdatesToApply.length == 0) return;
+
+    return this.requestQueue.enqueue(async () => {
+      try {
+        const result = await patchAPI<Character>(
+          `campaigns/${campaignId}/characters/${character.characterContentCode}`,
+          this.authToken,
+          patchUpdatesToApply
+        );
+        if (result) {
+          this.campaignStore.update((campaign) => {
+            if (campaign === undefined || campaign.id != campaignId)
+              return campaign;
+            const updatedCampaign = deepClone(campaign) as Campaign;
+            updatedCampaign.party.splice(
+              campaign.party.findIndex(
+                (chr) =>
+                  chr.characterContentCode === result.characterContentCode
+              ),
+              1,
+              result
+            );
+            return updatedCampaign;
+          });
+        }
+      } catch (err: unknown) {
+        GlobalError.showErrorMessage("Failed to update Campaign Summary");
+      }
+    });
+  };
+
+  public getPartyMemeberDetails = async (
+    campaignId: string,
+    characterContentCode: string
+  ) => {
+    return this.requestQueue.enqueue(async () => {
+      try {
+        const result = await getAPI<Character>(
+          `campaigns/${campaignId}/characters/${characterContentCode}`,
+          this.authToken
+        );
+        if (result) {
+          this.campaignStore.update((campaign) => {
+            if (campaign === undefined || campaign.id != campaignId)
+              return campaign;
+            const updatedCampaign = deepClone(campaign) as Campaign;
+            updatedCampaign.party.splice(
+              campaign.party.findIndex(
+                (chr) =>
+                  chr.characterContentCode === result.characterContentCode
+              ),
+              1,
+              result
+            );
+            return updatedCampaign;
+          });
+        }
+      } catch (err: unknown) {
+        GlobalError.showErrorMessage("Failed to retrieve character details");
+      }
+    });
+  };
 
   public addUpdatePartyMember = (character: Character) => {
     this.campaignStore.update((campaignBeingUpdated) => {

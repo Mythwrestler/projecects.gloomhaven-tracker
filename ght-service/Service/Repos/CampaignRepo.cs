@@ -119,6 +119,9 @@ public class CampaignRepoImplementation : CampaignRepo
     {
         CharacterDAO characterToUpdate = context.CampaignCharacter.Where(chr => chr.Id == character.Id).First();
 
+        if(characterToUpdate.Name != character.Name)
+            characterToUpdate.Name = character.Name;
+
         if(characterToUpdate.Experience != character.Experience)
             characterToUpdate.Experience = character.Experience;
 
