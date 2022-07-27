@@ -30,6 +30,7 @@
         name={textBoxName}
         bind:value
         on:change={onChange}
+        on:blur={onBlur}
         class={clsx(
           "w-full px-4 py-1 text-gray-800 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none",
           variant === "rounded" && "rounded-full",
@@ -43,6 +44,7 @@
         name={textBoxName}
         bind:value
         on:change={onChange}
+        on:blur={onBlur}
         class={clsx(
           "w-full px-4 py-1 text-gray-800 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none",
           variant === "rounded" && "rounded-full",

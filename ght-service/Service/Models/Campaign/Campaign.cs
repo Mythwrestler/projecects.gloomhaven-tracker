@@ -31,7 +31,7 @@ public class Campaign
 
 
 [Serializable]
-public struct CampaignSummary
+public class CampaignSummary
 {
     public CampaignSummary(Guid id, string name, string description, string gameContentCode)
     {
@@ -42,16 +42,16 @@ public struct CampaignSummary
     }
 
     [JsonPropertyName("id")]
-    public Guid Id { get; }
+    public Guid Id { get; set; }
 
     [JsonPropertyName("name")]
-    public string Name { get; }
+    public string Name { get; set; }
 
     [JsonPropertyName("description")]
-    public string Description { get; }
+    public string Description { get; set; }
 
     [JsonPropertyName("game")]
-    public string GameContentCode { get; }
+    public string GameContentCode { get; set; }
 
     [JsonPropertyName("editable")]
     public bool Editable { get; set; } = false;

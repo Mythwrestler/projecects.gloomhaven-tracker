@@ -11,7 +11,7 @@ const request = async <T>(
   const headers: string[][] = [
     [
       "Content-Type",
-      method == "PATCH" ? "application/json+patch" : "application/json",
+      method == "PATCH" ? "application/json-patch+json" : "application/json",
     ],
   ];
   if (accessToken != undefined)
