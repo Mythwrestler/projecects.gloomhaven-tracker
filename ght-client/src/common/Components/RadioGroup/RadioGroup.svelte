@@ -9,6 +9,7 @@
   export let onClick: ((value: string | number) => void) | undefined =
     undefined;
   export let centered = false;
+  export let disabled = false;
 
   const handleClick = (value: string | number) => {
     if (onClick) onClick(value);
@@ -21,6 +22,7 @@
       <input
         class="my-auto transform scale-125"
         type="radio"
+        {disabled}
         bind:group={value}
         name={groupId}
         value={option.value}
