@@ -68,7 +68,7 @@ steps:
       - cat /drone/src/version >> .tags
 
   - name: "Service: Build and Push Image"
-    image: harbor.casperinc.net/docker-hub/plugins/docker
+    image: plugins/docker
     settings:
       dry_run: false
       repo: harbor.casperinc.net/library/ght/ght-service
@@ -83,7 +83,7 @@ steps:
         - REGISTRY=harbor.casperinc.net/microsoft/
 
   - name: "Client: Build and Push Image"
-    image: harbor.casperinc.net/docker-hub/plugins/docker
+    image: plugins/docker
     settings:
       dry_run: false
       repo: harbor.casperinc.net/library/ght/ght-client
