@@ -190,7 +190,7 @@ steps:
 
 
 image_pull_secrets:
-  - harbor-registry
+  - hargor-regcred-docker-json
 
 ---
 kind: secret
