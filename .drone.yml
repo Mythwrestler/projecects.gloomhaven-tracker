@@ -138,11 +138,8 @@ steps:
       DB_PASSWORD:
         from_secret: creds-nprd-db-password
     commands:
-      - echo "DB_SERVER=$DB_SERVER"
-      - echo -n "$DB_SERVER:$DB_PORT:$DB_DATABASE:$DB_USERNAME:$DB_PASSWORD"
-      - cd ~
-      - echo -n "$DB_SERVER:$DB_PORT:$DB_DATABASE:$DB_USERNAME:$DB_PASSWORD" > .pgpass
-      - chmod 0600 .pgpass
+      - echo -n "$DB_SERVER:$DB_PORT:$DB_DATABASE:$DB_USERNAME:$DB_PASSWORD" >> ~/.pgpass
+      - chmod 0600 ~/.pgpass
       - pg_dump --host=$DB_SERVER --username=$DB_USERNAME --file=./${DRONE_BRANCH//\//-}-${DRONE_COMMIT_SHA:0:8}.sql --format=p --schema-only ght-db-nprd
 
   # - name: "Replace Placeholders in NPRD Helmchart"
