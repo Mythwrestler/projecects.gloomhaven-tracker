@@ -138,6 +138,8 @@ steps:
       DB_PASSWORD:
         from_secret: creds-nprd-db-password
     commands:
+      - echo "DB_SERVER=$DB_SERVER"
+      - echo -n "$DB_SERVER:$DB_PORT:$DB_DATABASE:$DB_USERNAME:$DB_PASSWORD"
       - cd ~
       - echo -n "$DB_SERVER:$DB_PORT:$DB_DATABASE:$DB_USERNAME:$DB_PASSWORD" > .pgpass
       - chmod 0600 .pgpass
