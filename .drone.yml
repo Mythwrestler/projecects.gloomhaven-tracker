@@ -68,7 +68,7 @@ steps:
       - cat /drone/src/version >> .tags
 
   - name: "Service: Build and Push Image"
-    image: harbor.casperinc.net/docker-hub/library/plugins/docker
+    image: harbor.casperinc.net/docker-hub/plugins/docker
     settings:
       dry_run: false
       repo: harbor.casperinc.net/library/ght/ght-service
@@ -83,7 +83,7 @@ steps:
         - REGISTRY=harbor.casperinc.net/microsoft/
 
   - name: "Client: Build and Push Image"
-    image: harbor.casperinc.net/docker-hub/library/plugins/docker
+    image: harbor.casperinc.net/docker-hub/plugins/docker
     settings:
       dry_run: false
       repo: harbor.casperinc.net/library/ght/ght-client
@@ -155,7 +155,7 @@ steps:
     when:
       branch:
         - dev
-    image: harbor.casperinc.net/docker-hub/library/pelotech/drone-helm3
+    image: harbor.casperinc.net/docker-hub/pelotech/drone-helm3
     settings:
       mode: lint
       debug: true
@@ -168,7 +168,7 @@ steps:
     when:
       branch:
         - dev
-    image: harbor.casperinc.net/docker-hub/library/pelotech/drone-helm3
+    image: harbor.casperinc.net/docker-hub/pelotech/drone-helm3
     settings:
       mode: upgrade
       debug: true
