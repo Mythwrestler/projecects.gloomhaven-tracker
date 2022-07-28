@@ -188,6 +188,10 @@ steps:
   #     kube_service_account:
   #       from_secret: kube_service_account
 
+
+image_pull_secrets:
+  - harbor-registry
+
 ---
 kind: secret
 name: registry-username
