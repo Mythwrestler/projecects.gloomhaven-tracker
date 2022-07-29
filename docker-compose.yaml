@@ -28,15 +28,15 @@ services:
     - DB_PASSWORD=pguser
     - DB_SEED_DATA=false
   dbpostgres:
-    image: postgres:14-alpine3.14
+    image: harbor.casperinc.net/library/ght/testingdb:dev-latest
     volumes:
       - db-data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: pguser
+      POSTGRES_USER: ght-db-test
       POSTGRES_PASSWORD: pguser
-      POSTGRES_DB: ght-db
+      POSTGRES_DB: ght-db-nprd
 volumes:
   db-data:
     driver: local
