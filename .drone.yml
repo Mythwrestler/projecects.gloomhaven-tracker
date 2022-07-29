@@ -95,25 +95,25 @@ steps:
       - kubectl apply -f ./ght-service/Database/Testing/TestingDB.yaml --namespace infra-builds
       - kubectl wait deployment gloomhaven-tracker-testingdb --namespace infra-builds --for condition=Available=True --timeout=90s
 
-  - name: "Validate Migration: Test Migration"
-    when:
-      branch:
-        - dev
-    image: harbor.casperinc.net/microsoft/dotnet/sdk:6.0
-    environment:
-      DB_SERVER: gloomhaven-tracker-testingdb.infra-builds.svc.cluster.local
-      DB_PORT: 5432
-      DB_DATABASE:
-        from_secret: creds-nprd-db-database
-      DB_USER:
-        from_secret: creds-nprd-db-user
-      DB_PASSWORD: pguser
-    commands:
-      - cd /drone/src/ght-service
-      - export PATH="$PATH:/root/.dotnet/tools"
-      - dotnet tool install --global dotnet-ef --version 6.0.3
-      - dotnet restore
-      - dotnet ef database update --project ./Database/ght-database.csproj --startup-project ./Service
+  # - name: "Validate Migration: Test Migration"
+  #   when:
+  #     branch:
+  #       - dev
+  #   image: harbor.casperinc.net/microsoft/dotnet/sdk:6.0
+  #   environment:
+  #     DB_SERVER: gloomhaven-tracker-testingdb.infra-builds.svc.cluster.local
+  #     DB_PORT: 5432
+  #     DB_DATABASE:
+  #       from_secret: creds-nprd-db-database
+  #     DB_USER:
+  #       from_secret: creds-nprd-db-user
+  #     DB_PASSWORD: pguser
+  #   commands:
+  #     - cd /drone/src/ght-service
+  #     - export PATH="$PATH:/root/.dotnet/tools"
+  #     - dotnet tool install --global dotnet-ef --version 6.0.3
+  #     - dotnet restore
+  #     - dotnet ef database update --project ./Database/ght-database.csproj --startup-project ./Service
 
 
   - name: "Validate Migration: Teardown Testing DB"
@@ -180,41 +180,42 @@ steps:
   #     - dotnet restore
   #     - dotnet ef database update --project ./Database/ght-database.csproj --startup-project ./Service
 
-  # - name: "Generate Schema Scritps Post Migration"
-  #   when:
-  #     branch:
-  #       - dev
-  #   image: harbor.casperinc.net/library/postgresql/client:14
-  #   environment:
-  #     DB_SERVER:
-  #       from_secret: creds-nprd-db-server
-  #     DB_PORT:
-  #       from_secret: creds-nprd-db-port
-  #     DB_DATABASE:
-  #       from_secret: creds-nprd-db-database
-  #     DB_USER:
-  #       from_secret: creds-nprd-db-user
-  #     DB_PASSWORD:
-  #       from_secret: creds-nprd-db-password
-  #   commands:
-  #     - echo -n "$$DB_SERVER:$$DB_PORT:$$DB_DATABASE:$$DB_USER:$$DB_PASSWORD" >> ~/.pgpass
-  #     - chmod 0600 ~/.pgpass
-  #     - pg_dump --host=$${DB_SERVER} --username=$${DB_USER} --file=/drone/src/ght-service/Database/Resources/10.DDL.${DRONE_BRANCH//\//-}-${DRONE_COMMIT_SHA:0:8}.sql --format=p --schema-only $${DB_DATABASE}
+  - name: "Generate Schema Scritps Post Migration"
+    when:
+      branch:
+        - dev
+    image: harbor.casperinc.net/library/postgresql/client:14
+    environment:
+      DB_SERVER:
+        from_secret: creds-nprd-db-server
+      DB_PORT:
+        from_secret: creds-nprd-db-port
+      DB_DATABASE:
+        from_secret: creds-nprd-db-database
+      DB_USER:
+        from_secret: creds-nprd-db-user
+      DB_PASSWORD:
+        from_secret: creds-nprd-db-password
+    commands:
+      - echo -n "$$DB_SERVER:$$DB_PORT:$$DB_DATABASE:$$DB_USER:$$DB_PASSWORD" >> ~/.pgpass
+      - chmod 0600 ~/.pgpass
+      - pg_dump --host=$${DB_SERVER} --username=$${DB_USER} --file=/drone/src/ght-service/Database/Resources/10.DDL.${DRONE_BRANCH//\//-}-${DRONE_COMMIT_SHA:0:8}.sql --format=p --schema-only $${DB_DATABASE}
+      - pg_dump --host=$${DB_SERVER} --username=$${DB_USER} --file=/drone/src/ght-service/Database/Resources/15.DML.${DRONE_BRANCH//\//-}-${DRONE_COMMIT_SHA:0:8}.sql --column-inserts --data-only --table=__EFMigrationsHistory $${DB_DATABASE}
 
-  # - name: "Create Test DB Image w/ Scripts"
-  #   image: plugins/docker
-  #   settings:
-  #     dry_run: false
-  #     repo: harbor.casperinc.net/library/ght/testingdb
-  #     registry: harbor.casperinc.net
-  #     username:
-  #       from_secret: registry-username
-  #     password:
-  #       from_secret: registry-password
-  #     context: ./ght-service/
-  #     dockerfile: ./ght-service/Database/Testing/TestingDB.Dockerfile
-  #     build_args:
-  #       - REGISTRY=harbor.casperinc.net/docker-hub/library/
+  - name: "Create Test DB Image w/ Scripts"
+    image: plugins/docker
+    settings:
+      dry_run: false
+      repo: harbor.casperinc.net/library/ght/testingdb
+      registry: harbor.casperinc.net
+      username:
+        from_secret: registry-username
+      password:
+        from_secret: registry-password
+      context: ./ght-service/
+      dockerfile: ./ght-service/Database/Testing/TestingDB.Dockerfile
+      build_args:
+        - REGISTRY=harbor.casperinc.net/docker-hub/library/
 
 
   # - name: "Replace Placeholders in NPRD Helmchart"
