@@ -92,7 +92,7 @@ steps:
     image: harbor.casperinc.net/docker-hub/bitnami/kubectl:1.24.3
     commands:
       - cp ./kube-config /.kube/config
-      - kubectl apply -f /drone/src/ght-servce/Database/Testing/TestingDB.yaml --namespace infra-builds
+      - kubectl apply -f ./ght-service/Database/Testing/TestingDB.yaml --namespace infra-builds
       - kubectl wait deployment gloomhaven-tracker-testingdb --namespace infra-builds --for condition=Available=True --timeout=90s
 
   # - name: "Validate Migration: Test Migration"
