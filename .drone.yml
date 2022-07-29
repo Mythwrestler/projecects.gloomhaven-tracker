@@ -200,7 +200,7 @@ steps:
       - echo -n "$$DB_SERVER:$$DB_PORT:$$DB_DATABASE:$$DB_USER:$$DB_PASSWORD" >> ~/.pgpass
       - chmod 0600 ~/.pgpass
       - pg_dump --host=$${DB_SERVER} --username=$${DB_USER} --file=/drone/src/ght-service/Database/Resources/10.DDL.${DRONE_BRANCH//\//-}-${DRONE_COMMIT_SHA:0:8}.sql --format=p --schema-only $${DB_DATABASE}
-      - pg_dump --host=$${DB_SERVER} --username=$${DB_USER} --file=/drone/src/ght-service/Database/Resources/15.DML.${DRONE_BRANCH//\//-}-${DRONE_COMMIT_SHA:0:8}.sql --column-inserts --data-only --table=__EFMigrationsHistory $${DB_DATABASE}
+      - pg_dump --host=$${DB_SERVER} --username=$${DB_USER} --file=/drone/src/ght-service/Database/Resources/15.DML.${DRONE_BRANCH//\//-}-${DRONE_COMMIT_SHA:0:8}.sql --column-inserts --data-only --table="__EFMigrationsHistory" $${DB_DATABASE}
 
   - name: "Create Test DB Image w/ Scripts"
     image: plugins/docker
