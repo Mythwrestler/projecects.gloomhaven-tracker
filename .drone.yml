@@ -85,7 +85,7 @@ steps:
       DB_USER:
         from_secret: creds-nprd-db-user
 
-  - name: "Validate Migration: Deploy TestDB"
+  - name: "Validate Migration: Standup Testing DB"
     when:
       branch:
         - dev
@@ -116,14 +116,14 @@ steps:
   #     - dotnet ef database update --project ./Database/ght-database.csproj --startup-project ./Service
 
 
-  # - name: "Validate Migration: Teardown TestDB"
-  #   when:
-  #     branch:
-  #       - dev
-  #   image: harbor.casperinc.net/docker-hub/bitnami/kubectl:1.24.3
-  #   commands:
-  #     - cp /drone/src/kube-config /.kube/config
-  #     - kubectl delete -f /drone/src/ght-servce/Database/Testing/TestingDB.yaml --namespace infra-builds
+  - name: "Validate Migration: Teardown Testing DB"
+    when:
+      branch:
+        - dev
+    image: harbor.casperinc.net/docker-hub/bitnami/kubectl:1.24.3
+    commands:
+      - cp /drone/src/kube-config /.kube/config
+      - kubectl delete -f ./ght-service/Database/Testing/TestingDB.yaml --namespace infra-builds
 
 
   # - name: "Service: Build and Push Image"
