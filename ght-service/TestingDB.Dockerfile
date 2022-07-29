@@ -1,5 +1,5 @@
 ARG REGISTRY
-FROM ${REGISTRY}postgresql:14 AS builder
+FROM ${REGISTRY}postgres:14-alpine3.14 AS builder
 
 WORKDIR /docker-entrypoint-initdb.d
 
