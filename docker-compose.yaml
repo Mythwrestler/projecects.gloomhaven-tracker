@@ -36,7 +36,7 @@ services:
     environment:
       POSTGRES_USER: svc_ght_nprd
       POSTGRES_PASSWORD: pguser
-      POSTGRES_DB: postgres
+      POSTGRES_DB: ght-db-nprd
 volumes:
   db-data:
     driver: local
