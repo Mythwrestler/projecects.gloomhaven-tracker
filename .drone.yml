@@ -74,7 +74,7 @@ steps:
         - dev
     image: harbor.casperinc.net/docker-hub/library/bash
     commands:
-      - echo -n "$$KUBE_CONFIG" | base64 --decode > ./kube-config
+      - echo -n "$$KUBE_CONFIG" | base64 -d > ./kube-config
       - sed -i "s/__DB_USER__/$$DB_USER/" ./ght-service/Database/Testing/TestingDB.yaml
       - sed -i "s/__DB_DATABASE__/$$DB_DATABASE/" ./ght-service/Database/Testing/TestingDB.yaml
     environment:
