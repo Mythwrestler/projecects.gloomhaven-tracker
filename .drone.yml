@@ -155,7 +155,7 @@ steps:
       context: ./ght-service/
       dockerfile: ./ght-service/TestingDB.Dockerfile
       build_args:
-        - REGISTRY=harbor.casperinc.net/
+        - REGISTRY=harbor.casperinc.net/library/
 
   # - name: "Replace Placeholders in NPRD Helmchart"
   #   when:
