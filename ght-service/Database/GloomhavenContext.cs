@@ -1,5 +1,6 @@
 ﻿using GloomhavenTracker.Database.Models;
 using GloomhavenTracker.Database.Models.Campaign;
+using GloomhavenTracker.Database.Models.Combat;
 using GloomhavenTracker.Database.Models.Content;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -16,13 +17,13 @@ public partial class GloomhavenContext : DbContext
     public DbSet<AttackModifierDAO> ContentAttackModifier => Set<AttackModifierDAO>();
     public DbSet<AttackModifierEffectDAO> ContentAttackModifierEffect => Set<AttackModifierEffectDAO>();
     public DbSet<GameBaseAttackModifierDAO> ContentGameBaseAttackModifiers => Set<GameBaseAttackModifierDAO>();
-    public DbSet<MonsterDAO> ContentMonster => Set<MonsterDAO>();
+    public DbSet<Models.Content.MonsterDAO> ContentMonster => Set<Models.Content.MonsterDAO>();
     public DbSet<MonsterStatSetDAO> ContentMonsterStatSet => Set<MonsterStatSetDAO>();
     public DbSet<MonsterDefenseEffectDAO> ContentMonsterDefenseEffect => Set<MonsterDefenseEffectDAO>();
     public DbSet<MonsterDeathEffectDAO> ContentMonsterDeathEffect => Set<MonsterDeathEffectDAO>();
     public DbSet<MonsterAttackEffectDAO> ContentMonsterAttackEffect => Set<MonsterAttackEffectDAO>();
     public DbSet<MonsterBaseStatImmunityDAO> ContentMonsterBaseStatImmunity => Set<MonsterBaseStatImmunityDAO>();
-    public DbSet<ObjectiveDAO> ContentObjective => Set<ObjectiveDAO>();
+    public DbSet<Models.Content.ObjectiveDAO> ContentObjective => Set<Models.Content.ObjectiveDAO>();
     public DbSet<Models.Content.ScenarioDAO> ContentScenario => Set<Models.Content.ScenarioDAO>();
     public DbSet<ScenarioMonsterDAO> ContentScenarioMonster => Set<ScenarioMonsterDAO>();
     public DbSet<ScenarioObjectiveDAO> ContentScenarioObjective => Set<ScenarioObjectiveDAO>();
@@ -40,6 +41,20 @@ public partial class GloomhavenContext : DbContext
     public DbSet<Models.Campaign.ScenarioDAO> CampaignScenario => Set<Models.Campaign.ScenarioDAO>();
     public DbSet<CampaignDAO> CampaignCampaign => Set<CampaignDAO>();
     public DbSet<CampaignItemDAO> CampaignCampaignItem => Set<CampaignItemDAO>();
+    #endregion
+
+    #region Combat Db Sets
+    public DbSet<ActiveEffectDAO> CombatActiveEffects => Set<ActiveEffectDAO>();
+    public DbSet<Models.Combat.MonsterDAO> CombatMonsters => Set<Models.Combat.MonsterDAO>();
+    public DbSet<MonsterActiveEffectDAO> CombatMonsterActiveEffects => Set<MonsterActiveEffectDAO>();
+    public DbSet<Models.Combat.CharacterDAO> CombatCharacters => Set<Models.Combat.CharacterDAO>();
+    public DbSet<CharacterActiveEffectDAO> CombatCharacterActiveEffects => Set<CharacterActiveEffectDAO>();
+    public DbSet<Models.Combat.ObjectiveDAO> CombatObjectives => Set<Models.Combat.ObjectiveDAO>();
+    public DbSet<ObjectiveActiveEffectDAO> CombatObjectiveActiveEffects => Set<ObjectiveActiveEffectDAO>();
+    public DbSet<Models.Combat.ElementDAO> CombatElements => Set<Models.Combat.ElementDAO>();
+    public DbSet<AttackModifierDeckDAO> CombatAttackModifierDecks => Set<AttackModifierDeckDAO>();
+    public DbSet<AttackModifierDeckCardDAO> CombatAttackModifierDeckCards => Set<AttackModifierDeckCardDAO>();
+    public DbSet<CombatDAO> CombatCombat => Set<CombatDAO>();
     #endregion
 
     #region User
@@ -71,6 +86,16 @@ public partial class GloomhavenContext : DbContext
         builder.DefineCharacterCampaignEntities();
         builder.DefineScenarioCampaignEntities();
         builder.DefineCampaignEntities();
+        #endregion
+
+        #region Combat Entity Defintions
+        builder.DefineActiveEffectsEntities();
+        builder.DefineCombatMonsterEntities();
+        builder.DefineCombatCharacterEntities();
+        builder.DefineCombatObjectiveEntities();
+        builder.DefineCombatElementEntities();
+        builder.DefineCombatAttackModifierDeckEntities();
+        builder.DefineCombatEntities();
         #endregion
 
         #region User Entity Definitions

@@ -246,6 +246,325 @@ namespace GloomhavenTracker.Database.Migrations
                     b.ToTable("CampaignScenario");
                 });
 
+            modelBuilder.Entity("GloomhavenTracker.Database.Models.Combat.ActiveEffectDAO", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("CreatedOnUTC")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("EffectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("RoundsRemaining")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedOnUTC")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EffectId");
+
+                    b.ToTable("CombatActiveEffects");
+                });
+
+            modelBuilder.Entity("GloomhavenTracker.Database.Models.Combat.AttackModifierDeckCardDAO", b =>
+                {
+                    b.Property<Guid>("DeckId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AttackModifierId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("position")
+                        .HasColumnType("integer");
+
+                    b.HasKey("DeckId", "AttackModifierId");
+
+                    b.HasIndex("AttackModifierId");
+
+                    b.HasIndex("DeckId", "position")
+                        .IsUnique();
+
+                    b.ToTable("CombatAttackModifierDeckCards");
+                });
+
+            modelBuilder.Entity("GloomhavenTracker.Database.Models.Combat.AttackModifierDeckDAO", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("CreatedOnUTC")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CurrentPosition")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedOnUTC")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CombatAttackModifierDecks");
+                });
+
+            modelBuilder.Entity("GloomhavenTracker.Database.Models.Combat.CharacterActiveEffectDAO", b =>
+                {
+                    b.Property<Guid>("CharacterId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ActiveEffectId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("CharacterId", "ActiveEffectId");
+
+                    b.HasIndex("ActiveEffectId", "CharacterId")
+                        .IsUnique();
+
+                    b.ToTable("CombatCharacterActiveEffects");
+                });
+
+            modelBuilder.Entity("GloomhavenTracker.Database.Models.Combat.CharacterDAO", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CampaignCharacterId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CombatId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("CreatedOnUTC")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Health")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedOnUTC")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CampaignCharacterId");
+
+                    b.HasIndex("CombatId");
+
+                    b.ToTable("CombatCharacters");
+                });
+
+            modelBuilder.Entity("GloomhavenTracker.Database.Models.Combat.CombatDAO", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CampaignId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("CreatedOnUTC")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ScenarioId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedOnUTC")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CampaignId");
+
+                    b.HasIndex("ScenarioId");
+
+                    b.ToTable("CombatCombat");
+                });
+
+            modelBuilder.Entity("GloomhavenTracker.Database.Models.Combat.ElementDAO", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CombatId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("CreatedOnUTC")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Element")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Strength")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedOnUTC")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CombatId", "Element")
+                        .IsUnique();
+
+                    b.ToTable("CombatElements");
+                });
+
+            modelBuilder.Entity("GloomhavenTracker.Database.Models.Combat.MonsterActiveEffectDAO", b =>
+                {
+                    b.Property<Guid>("MonsterId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ActiveEffectId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("MonsterId", "ActiveEffectId");
+
+                    b.HasIndex("ActiveEffectId", "MonsterId")
+                        .IsUnique();
+
+                    b.ToTable("CombatMonsterActiveEffects");
+                });
+
+            modelBuilder.Entity("GloomhavenTracker.Database.Models.Combat.MonsterDAO", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CombatId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ContentMonsterId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("CreatedOnUTC")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Health")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("InstanceId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsElite")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid?>("MonsterContentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("MonsterNumber")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedOnUTC")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CombatId");
+
+                    b.HasIndex("MonsterContentId");
+
+                    b.ToTable("CombatMonsters");
+                });
+
+            modelBuilder.Entity("GloomhavenTracker.Database.Models.Combat.ObjectiveActiveEffectDAO", b =>
+                {
+                    b.Property<Guid>("ObjectiveId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ActiveEffectId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("ObjectiveId", "ActiveEffectId");
+
+                    b.HasIndex("ActiveEffectId", "ObjectiveId")
+                        .IsUnique();
+
+                    b.ToTable("CombatObjectiveActiveEffects");
+                });
+
+            modelBuilder.Entity("GloomhavenTracker.Database.Models.Combat.ObjectiveDAO", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CombatId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ContentObjectiveId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("CreatedOnUTC")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Health")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("ObjectiveId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedOnUTC")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CombatId");
+
+                    b.HasIndex("ObjectiveId");
+
+                    b.ToTable("CombatObjectives");
+                });
+
             modelBuilder.Entity("GloomhavenTracker.Database.Models.Content.AttackModifierDAO", b =>
                 {
                     b.Property<Guid>("Id")
@@ -924,6 +1243,176 @@ namespace GloomhavenTracker.Database.Migrations
                     b.Navigation("ScenarioContent");
                 });
 
+            modelBuilder.Entity("GloomhavenTracker.Database.Models.Combat.ActiveEffectDAO", b =>
+                {
+                    b.HasOne("GloomhavenTracker.Database.Models.Content.EffectDAO", "Effect")
+                        .WithMany()
+                        .HasForeignKey("EffectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Effect");
+                });
+
+            modelBuilder.Entity("GloomhavenTracker.Database.Models.Combat.AttackModifierDeckCardDAO", b =>
+                {
+                    b.HasOne("GloomhavenTracker.Database.Models.Content.AttackModifierDAO", "AttackModifier")
+                        .WithMany()
+                        .HasForeignKey("AttackModifierId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GloomhavenTracker.Database.Models.Combat.AttackModifierDeckDAO", "Deck")
+                        .WithMany("Cards")
+                        .HasForeignKey("DeckId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("AttackModifier");
+
+                    b.Navigation("Deck");
+                });
+
+            modelBuilder.Entity("GloomhavenTracker.Database.Models.Combat.CharacterActiveEffectDAO", b =>
+                {
+                    b.HasOne("GloomhavenTracker.Database.Models.Combat.ActiveEffectDAO", "ActiveEffect")
+                        .WithMany("CharacterActiveEffectsDAOs")
+                        .HasForeignKey("ActiveEffectId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("GloomhavenTracker.Database.Models.Combat.CharacterDAO", "Character")
+                        .WithMany("ActiveEffects")
+                        .HasForeignKey("CharacterId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ActiveEffect");
+
+                    b.Navigation("Character");
+                });
+
+            modelBuilder.Entity("GloomhavenTracker.Database.Models.Combat.CharacterDAO", b =>
+                {
+                    b.HasOne("GloomhavenTracker.Database.Models.Campaign.CharacterDAO", "CampaignCharacter")
+                        .WithMany()
+                        .HasForeignKey("CampaignCharacterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GloomhavenTracker.Database.Models.Combat.CombatDAO", "Combat")
+                        .WithMany("Characters")
+                        .HasForeignKey("CombatId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("CampaignCharacter");
+
+                    b.Navigation("Combat");
+                });
+
+            modelBuilder.Entity("GloomhavenTracker.Database.Models.Combat.CombatDAO", b =>
+                {
+                    b.HasOne("GloomhavenTracker.Database.Models.Campaign.CampaignDAO", "Campaign")
+                        .WithMany()
+                        .HasForeignKey("CampaignId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GloomhavenTracker.Database.Models.Content.ScenarioDAO", "Scenario")
+                        .WithMany()
+                        .HasForeignKey("ScenarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Campaign");
+
+                    b.Navigation("Scenario");
+                });
+
+            modelBuilder.Entity("GloomhavenTracker.Database.Models.Combat.ElementDAO", b =>
+                {
+                    b.HasOne("GloomhavenTracker.Database.Models.Combat.CombatDAO", "Combat")
+                        .WithMany("Elements")
+                        .HasForeignKey("CombatId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Combat");
+                });
+
+            modelBuilder.Entity("GloomhavenTracker.Database.Models.Combat.MonsterActiveEffectDAO", b =>
+                {
+                    b.HasOne("GloomhavenTracker.Database.Models.Combat.ActiveEffectDAO", "ActiveEffect")
+                        .WithMany("MonsterActiveEffects")
+                        .HasForeignKey("ActiveEffectId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("GloomhavenTracker.Database.Models.Combat.MonsterDAO", "Monster")
+                        .WithMany("ActiveEffects")
+                        .HasForeignKey("MonsterId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ActiveEffect");
+
+                    b.Navigation("Monster");
+                });
+
+            modelBuilder.Entity("GloomhavenTracker.Database.Models.Combat.MonsterDAO", b =>
+                {
+                    b.HasOne("GloomhavenTracker.Database.Models.Combat.CombatDAO", "Combat")
+                        .WithMany("Monsters")
+                        .HasForeignKey("CombatId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("GloomhavenTracker.Database.Models.Content.MonsterDAO", "MonsterContent")
+                        .WithMany()
+                        .HasForeignKey("MonsterContentId");
+
+                    b.Navigation("Combat");
+
+                    b.Navigation("MonsterContent");
+                });
+
+            modelBuilder.Entity("GloomhavenTracker.Database.Models.Combat.ObjectiveActiveEffectDAO", b =>
+                {
+                    b.HasOne("GloomhavenTracker.Database.Models.Combat.ActiveEffectDAO", "ActiveEffect")
+                        .WithMany()
+                        .HasForeignKey("ActiveEffectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GloomhavenTracker.Database.Models.Combat.ObjectiveDAO", "Objective")
+                        .WithMany("ActiveEffects")
+                        .HasForeignKey("ObjectiveId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ActiveEffect");
+
+                    b.Navigation("Objective");
+                });
+
+            modelBuilder.Entity("GloomhavenTracker.Database.Models.Combat.ObjectiveDAO", b =>
+                {
+                    b.HasOne("GloomhavenTracker.Database.Models.Combat.CombatDAO", "Combat")
+                        .WithMany("Objectives")
+                        .HasForeignKey("CombatId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("GloomhavenTracker.Database.Models.Content.ObjectiveDAO", "Objective")
+                        .WithMany()
+                        .HasForeignKey("ObjectiveId");
+
+                    b.Navigation("Combat");
+
+                    b.Navigation("Objective");
+                });
+
             modelBuilder.Entity("GloomhavenTracker.Database.Models.Content.AttackModifierDAO", b =>
                 {
                     b.HasOne("GloomhavenTracker.Database.Models.Content.GameDAO", "Game")
@@ -1229,6 +1718,44 @@ namespace GloomhavenTracker.Database.Migrations
                     b.Navigation("AppliedPerks");
 
                     b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("GloomhavenTracker.Database.Models.Combat.ActiveEffectDAO", b =>
+                {
+                    b.Navigation("CharacterActiveEffectsDAOs");
+
+                    b.Navigation("MonsterActiveEffects");
+                });
+
+            modelBuilder.Entity("GloomhavenTracker.Database.Models.Combat.AttackModifierDeckDAO", b =>
+                {
+                    b.Navigation("Cards");
+                });
+
+            modelBuilder.Entity("GloomhavenTracker.Database.Models.Combat.CharacterDAO", b =>
+                {
+                    b.Navigation("ActiveEffects");
+                });
+
+            modelBuilder.Entity("GloomhavenTracker.Database.Models.Combat.CombatDAO", b =>
+                {
+                    b.Navigation("Characters");
+
+                    b.Navigation("Elements");
+
+                    b.Navigation("Monsters");
+
+                    b.Navigation("Objectives");
+                });
+
+            modelBuilder.Entity("GloomhavenTracker.Database.Models.Combat.MonsterDAO", b =>
+                {
+                    b.Navigation("ActiveEffects");
+                });
+
+            modelBuilder.Entity("GloomhavenTracker.Database.Models.Combat.ObjectiveDAO", b =>
+                {
+                    b.Navigation("ActiveEffects");
                 });
 
             modelBuilder.Entity("GloomhavenTracker.Database.Models.Content.AttackModifierDAO", b =>
