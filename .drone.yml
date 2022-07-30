@@ -62,11 +62,11 @@ trigger:
 steps:
 
 
-  # - name: send-tags-to-tags-file
-  #   image: harbor.casperinc.net/docker-hub/library/bash
-  #   commands:
-  #     - echo -n "${DRONE_BRANCH//\//-}-${DRONE_COMMIT_SHA:0:8}, ${DRONE_BRANCH//\//-}-latest, " > .tags
-  #     - cat /drone/src/version >> .tags
+  - name: send-tags-to-tags-file
+    image: harbor.casperinc.net/docker-hub/library/bash
+    commands:
+      - echo -n "${DRONE_BRANCH//\//-}-${DRONE_COMMIT_SHA:0:8}, ${DRONE_BRANCH//\//-}-latest, " > .tags
+      - cat /drone/src/version >> .tags
 
   - name: "Validate Migration: Prep For Testing"
     when:
