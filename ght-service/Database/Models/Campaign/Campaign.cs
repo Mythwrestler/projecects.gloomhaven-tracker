@@ -19,6 +19,7 @@ public static partial class EntityDefinitions
         builder.Entity<CampaignItemDAO>(campaignItemTable => {
             campaignItemTable.HasKey(ci => new {ci.CampaignId, ci.ItemId});
         });
+
     }
 }
 
@@ -48,5 +49,6 @@ public class CampaignItemDAO : AuditableEntityBase
     [Required]
     public Guid CampaignId { get; set; }
     public CampaignDAO? Campaign { get; set; }
-    public bool InUse { get; set; }
+    public Guid? CharacterId { get; set; }
+    public CharacterDAO? Character { get; set; }
 }

@@ -103,16 +103,18 @@ namespace GloomhavenTracker.Database.Migrations
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("CharacterId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime?>("CreatedOnUTC")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("InUse")
-                        .HasColumnType("boolean");
 
                     b.Property<DateTime?>("UpdatedOnUTC")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("CampaignId", "ItemId");
+
+                    b.HasIndex("CharacterId");
 
                     b.HasIndex("ItemId");
 
@@ -163,27 +165,6 @@ namespace GloomhavenTracker.Database.Migrations
                     b.HasIndex("CharacterContentId");
 
                     b.ToTable("CampaignCharacter");
-                });
-
-            modelBuilder.Entity("GloomhavenTracker.Database.Models.Campaign.CharacterItemDAO", b =>
-                {
-                    b.Property<Guid>("CharacterId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ItemId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("CreatedOnUTC")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("UpdatedOnUTC")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("CharacterId", "ItemId");
-
-                    b.HasIndex("ItemId");
-
-                    b.ToTable("CampaignCharacterItem");
                 });
 
             modelBuilder.Entity("GloomhavenTracker.Database.Models.Campaign.CharacterPerkDAO", b =>
@@ -1156,6 +1137,10 @@ namespace GloomhavenTracker.Database.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("GloomhavenTracker.Database.Models.Campaign.CharacterDAO", "Character")
+                        .WithMany("Items")
+                        .HasForeignKey("CharacterId");
+
                     b.HasOne("GloomhavenTracker.Database.Models.Content.ItemDAO", "Item")
                         .WithMany("CampaginItems")
                         .HasForeignKey("ItemId")
@@ -1163,6 +1148,8 @@ namespace GloomhavenTracker.Database.Migrations
                         .IsRequired();
 
                     b.Navigation("Campaign");
+
+                    b.Navigation("Character");
 
                     b.Navigation("Item");
                 });
@@ -1184,25 +1171,6 @@ namespace GloomhavenTracker.Database.Migrations
                     b.Navigation("Campaign");
 
                     b.Navigation("CharacterContent");
-                });
-
-            modelBuilder.Entity("GloomhavenTracker.Database.Models.Campaign.CharacterItemDAO", b =>
-                {
-                    b.HasOne("GloomhavenTracker.Database.Models.Campaign.CharacterDAO", "Character")
-                        .WithMany("Items")
-                        .HasForeignKey("CharacterId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("GloomhavenTracker.Database.Models.Content.ItemDAO", "Item")
-                        .WithMany("CharacterItems")
-                        .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Character");
-
-                    b.Navigation("Item");
                 });
 
             modelBuilder.Entity("GloomhavenTracker.Database.Models.Campaign.CharacterPerkDAO", b =>
@@ -1805,8 +1773,6 @@ namespace GloomhavenTracker.Database.Migrations
             modelBuilder.Entity("GloomhavenTracker.Database.Models.Content.ItemDAO", b =>
                 {
                     b.Navigation("CampaginItems");
-
-                    b.Navigation("CharacterItems");
                 });
 
             modelBuilder.Entity("GloomhavenTracker.Database.Models.Content.MonsterDAO", b =>
