@@ -114,7 +114,8 @@ public class CampaignMapperProfile : Profile
                     .Select(user => new UserCampaignDAO()
                     {
                         UserId = user.UserId,
-                        CampaignId = src.Id
+                        CampaignId = src.Id,
+                        IsOwner = src.Owner.UserId == user.UserId
                     }).ToList();
 
                 CampaignDAO campaign = new CampaignDAO()
@@ -158,6 +159,7 @@ public class CampaignMapperProfile : Profile
                 game: ctx.Mapper.Map<Game>(src.Game),
                 scenarios: scenarios,
                 party: party,
+                owner: ctx.Mapper.Map<User>(src.Managers.First(m => m.IsOwner)),
                 managers: managers
             );
         });

@@ -12,7 +12,7 @@ public static partial class EntityDefinitions
     {
         builder.Entity<ItemDAO>(itemTable =>
         {
-            itemTable.HasMany(item => item.CampaginItems).WithOne(ci => ci.Item).OnDelete(DeleteBehavior.Restrict);
+            itemTable.HasMany(item => item.CampaignItems).WithOne(ci => ci.Item).OnDelete(DeleteBehavior.Restrict);
             itemTable.Property(item => item.Location).HasConversion(itemLocation);
             itemTable.Property(item => item.Frequency).HasConversion(itemFrequency);
         });
@@ -31,8 +31,9 @@ public enum LOCATION_DAO
 
 public enum FREQUENCY_DAO
 {
-    single,
-    multiple
+    spend,
+    tap,
+    permanent
 }
 
 public class ItemDAO
@@ -45,7 +46,8 @@ public class ItemDAO
     public int Number { get; set; }
     public LOCATION_DAO Location { get; set; }
     public FREQUENCY_DAO Frequency { get; set; }
-    public virtual ICollection<CampaignItemDAO> CampaginItems { get; set; } = new HashSet<CampaignItemDAO>();
+    public int Cost { get; set; }
+    public virtual ICollection<CampaignItemDAO> CampaignItems { get; set; } = new HashSet<CampaignItemDAO>();
     [Required]
     public Guid GameId { get; set; }
     public GameDAO Game { get; set; } = new GameDAO();

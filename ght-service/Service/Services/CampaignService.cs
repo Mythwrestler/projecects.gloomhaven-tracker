@@ -92,6 +92,7 @@ public class CampaignServiceImplementation : CampaignService
             game,
             new Dictionary<string, Models.Campaign.Scenario>(),
             new Dictionary<string, Models.Campaign.Character>(),
+            user,
             new Dictionary<Guid, Models.User>(){{user.UserId, user}}
         );
 

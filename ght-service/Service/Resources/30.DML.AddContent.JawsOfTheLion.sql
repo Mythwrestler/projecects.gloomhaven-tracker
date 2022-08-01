@@ -996,11 +996,11 @@ INSERT INTO public."ContentScenarioMonster" ("ScenarioId", "MonsterId") VALUES
 ,('bed28a5c-2fdc-7dbe-702a-70263a71bccc', '1b1c44d4-417d-4548-ab5c-87116956d51e') --Jaws of The Lion - The Greatest Job in the World - Jaws of The Lion - Vermling Scout
 ;
 
-INSERT INTO public."ContentItem" ("Id", "ContentCode", "Name", "Description", "Number", "Location", "Frequency", "GameId") VALUES
- ('7a08d269-21f0-f69d-cc59-5191f3089647', 'eagle_eye_goggles', 'Eagle-Eye Goggles', 'During your attack, gain Advantage for the entire Attack action.', '1', 'head', 'tap', '153dad18-1725-4a91-b337-521c52aaccd1') --Jaws of The Lion - Eagle-Eye Goggles
-,('cfbd1289-f11a-8292-8ec6-248bbc469689', 'eagle_eye_goggles', 'Eagle-Eye Goggles', 'During your attack, gain Advantage for the entire Attack action.', '1', 'head', 'tap', '153dad18-1725-4a91-b337-521c52aaccd1') --Jaws of The Lion - Eagle-Eye Goggles
-,('f1423b25-7326-1354-5c2c-329bab98f5d8', 'iron_helmet', 'Iron Helmet', 'When Attacked, consider and 2x attack madifier card the enemy draws to be a +0 instead.', '2', 'head', 'permenant', '153dad18-1725-4a91-b337-521c52aaccd1') --Jaws of The Lion - Iron Helmet
-,('d6a1d2d0-ba00-355d-f750-1986beabb15f', 'iron_helmet', 'Iron Helmet', 'When Attacked, consider and 2x attack madifier card the enemy draws to be a +0 instead.', '2', 'head', 'permenant', '153dad18-1725-4a91-b337-521c52aaccd1') --Jaws of The Lion - Iron Helmet
-,('4116037b-201d-fc32-f1d3-045b1b8e60ce', 'throwing_hammer', 'Throwing Hammer', 'During your ranged attack, add STUN to a single attack', '8', 'hand', 'spend', '153dad18-1725-4a91-b337-521c52aaccd1') --Jaws of The Lion - Throwing Hammer
-,('63bb3147-5d03-f231-a47a-a4a4b77f415a', 'throwing_hammer', 'Throwing Hammer', 'During your ranged attack, add STUN to a single attack', '8', 'hand', 'spend', '153dad18-1725-4a91-b337-521c52aaccd1') --Jaws of The Lion - Throwing Hammer
+INSERT INTO public."ContentItem" ("Id", "ContentCode", "Name", "Description", "Number", "Location", "Frequency", "Cost", "GameId") VALUES
+ ('7a08d269-21f0-f69d-cc59-5191f3089647', 'eagle_eye_goggles', 'Eagle-Eye Goggles', 'During your attack, gain Advantage for the entire Attack action.', 1, 'head', 'tap', 30, '153dad18-1725-4a91-b337-521c52aaccd1') --Jaws of The Lion - Eagle-Eye Goggles
+,('cfbd1289-f11a-8292-8ec6-248bbc469689', 'eagle_eye_goggles', 'Eagle-Eye Goggles', 'During your attack, gain Advantage for the entire Attack action.', 1, 'head', 'tap', 30, '153dad18-1725-4a91-b337-521c52aaccd1') --Jaws of The Lion - Eagle-Eye Goggles
+,('f1423b25-7326-1354-5c2c-329bab98f5d8', 'iron_helmet', 'Iron Helmet', 'When Attacked, consider and 2x attack madifier card the enemy draws to be a +0 instead.', 2, 'head', 'permanent', 20, '153dad18-1725-4a91-b337-521c52aaccd1') --Jaws of The Lion - Iron Helmet
+,('d6a1d2d0-ba00-355d-f750-1986beabb15f', 'iron_helmet', 'Iron Helmet', 'When Attacked, consider and 2x attack madifier card the enemy draws to be a +0 instead.', 2, 'head', 'permanent', 20, '153dad18-1725-4a91-b337-521c52aaccd1') --Jaws of The Lion - Iron Helmet
+,('4116037b-201d-fc32-f1d3-045b1b8e60ce', 'throwing_hammer', 'Throwing Hammer', 'During your ranged attack, add STUN to a single attack', 8, 'hand', 'spend', 30, '153dad18-1725-4a91-b337-521c52aaccd1') --Jaws of The Lion - Throwing Hammer
+,('63bb3147-5d03-f231-a47a-a4a4b77f415a', 'throwing_hammer', 'Throwing Hammer', 'During your ranged attack, add STUN to a single attack', 8, 'hand', 'spend', 30, '153dad18-1725-4a91-b337-521c52aaccd1') --Jaws of The Lion - Throwing Hammer
 ;

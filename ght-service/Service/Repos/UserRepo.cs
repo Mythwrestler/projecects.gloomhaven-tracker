@@ -101,7 +101,7 @@ public class UserRepoImplementation : UserRepo
         [JsonPropertyName("sub")]
         public Guid UserId { get; set; }
 
-        [JsonPropertyName("userName")]
+        [JsonPropertyName("username")]
         public string UserName { get; set; } = string.Empty;
 
         [JsonPropertyName("firstName")]
