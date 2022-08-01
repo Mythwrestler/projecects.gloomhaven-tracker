@@ -742,6 +742,9 @@ namespace GloomhavenTracker.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("Cost")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
@@ -1084,6 +1087,9 @@ namespace GloomhavenTracker.Database.Migrations
                     b.Property<Guid>("CampaignId")
                         .HasColumnType("uuid");
 
+                    b.Property<bool>("IsOwner")
+                        .HasColumnType("boolean");
+
                     b.HasKey("UserId", "CampaignId");
 
                     b.HasIndex("CampaignId");
@@ -1142,7 +1148,7 @@ namespace GloomhavenTracker.Database.Migrations
                         .HasForeignKey("CharacterId");
 
                     b.HasOne("GloomhavenTracker.Database.Models.Content.ItemDAO", "Item")
-                        .WithMany("CampaginItems")
+                        .WithMany("CampaignItems")
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -1772,7 +1778,7 @@ namespace GloomhavenTracker.Database.Migrations
 
             modelBuilder.Entity("GloomhavenTracker.Database.Models.Content.ItemDAO", b =>
                 {
-                    b.Navigation("CampaginItems");
+                    b.Navigation("CampaignItems");
                 });
 
             modelBuilder.Entity("GloomhavenTracker.Database.Models.Content.MonsterDAO", b =>
