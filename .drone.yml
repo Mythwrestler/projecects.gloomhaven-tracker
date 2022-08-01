@@ -102,16 +102,13 @@ steps:
   - name: "EF Migration: Test Data Seed"
     image: harbor.casperinc.net/library/postgresql/client:14
     environment:
-      DB_SERVER:
-        from_secret: creds-nprd-db-server
-      DB_PORT:
-        from_secret: creds-nprd-db-port
+      DB_SERVER: ght-testingdb-${DRONE_COMMIT_SHA:0:8}.infra-builds.svc.cluster.local
+      DB_PORT: 5432
       DB_DATABASE:
         from_secret: creds-nprd-db-database
       DB_USER:
         from_secret: creds-nprd-db-user
-      DB_PASSWORD:
-        from_secret: creds-nprd-db-password
+      DB_PASSWORD: pguser
     commands:
       - echo -n "$$DB_SERVER:$$DB_PORT:$$DB_DATABASE:$$DB_USER:$$DB_PASSWORD" >> ~/.pgpass
       - chmod 0600 ~/.pgpass
