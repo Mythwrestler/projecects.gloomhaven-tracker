@@ -24,6 +24,7 @@ namespace GloomhavenTracker.Service.SeedData
                 _connection.Open();
                 ClearDatabase(_connection);
                 LoadContent(_connection);
+                LoadTestData(_connection);
                 _connection.Close();
             }
             catch (Exception ex)
@@ -40,7 +41,7 @@ namespace GloomhavenTracker.Service.SeedData
         private static void ClearDatabase(NpgsqlConnection connection)
         {
             var workingDirectory = Directory.GetCurrentDirectory();
-            var sqlFileString = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "DML.ClearDatabase.sql");
+            var sqlFileString = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "20.DML.ClearDatabase.sql");
             var sqlString = File.OpenText(sqlFileString).ReadToEnd();
             var command = new NpgsqlCommand(sqlString, connection);
             command.ExecuteNonQuery();
@@ -49,7 +50,16 @@ namespace GloomhavenTracker.Service.SeedData
         private static void LoadContent(NpgsqlConnection connection)
         {
             var workingDirectory = Directory.GetCurrentDirectory();
-            var jsonFileString = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "DML.AddContent.JawsOfTheLion.sql");
+            var jsonFileString = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "30.DML.AddContent.JawsOfTheLion.sql");
+            var sqlString = File.OpenText(jsonFileString).ReadToEnd();
+            var command = new NpgsqlCommand(sqlString, connection);
+            command.ExecuteNonQuery();
+        }
+
+        private static void LoadTestData(NpgsqlConnection connection)
+        {
+            var workingDirectory = Directory.GetCurrentDirectory();
+            var jsonFileString = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "40.DML.AddTestData.sql");
             var sqlString = File.OpenText(jsonFileString).ReadToEnd();
             var command = new NpgsqlCommand(sqlString, connection);
             command.ExecuteNonQuery();
