@@ -132,54 +132,54 @@ steps:
       - echo -n "${DRONE_BRANCH//\//-}-${DRONE_COMMIT_SHA:0:8}, ${DRONE_BRANCH//\//-}-latest, " > .tags
       - cat /drone/src/version >> .tags
 
-  # - name: "Validate Migration: Prep For Testing"
-  #   image: harbor.casperinc.net/docker-hub/library/bash
-  #   commands:
-  #     - echo -n "$$KUBE_CONFIG" | base64 -d > ./kube-config
-  #     - sed -i "s/__DB_USER__/$$DB_USER/" ./ght-service/Database/Testing/TestingDB.yaml
-  #     - sed -i "s/__DB_DATABASE__/$$DB_DATABASE/" ./ght-service/Database/Testing/TestingDB.yaml
-  #     - sed -i "s/__COMMITSHA__/${DRONE_COMMIT_SHA:0:8}/" ./ght-service/Database/Testing/TestingDB.yaml
-  #   environment:
-  #     KUBE_CONFIG:
-  #       from_secret: k8s-config-base64
-  #     DB_DATABASE:
-  #       from_secret: creds-nprd-db-database
-  #     DB_USER:
-  #       from_secret: creds-nprd-db-user
+  - name: "Validate Migration: Prep For Testing"
+    image: harbor.casperinc.net/docker-hub/library/bash
+    commands:
+      - echo -n "$$KUBE_CONFIG" | base64 -d > ./kube-config
+      - sed -i "s/__DB_USER__/$$DB_USER/" ./ght-service/Database/Testing/TestingDB.yaml
+      - sed -i "s/__DB_DATABASE__/$$DB_DATABASE/" ./ght-service/Database/Testing/TestingDB.yaml
+      - sed -i "s/__COMMITSHA__/${DRONE_COMMIT_SHA:0:8}/" ./ght-service/Database/Testing/TestingDB.yaml
+    environment:
+      KUBE_CONFIG:
+        from_secret: k8s-config-base64
+      DB_DATABASE:
+        from_secret: creds-nprd-db-database
+      DB_USER:
+        from_secret: creds-nprd-db-user
 
-  # - name: "Validate Migration: Standup Testing DB"
-  #   image: harbor.casperinc.net/docker-hub/bitnami/kubectl:1.24.3
-  #   commands:
-  #     - cp ./kube-config /.kube/config
-  #     - kubectl apply -f ./ght-service/Database/Testing/TestingDB.yaml --namespace infra-builds
-  #     - kubectl wait deployment ght-testingdb-${DRONE_COMMIT_SHA:0:8} --namespace infra-builds --for condition=Available=True --timeout=90s
+  - name: "Validate Migration: Standup Testing DB"
+    image: harbor.casperinc.net/docker-hub/bitnami/kubectl:1.24.3
+    commands:
+      - cp ./kube-config /.kube/config
+      - kubectl apply -f ./ght-service/Database/Testing/TestingDB.yaml --namespace infra-builds
+      - kubectl wait deployment ght-testingdb-${DRONE_COMMIT_SHA:0:8} --namespace infra-builds --for condition=Available=True --timeout=90s
 
-  # - name: "Validate Migration: Test Migration"
-  #   image: harbor.casperinc.net/microsoft/dotnet/sdk:6.0
-  #   environment:
-  #     DB_SERVER: ght-testingdb-${DRONE_COMMIT_SHA:0:8}.infra-builds.svc.cluster.local
-  #     DB_PORT: 5432
-  #     DB_DATABASE:
-  #       from_secret: creds-nprd-db-database
-  #     DB_USER:
-  #       from_secret: creds-nprd-db-user
-  #     DB_PASSWORD: pguser
-  #   commands:
-  #     - cd /drone/src/ght-service
-  #     - export PATH="$PATH:/root/.dotnet/tools"
-  #     - dotnet tool install --global dotnet-ef --version 6.0.3
-  #     - dotnet restore
-  #     - dotnet ef database update --project ./Database/ght-database.csproj --startup-project ./Service
+  - name: "Validate Migration: Test Migration"
+    image: harbor.casperinc.net/microsoft/dotnet/sdk:6.0
+    environment:
+      DB_SERVER: ght-testingdb-${DRONE_COMMIT_SHA:0:8}.infra-builds.svc.cluster.local
+      DB_PORT: 5432
+      DB_DATABASE:
+        from_secret: creds-nprd-db-database
+      DB_USER:
+        from_secret: creds-nprd-db-user
+      DB_PASSWORD: pguser
+    commands:
+      - cd /drone/src/ght-service
+      - export PATH="$PATH:/root/.dotnet/tools"
+      - dotnet tool install --global dotnet-ef --version 6.0.3
+      - dotnet restore
+      - dotnet ef database update --project ./Database/ght-database.csproj --startup-project ./Service
 
-  # - name: "Validate Migration: Teardown Testing DB"
-  #   when:
-  #     status:
-  #     - success
-  #     - failure
-  #   image: harbor.casperinc.net/docker-hub/bitnami/kubectl:1.24.3
-  #   commands:
-  #     - cp /drone/src/kube-config /.kube/config
-  #     - kubectl delete -f ./ght-service/Database/Testing/TestingDB.yaml --namespace infra-builds
+  - name: "Validate Migration: Teardown Testing DB"
+    when:
+      status:
+      - success
+      - failure
+    image: harbor.casperinc.net/docker-hub/bitnami/kubectl:1.24.3
+    commands:
+      - cp /drone/src/kube-config /.kube/config
+      - kubectl delete -f ./ght-service/Database/Testing/TestingDB.yaml --namespace infra-builds
 
   # - name: "Service: Build and Push Image"
   #   image: plugins/docker
