@@ -99,7 +99,7 @@ steps:
       - dotnet restore
       - dotnet ef database update --project ./Database/ght-database.csproj --startup-project ./Service
 
-- name: "EF Migration: Test Data Seed"
+  - name: "EF Migration: Test Data Seed"
     image: harbor.casperinc.net/library/postgresql/client:14
     environment:
       DB_SERVER:
