@@ -154,22 +154,22 @@ steps:
       - kubectl apply -f ./ght-service/Database/Testing/TestingDB.yaml --namespace infra-builds
       - kubectl wait deployment ght-testingdb-${DRONE_COMMIT_SHA:0:8} --namespace infra-builds --for condition=Available=True --timeout=90s
 
-  # - name: "Validate Migration: Test Migration"
-  #   image: harbor.casperinc.net/microsoft/dotnet/sdk:6.0
-  #   environment:
-  #     DB_SERVER: ght-testingdb-${DRONE_COMMIT_SHA:0:8}.infra-builds.svc.cluster.local
-  #     DB_PORT: 5432
-  #     DB_DATABASE:
-  #       from_secret: creds-nprd-db-database
-  #     DB_USER:
-  #       from_secret: creds-nprd-db-user
-  #     DB_PASSWORD: pguser
-  #   commands:
-  #     - cd /drone/src/ght-service
-  #     - export PATH="$PATH:/root/.dotnet/tools"
-  #     - dotnet tool install --global dotnet-ef --version 6.0.3
-  #     - dotnet restore
-  #     - dotnet ef database update --project ./Database/ght-database.csproj --startup-project ./Service
+  - name: "Validate Migration: Test Migration"
+    image: harbor.casperinc.net/microsoft/dotnet/sdk:6.0
+    environment:
+      DB_SERVER: ght-testingdb-${DRONE_COMMIT_SHA:0:8}.infra-builds.svc.cluster.local
+      DB_PORT: 5432
+      DB_DATABASE:
+        from_secret: creds-nprd-db-database
+      DB_USER:
+        from_secret: creds-nprd-db-user
+      DB_PASSWORD: pguser
+    commands:
+      - cd /drone/src/ght-service
+      - export PATH="$PATH:/root/.dotnet/tools"
+      - dotnet tool install --global dotnet-ef --version 6.0.3
+      - dotnet restore
+      - dotnet ef database update --project ./Database/ght-database.csproj --startup-project ./Service
 
   # - name: "Validate Migration: Teardown Testing DB"
   #   when:
