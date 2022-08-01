@@ -1,7 +1,7 @@
 ---
 kind: pipeline
 type: kubernetes
-name: "Build Images Only"
+name: "Runtime Image Build Validation"
 
 trigger:
   branch:
@@ -47,7 +47,7 @@ steps:
 ---
 kind: pipeline
 type: kubernetes
-name: "Validate Migration Only"
+name: "EF Migration And Seed Data Validation"
 
 trigger:
   branch:
@@ -60,7 +60,7 @@ trigger:
     - pr
 
 steps:
-  - name: "Validate Migration: Prep For Testing"
+  - name: "Ef Migration: Prep For Testing"
     image: harbor.casperinc.net/docker-hub/library/bash
     commands:
       - echo -n "$$KUBE_CONFIG" | base64 -d > ./kube-config
@@ -75,7 +75,7 @@ steps:
       DB_USER:
         from_secret: creds-nprd-db-user
 
-  - name: "Validate Migration: Standup Testing DB"
+  - name: "EF Migration: Standup Testing DB"
     image: harbor.casperinc.net/docker-hub/bitnami/kubectl:1.24.3
     commands:
       - cp ./kube-config /.kube/config
@@ -99,8 +99,27 @@ steps:
       - dotnet restore
       - dotnet ef database update --project ./Database/ght-database.csproj --startup-project ./Service
 
+- name: "EF Migration: Test Data Seed"
+    image: harbor.casperinc.net/library/postgresql/client:14
+    environment:
+      DB_SERVER:
+        from_secret: creds-nprd-db-server
+      DB_PORT:
+        from_secret: creds-nprd-db-port
+      DB_DATABASE:
+        from_secret: creds-nprd-db-database
+      DB_USER:
+        from_secret: creds-nprd-db-user
+      DB_PASSWORD:
+        from_secret: creds-nprd-db-password
+    commands:
+      - echo -n "$$DB_SERVER:$$DB_PORT:$$DB_DATABASE:$$DB_USER:$$DB_PASSWORD" >> ~/.pgpass
+      - chmod 0600 ~/.pgpass
+      - psql --hostname=$${DB_SERVER} --username=$${DB_USER} --no-password --file=/drone/src/ght-service/Service/Resources/20.DML.ClearDatabase.sql
+      - psql --hostname=$${DB_SERVER} --username=$${DB_USER} --no-password --file=/drone/src/ght-service/Service/Resources/30.DML.AddContent.JawsOfTheLion.sql
+      - psql --hostname=$${DB_SERVER} --username=$${DB_USER} --no-password --file=/drone/src/ght-service/Service/Resources/40.DML.AddTestData.sql
 
-  - name: "Validate Migration: Teardown Testing DB"
+  - name: "EF Migration: Teardown Testing DB"
     when:
       status:
       - success
@@ -132,7 +151,7 @@ steps:
       - echo -n "${DRONE_BRANCH//\//-}-${DRONE_COMMIT_SHA:0:8}, ${DRONE_BRANCH//\//-}-latest, " > .tags
       - cat /drone/src/version >> .tags
 
-  - name: "Validate Migration: Prep For Testing"
+  - name: "EF Migration: Prep For Testing"
     image: harbor.casperinc.net/docker-hub/library/bash
     commands:
       - echo -n "$$KUBE_CONFIG" | base64 -d > ./kube-config
@@ -147,14 +166,14 @@ steps:
       DB_USER:
         from_secret: creds-nprd-db-user
 
-  - name: "Validate Migration: Standup Testing DB"
+  - name: "Ef Migration: Standup Testing DB"
     image: harbor.casperinc.net/docker-hub/bitnami/kubectl:1.24.3
     commands:
       - cp ./kube-config /.kube/config
       - kubectl apply -f ./ght-service/Database/Testing/TestingDB.yaml --namespace infra-builds
       - kubectl wait deployment ght-testingdb-${DRONE_COMMIT_SHA:0:8} --namespace infra-builds --for condition=Available=True --timeout=90s
 
-  - name: "Validate Migration: Test Migration"
+  - name: "EF Migration: Test Migration"
     image: harbor.casperinc.net/microsoft/dotnet/sdk:6.0
     environment:
       DB_SERVER: ght-testingdb-${DRONE_COMMIT_SHA:0:8}.infra-builds.svc.cluster.local
@@ -171,66 +190,66 @@ steps:
       - dotnet restore
       - dotnet ef database update --project ./Database/ght-database.csproj --startup-project ./Service
 
-  # - name: "Validate Migration: Teardown Testing DB"
-  #   when:
-  #     status:
-  #     - success
-  #     - failure
-  #   image: harbor.casperinc.net/docker-hub/bitnami/kubectl:1.24.3
-  #   commands:
-  #     - cp /drone/src/kube-config /.kube/config
-  #     - kubectl delete -f ./ght-service/Database/Testing/TestingDB.yaml --namespace infra-builds
+  - name: "EF Migration: Teardown Testing DB"
+    when:
+      status:
+      - success
+      - failure
+    image: harbor.casperinc.net/docker-hub/bitnami/kubectl:1.24.3
+    commands:
+      - cp /drone/src/kube-config /.kube/config
+      - kubectl delete -f ./ght-service/Database/Testing/TestingDB.yaml --namespace infra-builds
 
-  # - name: "Service: Build and Push Image"
-  #   image: plugins/docker
-  #   settings:
-  #     dry_run: false
-  #     repo: harbor.casperinc.net/library/ght/ght-service
-  #     registry: harbor.casperinc.net
-  #     username:
-  #       from_secret: registry-username
-  #     password:
-  #       from_secret: registry-password
-  #     context: ./ght-service/
-  #     dockerfile: ./ght-service/Dockerfile
-  #     build_args:
-  #       - REGISTRY=harbor.casperinc.net/microsoft/
+  - name: "Service: Build and Push Image"
+    image: plugins/docker
+    settings:
+      dry_run: false
+      repo: harbor.casperinc.net/library/ght/ght-service
+      registry: harbor.casperinc.net
+      username:
+        from_secret: registry-username
+      password:
+        from_secret: registry-password
+      context: ./ght-service/
+      dockerfile: ./ght-service/Dockerfile
+      build_args:
+        - REGISTRY=harbor.casperinc.net/microsoft/
 
-  # - name: "Client: Build and Push Image"
-  #   image: plugins/docker
-  #   settings:
-  #     dry_run: false
-  #     repo: harbor.casperinc.net/library/ght/ght-client
-  #     registry: harbor.casperinc.net
-  #     username:
-  #       from_secret: registry-username
-  #     password:
-  #       from_secret: registry-password
-  #     context: ./ght-client/
-  #     dockerfile: ./ght-client/Dockerfile
-  #     build_args:
-  #       - REGISTRY=harbor.casperinc.net/docker-hub/library/
-  #       - BUILD_ENV=nprd
+  - name: "Client: Build and Push Image"
+    image: plugins/docker
+    settings:
+      dry_run: false
+      repo: harbor.casperinc.net/library/ght/ght-client
+      registry: harbor.casperinc.net
+      username:
+        from_secret: registry-username
+      password:
+        from_secret: registry-password
+      context: ./ght-client/
+      dockerfile: ./ght-client/Dockerfile
+      build_args:
+        - REGISTRY=harbor.casperinc.net/docker-hub/library/
+        - BUILD_ENV=nprd
 
-  # - name: "EF: Update NPRD Database"
-  #   image: harbor.casperinc.net/microsoft/dotnet/sdk:6.0
-  #   environment:
-  #     DB_SERVER:
-  #       from_secret: creds-nprd-db-server
-  #     DB_PORT:
-  #       from_secret: creds-nprd-db-port
-  #     DB_DATABASE:
-  #       from_secret: creds-nprd-db-database
-  #     DB_USER:
-  #       from_secret: creds-nprd-db-user
-  #     DB_PASSWORD:
-  #       from_secret: creds-nprd-db-password
-  #   commands:
-  #     - cd /drone/src/ght-service
-  #     - export PATH="$PATH:/root/.dotnet/tools"
-  #     - dotnet tool install --global dotnet-ef --version 6.0.3
-  #     - dotnet restore
-  #     - dotnet ef database update --project ./Database/ght-database.csproj --startup-project ./Service
+  - name: "EF: Update NPRD Database"
+    image: harbor.casperinc.net/microsoft/dotnet/sdk:6.0
+    environment:
+      DB_SERVER:
+        from_secret: creds-nprd-db-server
+      DB_PORT:
+        from_secret: creds-nprd-db-port
+      DB_DATABASE:
+        from_secret: creds-nprd-db-database
+      DB_USER:
+        from_secret: creds-nprd-db-user
+      DB_PASSWORD:
+        from_secret: creds-nprd-db-password
+    commands:
+      - cd /drone/src/ght-service
+      - export PATH="$PATH:/root/.dotnet/tools"
+      - dotnet tool install --global dotnet-ef --version 6.0.3
+      - dotnet restore
+      - dotnet ef database update --project ./Database/ght-database.csproj --startup-project ./Service
 
   - name: "Generate Schema Scritps Post Migration"
     image: harbor.casperinc.net/library/postgresql/client:14
@@ -266,44 +285,43 @@ steps:
       build_args:
         - REGISTRY=harbor.casperinc.net/docker-hub/library/
 
+  - name: "Replace Placeholders in NPRD Helmchart"
+    image: harbor.casperinc.net/docker-hub/library/bash
+    commands:
+      - export DEPLOY_TAG="${DRONE_BRANCH//\//-}-${DRONE_COMMIT_SHA:0:8}"
+      - sed -i "s/__DEPLOY_TAG__/$DEPLOY_TAG/" ./helm_values/values.nprd.yaml
 
-  # - name: "Replace Placeholders in NPRD Helmchart"
-  #   image: harbor.casperinc.net/docker-hub/library/bash
-  #   commands:
-  #     - export DEPLOY_TAG="${DRONE_BRANCH//\//-}-${DRONE_COMMIT_SHA:0:8}"
-  #     - sed -i "s/__DEPLOY_TAG__/$DEPLOY_TAG/" ./helm_values/values.nprd.yaml
+  - name: "Helm: Linting NPRD Values"
+    image: harbor.casperinc.net/docker-hub/pelotech/drone-helm3
+    settings:
+      mode: lint
+      debug: true
+      chart: ./helm
+      values_files: 
+        - ./helm_values/values.nprd.yaml
+      lint_strictly: true
 
-  # - name: "Helm: Linting NPRD Values"
-  #   image: harbor.casperinc.net/docker-hub/pelotech/drone-helm3
-  #   settings:
-  #     mode: lint
-  #     debug: true
-  #     chart: ./helm
-  #     values_files: 
-  #       - ./helm_values/values.nprd.yaml
-  #     lint_strictly: true
-
-  # - name: "Helm: Update NPRD Deployment"
-  #   image: harbor.casperinc.net/docker-hub/pelotech/drone-helm3
-  #   settings:
-  #     mode: upgrade
-  #     debug: true
-  #     force_upgrade: true
-  #     cleanup_failed_upgrade: true
-  #     chart: ./helm
-  #     release: ght-nprd
-  #     namespace: nprd
-  #     wait_for_upgrade: true
-  #     values_files: 
-  #       - ./helm_values/values.nprd.yaml
-  #     kube_api_server:
-  #       from_secret: kube_api_server
-  #     kube_certificate:
-  #       from_secret: kube_certificate
-  #     kube_token:
-  #       from_secret: kube_token
-  #     kube_service_account:
-  #       from_secret: kube_service_account
+  - name: "Helm: Update NPRD Deployment"
+    image: harbor.casperinc.net/docker-hub/pelotech/drone-helm3
+    settings:
+      mode: upgrade
+      debug: true
+      force_upgrade: true
+      cleanup_failed_upgrade: true
+      chart: ./helm
+      release: ght-nprd
+      namespace: nprd
+      wait_for_upgrade: true
+      values_files: 
+        - ./helm_values/values.nprd.yaml
+      kube_api_server:
+        from_secret: kube_api_server
+      kube_certificate:
+        from_secret: kube_certificate
+      kube_token:
+        from_secret: kube_token
+      kube_service_account:
+        from_secret: kube_service_account
 
 image_pull_secrets:
   - hargor-regcred-docker-json
