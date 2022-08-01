@@ -60,7 +60,7 @@ trigger:
     - pr
 
 steps:
-  - name: "Ef Migration: Prep For Testing"
+  - name: "EF Migration: Prep For Testing"
     image: harbor.casperinc.net/docker-hub/library/bash
     commands:
       - echo -n "$$KUBE_CONFIG" | base64 -d > ./kube-config
@@ -82,7 +82,7 @@ steps:
       - kubectl apply -f ./ght-service/Database/Testing/TestingDB.yaml --namespace infra-builds
       - kubectl wait deployment ght-testingdb-${DRONE_COMMIT_SHA:0:8} --namespace infra-builds --for condition=Available=True --timeout=90s
 
-  - name: "Validate Migration: Test Migration"
+  - name: "EF Migration: Test Migration"
     image: harbor.casperinc.net/microsoft/dotnet/sdk:6.0
     environment:
       DB_SERVER: ght-testingdb-${DRONE_COMMIT_SHA:0:8}.infra-builds.svc.cluster.local
@@ -102,22 +102,19 @@ steps:
   - name: "EF Migration: Test Data Seed"
     image: harbor.casperinc.net/library/postgresql/client:14
     environment:
-      DB_SERVER:
-        from_secret: creds-nprd-db-server
-      DB_PORT:
-        from_secret: creds-nprd-db-port
+      DB_SERVER: ght-testingdb-${DRONE_COMMIT_SHA:0:8}.infra-builds.svc.cluster.local
+      DB_PORT: 5432
       DB_DATABASE:
         from_secret: creds-nprd-db-database
       DB_USER:
         from_secret: creds-nprd-db-user
-      DB_PASSWORD:
-        from_secret: creds-nprd-db-password
+      DB_PASSWORD: pguser
     commands:
       - echo -n "$$DB_SERVER:$$DB_PORT:$$DB_DATABASE:$$DB_USER:$$DB_PASSWORD" >> ~/.pgpass
       - chmod 0600 ~/.pgpass
-      - psql --hostname=$${DB_SERVER} --username=$${DB_USER} --no-password --file=/drone/src/ght-service/Service/Resources/20.DML.ClearDatabase.sql
-      - psql --hostname=$${DB_SERVER} --username=$${DB_USER} --no-password --file=/drone/src/ght-service/Service/Resources/30.DML.AddContent.JawsOfTheLion.sql
-      - psql --hostname=$${DB_SERVER} --username=$${DB_USER} --no-password --file=/drone/src/ght-service/Service/Resources/40.DML.AddTestData.sql
+      - psql --host=$${DB_SERVER} --username=$${DB_USER} --no-password -v ON_ERROR_STOP=1 --file=/drone/src/ght-service/Service/Resources/20.DML.ClearDatabase.sql $${DB_DATABASE}
+      - psql --host=$${DB_SERVER} --username=$${DB_USER} --no-password -v ON_ERROR_STOP=1 --file=/drone/src/ght-service/Service/Resources/30.DML.AddContent.JawsOfTheLion.sql $${DB_DATABASE}
+      - psql --host=$${DB_SERVER} --username=$${DB_USER} --no-password -v ON_ERROR_STOP=1 --file=/drone/src/ght-service/Service/Resources/40.DML.AddTestData.sql $${DB_DATABASE}
 
   - name: "EF Migration: Teardown Testing DB"
     when:
@@ -267,8 +264,8 @@ steps:
     commands:
       - echo -n "$$DB_SERVER:$$DB_PORT:$$DB_DATABASE:$$DB_USER:$$DB_PASSWORD" >> ~/.pgpass
       - chmod 0600 ~/.pgpass
-      - pg_dump --host=$${DB_SERVER} --username=$${DB_USER} --file=/drone/src/ght-service/Service/Resources/10.DDL.${DRONE_BRANCH//\//-}-${DRONE_COMMIT_SHA:0:8}.sql --format=p --schema-only $${DB_DATABASE}
-      - pg_dump --host=$${DB_SERVER} --username=$${DB_USER} --file=/drone/src/ght-service/Service/Resources/15.DML.${DRONE_BRANCH//\//-}-${DRONE_COMMIT_SHA:0:8}.sql --column-inserts --data-only --table="public.\"__EFMigrationsHistory\"" $${DB_DATABASE}
+      - pg_dump --host=$${DB_SERVER} --username=$${DB_USER} --no-password --file=/drone/src/ght-service/Service/Resources/10.DDL.${DRONE_BRANCH//\//-}-${DRONE_COMMIT_SHA:0:8}.sql --format=p --schema-only $${DB_DATABASE}
+      - pg_dump --host=$${DB_SERVER} --username=$${DB_USER} --no-password --file=/drone/src/ght-service/Service/Resources/15.DML.${DRONE_BRANCH//\//-}-${DRONE_COMMIT_SHA:0:8}.sql --column-inserts --data-only --table="public.\"__EFMigrationsHistory\"" $${DB_DATABASE}
 
   - name: "Create Test DB Image w/ Scripts"
     image: plugins/docker
