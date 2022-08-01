@@ -112,9 +112,9 @@ steps:
     commands:
       - echo -n "$$DB_SERVER:$$DB_PORT:$$DB_DATABASE:$$DB_USER:$$DB_PASSWORD" >> ~/.pgpass
       - chmod 0600 ~/.pgpass
-      - psql --hostname=$${DB_SERVER} --username=$${DB_USER} --no-password --file=/drone/src/ght-service/Service/Resources/20.DML.ClearDatabase.sql
-      - psql --hostname=$${DB_SERVER} --username=$${DB_USER} --no-password --file=/drone/src/ght-service/Service/Resources/30.DML.AddContent.JawsOfTheLion.sql
-      - psql --hostname=$${DB_SERVER} --username=$${DB_USER} --no-password --file=/drone/src/ght-service/Service/Resources/40.DML.AddTestData.sql
+      - psql --host=$${DB_SERVER} --username=$${DB_USER} --no-password --file=/drone/src/ght-service/Service/Resources/20.DML.ClearDatabase.sql $${DB_DATABASE}
+      - psql --host=$${DB_SERVER} --username=$${DB_USER} --no-password --file=/drone/src/ght-service/Service/Resources/30.DML.AddContent.JawsOfTheLion.sql $${DB_DATABASE}
+      - psql --host=$${DB_SERVER} --username=$${DB_USER} --no-password --file=/drone/src/ght-service/Service/Resources/40.DML.AddTestData.sql $${DB_DATABASE}
 
   - name: "EF Migration: Teardown Testing DB"
     when:
