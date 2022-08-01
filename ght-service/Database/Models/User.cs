@@ -36,5 +36,5 @@ public class UserCampaignDAO
     [Required]
     public Guid CampaignId { get; set; }
     public Campaign.CampaignDAO? Campaign { get; set; }
-
+    public bool IsOwner { get; set;}
 }
