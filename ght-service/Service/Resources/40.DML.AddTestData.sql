@@ -20,5 +20,5 @@ INSERT INTO public."CampaignCampaignItem" ("ItemId", "CampaignId", "CreatedOnUTC
  ('7a08d269-21f0-f69d-cc59-5191f3089647', '5459c417-c100-407e-b402-e2c087493ec5', '2022-07-27 13:38:04.990','2022-07-27 13:38:04.990', '2341ff54-1d05-4bf2-ac78-9bc5465b039d');
 
 -- Test Campaign 01 Users
-INSERT INTO public."UserCampaign" ("UserId","CampaignId", "IsOwner", "NotAColumn") VALUES
+INSERT INTO public."UserCampaign" ("UserId","CampaignId", "IsOwner") VALUES
  ('a335dbb1-84d6-487f-896a-2555c76c8799','5459c417-c100-407e-b402-e2c087493ec5', TRUE);
