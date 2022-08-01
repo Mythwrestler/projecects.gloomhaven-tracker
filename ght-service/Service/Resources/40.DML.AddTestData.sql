@@ -21,4 +21,4 @@ INSERT INTO public."CampaignCampaignItem" ("ItemId", "CampaignId", "CreatedOnUTC
 
 -- Test Campaign 01 Users
 INSERT INTO public."UserCampaign" ("UserId","CampaignId", "IsOwner") VALUES
- ('a335dbb1-84d6-487f-896a-2555c76c8799','5459c417-c100-407e-b402-e2c087493ec5');
+ ('a335dbb1-84d6-487f-896a-2555c76c8799','5459c417-c100-407e-b402-e2c087493ec5', TRUE);
