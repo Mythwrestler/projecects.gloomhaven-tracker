@@ -171,15 +171,15 @@ steps:
       - dotnet restore
       - dotnet ef database update --project ./Database/ght-database.csproj --startup-project ./Service
 
-  - name: "Validate Migration: Teardown Testing DB"
-    when:
-      status:
-      - success
-      - failure
-    image: harbor.casperinc.net/docker-hub/bitnami/kubectl:1.24.3
-    commands:
-      - cp /drone/src/kube-config /.kube/config
-      - kubectl delete -f ./ght-service/Database/Testing/TestingDB.yaml --namespace infra-builds
+  # - name: "Validate Migration: Teardown Testing DB"
+  #   when:
+  #     status:
+  #     - success
+  #     - failure
+  #   image: harbor.casperinc.net/docker-hub/bitnami/kubectl:1.24.3
+  #   commands:
+  #     - cp /drone/src/kube-config /.kube/config
+  #     - kubectl delete -f ./ght-service/Database/Testing/TestingDB.yaml --namespace infra-builds
 
   # - name: "Service: Build and Push Image"
   #   image: plugins/docker
