@@ -1,87 +1,112 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using AutoMapper;
+using GloomhavenTracker.Service.Models.Campaign;
 using GloomhavenTracker.Service.Models.Combat;
 using GloomhavenTracker.Service.Models.Content;
 using GloomhavenTracker.Service.Repos;
 using Microsoft.Extensions.Logging;
 
 namespace GloomhavenTracker.Service.Services;
-public interface CombatService
+public partial interface CombatService
 {
-    #region Find or Start Combat Interface
-
     public bool CombatExists(Guid combatId);
-    public Guid NewCombat(Guid campaingId, string ScenarioContentCode);
-    public List<CombatTrackerSummary> GetCombatList();
-    public CombatTrackerDTO GetCombatDTO(Guid combatId);
-
-    #endregion
-
-    #region Combat Hub Clients Interface
-
-    public void RegisterHubClient(Guid combatId, string clientId);
-    public void RemoveHubClient(Guid combatId, string clientId);
-
-    #endregion
+    public List<CombatDTO> GetCombatListing();
+    public CombatDTO NewCombat(Guid campaignId, string scenarioContentCode);
+    public CombatDTO GetCombatDTO(Guid combatId);
+    public void RegisterHubClientToCombat(Guid combatId, string clientId);
+    public void RemoveHubClientFromCombat(Guid combatId, string clientId);
+    public List<string> GetHubClientsForCombat(Guid combatId);
 }
 
-public partial class CombatServiceImplentation : CombatService
+public partial class CombatServiceImplantation : CombatService
 {
-    private CombatRepo combatRepo;
-    private ContentService contentService;
-    private CampaignService campaignService;
-    private ILogger<CombatServiceImplentation> logger;
-    private Dictionary<Guid, CombatTracker> combatTrackers = new Dictionary<Guid, CombatTracker>();
+    private readonly ContentRepo contentRepo;
+    private readonly CampaignRepo campaignRepo;
+    private readonly CombatRepo combatRepo;
+    private readonly IMapper mapper;
+    private readonly Dictionary<Guid, Combat> combats = new Dictionary<Guid, Combat>();
 
-    public CombatServiceImplentation(
+    public CombatServiceImplantation 
+    (
+        ContentRepo contentRepo,
+        CampaignRepo campaignRepo,
         CombatRepo combatRepo,
-        ContentService contentService,
-        CampaignService campaignService,
-        ILogger<CombatServiceImplentation> logger)
+        IMapper mapper
+    )
     {
+        this.contentRepo = contentRepo;
+        this.campaignRepo = campaignRepo;
         this.combatRepo = combatRepo;
-        this.contentService = contentService;
-        this.logger = logger;
-        this.campaignService = campaignService;
+        this.mapper = mapper;
     }
 
-    public bool CombatExists(Guid combatId)
+    public List<CombatDTO> GetCombatListing()
     {
-        throw new NotImplementedException();
+        return mapper.Map<List<CombatDTO>>(combatRepo.GetCombatListing());
     }
 
-    private CombatTracker GetCombatById(Guid combatId)
+    public bool CombatExists (Guid combatId)
     {
-        CombatTracker combat;
-        
-        if(!combatTrackers.ContainsKey(combatId)){
-            combat = new CombatTracker(combatRepo.GetCombatTracker(combatId));
-            combatTrackers.Add(combat.Id, combat);
+        return combatRepo.CombatExists(combatId);
+    }
+
+    public CombatDTO GetCombatDTO(Guid combatId)
+    {
+        return mapper.Map<CombatDTO>(GetCombat(combatId));
+    }
+
+    private Combat GetCombat(Guid combatId) 
+    {
+        Combat? combat;
+        if(!combats.TryGetValue(combatId, out combat));
+        {
+            combat = combatRepo.GetCombatById(combatId);
+            combats.Add(combatId, combat);
         }
-        combat = combatTrackers[combatId];
-
         return combat;
     }
 
-    public List<CombatTrackerSummary> GetCombatList()
+    public CombatDTO NewCombat(Guid campaignId, string scenarioContentCode)
     {
-        return combatRepo.GetCombatTrackerListing();
+        Campaign campaign = campaignRepo.GetCampaign(campaignId);
+        GAME_TYPE gameType = GameUtils.GameType(campaign.Game.ContentCode);
+        Game game = contentRepo.GetGameDefaults(gameType);
+        Models.Content.Scenario scenario = contentRepo.GetScenarioDefaults(gameType, scenarioContentCode);
+        int scenarioLevel =  (int)Math.Floor(campaign.Party.Select(kvp => kvp.Value.Level).Average());
+        Combat newCombat = new Combat(
+            id: new Guid(),
+            campaign: campaign,
+            scenario: scenario,
+            scenarioLevel: scenarioLevel,
+            monsterModifierDeck: new AttackModifierDeck(game.BaseModifierDeck)
+        );
+
+        combatRepo.CreateCombat(newCombat);
+
+        combats.Add(newCombat.Id, newCombat);
+
+        return mapper.Map<CombatDTO>(newCombat);
+    }
+    
+    public void RegisterHubClientToCombat(Guid combatId, string clientId)
+    {
+        Combat combat = GetCombat(combatId);
+        if(!combat.RegisteredClients.Contains(clientId))
+            combat.RegisteredClients.Add(clientId);
     }
 
-    public CombatTrackerDTO GetCombatDTO(Guid combatId)
+    public void RemoveHubClientFromCombat(Guid combatId, string clientId)
     {
-        CombatTracker combat = GetCombatById(combatId);
-        return combat.DataTransferObject;
+        Combat combat = GetCombat(combatId);
+        combat.RegisteredClients.Remove(clientId);
     }
 
-    public void RegisterHubClient(Guid combatId, string clientId)
+    public List<string> GetHubClientsForCombat(Guid combatId)
     {
-        throw new NotImplementedException();
-    }
-
-    public void RemoveHubClient(Guid combatId, string clientId)
-    {
-        throw new NotImplementedException();
+        Combat combat = GetCombat(combatId);
+        return combat.RegisteredClients;
     }
 }

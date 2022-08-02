@@ -12,6 +12,8 @@ using CampaignScenario = GloomhavenTracker.Service.Models.Campaign.Scenario;
 using ContentCharacter = GloomhavenTracker.Service.Models.Content.Character;
 using ContentScenario = GloomhavenTracker.Service.Models.Content.Scenario;
 
+namespace GloomhavenTracker.Service.Models.Campaign;
+
 public class CampaignMapperProfile : Profile
 {
     public CampaignMapperProfile()

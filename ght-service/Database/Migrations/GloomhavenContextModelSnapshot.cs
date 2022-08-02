@@ -291,8 +291,9 @@ namespace GloomhavenTracker.Database.Migrations
                     b.Property<DateTime?>("CreatedOnUTC")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("CurrentPosition")
-                        .HasColumnType("integer");
+                    b.Property<List<int>>("Positions")
+                        .IsRequired()
+                        .HasColumnType("integer[]");
 
                     b.Property<Guid>("UpdatedBy")
                         .HasColumnType("uuid");
@@ -372,8 +373,14 @@ namespace GloomhavenTracker.Database.Migrations
                     b.Property<DateTime?>("CreatedOnUTC")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid>("MonsterModifierDeckId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("ScenarioId")
                         .HasColumnType("uuid");
+
+                    b.Property<int>("ScenarioLevel")
+                        .HasColumnType("integer");
 
                     b.Property<Guid>("UpdatedBy")
                         .HasColumnType("uuid");
@@ -384,6 +391,8 @@ namespace GloomhavenTracker.Database.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CampaignId");
+
+                    b.HasIndex("MonsterModifierDeckId");
 
                     b.HasIndex("ScenarioId");
 
@@ -1293,6 +1302,12 @@ namespace GloomhavenTracker.Database.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("GloomhavenTracker.Database.Models.Combat.AttackModifierDeckDAO", "MonsterModifierDeck")
+                        .WithMany()
+                        .HasForeignKey("MonsterModifierDeckId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("GloomhavenTracker.Database.Models.Content.ScenarioDAO", "Scenario")
                         .WithMany()
                         .HasForeignKey("ScenarioId")
@@ -1300,6 +1315,8 @@ namespace GloomhavenTracker.Database.Migrations
                         .IsRequired();
 
                     b.Navigation("Campaign");
+
+                    b.Navigation("MonsterModifierDeck");
 
                     b.Navigation("Scenario");
                 });

@@ -22,7 +22,7 @@ public static partial class EntityDefinitions
 public class AttackModifierDeckDAO : AuditableEntityBase
 {
     public Guid Id { get; set; }
-    public int CurrentPosition { get; set; }
+    public List<int> Positions { get; set; } = new List<int>();
     public ICollection<AttackModifierDeckCardDAO> Cards { get; set; } = new HashSet<AttackModifierDeckCardDAO>();
     public Guid CreatedBy { get; set; }
     public Guid UpdatedBy { get; set; }
@@ -33,6 +33,7 @@ public class AttackModifierDeckCardDAO
     [Required]
     public Guid DeckId { get; set; }
     public AttackModifierDeckDAO? Deck { get; set; } 
+    [Required]
     public int position { get; set; }
     [Required]
     public Guid AttackModifierId { get; set; }

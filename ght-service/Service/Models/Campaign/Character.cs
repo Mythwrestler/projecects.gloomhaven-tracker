@@ -21,8 +21,17 @@ public class Character
     public string Name { get; set; } = string.Empty;
     public Models.Content.Character CharacterContent { get; set; }
     public int Experience { get; set; }
+    public int Level
+    {
+        get
+        {
+            return CharacterContent.BaseStats.Levels
+                .Where(lv => lv.Experience <= Experience)
+                .Select(lv => lv.Level).Max();
+        }
+    }
     public int Gold { get; set; }
-    public int PerkPoints {get; set; }
+    public int PerkPoints { get; set; }
 }
 
 [Serializable]

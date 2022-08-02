@@ -44,16 +44,16 @@ public class CampaignSummary
     }
 
     [JsonPropertyName("id")]
-    public Guid Id { get; set; }
+    public Guid Id { get; }
 
     [JsonPropertyName("name")]
-    public string Name { get; set; }
+    public string Name { get; }
 
     [JsonPropertyName("description")]
-    public string Description { get; set; }
+    public string Description { get; }
 
     [JsonPropertyName("game")]
-    public string GameContentCode { get; set; }
+    public string GameContentCode { get; }
 
     [JsonPropertyName("editable")]
     public bool Editable { get; set; } = false;
