@@ -61,7 +61,7 @@ public partial class CombatServiceImplantation : CombatService
     private Combat GetCombat(Guid combatId) 
     {
         Combat? combat;
-        if(!combats.TryGetValue(combatId, out combat));
+        if(!combats.TryGetValue(combatId, out combat))
         {
             combat = combatRepo.GetCombatById(combatId);
             combats.Add(combatId, combat);

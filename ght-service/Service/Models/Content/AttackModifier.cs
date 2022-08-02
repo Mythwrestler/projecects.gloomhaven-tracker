@@ -5,20 +5,6 @@ using System.Text.Json.Serialization;
 
 namespace GloomhavenTracker.Service.Models.Content;
 
-
-[JsonConverter(typeof(JsonStringEnumConverter))]
-public enum ATTACK_MODIFIER_TYPE
-{
-    [EnumMember(Value = "add")]
-    Add,
-
-    [EnumMember(Value = "multiply")]
-    Multiply,
-
-    [EnumMember(Value = "cancel")]
-    Cancel,
-}
-
 [Serializable]
 public struct AttackModifier : ContentItem
 {
