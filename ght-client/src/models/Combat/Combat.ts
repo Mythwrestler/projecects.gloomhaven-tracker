@@ -1,10 +1,6 @@
-import type { Character } from "./Character";
-import type { Element } from "./Element";
-import type { Initiative } from "./Initiative";
-import type { MonsterGroup } from "./Monster";
-import type { ObjectiveGroup } from "./Objective";
+import type { AttackModifierDeck } from "./AttackModifierDeck";
 
-export interface CombatSpaceSummary {
+export interface CombatSummary {
   id: string;
   scenarioContentCode: string;
   scenarioLevel: number;
@@ -12,16 +8,6 @@ export interface CombatSpaceSummary {
   description: string;
 }
 
-export interface CombatSpace {
-  id: string;
-  gameCode: string;
-  campaign: string;
-  scenarioContentCode: string;
-  scenarioLevel: number;
-  description: string;
-  elements: Element[];
-  characters: Character[];
-  monsters: MonsterGroup[];
-  objectives: ObjectiveGroup;
-  initiative: Initiative;
+export interface Combat extends CombatSummary {
+  monsterModifierDeck: AttackModifierDeck
 }

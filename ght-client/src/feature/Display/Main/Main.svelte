@@ -18,6 +18,7 @@
   import { getContext, onMount } from "svelte";
   import Login from "../../Authentication/Login.svelte";
   import Logout from "../../Authentication/Logout.svelte";
+  import ActiveCombat from "../../ActiveCombat/ActiveCombat.svelte";
 
   const location = useLocation();
 
@@ -63,6 +64,9 @@
   <Route path="/combats"><CombatListing /></Route>
   <Route path="/combats/:id" let:params>
     <CombatDetails combatId={params.id} />
+  </Route>
+  <Route path="/combats/fight" let:params>
+    <ActiveCombat />
   </Route>
   <Route path="/sampler"><Sampler /></Route>
 </main>

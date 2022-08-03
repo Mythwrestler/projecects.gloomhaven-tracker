@@ -27,6 +27,9 @@ public class CombatDAO : AuditableEntityBase
     [Required]
     public Guid ScenarioId { get; set; }
     public Content.ScenarioDAO? Scenario { get; set; }
+    public int ScenarioLevel { get; set; }
+    public Guid MonsterModifierDeckId { get; set; }
+    public AttackModifierDeckDAO? MonsterModifierDeck { get; set; }
     public ICollection<Combat.MonsterDAO> Monsters { get; set; } = new HashSet<Combat.MonsterDAO>();
     public ICollection<Combat.CharacterDAO> Characters { get; set; } = new HashSet<Combat.CharacterDAO>();
     public ICollection<Combat.ObjectiveDAO> Objectives { get; set; } = new HashSet<Combat.ObjectiveDAO>();

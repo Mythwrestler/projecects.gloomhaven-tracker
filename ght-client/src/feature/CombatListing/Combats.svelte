@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import type { CombatSpaceSummary } from "../../models/Combat";
+  import { writable } from "svelte/store";
+  import type { CombatSummary } from "../../models/Combat";
   import { AddContainedIcon, Table } from "../../common/Components";
   import type {
     ColumnDefinition,
@@ -8,12 +9,16 @@
     TableConfiguration,
   } from "../../common/Components";
   import CombatLink from "./CombatLink.svelte";
-  import { useCampaignService } from "../../Service/CampaignService";
   import clsx from "clsx";
+  import { accessToken } from "../../common/Utils/OidcSvelteClient";
   import { useCombatService } from "../../Service/CombatService";
+  import ENV_VARS from "../../common/Environment";
 
-  const { State, getCombatListing } = useCombatService();
+  const { State, getCombatListing } = useCombatService(accessToken);
   const { combatListing } = State;
+
+  const refreshListing = writable<boolean>(false);
+  const combatListingLoaded = writable<boolean>(false);
 
   const columns: ColumnDefinition[] = [
     {
@@ -37,8 +42,6 @@
   };
   let combatsRowData: RowData[] = [];
 
-  let combatListingLoaded = false;
-
   combatListing.subscribe((combats) => {
     combatsRowData = combats.map((combat) => {
       return {
@@ -49,11 +52,36 @@
         scenarioLevel: combat.scenarioLevel,
       };
     });
-    if (combats.length > 0) combatListingLoaded = true;
+    if (combats.length > 0) combatListingLoaded.set(true);
+  });
+
+  const handleGetCampaigns = async (
+    token: string | undefined
+  ): Promise<void> => {
+    if (token == undefined || token.trim() == "") return;
+    if ($refreshListing) {
+      await getCombatListing();
+      refreshListing.set(false);
+    }
+  };
+
+  refreshListing.subscribe(() => {
+    let token = "";
+    if (ENV_VARS.AUTH.Enabled() && $accessToken !== null)
+      token = $accessToken ?? "";
+    void handleGetCampaigns(token);
+  });
+
+  accessToken.subscribe((tokenFromStore) => {
+    let token = "";
+    if (ENV_VARS.AUTH.Enabled() && tokenFromStore !== null)
+      token = tokenFromStore ?? "";
+    void handleGetCampaigns(token);
   });
 
   onMount(() => {
-    void getCombatListing();
+    combatListingLoaded.set(false);
+    refreshListing.set(true);
   });
 </script>
 
@@ -67,7 +95,7 @@
     <div aria-label="Available Combats" class="text-center text-xl">
       Campaigns
     </div>
-    {#if combatListingLoaded}
+    {#if $combatListingLoaded}
       <Table {config} rowData={combatsRowData} />
     {/if}
   </div>

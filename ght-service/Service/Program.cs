@@ -22,6 +22,8 @@ using Microsoft.AspNetCore.Http;
 using AutoMapper;
 using GloomhavenTracker.Service.Models;
 using GloomhavenTracker.Service.Helpers;
+using GloomhavenTracker.Service.Models.Campaign;
+using GloomhavenTracker.Service.Models.Combat;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -145,9 +147,9 @@ builder.Services.Configure<JsonOptions>(options =>
 builder.Services.AddAutoMapper(cfg => {
     cfg.AddProfile(new ContentMapperProfile());
     cfg.AddProfile(new CampaignMapperProfile());
+    cfg.AddProfile(new CombatMapperProfile());
     cfg.AddProfile(new UserMapperProfile());
 });
-
 
 builder.Services.AddDbContext<GloomhavenContext>(optionsAction => {
     optionsAction.UseNpgsql(
@@ -175,17 +177,12 @@ builder.Services.AddScoped<ContentRepo, ContentRepoImplementation>();
 //  Register Campaign DI
 builder.Services.AddScoped<CampaignService, CampaignServiceImplementation>();
 builder.Services.AddScoped<CampaignRepo, CampaignRepoImplementation>();
-// builder.Services.AddScoped<CampaignRepo, CampaignRepoImplementation>(factory => {
-//     return new CampaignRepoImplementation(dbConnectionString, factory.GetRequiredService<ILogger<CampaignRepoImplementation>>());
-// });
+builder.Services.AddScoped<CampaignRepo, CampaignRepoImplementation>();
 
 //  Register Combat DI
-builder.Services.AddScoped<CombatService, CombatServiceImplentation>();
-builder.Services.AddScoped<CombatRepo, CombatRepoImplementation>(factory =>
-{
-    // return new CombatRepo(factory.GetRequiredService<IMemoryCache>(), dbConnectionString);
-    return new CombatRepoImplementation(dbConnectionString, factory.GetRequiredService<ILogger<CombatRepoImplementation>>());
-});
+builder.Services.AddScoped<CombatService, CombatServiceImplantation>();
+builder.Services.AddScoped<CombatRepo, CombatRepoImplementation>();
+
 builder.Services.AddHostedService<BattleHubMonitor>();
 
 if (httpLoggingEnabled)
