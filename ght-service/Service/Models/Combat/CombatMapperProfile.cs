@@ -12,16 +12,20 @@ public class CombatMapperProfile : Profile
       #region Attack Modifier Deck
         CreateMap<AttackModifierDeckDAO, AttackModifierDeck>().ConvertUsing((src, dst, ctx) =>
         {
+          Dictionary<int, Content.AttackModifier> deck;
           
-          Dictionary<int, Content.AttackModifier> deck = src.Cards.ToDictionary(
-              card => card.position,
-              card => ctx.Mapper.Map<Content.AttackModifier>(card.AttackModifier)
-          );
+          if(src.Cards is null)
+            deck = new Dictionary<int, Content.AttackModifier>();
+          else
+            deck = src.Cards.ToDictionary(
+                card => card.position,
+                card => ctx.Mapper.Map<Content.AttackModifier>(card.AttackModifier)
+            );
 
           return new AttackModifierDeck(
             src.Id,
             deck,
-            src.Positions
+            src.Positions ?? new List<int>()
           );
         });
 

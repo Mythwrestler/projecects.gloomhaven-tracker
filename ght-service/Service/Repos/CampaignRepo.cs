@@ -56,7 +56,7 @@ public class CampaignRepoImplementation : CampaignRepo
             campaignDAO = context.CampaignCampaign
                 .Where(campaign => campaign.Id == campaignId)
                 .Include(campaign => campaign.Game)
-                .Include(campaign => campaign.Party).ThenInclude(chr => chr.CharacterContent)
+                .Include(campaign => campaign.Party).ThenInclude(chr => chr.CharacterContent).ThenInclude(cc => cc.BaseStats)
                 .Include(campaign => campaign.Scenarios).ThenInclude(scn => scn.ScenarioContent)
                 .Include(campaign => campaign.Managers).ThenInclude(mng => mng.User)
                 .FirstOrDefault();

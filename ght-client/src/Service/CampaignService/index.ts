@@ -65,24 +65,22 @@ class CampaignServiceImplementation {
   };
 
   public createNewCampaign = async (campaign: Campaign): Promise<void> => {
-    try {
-      const result = await postAPI<Campaign>(
-        "campaigns",
-        this.authToken ?? "",
-        {
+    return this.requestQueue.enqueue(async () => {
+      try {
+        const result = await postAPI<Campaign>("campaigns", this.authToken, {
           id: campaign.id,
           name: campaign.name,
           game: campaign.game,
+        });
+        if (result) {
+          this.campaignStore.set(result);
+          // this.savedCampaign.set(result);
+          await this.getCampaignListing();
         }
-      );
-      if (result) {
-        this.campaignStore.set(result);
-        // this.savedCampaign.set(result);
-        await this.getCampaignListing();
+      } catch (ex) {
+        GlobalError.showErrorMessage("Failed To Create a New Campaign");
       }
-    } catch (ex) {
-      GlobalError.showErrorMessage("Failed To Create a New Campaign");
-    }
+    }) as Promise<void>;
   };
 
   public updateCampaign = async (

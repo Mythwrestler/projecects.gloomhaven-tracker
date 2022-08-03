@@ -10,6 +10,10 @@ namespace GloomhavenTracker.Database.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropPrimaryKey(
+                name: "PK_CombatAttackModifierDeckCards",
+                table: "CombatAttackModifierDeckCards");
+
             migrationBuilder.DropColumn(
                 name: "CurrentPosition",
                 table: "CombatAttackModifierDecks");
@@ -33,6 +37,11 @@ namespace GloomhavenTracker.Database.Migrations
                 table: "CombatAttackModifierDecks",
                 type: "integer[]",
                 nullable: false);
+
+            migrationBuilder.AddPrimaryKey(
+                name: "PK_CombatAttackModifierDeckCards",
+                table: "CombatAttackModifierDeckCards",
+                columns: new[] { "DeckId", "position", "AttackModifierId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_CombatCombat_MonsterModifierDeckId",
@@ -58,6 +67,10 @@ namespace GloomhavenTracker.Database.Migrations
                 name: "IX_CombatCombat_MonsterModifierDeckId",
                 table: "CombatCombat");
 
+            migrationBuilder.DropPrimaryKey(
+                name: "PK_CombatAttackModifierDeckCards",
+                table: "CombatAttackModifierDeckCards");
+
             migrationBuilder.DropColumn(
                 name: "MonsterModifierDeckId",
                 table: "CombatCombat");
@@ -76,6 +89,11 @@ namespace GloomhavenTracker.Database.Migrations
                 type: "integer",
                 nullable: false,
                 defaultValue: 0);
+
+            migrationBuilder.AddPrimaryKey(
+                name: "PK_CombatAttackModifierDeckCards",
+                table: "CombatAttackModifierDeckCards",
+                columns: new[] { "DeckId", "AttackModifierId" });
         }
     }
 }

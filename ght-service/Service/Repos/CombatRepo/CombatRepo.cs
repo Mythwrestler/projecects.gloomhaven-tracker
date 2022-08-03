@@ -39,7 +39,12 @@ public partial class CombatRepoImplementation : CombatRepo
 
     public List<Combat> GetCombatListing()
     {
-        return mapper.Map<List<Combat>>(context.CombatCombat.ToList());
+        List<CombatDAO> listing = context.CombatCombat
+        .Include(combat => combat.Campaign).ThenInclude(campaign => campaign.Game)
+        .Include(combat => combat.Campaign).ThenInclude(campaign => campaign.Managers)
+        .Include(combat => combat.Scenario)
+        .ToList();
+        return mapper.Map<List<Combat>>(listing);
     }
 
     public bool CombatExists(Guid combatId)
@@ -53,9 +58,11 @@ public partial class CombatRepoImplementation : CombatRepo
 
     private CombatDAO GetCombatDAOById(Guid combatId)
     {
-        return this.context.CombatCombat.Where(combat => combat.Id == combatId)
+        CombatDAO combat = this.context.CombatCombat.Where(combat => combat.Id == combatId)
             // Campaign
-            .Include(combat => combat.Campaign).ThenInclude(campaign => campaign.Party)
+            .Include(combat => combat.Campaign).ThenInclude(campaign => campaign.Party).ThenInclude(character => character.CharacterContent)
+            .Include(combat => combat.Campaign).ThenInclude(campaign => campaign.Game)
+            .Include(combat => combat.Campaign).ThenInclude(campaign => campaign.Managers)
 
             // Monster Mod Deck
             .Include(combat => combat.MonsterModifierDeck).ThenInclude(modDeck => modDeck.Cards).ThenInclude(card => card.AttackModifier)
@@ -67,10 +74,11 @@ public partial class CombatRepoImplementation : CombatRepo
             // Characters
             //.Include(combat => combat.Characters).ThenInclude(character => character.ActiveEffects)
             .First();
+        return combat;
     }
 
     public void CreateCombat(Combat combatToSave)
-    {;
+    {
         CombatDAO combatDAO = mapper.Map<CombatDAO>(combatToSave);
         context.CombatCombat.Add(combatDAO);
         if(combatDAO.MonsterModifierDeck != null)

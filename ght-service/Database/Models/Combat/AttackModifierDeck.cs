@@ -13,7 +13,7 @@ public static partial class EntityDefinitions
             attackModifierDeckTable.HasMany(deck => deck.Cards).WithOne(card => card.Deck).OnDelete(DeleteBehavior.Restrict);
         });
         builder.Entity<AttackModifierDeckCardDAO>(attackModifierDeckCardsTable => {
-            attackModifierDeckCardsTable.HasKey(card => new {card.DeckId, card.AttackModifierId});
+            attackModifierDeckCardsTable.HasKey(card => new {card.DeckId, card.position, card.AttackModifierId});
             attackModifierDeckCardsTable.HasIndex(card => new {card.DeckId, card.position}).IsUnique();
         });
     }

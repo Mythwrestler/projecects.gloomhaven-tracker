@@ -31,7 +31,8 @@ public class ContentMapperProfile : Profile
             });
 
         CreateMap<Effect, EffectDAO>()
-            .ConvertUsing((src, dst, ctx) => new EffectDAO(){
+            .ConvertUsing((src, dst, ctx) => new EffectDAO()
+            {
                 Id = src.Id,
                 Type = ctx.Mapper.Map<EFFECT_TYPE_DAO>(src.Type),
                 Value = src.Value,
@@ -158,24 +159,28 @@ public class ContentMapperProfile : Profile
         CreateMap<ScenarioMonsterDAO, Monster>().ConvertUsing((src, dst, ctx) => ctx.Mapper.Map<Monster>(src.Monster));
         CreateMap<ScenarioObjectiveDAO, Objective>().ConvertUsing((src, dst, ctx) => ctx.Mapper.Map<Objective>(src.Objective));
 
-        CreateMap<ScenarioDAO, Scenario>().ConvertUsing((src, dst, ctx) => new Scenario
-        (
-            id: src.Id,
-            contentCode: src.ContentCode,
-            name: src.Name,
-            description: src.Description,
-            scenarioNumber: src.ScenarioNumber,
-            goal: src.Goal,
-            cityMapLocation: src.CityMapLocation,
-            scenarioBook: src.ScenarioBookPages,
-            supplementalBook: src.SupplementalBookPages,
-            monsters: ctx.Mapper.Map<List<Monster>>(src.Monsters),
-            objectives: ctx.Mapper.Map<List<Objective>>(src.Objectives),
-            gameContentCode: src.Game.ContentCode
-        ));
+        CreateMap<ScenarioDAO, Scenario>().ConvertUsing((src, dst, ctx) =>
+        {
+            return new Scenario(
+                id: src.Id,
+                contentCode: src.ContentCode,
+                name: src.Name,
+                description: src.Description,
+                scenarioNumber: src.ScenarioNumber,
+                goal: src.Goal,
+                cityMapLocation: src.CityMapLocation,
+                scenarioBook: src.ScenarioBookPages,
+                supplementalBook: src.SupplementalBookPages,
+                monsters: ctx.Mapper.Map<List<Monster>>(src.Monsters),
+                objectives: ctx.Mapper.Map<List<Objective>>(src.Objectives),
+                gameContentCode: src.Game.ContentCode
+            );
+        });
 
-        CreateMap<Scenario, ScenarioDAO>().ConvertUsing((src, dst, ctx) => {
-            ScenarioDAO scenarioDAO = new ScenarioDAO(){
+        CreateMap<Scenario, ScenarioDAO>().ConvertUsing((src, dst, ctx) =>
+        {
+            ScenarioDAO scenarioDAO = new ScenarioDAO()
+            {
                 Id = src.Id,
                 ContentCode = src.ContentCode,
                 Name = src.Name,

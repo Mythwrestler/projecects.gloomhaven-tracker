@@ -1,5 +1,5 @@
 import { derived, writable, type Readable, type Writable } from "svelte/store";
-import { getAPI } from "../../common/Utils/API";
+import { getAPI, postAPI } from "../../common/Utils/API";
 import type { Combat, CombatSummary } from "../../models/Combat";
 import * as GlobalError from "../Error";
 import { AsyncQueue } from "../../common/Utils/AsycnQueue";
@@ -33,16 +33,59 @@ class CombatServiceImplementation {
   //#endregion
 
   //#region Combat
-  private combatStores = writable<Combat>();
+  private combatStore = writable<Combat | undefined>();
+  private combat = derived(this.combatStore, ($store) => $store);
+
+  public clearCombat = () => {
+    this.combatStore.set(undefined);
+  };
 
   //#endregion
 
-  //#region Create New Combat
+  //#region Combat
+
+  public createNewCombat = async (
+    campaignId: string,
+    scenarioContentCode: string
+  ): Promise<void> => {
+    return this.requestQueue.enqueue(async () => {
+      try {
+        const result = await postAPI<Combat>("combats", this.authToken, {
+          campaignId,
+          scenarioContentCode,
+        });
+        if (result) {
+          this.combatStore.set(result);
+          await this.getCombatListing();
+        }
+      } catch (ex) {
+        GlobalError.showErrorMessage("Failed To Create a New Combat");
+      }
+    }) as Promise<void>;
+  };
+
+  public getCombat = async (combatId: string): Promise<void> => {
+    return this.requestQueue.enqueue(async () => {
+      try {
+        const result = await getAPI<Combat>(
+          `combats/${combatId}`,
+          this.authToken
+        );
+        if (result) {
+          this.combatStore.set(result);
+          await this.getCombatListing();
+        }
+      } catch (ex) {
+        GlobalError.showErrorMessage("Failed To Get Combat Details");
+      }
+    }) as Promise<void>;
+  };
 
   //#endregion
 
   public State = {
     combatListing: this.combatListing,
+    combat: this.combat,
   };
 }
 

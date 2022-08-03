@@ -263,13 +263,13 @@ namespace GloomhavenTracker.Database.Migrations
                     b.Property<Guid>("DeckId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("AttackModifierId")
-                        .HasColumnType("uuid");
-
                     b.Property<int>("position")
                         .HasColumnType("integer");
 
-                    b.HasKey("DeckId", "AttackModifierId");
+                    b.Property<Guid>("AttackModifierId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("DeckId", "position", "AttackModifierId");
 
                     b.HasIndex("AttackModifierId");
 

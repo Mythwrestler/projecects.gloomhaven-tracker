@@ -25,7 +25,7 @@ public class Combat
     {
         Id = id;
         Campaign = campaign;
-        Scenario = Scenario;
+        Scenario = scenario;
         ScenarioLevel = scenarioLevel;
         MonsterModifierDeck = monsterModifierDeck;
     }
@@ -58,5 +58,6 @@ public struct NewCombatRequest
 {
     [JsonPropertyName("campaignId")]
     public Guid CampaignId { get; set; }
+    [JsonPropertyName("scenarioContentCode")]
     public String ScenarioContentCode { get; set; }
 }

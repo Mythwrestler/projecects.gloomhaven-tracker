@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GloomhavenTracker.Database.Migrations
 {
     [DbContext(typeof(GloomhavenContext))]
-    [Migration("20220802160304_combat-listing")]
+    [Migration("20220802213907_combat-listing")]
     partial class combatlisting
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -265,13 +265,13 @@ namespace GloomhavenTracker.Database.Migrations
                     b.Property<Guid>("DeckId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("AttackModifierId")
-                        .HasColumnType("uuid");
-
                     b.Property<int>("position")
                         .HasColumnType("integer");
 
-                    b.HasKey("DeckId", "AttackModifierId");
+                    b.Property<Guid>("AttackModifierId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("DeckId", "position", "AttackModifierId");
 
                     b.HasIndex("AttackModifierId");
 

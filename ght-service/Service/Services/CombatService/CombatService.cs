@@ -45,7 +45,8 @@ public partial class CombatServiceImplantation : CombatService
 
     public List<CombatDTO> GetCombatListing()
     {
-        return mapper.Map<List<CombatDTO>>(combatRepo.GetCombatListing());
+        var listing = combatRepo.GetCombatListing();
+        return mapper.Map<List<CombatDTO>>(listing);
     }
 
     public bool CombatExists (Guid combatId)
@@ -77,7 +78,7 @@ public partial class CombatServiceImplantation : CombatService
         Models.Content.Scenario scenario = contentRepo.GetScenarioDefaults(gameType, scenarioContentCode);
         int scenarioLevel =  (int)Math.Floor(campaign.Party.Select(kvp => kvp.Value.Level).Average());
         Combat newCombat = new Combat(
-            id: new Guid(),
+            id: Guid.NewGuid(),
             campaign: campaign,
             scenario: scenario,
             scenarioLevel: scenarioLevel,

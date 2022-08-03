@@ -22,17 +22,20 @@ public class AttackModifierDeck
 
     public List<int> Positions { get; private set; } = new List<int>(); // Current Flipped Card
     public List<AttackModifier> ShownCards { get {
+        if(Positions.Count() == 0) return new List<AttackModifier>();
         return Deck
             .Where(kvp => kvp.Key >= Positions.Min() && kvp.Key <= Positions.Max())
             .Select(kvp => kvp.Value)
             .ToList();
     }}
     public Dictionary<int, AttackModifier> DiscardPile { get {
+        if(Positions.Count() == 0) return new Dictionary<int, AttackModifier>();
         return Deck
             .Where(kvp => kvp.Key < Positions.Min())
             .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
     }}
     public Dictionary<int, AttackModifier> DrawPile { get{
+        if(Positions.Count() == 0) return Deck;
         return Deck
             .Where(kvp => kvp.Key > Positions.Max())
             .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
@@ -55,7 +58,7 @@ public class AttackModifierDeck
 
     public AttackModifierDeck(List<AttackModifier> deck)
     {
-        Id = new Guid();
+        Id = Guid.NewGuid();
         Deck = AddCardsToModifierDeck(new Dictionary<int, AttackModifier>(), deck, 0, MODIFIER_DECK_NEW_CARD_POSITION.random);
     }
 

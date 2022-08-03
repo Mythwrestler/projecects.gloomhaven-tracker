@@ -24,7 +24,12 @@
   import { useContentService } from "../../../Service/ContentService";
   import { useCampaignService } from "../../../Service/CampaignService";
   import { accessToken } from "../../../common/Utils/OidcSvelteClient";
+  import { useCombatService } from "../../../Service/CombatService";
+  import { useNavigate } from "svelte-navigator";
   const { addScenario, updateScenario } = useCampaignService(accessToken);
+  const { createNewCombat, State: combatState } = useCombatService(accessToken);
+  const { combat } = combatState;
+  const navigate = useNavigate();
 
   export let campaign: Campaign | undefined;
 
@@ -177,6 +182,17 @@
     }
   };
 
+  let redirectOnCombatCreate = false;
+  const handleCreateCombat = async () => {
+    if (campaign && selectedScenario && selectedScenario.trim() != "") {
+      redirectOnCombatCreate = true;
+      await createNewCombat(campaign?.id, selectedScenario);
+    }
+  };
+  combat.subscribe((combat) => {
+    if (combat && redirectOnCombatCreate) navigate(`/combats/${combat.id}`);
+  });
+
   $: void handleScenarioSelected(selectedScenario);
 
   $: disableSave = shouldDisableSave(selectedScenario, selectedScenarioStatus);
@@ -294,5 +310,8 @@
     >
       {existingScenario ? "Update" : "Add"} Scenario
     </Button>
+    <Button variant="outlined" color="red" onClick={handleCreateCombat}
+      >Join Combat</Button
+    >
   </DialogFooter>
 </Dialog>
