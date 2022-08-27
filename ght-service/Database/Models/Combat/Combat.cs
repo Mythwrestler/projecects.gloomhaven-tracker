@@ -13,6 +13,7 @@ public static partial class EntityDefinitions
             combatTable.HasMany(combat => combat.Characters).WithOne(character => character.Combat).OnDelete(DeleteBehavior.Restrict);
             combatTable.HasMany(combat => combat.Objectives).WithOne(objective => objective.Combat).OnDelete(DeleteBehavior.Restrict);
             combatTable.HasMany(combat => combat.Elements).WithOne(element => element.Combat).OnDelete(DeleteBehavior.Restrict);
+            combatTable.HasMany(combat => combat.HubClients).WithOne(hub => hub.Combat).OnDelete(DeleteBehavior.Restrict);
         });
     }
 }
@@ -30,6 +31,7 @@ public class CombatDAO : AuditableEntityBase
     public int ScenarioLevel { get; set; }
     public Guid MonsterModifierDeckId { get; set; }
     public AttackModifierDeckDAO? MonsterModifierDeck { get; set; }
+    public ICollection<CombatHubClientDAO> HubClients { get; set; } = new HashSet<CombatHubClientDAO>();
     public ICollection<Combat.MonsterDAO> Monsters { get; set; } = new HashSet<Combat.MonsterDAO>();
     public ICollection<Combat.CharacterDAO> Characters { get; set; } = new HashSet<Combat.CharacterDAO>();
     public ICollection<Combat.ObjectiveDAO> Objectives { get; set; } = new HashSet<Combat.ObjectiveDAO>();

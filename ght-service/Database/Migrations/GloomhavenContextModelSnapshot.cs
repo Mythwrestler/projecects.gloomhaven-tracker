@@ -555,6 +555,31 @@ namespace GloomhavenTracker.Database.Migrations
                     b.ToTable("CombatObjectives");
                 });
 
+            modelBuilder.Entity("GloomhavenTracker.Database.Models.CombatHubClientDAO", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ClientId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("CombatId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CombatId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("CombatHubClientDAO");
+                });
+
             modelBuilder.Entity("GloomhavenTracker.Database.Models.Content.AttackModifierDAO", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1404,6 +1429,25 @@ namespace GloomhavenTracker.Database.Migrations
                     b.Navigation("Objective");
                 });
 
+            modelBuilder.Entity("GloomhavenTracker.Database.Models.CombatHubClientDAO", b =>
+                {
+                    b.HasOne("GloomhavenTracker.Database.Models.Combat.CombatDAO", "Combat")
+                        .WithMany("HubClients")
+                        .HasForeignKey("CombatId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("GloomhavenTracker.Database.Models.UserDAO", "User")
+                        .WithMany("CombatHubClients")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Combat");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("GloomhavenTracker.Database.Models.Content.AttackModifierDAO", b =>
                 {
                     b.HasOne("GloomhavenTracker.Database.Models.Content.GameDAO", "Game")
@@ -1734,6 +1778,8 @@ namespace GloomhavenTracker.Database.Migrations
 
                     b.Navigation("Elements");
 
+                    b.Navigation("HubClients");
+
                     b.Navigation("Monsters");
 
                     b.Navigation("Objectives");
@@ -1840,6 +1886,8 @@ namespace GloomhavenTracker.Database.Migrations
             modelBuilder.Entity("GloomhavenTracker.Database.Models.UserDAO", b =>
                 {
                     b.Navigation("Campaigns");
+
+                    b.Navigation("CombatHubClients");
                 });
 #pragma warning restore 612, 618
         }

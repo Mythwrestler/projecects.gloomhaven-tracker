@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using GloomhavenTracker.Database.Models.Combat;
 using Microsoft.EntityFrameworkCore;
 
 namespace GloomhavenTracker.Database.Models;
@@ -9,6 +10,7 @@ public static partial class EntityDefinitions
     {
         builder.Entity<UserDAO>(userTable => {
             userTable.HasMany(user => user.Campaigns).WithOne(uc => uc.User);
+            userTable.HasMany(user => user.CombatHubClients).WithOne(hub => hub.User);
         });
 
         builder.Entity<UserCampaignDAO>(userCampaignTable => {
@@ -26,6 +28,7 @@ public class UserDAO
     public string LastName { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public ICollection<UserCampaignDAO> Campaigns { get; set; } = new HashSet<UserCampaignDAO>();
+    public ICollection<CombatHubClientDAO> CombatHubClients { get; set; } = new HashSet<CombatHubClientDAO>();
 }
 
 public class UserCampaignDAO

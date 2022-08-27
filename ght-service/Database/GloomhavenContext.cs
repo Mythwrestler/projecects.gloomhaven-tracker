@@ -53,12 +53,17 @@ public partial class GloomhavenContext : DbContext
     public DbSet<Models.Combat.ElementDAO> CombatElements => Set<Models.Combat.ElementDAO>();
     public DbSet<AttackModifierDeckDAO> CombatAttackModifierDecks => Set<AttackModifierDeckDAO>();
     public DbSet<AttackModifierDeckCardDAO> CombatAttackModifierDeckCards => Set<AttackModifierDeckCardDAO>();
+    public DbSet<CombatHubClientDAO> CombatHubClient => Set<CombatHubClientDAO>();
     public DbSet<CombatDAO> CombatCombat => Set<CombatDAO>();
     #endregion
 
     #region User
     public DbSet<UserDAO> User => Set<UserDAO>();
     public DbSet<UserCampaignDAO> UserCampaign => Set<UserCampaignDAO>();
+    #endregion
+
+    #region User
+    public DbSet<CombatHubClientDAO> HubCombatClient => Set<CombatHubClientDAO>();
     #endregion
 
     #region Audit
@@ -99,6 +104,10 @@ public partial class GloomhavenContext : DbContext
 
         #region User Entity Definitions
         builder.DefineUserEntities();
+        #endregion
+        
+        #region Hub Entity Definitions
+        builder.DefineHubEntities();
         #endregion
     }
 
