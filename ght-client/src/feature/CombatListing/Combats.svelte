@@ -93,7 +93,7 @@
     )}
   >
     <div aria-label="Available Combats" class="text-center text-xl">
-      Campaigns
+      Combats
     </div>
     {#if $combatListingLoaded}
       <Table {config} rowData={combatsRowData} />

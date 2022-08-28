@@ -81,7 +81,7 @@ if (authEnabled)
                 // If the request is for our hub...
                 var path = context.HttpContext.Request.Path;
                 if (!string.IsNullOrEmpty(accessToken) &&
-                    (path.StartsWithSegments("/battle")))
+                    (path.StartsWithSegments("/hub")))
                 {
                     // Read the token out of the query string
                     context.Token = accessToken;
@@ -242,7 +242,7 @@ app.UseRouting();
 
 app.UseAuthorization();
 
-app.MapHub<CombatHub>("hub/combatspace").RequireAuthorization("authenticated", "superuser");
+app.MapHub<CombatHub>("hub/combats").RequireAuthorization("authenticated");
 
 app.UseEndpoints(endpoints => endpoints.MapControllers());
 

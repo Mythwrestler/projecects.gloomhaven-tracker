@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using GloomhavenTracker.Service.Models.Hub;
 
 namespace GloomhavenTracker.Service.Models.Combat;
 
@@ -12,7 +13,7 @@ public class Combat
     public Content.Scenario Scenario { get; }
     public int ScenarioLevel { get; }
     public AttackModifierDeck MonsterModifierDeck { get; }
-    public List<string> RegisteredClients { get; } = new List<string>();
+    public List<HubClient> RegisteredClients { get; }
 
     public Combat
     (
@@ -20,7 +21,8 @@ public class Combat
         Campaign.Campaign campaign,
         Content.Scenario scenario,
         int scenarioLevel,
-        AttackModifierDeck monsterModifierDeck
+        AttackModifierDeck monsterModifierDeck,
+        List<HubClient> registeredClients
     )
     {
         Id = id;
@@ -28,8 +30,10 @@ public class Combat
         Scenario = scenario;
         ScenarioLevel = scenarioLevel;
         MonsterModifierDeck = monsterModifierDeck;
+        RegisteredClients = registeredClients;
     }
 }
+
 
 [Serializable]
 public class CombatDTO
@@ -60,4 +64,15 @@ public struct NewCombatRequest
     public Guid CampaignId { get; set; }
     [JsonPropertyName("scenarioContentCode")]
     public String ScenarioContentCode { get; set; }
+}
+
+
+[Serializable]
+public class CombatUser
+{
+    [JsonPropertyName("userId")]
+    public Guid UserId { get; set; }
+
+    [JsonPropertyName("username")]
+    public string Username { get; set; }
 }

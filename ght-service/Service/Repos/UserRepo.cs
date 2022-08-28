@@ -11,6 +11,7 @@ using GloomhavenTracker.Database;
 using GloomhavenTracker.Database.Models;
 using GloomhavenTracker.Service.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
 
 namespace GloomhavenTracker.Service.Repos;
@@ -18,7 +19,8 @@ namespace GloomhavenTracker.Service.Repos;
 
 public interface UserRepo
 {
-    public User GetUser();
+    public User GetCurrentUser();
+    public User GetUserById(Guid userId);
 }
 
 public class UserRepoImplementation : UserRepo
@@ -27,7 +29,7 @@ public class UserRepoImplementation : UserRepo
     private readonly IMapper mapper;
     private readonly string baseAuthURL;
     private readonly IHttpContextAccessor httpContextAccessor;
-    private UserDAO? userDAO;
+    private UserDAO? currentUserDAO;
 
     private HttpContext httpContext
     {
@@ -46,15 +48,29 @@ public class UserRepoImplementation : UserRepo
         this.httpContextAccessor = httpContextAccessor;
     }
 
-    public User GetUser()
+    public User GetCurrentUser()
     {
-        if(userDAO is null) GetUserDAO();
-        return mapper.Map<User>(userDAO);
+        if(currentUserDAO is null) GetCurrentUserDAO();
+        return mapper.Map<User>(currentUserDAO);
+    }
+
+    public User GetUserById(Guid userId)
+    {
+        UserDAO? user = GetUserDAO(userId);
+        if(user == null)
+            throw new ArgumentException("user not found");
+        return mapper.Map<User>(user);
     }
 
 
-    private void GetUserDAO()
+    private UserDAO? GetUserDAO(Guid userId)
     {
+        return dbContext.User.Find(userId);
+    }
+
+    private void GetCurrentUserDAO()
+    {
+
         UserIdentity? userIdentity = null;
         using(var client = new HttpClient())
         {
@@ -62,7 +78,15 @@ public class UserRepoImplementation : UserRepo
             client.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue("application/json")
             );
-            client.DefaultRequestHeaders.Add("Authorization", httpContext.Request.Headers.Authorization.ToString());
+
+            StringValues authQueryParam;
+            string authHeaderValue;
+            if(httpContext.Request.Query.TryGetValue("access_token", out authQueryParam))
+                authHeaderValue = $"Bearer {authQueryParam.ToString()}";
+            else
+                authHeaderValue = httpContext.Request.Headers.Authorization.ToString();
+
+            client.DefaultRequestHeaders.Add("Authorization", authHeaderValue);
 
             Task.Run(async () => {
                 var response = await client.GetAsync($"{baseAuthURL}/protocol/openid-connect/userinfo");
@@ -91,7 +115,7 @@ public class UserRepoImplementation : UserRepo
 
         dbContext.SaveChanges();
         
-        this.userDAO = userDAO;
+        this.currentUserDAO = userDAO;
     }
 
 
