@@ -55,7 +55,7 @@ public class CampaignServiceImplementation : CampaignService
 
     public List<CampaignSummary> GetCampaignList()
     {
-        var user = identityRepo.GetUser();
+        var user = identityRepo.GetCurrentUser();
 
         List<Campaign> campaigns = repo.GetCampaignList();
         List<CampaignSummary> summaries = mapper.Map<List<CampaignSummary>>(campaigns);
@@ -67,7 +67,7 @@ public class CampaignServiceImplementation : CampaignService
 
     public CampaignDTO GetCampaign(Guid campaignId)
     {
-        var user = identityRepo.GetUser();
+        var user = identityRepo.GetCurrentUser();
 
         Campaign campaign = GetCampaignById(campaignId);
         CampaignDTO campaignDTO = mapper.Map<CampaignDTO>(campaign);
@@ -82,7 +82,7 @@ public class CampaignServiceImplementation : CampaignService
             GameUtils.GameType(requestBody.GameContentCode)
         );
 
-        var user = identityRepo.GetUser();
+        var user = identityRepo.GetCurrentUser();
 
         var campaign = new Campaign
         (

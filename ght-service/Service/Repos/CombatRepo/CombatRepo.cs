@@ -49,11 +49,8 @@ public partial class CombatRepoImplementation : CombatRepo
 
     public bool CombatExists(Guid combatId)
     {
-        if(context.CombatCombat.Where(combat => combat.Id == combatId).Count() > 1)
-            return true;
-        if(context.CombatCombat.Local.Where(combat => combat.Id == combatId).Count() > 1)
-            return true;
-        return false;
+        var combat = context.CombatCombat.Find(combatId);
+        return (combat != null);
     }
 
     private CombatDAO GetCombatDAOById(Guid combatId)
@@ -70,6 +67,9 @@ public partial class CombatRepoImplementation : CombatRepo
             // Scenario
             .Include(combat => combat.Scenario).ThenInclude(scenario => scenario.Monsters).ThenInclude(ms => ms.Monster)
             .Include(combat => combat.Scenario).ThenInclude(scenario => scenario.Objectives).ThenInclude(os => os.Objective)
+
+            // Hubs
+            .Include(combat => combat.HubClients).ThenInclude(hubClient => hubClient.User)
 
             // Characters
             //.Include(combat => combat.Characters).ThenInclude(character => character.ActiveEffects)

@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
+using GloomhavenTracker.Database.Models;
 using GloomhavenTracker.Database.Models.Combat;
+using GloomhavenTracker.Service.Models.Hub;
 
 namespace GloomhavenTracker.Service.Models.Combat;
 
@@ -9,6 +11,20 @@ public class CombatMapperProfile : Profile
 {
     public CombatMapperProfile()
     {
+      #region Combat Users
+
+       CreateMap<User, CombatUser>().ConvertUsing((src, dst, ctx) =>
+       {
+        return new CombatUser()
+        {
+          UserId = src.UserId,
+          Username = src.UserName
+        };
+       });
+
+      #endregion
+
+
       #region Attack Modifier Deck
         CreateMap<AttackModifierDeckDAO, AttackModifierDeck>().ConvertUsing((src, dst, ctx) =>
         {
@@ -58,24 +74,45 @@ public class CombatMapperProfile : Profile
 
 
       #region Combat
+        CreateMap<CombatHubClientDAO, HubClient>().ConvertUsing((src, dst, ctx) => {
+          return new HubClient(
+            id: src.Id,
+            connectionId: src.ClientId,
+            user: ctx.Mapper.Map<User>(src.User)
+          );
+        });
+
+        CreateMap<HubClient, CombatHubClientDAO>().ConvertUsing((src, dst, ctx) => {
+          return new CombatHubClientDAO()
+          {
+            UserId = src.User.UserId,
+            ClientId = src.ClientId
+          };
+        });
+
         CreateMap<CombatDAO, Combat>().ConvertUsing((src, dst, ctx) => {
           return new Combat(
             src.Id,
             ctx.Mapper.Map<Campaign.Campaign>(src.Campaign),
             ctx.Mapper.Map<Content.Scenario>(src.Scenario),
             src.ScenarioLevel,
-            ctx.Mapper.Map<AttackModifierDeck>(src.MonsterModifierDeck)
+            ctx.Mapper.Map<AttackModifierDeck>(src.MonsterModifierDeck),
+            ctx.Mapper.Map<List<HubClient>>(src.HubClients.ToList())
           );
         });
 
         CreateMap<Combat, CombatDAO>().ConvertUsing((src, dst, ctx) => {
+          var hubClients = ctx.Mapper.Map<List<CombatHubClientDAO>>(src.RegisteredClients);
+          hubClients.ForEach(client => client.CombatId = src.Id);
+
           return new CombatDAO()
           {
             Id = src.Id,
             CampaignId = src.Campaign.Id,
             ScenarioId = src.Scenario.Id,
             ScenarioLevel = src.ScenarioLevel,
-            MonsterModifierDeck = ctx.Mapper.Map<AttackModifierDeckDAO>(src.MonsterModifierDeck)
+            MonsterModifierDeck = ctx.Mapper.Map<AttackModifierDeckDAO>(src.MonsterModifierDeck),
+            HubClients = hubClients
           };
         });
 

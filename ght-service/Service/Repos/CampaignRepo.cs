@@ -27,7 +27,6 @@ public class CampaignRepoImplementation : CampaignRepo
     private readonly IMapper mapper;
     private readonly GloomhavenContext context;
     private readonly ILogger<CampaignRepoImplementation> logger;
-    private Dictionary<Guid, CampaignDAO> campaigns = new Dictionary<Guid, CampaignDAO>();
 
     public CampaignRepoImplementation(GloomhavenContext context, IMapper mapper, ILogger<CampaignRepoImplementation> logger)
     {
@@ -49,22 +48,15 @@ public class CampaignRepoImplementation : CampaignRepo
     {
         CampaignDAO? campaignDAO;
 
-        campaignDAO = campaigns.GetValueOrDefault(campaignId);
-
-        if(campaignDAO is null)
-        {
-            campaignDAO = context.CampaignCampaign
-                .Where(campaign => campaign.Id == campaignId)
-                .Include(campaign => campaign.Game)
-                .Include(campaign => campaign.Party).ThenInclude(chr => chr.CharacterContent).ThenInclude(cc => cc.BaseStats)
-                .Include(campaign => campaign.Scenarios).ThenInclude(scn => scn.ScenarioContent)
-                .Include(campaign => campaign.Managers).ThenInclude(mng => mng.User)
-                .FirstOrDefault();
+        campaignDAO = context.CampaignCampaign
+            .Where(campaign => campaign.Id == campaignId)
+            .Include(campaign => campaign.Game)
+            .Include(campaign => campaign.Party).ThenInclude(chr => chr.CharacterContent).ThenInclude(cc => cc.BaseStats)
+            .Include(campaign => campaign.Scenarios).ThenInclude(scn => scn.ScenarioContent)
+            .Include(campaign => campaign.Managers).ThenInclude(mng => mng.User)
+            .FirstOrDefault();
             
             if(campaignDAO is null) throw new KeyNotFoundException("Could not find campaign.");
-
-            campaigns[campaignDAO.Id] = campaignDAO;
-        }
 
         return campaignDAO;
     }

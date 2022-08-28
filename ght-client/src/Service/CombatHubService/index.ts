@@ -1,11 +1,18 @@
-import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
-import { get, writable, type Readable, type Writable } from "svelte/store";
+import {
+  derived,
+  get,
+  writable,
+  type Readable,
+  type Writable,
+} from "svelte/store";
 import ENV_VARS from "../../common/Environment";
 import * as GlobalError from "../Error";
+import SvelteSignalRHub from "../../common/Utils/SvelteSignalRHub";
+import type { User } from "../../models/Combat";
 
 const HUB_METHODS = {
-  join: "joinCombat",
-  leave: "leaveCombat",
+  join: "JoinCombat",
+  leave: "LeaveCombat",
 };
 
 interface HubRequestResult {
@@ -21,53 +28,54 @@ interface HubListener {
 
 class CombatHubServiceImplementation {
   private authToken?: string;
+  private combatHubStore = new SvelteSignalRHub();
 
   constructor(authTokenStore: Readable<string | undefined>) {
     authTokenStore.subscribe((token) => (this.authToken = token));
   }
 
   //#region Combat Connection
-  combatConnecting: Writable<boolean> = writable<boolean>(false);
-  combatDisconnecting: Writable<boolean> = writable<boolean>(false);
-  combatConnected: Writable<boolean> = writable<boolean>(false);
-  combatId: Writable<string | undefined> = writable<string | undefined>();
-  requestCombatConnection = (): void => {
+  private combatConnecting: Writable<boolean> = writable<boolean>(false);
+  private combatDisconnecting: Writable<boolean> = writable<boolean>(false);
+  private combatConnected: Writable<boolean> = writable<boolean>(false);
+  private combatId: Writable<string | undefined> = writable<
+    string | undefined
+  >();
+  private requestCombatConnection = (): void => {
     this.combatConnecting.set(true);
   };
-  requestCombatConnectionSuccess = (combatId: string): void => {
+  private requestCombatConnectionSuccess = (combatId: string): void => {
     this.combatConnected.set(true);
     this.combatConnecting.set(false);
     this.combatId.set(combatId);
   };
-  requestCombatConnectionFailure = (): void => {
+  private requestCombatConnectionFailure = (): void => {
     this.combatConnecting.set(false);
   };
-  requestCombatDisconnect = (): void => {
+  private requestCombatDisconnect = (): void => {
     this.combatDisconnecting.set(true);
   };
-  requestCombatDisconnectSuccess = (): void => {
+  private requestCombatDisconnectSuccess = (): void => {
     this.combatConnected.set(false);
     this.combatDisconnecting.set(false);
     this.combatId.set(undefined);
   };
-  requestCombatDisconnectFailure = (): void => {
+  private requestCombatDisconnectFailure = (): void => {
     this.combatDisconnecting.set(false);
   };
 
   public joinCombat = async (combatId: string): Promise<void> => {
-    const hubConnected = get(this.combatHubConnected);
+    const hubConnected = get(this.combatHubStore.State.combatHubConnected);
     if (!hubConnected) return;
-
-    const hub = get(this.combatHub);
-    if (hub === undefined) return;
 
     const currentId = get(this.combatId);
     if (currentId === combatId) return;
 
     try {
       this.requestCombatConnection();
-      await hub.send(HUB_METHODS.join, combatId);
-    } catch {
+      await this.combatHubStore.sendHubRequest(HUB_METHODS.join, combatId);
+    } catch (error: unknown) {
+      console.log(JSON.stringify(error));
       this.requestCombatConnectionFailure();
       GlobalError.showErrorMessage("Failed To Join Combat Space");
     }
@@ -81,14 +89,12 @@ class CombatHubServiceImplementation {
   };
 
   public leaveCombat = async (): Promise<void> => {
-    const hubConnected = get(this.combatHubConnected);
+    const hubConnected = get(this.combatHubStore.State.combatHubConnected);
     if (!hubConnected) return;
-    const hub = get(this.combatHub);
     const combatId = get(this.combatId);
-    if (hub === undefined) return;
     try {
       this.requestCombatDisconnect();
-      await hub.send(HUB_METHODS.leave, combatId);
+      await this.combatHubStore.sendHubRequest(HUB_METHODS.leave, combatId);
     } catch {
       this.requestCombatDisconnectFailure();
     }
@@ -99,6 +105,18 @@ class CombatHubServiceImplementation {
       this.requestCombatDisconnectFailure();
     }
     this.requestCombatDisconnectSuccess();
+  };
+
+  private combatUsersStore: Writable<User[]> = writable<User[]>([]);
+  private combatUsers = derived(this.combatUsersStore, ($store) => $store, []);
+
+  private handleUserJoinedLeftCombat = (result: HubRequestResult): void => {
+    console.log(`Got a result: ${JSON.stringify(result)}`);
+    if (!result || !result.data) return;
+    this.combatUsersStore.update((currentUsers) => {
+      console.log(`Updating user store to: ${JSON.stringify(result.data)}`);
+      return result.data as User[];
+    });
   };
 
   //#endregion
@@ -114,68 +132,48 @@ class CombatHubServiceImplementation {
       method: `${HUB_METHODS.leave}Result`,
       effect: this.leaveCombatResult,
     },
+    {
+      method: "UserJoinedCombat",
+      effect: this.handleUserJoinedLeftCombat,
+    },
+    {
+      method: "UserLeftCombat",
+      effect: this.handleUserJoinedLeftCombat,
+    },
   ];
 
   //#endregion
 
   //#region Combat Hub Connection
-  combatHub: Writable<HubConnection | undefined> = writable<
-    HubConnection | undefined
-  >(undefined);
-
-  combatHubConnecting: Writable<boolean> = writable<boolean>(false);
-  combatHubConnected: Writable<boolean> = writable<boolean>(false);
-
-  private requestCombatHubConnection = (): void => {
-    this.combatHubConnected.set(false);
-    this.combatHubConnecting.set(true);
-  };
-  private requestCombatHubConnectionSuccess = (): void => {
-    this.combatHubConnected.set(true);
-    this.combatHubConnecting.set(false);
-  };
-  private requestCombatHubConnectionFailure = (): void => {
-    this.combatHubConnected.set(false);
-    this.combatHubConnecting.set(false);
-  };
-
-  public joinCombatHub = async (): Promise<void> => {
-    const url = `${ENV_VARS.API.BaseURL()}hub/combathub`;
-    const hub =
-      ENV_VARS.AUTH.Enabled() && this.authToken !== ""
-        ? new HubConnectionBuilder()
-            .withUrl(url, { accessTokenFactory: () => this.authToken ?? "" })
-            .build()
-        : new HubConnectionBuilder().withUrl(url).build();
-
-    this.hubListeners.forEach((listener) =>
-      hub.on(listener.method, listener.effect)
+  public connectToHub = async () => {
+    this.combatHubStore.buildHub(
+      `${ENV_VARS.API.BaseURL()}hub/combats`,
+      this.authToken,
+      this.hubListeners
     );
-
-    try {
-      this.requestCombatHubConnection();
-      await hub.start();
-      this.combatHub.set(hub);
-      this.requestCombatHubConnectionSuccess();
-    } catch {
-      this.combatHub.set(undefined);
-      this.requestCombatHubConnectionFailure();
-    }
+    await this.combatHubStore.startHub();
   };
+  public disconnectFromHub = async () => {
+    await this.combatHubStore.stopHub();
+  };
+
   //#endregion
 
   public State = {
     combatHub: {
-      connecting: this.combatHubConnecting,
-      connected: this.combatHubConnected,
+      connecting: this.combatHubStore.State.combatHubConnecting,
+      connected: this.combatHubStore.State.combatHubConnected,
     },
     combat: {
       connecting: this.combatConnecting,
       connected: this.combatConnected,
       combatId: this.combatId,
+      connectedUsers: this.combatUsers,
     },
   };
 }
+
+export type CombatHubService = CombatHubServiceImplementation;
 
 let combatHubService: CombatHubServiceImplementation | undefined = undefined;
 

@@ -7,6 +7,7 @@
   import * as GlobalError from "../../Service/Error";
   import type { Combat } from "../../models/Combat";
   import { Button } from "../../common/Components";
+  import { useNavigate } from "svelte-navigator";
 
   const {
     getCombat,
@@ -14,6 +15,8 @@
     State: combatState,
   } = useCombatService(accessToken);
   const { State: hubState } = useCombatHubService(accessToken);
+
+  const navigate = useNavigate();
 
   export let combatId = "";
 
@@ -44,6 +47,10 @@
     }
   });
 
+  const handleStartCombat = (combatId: string) => {
+    navigate(`/combats/fight/?activeCombat=${combatId}`);
+  };
+
   $: if (combatId !== combat?.id) requestCombat.set(true);
 
   onMount(() => {
@@ -60,6 +67,11 @@
   <div>Loading Combat</div>
 {:else}
   <div>Combat Description: {combat?.description}</div>
+  <Button
+    variant="filled"
+    color="red"
+    onClick={() => {
+      handleStartCombat(combat?.id ?? "");
+    }}>Fight!</Button
+  >
 {/if}
-
-<Button variant="filled" color="red">Fight!</Button>

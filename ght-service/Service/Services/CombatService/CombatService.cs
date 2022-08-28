@@ -3,9 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
+using GloomhavenTracker.Service.Models;
 using GloomhavenTracker.Service.Models.Campaign;
 using GloomhavenTracker.Service.Models.Combat;
 using GloomhavenTracker.Service.Models.Content;
+using GloomhavenTracker.Service.Models.Hub;
 using GloomhavenTracker.Service.Repos;
 using Microsoft.Extensions.Logging;
 
@@ -16,9 +18,9 @@ public partial interface CombatService
     public List<CombatDTO> GetCombatListing();
     public CombatDTO NewCombat(Guid campaignId, string scenarioContentCode);
     public CombatDTO GetCombatDTO(Guid combatId);
-    public void RegisterHubClientToCombat(Guid combatId, string clientId);
-    public void RemoveHubClientFromCombat(Guid combatId, string clientId);
-    public List<string> GetHubClientsForCombat(Guid combatId);
+    public Dictionary<string, CombatUser> RegisterHubClientToCombat(Guid combatId, string clientId, Guid userId);
+    public Dictionary<string, CombatUser> RemoveHubClientFromCombat(Guid combatId, string clientId);
+    public Dictionary<string, User> GetHubUsersForCombat(Guid combatId);
 }
 
 public partial class CombatServiceImplantation : CombatService
@@ -26,6 +28,7 @@ public partial class CombatServiceImplantation : CombatService
     private readonly ContentRepo contentRepo;
     private readonly CampaignRepo campaignRepo;
     private readonly CombatRepo combatRepo;
+    private readonly UserRepo userRepo;
     private readonly IMapper mapper;
     private readonly Dictionary<Guid, Combat> combats = new Dictionary<Guid, Combat>();
 
@@ -34,12 +37,14 @@ public partial class CombatServiceImplantation : CombatService
         ContentRepo contentRepo,
         CampaignRepo campaignRepo,
         CombatRepo combatRepo,
+        UserRepo userRepo,
         IMapper mapper
     )
     {
         this.contentRepo = contentRepo;
         this.campaignRepo = campaignRepo;
         this.combatRepo = combatRepo;
+        this.userRepo = userRepo;
         this.mapper = mapper;
     }
 
@@ -61,13 +66,7 @@ public partial class CombatServiceImplantation : CombatService
 
     private Combat GetCombat(Guid combatId) 
     {
-        Combat? combat;
-        if(!combats.TryGetValue(combatId, out combat))
-        {
-            combat = combatRepo.GetCombatById(combatId);
-            combats.Add(combatId, combat);
-        }
-        return combat;
+        return combatRepo.GetCombatById(combatId);
     }
 
     public CombatDTO NewCombat(Guid campaignId, string scenarioContentCode)
@@ -82,7 +81,8 @@ public partial class CombatServiceImplantation : CombatService
             campaign: campaign,
             scenario: scenario,
             scenarioLevel: scenarioLevel,
-            monsterModifierDeck: new AttackModifierDeck(game.BaseModifierDeck)
+            monsterModifierDeck: new AttackModifierDeck(game.BaseModifierDeck),
+            new List<HubClient>()
         );
 
         combatRepo.CreateCombat(newCombat);
@@ -92,22 +92,48 @@ public partial class CombatServiceImplantation : CombatService
         return mapper.Map<CombatDTO>(newCombat);
     }
     
-    public void RegisterHubClientToCombat(Guid combatId, string clientId)
+    public Dictionary<string, CombatUser> RegisterHubClientToCombat(Guid combatId, string clientId, Guid userId)
     {
         Combat combat = GetCombat(combatId);
-        if(!combat.RegisteredClients.Contains(clientId))
-            combat.RegisteredClients.Add(clientId);
+        User user = userRepo.GetCurrentUser();
+        HubClient? hubClient = combat.RegisteredClients.FirstOrDefault(client => client.ClientId == clientId);
+        if(hubClient is null) {
+            hubClient = new HubClient(
+                Guid.NewGuid(),
+                clientId,
+                user
+            );
+            combat.RegisteredClients.Add(hubClient);
+            combatRepo.RegisterClient(combat.Id, hubClient);
+        }
+
+        var clients = GetHubUsersForCombat(combat);
+        return clients.ToDictionary(kvp => kvp.Key, kvp => mapper.Map<CombatUser>(kvp.Value));
     }
 
-    public void RemoveHubClientFromCombat(Guid combatId, string clientId)
+    public Dictionary<string, CombatUser> RemoveHubClientFromCombat(Guid combatId, string clientId)
     {
         Combat combat = GetCombat(combatId);
-        combat.RegisteredClients.Remove(clientId);
+        HubClient? hubClient = combat.RegisteredClients.FirstOrDefault(client => client.ClientId == clientId);
+
+        if(hubClient is not null)
+        {
+            combat.RegisteredClients.Remove(hubClient);
+            combatRepo.RemoveClient(combatId, hubClient.Id);
+        }
+
+        var clients = GetHubUsersForCombat(combat);
+        return clients.ToDictionary(kvp => kvp.Key, kvp => mapper.Map<CombatUser>(kvp.Value));
     }
 
-    public List<string> GetHubClientsForCombat(Guid combatId)
+    public Dictionary<string, User> GetHubUsersForCombat(Guid combatId)
     {
         Combat combat = GetCombat(combatId);
-        return combat.RegisteredClients;
+        return GetHubUsersForCombat(combat);
+    }
+
+    private Dictionary<string, User> GetHubUsersForCombat(Combat combat)
+    {
+        return combat.RegisteredClients.ToDictionary(client => client.ClientId, client => client.User);
     }
 }
