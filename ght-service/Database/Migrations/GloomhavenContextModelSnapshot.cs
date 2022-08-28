@@ -577,7 +577,7 @@ namespace GloomhavenTracker.Database.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("CombatHubClientDAO");
+                    b.ToTable("HubCombatClient");
                 });
 
             modelBuilder.Entity("GloomhavenTracker.Database.Models.Content.AttackModifierDAO", b =>

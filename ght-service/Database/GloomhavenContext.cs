@@ -53,7 +53,6 @@ public partial class GloomhavenContext : DbContext
     public DbSet<Models.Combat.ElementDAO> CombatElements => Set<Models.Combat.ElementDAO>();
     public DbSet<AttackModifierDeckDAO> CombatAttackModifierDecks => Set<AttackModifierDeckDAO>();
     public DbSet<AttackModifierDeckCardDAO> CombatAttackModifierDeckCards => Set<AttackModifierDeckCardDAO>();
-    public DbSet<CombatHubClientDAO> CombatHubClient => Set<CombatHubClientDAO>();
     public DbSet<CombatDAO> CombatCombat => Set<CombatDAO>();
     #endregion
 
