@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
@@ -77,8 +78,10 @@ public class CombatMapperProfile : Profile
         CreateMap<CombatHubClientDAO, HubClient>().ConvertUsing((src, dst, ctx) => {
           return new HubClient(
             id: src.Id,
-            connectionId: src.ClientId,
-            user: ctx.Mapper.Map<User>(src.User)
+            clientId: src.ClientId,
+            groupId: src.CombatId.ToString(),
+            user: ctx.Mapper.Map<User>(src.User),
+            lastSeen: src.LastSeen
           );
         });
 
@@ -86,7 +89,9 @@ public class CombatMapperProfile : Profile
           return new CombatHubClientDAO()
           {
             UserId = src.User.UserId,
-            ClientId = src.ClientId
+            CombatId = Guid.Parse(src.GroupId),
+            ClientId = src.ClientId,
+            LastSeen = src.LastSeen
           };
         });
 
