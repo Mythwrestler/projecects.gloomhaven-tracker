@@ -116,6 +116,8 @@ ghtService:
         paths:
           - path: /api
             pathType: Prefix
+          - path: /hub
+            pathType: Prefix
     tls:
       - secretName: ght.nprd.casperinc.net-tls
         hosts:
