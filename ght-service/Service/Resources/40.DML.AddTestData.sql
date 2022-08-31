@@ -53,3 +53,7 @@ INSERT INTO public."CombatAttackModifierDeckCards" ("DeckId","AttackModifierId",
 -- Test Combat 01
 INSERT INTO public."CombatCombat" ("Id","CampaignId","ScenarioId","CreatedBy","UpdatedBy","CreatedOnUTC","UpdatedOnUTC","MonsterModifierDeckId","ScenarioLevel") VALUES
  ('6235d6b1-38dc-4f9d-81cd-7b97b02fd7dd','5459c417-c100-407e-b402-e2c087493ec5','5d0c2238-19de-7aeb-f8db-971289354a38','00000000-0000-0000-0000-000000000000','00000000-0000-0000-0000-000000000000','2022-08-02 22:42:28.200','2022-08-02 22:42:28.200','360b783c-c83d-4b8f-9aa1-e3ea9d4096bd', 2);
+
+-- Test Combat Hub Client
+INSERT INTO public."HubCombatClient" ("Id", "CombatId", "UserId", "ClientId", "LastSeen") VALUES
+ ('cc06d62b-8a07-4c6d-bbed-0dca175e6303', '6235d6b1-38dc-4f9d-81cd-7b97b02fd7dd', 'a335dbb1-84d6-487f-896a-2555c76c8799', 'z5Lli8nWedtRvOrtyNMXug', Current_timestamp);

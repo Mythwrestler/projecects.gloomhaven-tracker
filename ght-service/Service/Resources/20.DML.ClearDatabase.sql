@@ -1,3 +1,6 @@
+-- Clear Hub Clients
+DELETE FROM public."HubCombatClient";
+
 -- Clear Audit
 DELETE FROM public."AuditLog";
 
