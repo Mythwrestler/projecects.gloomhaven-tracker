@@ -35,6 +35,15 @@ public partial class CombatRepoImplementation : CombatRepo
        context.SaveChanges();
     }
 
+    public void DeleteClient(string clientId)
+    {
+        var clientToDelete = context.HubCombatClient.FirstOrDefault(client => client.ClientId == clientId);
+        if(clientToDelete is not null) {
+            context.HubCombatClient.Remove(clientToDelete);
+            context.SaveChanges();
+        }
+    }
+
     public List<HubClient> GetClients() => mapper.Map<List<HubClient>>(
         context.HubCombatClient
             .Include(client => client.User)

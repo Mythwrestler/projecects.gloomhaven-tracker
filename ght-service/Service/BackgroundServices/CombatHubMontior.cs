@@ -57,7 +57,7 @@ namespace GloomhavenTracker.Service.BackgroundServices
                         "ActiveUsers",
                         new HubRequestResult()
                         {
-                            data = clientTracker.GetClientsForGroup(group)
+                            data = clientTracker.GetClientsForGroup(group).Select(client => client.User)
                         }
                     );
                 });

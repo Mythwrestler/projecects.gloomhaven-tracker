@@ -9,5 +9,6 @@ public interface HubClientRepo
 {
     public void UpdateClients(List<HubClient> clients);
     public void DeleteOldClients(int ageOutInSeconds);
+    public void DeleteClient(string clientId);
     public List<HubClient> GetClients();
 }

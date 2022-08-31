@@ -12,6 +12,7 @@ public partial class CombatServiceImplantation : CombatService
 {
     public void SyncClients(int ageOutInSeconds)
     {
+
         // Update All Tracker Clients In DB.
         combatRepo.UpdateClients(clientTracker.AllClients);
 
@@ -40,5 +41,10 @@ public partial class CombatServiceImplantation : CombatService
         currentIds.Where(clientId => !syncedIds.Contains(clientId)).ToList().ForEach(clientId => {
             clientTracker.UnregisterClient(clientId);
         });
+    }
+
+    public void UnregisterClient(string clientId)
+    {
+        combatRepo.DeleteClient(clientId);
     }
 }

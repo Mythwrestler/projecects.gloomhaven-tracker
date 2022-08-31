@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using GloomhavenTracker.Service.Models;
 using GloomhavenTracker.Service.Models.Hub;
@@ -49,10 +50,10 @@ public partial class CombatHub : Hub
                 List<HubClient> registeredClients = hubClientTracker.GetClientsForGroup(combatId.ToString());
 
                 await Clients.Group(combatId.ToString()).SendAsync(
-                    "UserJoinedCombat",
+                    "ActiveUsers",
                     new HubRequestResult()
                     {
-                        data = registeredClients
+                        data = registeredClients.Select(client => client.User).ToList()
                     }
                 );
             }
@@ -78,6 +79,7 @@ public partial class CombatHub : Hub
 
             await Groups.RemoveFromGroupAsync(clientId, groupId);
             hubClientTracker.UnregisterClient(clientId);
+            combatService.UnregisterClient(clientId);
             await Clients.Caller.SendAsync(
                 "LeaveCombatResult",
                 new HubRequestResult()
@@ -90,10 +92,10 @@ public partial class CombatHub : Hub
             if (registeredClients.Count > 0)
             {
                 await Clients.Group(combatId.ToString()).SendAsync(
-                     "UserLeftCombat",
+                     "ActiveUsers",
                      new HubRequestResult()
                      {
-                         data = registeredClients
+                         data = registeredClients.Select(client => client.User).ToList()
                      }
                 );
             }

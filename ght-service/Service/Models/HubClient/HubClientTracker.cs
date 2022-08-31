@@ -52,12 +52,13 @@ public class HubClientTracker
         HubClient? client;
         hubClients.Remove(clientId, out client);
         if (client is null) return;
-
+        
         List<string>? groupClientList;
         groupClients.TryGetValue(client.GroupId, out groupClientList);
         if (groupClientList is null) return;
 
         groupClientList.Remove(clientId);
+
     }
 
     public List<HubClient> GetClientsForGroup(string groupId)
