@@ -24,6 +24,7 @@ using GloomhavenTracker.Service.Models;
 using GloomhavenTracker.Service.Helpers;
 using GloomhavenTracker.Service.Models.Campaign;
 using GloomhavenTracker.Service.Models.Combat;
+using GloomhavenTracker.Service.Models.Hub;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -158,7 +159,8 @@ builder.Services.AddDbContext<GloomhavenContext>(optionsAction => {
     );
 });
 
-// Register Identity Repo
+// Register User DI
+builder.Services.AddScoped<UserService, UserServiceImplementation>();
 builder.Services.AddScoped<UserRepo, UserRepoImplementation>(factory => 
 {
     return new UserRepoImplementation(
@@ -183,7 +185,9 @@ builder.Services.AddScoped<CampaignRepo, CampaignRepoImplementation>();
 builder.Services.AddScoped<CombatService, CombatServiceImplantation>();
 builder.Services.AddScoped<CombatRepo, CombatRepoImplementation>();
 
-builder.Services.AddHostedService<BattleHubMonitor>();
+// Register Combat HUB DI
+builder.Services.AddSingleton<CombatHubClientTracker, CombatHubClientTracker>();
+builder.Services.AddHostedService<CombatHubMonitor>();
 
 if (httpLoggingEnabled)
 {
