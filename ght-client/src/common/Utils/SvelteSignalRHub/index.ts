@@ -112,6 +112,7 @@ class SvelteSignalRHub {
       );
     try {
       await this.hub.stop();
+      this.hub = undefined;
       this.requestCombatHubDisconnectSuccess();
     } catch (error: unknown) {
       throw error as Error;

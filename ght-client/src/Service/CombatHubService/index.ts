@@ -59,6 +59,7 @@ class CombatHubServiceImplementation {
     this.combatConnected.set(false);
     this.combatDisconnecting.set(false);
     this.combatId.set(undefined);
+    this.combatUsersStore.set([]);
   };
   private requestCombatDisconnectFailure = (): void => {
     this.combatDisconnecting.set(false);
@@ -95,6 +96,7 @@ class CombatHubServiceImplementation {
     try {
       this.requestCombatDisconnect();
       await this.combatHubStore.sendHubRequest(HUB_METHODS.leave, combatId);
+      this.requestCombatDisconnectSuccess();
     } catch {
       this.requestCombatDisconnectFailure();
     }
@@ -110,13 +112,9 @@ class CombatHubServiceImplementation {
   private combatUsersStore: Writable<User[]> = writable<User[]>([]);
   private combatUsers = derived(this.combatUsersStore, ($store) => $store, []);
 
-  private handleUserJoinedLeftCombat = (result: HubRequestResult): void => {
-    console.log(`Got a result: ${JSON.stringify(result)}`);
+  private handleActiveUsers = (result: HubRequestResult): void => {
     if (!result || !result.data) return;
-    this.combatUsersStore.update((currentUsers) => {
-      console.log(`Updating user store to: ${JSON.stringify(result.data)}`);
-      return result.data as User[];
-    });
+    this.combatUsersStore.set(result.data as User[]);
   };
 
   //#endregion
@@ -133,12 +131,8 @@ class CombatHubServiceImplementation {
       effect: this.leaveCombatResult,
     },
     {
-      method: "UserJoinedCombat",
-      effect: this.handleUserJoinedLeftCombat,
-    },
-    {
-      method: "UserLeftCombat",
-      effect: this.handleUserJoinedLeftCombat,
+      method: "ActiveUsers",
+      effect: this.handleActiveUsers,
     },
   ];
 
