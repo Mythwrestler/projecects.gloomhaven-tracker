@@ -10,13 +10,13 @@ public partial interface CombatService : HubClientService {}
 
 public partial class CombatServiceImplantation : CombatService
 {
-    public void SyncClients()
+    public void SyncClients(int ageOutInSeconds)
     {
         // Update All Tracker Clients In DB.
         combatRepo.UpdateClients(clientTracker.AllClients);
 
         // Delete Clients In DB Older than n Seconds.
-        combatRepo.DeleteOldClients();
+        combatRepo.DeleteOldClients(ageOutInSeconds);
 
         // Update Tracker W/ Clients From DB.
         List<HubClient> syncedClients = combatRepo.GetClients();

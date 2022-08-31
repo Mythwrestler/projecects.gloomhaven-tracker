@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using GloomhavenTracker.Database.Models;
 using GloomhavenTracker.Service.Models.Hub;
+using Microsoft.EntityFrameworkCore;
 
 namespace GloomhavenTracker.Service.Repos;
 
@@ -27,14 +28,18 @@ public partial class CombatRepoImplementation : CombatRepo
         context.SaveChanges();
     }
 
-    public void DeleteOldClients()
+    public void DeleteOldClients(int ageOutInSeconds)
     {
-       var clientsToDelete = context.HubCombatClient.Where(client => client.LastSeen < DateTime.UtcNow.AddSeconds(-30));
+       var clientsToDelete = context.HubCombatClient.Where(client => client.LastSeen < DateTime.UtcNow.AddSeconds(-ageOutInSeconds));
        context.RemoveRange(clientsToDelete);
        context.SaveChanges();
     }
 
-    public List<HubClient> GetClients() => mapper.Map<List<HubClient>>(context.HubCombatClient.ToList());
+    public List<HubClient> GetClients() => mapper.Map<List<HubClient>>(
+        context.HubCombatClient
+            .Include(client => client.User)
+            .ToList()
+    );
 
     private CombatHubClientDAO? GetClientByClientId(string clientId) => context.HubCombatClient.FirstOrDefault(client => client.ClientId == clientId);
 }

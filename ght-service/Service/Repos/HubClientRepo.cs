@@ -8,6 +8,6 @@ namespace GloomhavenTracker.Service.Repos;
 public interface HubClientRepo
 {
     public void UpdateClients(List<HubClient> clients);
-    public void DeleteOldClients();
+    public void DeleteOldClients(int ageOutInSeconds);
     public List<HubClient> GetClients();
 }

@@ -49,23 +49,18 @@ namespace GloomhavenTracker.Service.BackgroundServices
                 CombatHubClientTracker? clientTracker = scope.ServiceProvider.GetService<CombatHubClientTracker>();
                 if (service is null || clientTracker is null) return;
 
-                await Task.Run(() => service.SyncClients());
+                await Task.Run(() => service.SyncClients(SyncIntervalSeconds*2));
 
-                var shoutOuts = clientTracker.HubGroups.Select(group =>
+                clientTracker.HubGroups.ForEach(async (group) =>
                 {
-                    return new Task(async () =>
-                    {
-                        await combatHubContext.Clients.Group(group).SendAsync(
-                         "ActiveUsers",
-                         new HubRequestResult()
-                         {
-                             data = clientTracker.GetClientsForGroup(group)
-                         }
-                     );
-                    });
-                }).ToArray();
-
-                Task.WaitAll(shoutOuts);
+                    await combatHubContext.Clients.Group(group).SendAsync(
+                        "ActiveUsers",
+                        new HubRequestResult()
+                        {
+                            data = clientTracker.GetClientsForGroup(group)
+                        }
+                    );
+                });
             }
             finally
             {

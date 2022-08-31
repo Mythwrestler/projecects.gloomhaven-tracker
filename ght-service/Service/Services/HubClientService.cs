@@ -4,5 +4,5 @@ using GloomhavenTracker.Service.Models.Hub;
 
 public interface HubClientService
 {
-    public void SyncClients();
+    public void SyncClients(int ageOutInSeconds);
 }
