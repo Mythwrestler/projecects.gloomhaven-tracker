@@ -568,10 +568,16 @@ namespace GloomhavenTracker.Database.Migrations
                     b.Property<Guid>("CombatId")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("LastSeen")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ClientId")
+                        .IsUnique();
 
                     b.HasIndex("CombatId");
 

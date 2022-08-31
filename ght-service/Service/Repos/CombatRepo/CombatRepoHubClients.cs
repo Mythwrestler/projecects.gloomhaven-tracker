@@ -3,48 +3,52 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using GloomhavenTracker.Database.Models;
-using GloomhavenTracker.Database.Models.Combat;
-using GloomhavenTracker.Service.Models.Combat;
 using GloomhavenTracker.Service.Models.Hub;
 using Microsoft.EntityFrameworkCore;
 
 namespace GloomhavenTracker.Service.Repos;
 
-public partial interface CombatRepo
-{
-    public List<HubClient> RegisterClient (Guid combatId, HubClient hubClient);
-    public List<HubClient> RemoveClient (Guid combatId, Guid hubId);
-}
+public partial interface CombatRepo : HubClientRepo {}
 
 public partial class CombatRepoImplementation : CombatRepo
 {
-    public List<HubClient> RegisterClient (Guid combatId, HubClient hubClient)
+    public void UpdateClients(List<HubClient> clients)
     {
-        CombatDAO combat = GetCombatDAOById(combatId);
+        clients.ForEach(client => {
+            CombatHubClientDAO? clientDAO = GetClientByClientId(client.ClientId);
+            if(clientDAO is not null) 
+            {
+                clientDAO.LastSeen = client.LastSeen;
+            }
+            else
+            {
+                context.HubCombatClient.Add(mapper.Map<CombatHubClientDAO>(client));
+            }
+        });
+        context.SaveChanges();
+    }
 
-        if(!combat.HubClients.Select(client => client.ClientId).Contains(hubClient.ClientId))
-        {
-            var newClient = mapper.Map<CombatHubClientDAO>(hubClient);
-            newClient.CombatId = combatId;
-            context.HubCombatClient.Add(newClient);
-            combat.HubClients.Add(newClient);
+    public void DeleteOldClients(int ageOutInSeconds)
+    {
+       var clientsToDelete = context.HubCombatClient.Where(client => client.LastSeen < DateTime.UtcNow.AddSeconds(-ageOutInSeconds));
+       context.RemoveRange(clientsToDelete);
+       context.SaveChanges();
+    }
+
+    public void DeleteClient(string clientId)
+    {
+        var clientToDelete = context.HubCombatClient.FirstOrDefault(client => client.ClientId == clientId);
+        if(clientToDelete is not null) {
+            context.HubCombatClient.Remove(clientToDelete);
             context.SaveChanges();
         }
-
-        return mapper.Map<List<HubClient>>(combat.HubClients);
     }
-    
-    public List<HubClient> RemoveClient (Guid combatId, Guid hubId)
-    {
-        CombatDAO combat = GetCombatDAOById(combatId);
-        var hubClientToRemove = combat.HubClients.FirstOrDefault(client => client.Id == hubId);
-        if(hubClientToRemove is not null)
-        {
-            combat.HubClients.Remove(hubClientToRemove);
-            context.HubCombatClient.Remove(hubClientToRemove);
-            context.SaveChanges();
-        }
 
-        return mapper.Map<List<HubClient>>(combat.HubClients);
-    }
+    public List<HubClient> GetClients() => mapper.Map<List<HubClient>>(
+        context.HubCombatClient
+            .Include(client => client.User)
+            .ToList()
+    );
+
+    private CombatHubClientDAO? GetClientByClientId(string clientId) => context.HubCombatClient.FirstOrDefault(client => client.ClientId == clientId);
 }

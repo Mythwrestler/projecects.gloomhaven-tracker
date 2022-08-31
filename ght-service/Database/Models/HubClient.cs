@@ -5,8 +5,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GloomhavenTracker.Database.Models;
 
-
-
 public static partial class EntityDefinitions
 {
     public static void DefineHubEntities(this ModelBuilder builder)
@@ -14,6 +12,7 @@ public static partial class EntityDefinitions
         builder.Entity<CombatHubClientDAO>(combatHubTable => {
             combatHubTable.HasOne(hub => hub.User).WithMany(user => user.CombatHubClients).OnDelete(DeleteBehavior.Restrict);
             combatHubTable.HasOne(hub => hub.Combat).WithMany(combat => combat.HubClients).OnDelete(DeleteBehavior.Restrict);
+            combatHubTable.HasIndex(hub => hub.ClientId).IsUnique();
         });
     }
 }
@@ -26,6 +25,8 @@ public class HubClientDAO {
     public UserDAO? User { get; set; }
     [Required]
     public string ClientId { get; set; } = string.Empty;
+    [Required]
+    public DateTime LastSeen { get; set; }
 }
 
 

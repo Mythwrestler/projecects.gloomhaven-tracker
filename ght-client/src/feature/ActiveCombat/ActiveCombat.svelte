@@ -81,5 +81,5 @@
 <div>Combat Id: {$connectedCombatId}</div>
 <div>Connected Users</div>
 {#each $connectedCombatUsers as user}
-  <div>username: {user.username} userId: {user.userId}</div>
+  <div>username: {user.userName} userId: {user.userId}</div>
 {/each}
