@@ -1,7 +1,7 @@
 <script lang="ts">
   import Display from "./feature/Display/Display.svelte";
 
-  import { OidcContext } from "./common/Utils/OidcSvelteClient";
+  import { OidcContext } from "@ci-lab/svelte-oidc-context";
 
   import ENV_VARS from "./common/Environment";
 

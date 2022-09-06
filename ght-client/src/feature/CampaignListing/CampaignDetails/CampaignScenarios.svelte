@@ -23,7 +23,7 @@
   } from "../../../models/Content";
   import { useContentService } from "../../../Service/ContentService";
   import { useCampaignService } from "../../../Service/CampaignService";
-  import { accessToken } from "../../../common/Utils/OidcSvelteClient";
+  import { accessToken } from "@ci-lab/svelte-oidc-context";
   import { useCombatService } from "../../../Service/CombatService";
   import { useNavigate } from "svelte-navigator";
   const { addScenario, updateScenario } = useCampaignService(accessToken);

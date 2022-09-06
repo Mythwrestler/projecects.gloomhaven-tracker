@@ -4,6 +4,7 @@ FROM ${REGISTRY}node:14 as builder
 WORKDIR /app
 
 # Install Node Modules
+COPY ./.npmrc ./
 COPY ./package.json ./
 RUN npm install
 

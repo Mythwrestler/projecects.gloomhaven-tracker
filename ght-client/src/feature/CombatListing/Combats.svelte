@@ -10,7 +10,7 @@
   } from "../../common/Components";
   import CombatLink from "./CombatLink.svelte";
   import clsx from "clsx";
-  import { accessToken } from "../../common/Utils/OidcSvelteClient";
+  import { accessToken } from "@ci-lab/svelte-oidc-context";
   import { useCombatService } from "../../Service/CombatService";
   import ENV_VARS from "../../common/Environment";
 

@@ -2,7 +2,7 @@
   import { useLocation } from "svelte-navigator";
   import { onDestroy, onMount } from "svelte";
 
-  import { accessToken } from "../../common/Utils/OidcSvelteClient";
+  import { accessToken } from "@ci-lab/svelte-oidc-context";
   import { useCombatHubService } from "../../Service/CombatHubService";
   import { useCombatService } from "../../Service/CombatService";
 

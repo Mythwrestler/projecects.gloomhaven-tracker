@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onDestroy, onMount } from "svelte";
   import { writable } from "svelte/store";
-  import { accessToken } from "../../common/Utils/OidcSvelteClient";
+  import { accessToken } from "@ci-lab/svelte-oidc-context";
   import { useCombatService } from "../../Service/CombatService";
   import { useCombatHubService } from "../../Service/CombatHubService";
   import * as GlobalError from "../../Service/Error";
