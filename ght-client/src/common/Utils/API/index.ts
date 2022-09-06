@@ -8,7 +8,7 @@ const request = async <T>(
   accessToken: string | undefined = undefined,
   body: unknown = undefined
 ): Promise<T> => {
-  const headers: string[][] = [
+  const headers: [string, string][] = [
     [
       "Content-Type",
       method == "PATCH" ? "application/json-patch+json" : "application/json",
