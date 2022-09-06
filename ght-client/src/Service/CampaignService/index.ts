@@ -11,7 +11,7 @@ import type {
 import { cloneDeep, compact, isEqual, update } from "lodash";
 import { compare as patchCompare, deepClone } from "fast-json-patch";
 import type { Operation as PatchOperation } from "fast-json-patch";
-import { AsyncQueue } from "../../common/Utils/AsycnQueue";
+import { AsyncQueue } from "@ci-lab/async-queue";
 
 class CampaignServiceImplementation {
   private authToken?: string;

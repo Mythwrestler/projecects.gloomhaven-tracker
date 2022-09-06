@@ -1,6 +1,6 @@
 import { writable, type Readable, type Writable } from "svelte/store";
 import { getAPI } from "../../common/Utils/API";
-import { AsyncQueue } from "../../common/Utils/AsycnQueue";
+import { AsyncQueue } from "@ci-lab/async-queue";
 import type {
   Character,
   ContentItemSummary,
