@@ -8,7 +8,7 @@
   import { useLocation } from "svelte-navigator";
   import CampaignScenarios from "./CampaignScenarios.svelte";
   import { onDestroy, onMount } from "svelte";
-  import { accessToken } from "../../../common/Utils/OidcSvelteClient";
+  import { accessToken } from "@ci-lab/svelte-oidc-context";
   import { writable } from "svelte/store";
 
   // your script goes here

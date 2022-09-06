@@ -9,7 +9,7 @@
   import { useCampaignService } from "../../../Service/CampaignService";
   import CampaignCharacterEditor from "./CampaignCharacterEditor.svelte";
   import { useContentService } from "../../../Service/ContentService";
-  import { accessToken } from "../../../common/Utils/OidcSvelteClient";
+  import { accessToken } from "@ci-lab/svelte-oidc-context";
   import { deepClone } from "fast-json-patch";
   export let campaign: Campaign;
 

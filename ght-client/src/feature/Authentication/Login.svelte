@@ -13,7 +13,7 @@
     userInfo,
     login,
     OIDC_CONTEXT_CLIENT_PROMISE,
-  } from "../../common/Utils/OidcSvelteClient";
+  } from "@ci-lab/svelte-oidc-context";
 
   const oidcPromise = getContext<Promise<UserManager>>(
     OIDC_CONTEXT_CLIENT_PROMISE

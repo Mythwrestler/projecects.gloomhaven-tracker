@@ -2,7 +2,7 @@
   import { onMount } from "svelte";
   import type { CampaignSummary } from "../../../models/Campaign";
   import { AddContainedIcon, Table } from "../../../common/Components";
-  import { accessToken } from "../../../common/Utils/OidcSvelteClient";
+  import { accessToken } from "@ci-lab/svelte-oidc-context";
   import type {
     ColumnDefinition,
     RowData,

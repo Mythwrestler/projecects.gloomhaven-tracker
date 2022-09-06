@@ -19,7 +19,7 @@
   import { useContentService } from "../../../Service/ContentService";
   import { useCampaignService } from "../../../Service/CampaignService";
   import { v4 as uuid } from "uuid";
-  import { accessToken } from "../../../common/Utils/OidcSvelteClient";
+  import { accessToken } from "@ci-lab/svelte-oidc-context";
   const navigate = useNavigate();
 
   const { GetAvailableGames } = useContentService(accessToken);

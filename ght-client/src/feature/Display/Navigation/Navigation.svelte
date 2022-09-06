@@ -13,7 +13,7 @@
     logout,
     OIDC_CONTEXT_CLIENT_PROMISE,
     OIDC_CONTEXT_POST_LOGOUT_REDIRECT_URI,
-  } from "../../../common/Utils/OidcSvelteClient";
+  } from "@ci-lab/svelte-oidc-context";
   import { getContext } from "svelte";
   import { UserManager } from "oidc-client";
 

@@ -12,7 +12,7 @@
   import type { Character } from "../../../models/Campaign";
   import * as ContentModel from "../../../models/Content";
 
-  import { accessToken } from "../../../common/Utils/OidcSvelteClient";
+  import { accessToken } from "@ci-lab/svelte-oidc-context";
   import { useContentService } from "../../../Service/ContentService";
 
   export let gameCode = "";
