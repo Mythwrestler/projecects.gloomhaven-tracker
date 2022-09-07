@@ -2,7 +2,7 @@ import { derived, writable, type Readable, type Writable } from "svelte/store";
 import { getAPI, postAPI } from "../../common/Utils/API";
 import type { Combat, CombatSummary } from "../../models/Combat";
 import * as GlobalError from "../Error";
-import { AsyncQueue } from "../../common/Utils/AsycnQueue";
+import { AsyncQueue } from "@ci-lab/async-queue";
 
 class CombatServiceImplementation {
   private authToken?: string;
