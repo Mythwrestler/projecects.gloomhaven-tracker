@@ -10,10 +10,7 @@
   } from "../../../common/Components";
   import type { DropDownOption } from "../../../common/Components";
   import type { Character } from "../../../models/Campaign";
-  import * as ContentModel from "../../../models/Content";
-
-  import { accessToken } from "@ci-lab/svelte-oidc-context";
-  import { useContentService } from "../../../Service/ContentService";
+  import useContentService from "../../../Service/ContentService/index";
 
   export let gameCode = "";
   export let showCampaignCharacterDialog = false;
@@ -24,15 +21,12 @@
   export let handleCloseDialog: () => void;
   export let handleSave: () => void;
 
-  const contentService = useContentService(accessToken);
+  const { actions: contentActions, state: contentState } = useContentService();
+  const { getCharacterDefault } = contentActions;
+  const { characterDefault } = contentState;
 
-  let characterDetails: ContentModel.Character | undefined;
-
-  const handleCharacterSelection = async (characterCode: string) => {
-    characterDetails = await contentService.GetCharacterDefault(
-      gameCode,
-      characterCode
-    );
+  const handleCharacterSelection = (characterCode: string) => {
+    getCharacterDefault(gameCode, characterCode);
   };
   $: if (selectedCharacter?.characterContentCode)
     void handleCharacterSelection(selectedCharacter.characterContentCode);
@@ -41,15 +35,16 @@
   let characterHealth = 0;
   const calculateChracterLevel = () => {
     characterLevel =
-      characterDetails?.baseStats.levels
+      $characterDefault?.baseStats.levels
         .sort((a, b) => (a.level < b.level ? 1 : -1))
         .find((lvl) => lvl.experience <= selectedCharacter.experience)?.level ??
       0;
     characterHealth =
-      characterDetails?.baseStats.health.find((h) => h.level === characterLevel)
-        ?.health ?? 0;
+      $characterDefault?.baseStats.health.find(
+        (h) => h.level === characterLevel
+      )?.health ?? 0;
   };
-  $: if (characterDetails && selectedCharacter.experience)
+  $: if ($characterDefault && selectedCharacter.experience)
     calculateChracterLevel();
 
   let availableCharacterOptions: DropDownOption[] = [];
@@ -96,7 +91,7 @@
         disabled={!isNewCharacter}
       />
     </div>
-    {#if characterDetails}
+    {#if $characterDefault}
       <div class="flex flex-col pt-3">
         <TextField
           type="number"

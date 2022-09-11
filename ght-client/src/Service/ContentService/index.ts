@@ -1,247 +1,268 @@
-import { writable, type Readable, type Writable } from "svelte/store";
+import { getContext, setContext } from "svelte";
+import {
+  writable,
+  derived,
+  type Readable,
+  type Writable,
+  get,
+} from "svelte/store";
 import { getAPI } from "../../common/Utils/API";
-import { AsyncQueue } from "@ci-lab/async-queue";
+import * as GlobalError from "../Error";
 import type {
   Character,
   ContentItemSummary,
   Scenario,
   ScenarioSummary,
 } from "../../models/Content";
-import * as GlobalError from "../Error";
+import ENV_VARS from "../../common/Environment";
 
-class ContentServiceImplementation {
-  private authToken?: string;
+interface ContentStateWritable {
+  availableGames: Writable<ContentItemSummary[]>;
+  scenarioSummaries: Writable<ScenarioSummary[]>;
+  scenarioDefault: Writable<Scenario | undefined>;
+  characterSummaries: Writable<ContentItemSummary[]>;
+  characterDefault: Writable<Character | undefined>;
+}
 
-  constructor(authTokenStore: Readable<string | undefined>) {
-    authTokenStore.subscribe((token) => (this.authToken = token));
+export interface ContentState {
+  availableGames: Readable<ContentItemSummary[]>;
+  scenarioSummaries: Readable<ScenarioSummary[]>;
+  scenarioDefault: Readable<Scenario | undefined>;
+  characterSummaries: Readable<ContentItemSummary[]>;
+  characterDefault: Readable<Character | undefined>;
+}
+
+interface ContentActions {
+  getAvailableGames: () => void;
+  getScenarioSummaries: (gameCode: string) => void;
+  getScenarioDefault: (gameCode: string, scenarioCode: string) => void;
+  getCharacterSummaries: (gameCode: string) => void;
+  getCharacterDefault: (gameCode: string, characterCode: string) => void;
+}
+
+const getContentState = (contextKey: unknown): ContentStateWritable => {
+  let state = getContext<ContentStateWritable | undefined>(contextKey);
+  if (state) {
+    const stateProperties = Object.keys(state as object);
+    if (
+      stateProperties.includes("availableGames") &&
+      stateProperties.includes("scenarioSummaries") &&
+      stateProperties.includes("scenarioDefault") &&
+      stateProperties.includes("characterSummaries") &&
+      stateProperties.includes("characterDefault")
+    ) {
+      return state;
+    }
   }
 
-  // Available Games95
-  availableGames: ContentItemSummary[] = [];
+  state = {
+    availableGames: writable<ContentItemSummary[]>([]),
+    scenarioSummaries: writable<ScenarioSummary[]>(),
+    scenarioDefault: writable<Scenario | undefined>(),
+    characterSummaries: writable<ContentItemSummary[]>([]),
+    characterDefault: writable<Character | undefined>(),
+  };
+  setContext(contextKey, state);
+  return state;
+};
 
-  // Scenario Summary
-  scenarioSummaries: Map<string, ScenarioSummary[]> = new Map<
-    string,
-    ScenarioSummary[]
-  >();
+export const useContentServiceState = (
+  stateKey: string = ENV_VARS.CONTEXT.ContentService.State
+): ContentState => {
+  const writableState: ContentState = getContentState(stateKey);
+  return {
+    availableGames: derived(writableState.availableGames, (store) => store),
+    scenarioSummaries: derived(
+      writableState.scenarioSummaries,
+      (store) => store
+    ),
+    scenarioDefault: derived(writableState.scenarioDefault, (store) => store),
+    characterSummaries: derived(
+      writableState.characterSummaries,
+      (store) => store
+    ),
+    characterDefault: derived(writableState.characterDefault, (store) => store),
+  };
+};
+
+export const useContentServiceActions = (
+  actionKey: string = ENV_VARS.CONTEXT.ContentService.Actions
+): ContentActions => {
+  const actions = getContext<ContentActions | undefined>(actionKey);
+  if (actions) {
+    const properties = Object.keys(actions);
+    if (
+      properties.includes("getAvailableGames") &&
+      properties.includes("getScenarioSummaries") &&
+      properties.includes("getScenarioDefault") &&
+      properties.includes("getCharacterSummaries") &&
+      properties.includes("getCharacterDefault")
+    )
+      return actions;
+  }
+
+  const notImplemented = () => {
+    throw Error("Content Service Not Implements");
+  };
+  return {
+    getAvailableGames: notImplemented,
+    getScenarioSummaries: notImplemented,
+    getScenarioDefault: notImplemented,
+    getCharacterSummaries: notImplemented,
+    getCharacterDefault: notImplemented,
+  };
+};
+
+class ContentService {
+  private accessToken: Readable<string | undefined>;
+  private availableGames: Writable<ContentItemSummary[]>;
+  private scenarioSummaries: Writable<ScenarioSummary[]>;
+  private scenarioDefault: Writable<Scenario | undefined>;
+  private characterSummaries: Writable<ContentItemSummary[]>;
+  private characterDefault: Writable<Character | undefined>;
+
+  constructor(contextKey: string, accessToken: Readable<string | undefined>) {
+    const {
+      availableGames,
+      scenarioSummaries,
+      scenarioDefault,
+      characterSummaries,
+      characterDefault,
+    } = getContentState(contextKey);
+    this.accessToken = accessToken;
+    this.availableGames = availableGames;
+    this.scenarioSummaries = scenarioSummaries;
+    this.scenarioDefault = scenarioDefault;
+    this.characterSummaries = characterSummaries;
+    this.characterDefault = characterDefault;
+  }
+
+  private getAvailableGames = () => {
+    if (get(this.availableGames).length > 0) return;
+    const token: string | undefined = get(this.accessToken);
+    this.availableGames.set([]);
+    getAPI<ContentItemSummary[]>(`content/games/`, token)
+      .then((games) => {
+        this.availableGames.set(games);
+      })
+      .catch((err: unknown) => {
+        GlobalError.showErrorMessage(
+          `Failed to get Game Listing. ${JSON.stringify(err)}`
+        );
+      });
+  };
+
+  private scenarioSummariesRequest: string | undefined;
   private getScenarioSummaries = (gameCode: string) => {
-    if (!this.scenarioSummaries.has(gameCode))
-      this.scenarioSummaries.set(gameCode, []);
-    return this.scenarioSummaries.get(gameCode) as ScenarioSummary[];
-  };
-  private setScenarioSummaries = (
-    gameCode: string,
-    scenarios: ScenarioSummary[]
-  ): ContentItemSummary[] => {
-    this.scenarioSummaries.set(gameCode, scenarios);
-    return this.scenarioSummaries.get(gameCode) as ContentItemSummary[];
-  };
-
-  // Scenario Defaults
-  scenarioDefaults: Map<string, Scenario[]> = new Map<string, Scenario[]>();
-
-  private getScenarioDefaults = (gameCode: string) => {
-    if (!this.scenarioDefaults.has(gameCode))
-      this.scenarioDefaults.set(gameCode, []);
-    return this.scenarioDefaults.get(gameCode) as Scenario[];
-  };
-  private addScenarioDefault = (
-    gameCode: string,
-    scenario: Scenario
-  ): Scenario[] => {
-    let defaultList = [...this.getScenarioDefaults(gameCode)];
-    defaultList = defaultList.filter(
-      (scenarioFromList) =>
-        scenarioFromList.contentCode !== scenario.contentCode
-    );
-    defaultList.push(scenario);
-    this.scenarioDefaults.set(gameCode, defaultList);
-    return defaultList;
+    if (gameCode === this.scenarioSummariesRequest) return;
+    const token: string | undefined = get(this.accessToken);
+    this.scenarioSummaries.set([]);
+    getAPI<ScenarioSummary[]>(`content/games/${gameCode}/scenarios`, token)
+      .then((scenarios: ScenarioSummary[]) => {
+        this.scenarioSummaries.set(scenarios);
+      })
+      .catch((err: unknown) => {
+        GlobalError.showErrorMessage(
+          `Failed to get Scenario Summary Listing. ${JSON.stringify(err)}`
+        );
+      });
   };
 
-  // Character Summary
-  characterSummaries: Map<string, ContentItemSummary[]> = new Map<
-    string,
-    ContentItemSummary[]
-  >();
+  private scenarioDefaultRequest: {
+    gameCode: string | undefined;
+    scenarioCode: string | undefined;
+  } = { gameCode: undefined, scenarioCode: undefined };
+  private getScenarioDefault = (gameCode: string, scenarioCode: string) => {
+    if (
+      this.scenarioDefaultRequest.gameCode === gameCode &&
+      this.scenarioDefaultRequest.scenarioCode === scenarioCode
+    )
+      return;
+    const token: string | undefined = get(this.accessToken);
+    this.scenarioDefault.set(undefined);
+    getAPI<Scenario>(
+      `content/games/${gameCode}/scenarios/${scenarioCode}`,
+      token
+    )
+      .then((scenario: Scenario) => {
+        this.scenarioDefault.set(scenario);
+      })
+      .catch((err: unknown) => {
+        GlobalError.showErrorMessage(
+          `Failed to get Scenario Default Values. ${JSON.stringify(err)}`
+        );
+      });
+  };
 
+  private characterSummariesRequest: string | undefined;
   private getCharacterSummaries = (gameCode: string) => {
-    if (!this.characterSummaries.has(gameCode))
-      this.characterSummaries.set(gameCode, []);
-    return this.characterSummaries.get(gameCode) as ContentItemSummary[];
-  };
-
-  private setCharacterSummaries = (
-    gameCode: string,
-    characters: ContentItemSummary[]
-  ): ContentItemSummary[] => {
-    this.characterSummaries.set(gameCode, characters);
-    return this.characterSummaries.get(gameCode) as ContentItemSummary[];
-  };
-
-  // Character Defaults
-  characterDefaults: Map<string, Character[]> = new Map<string, Character[]>();
-
-  private getCharacterDefaults = (gameCode: string) => {
-    if (!this.characterDefaults.has(gameCode))
-      this.characterDefaults.set(gameCode, []);
-    return this.characterDefaults.get(gameCode) as Character[];
-  };
-
-  private addCharacterDefault = (
-    gameCode: string,
-    character: Character
-  ): Character[] => {
-    let defaultList = [...this.getCharacterDefaults(gameCode)];
-    defaultList = defaultList.filter(
-      (characterFromList) =>
-        characterFromList.contentCode !== character.contentCode
-    );
-    defaultList.push(character);
-    this.characterDefaults.set(gameCode, defaultList);
-    return defaultList;
-  };
-
-  // Exposed Interfaces
-
-  private getGamesQueue = new AsyncQueue<ContentItemSummary[]>();
-  public GetAvailableGames = async (): Promise<ContentItemSummary[]> => {
-    return this.getGamesQueue.enqueue(async () => {
-      if (this.availableGames.length > 0) return this.availableGames;
-      let result: ContentItemSummary[] = [];
-      try {
-        result = await getAPI<ContentItemSummary[]>(
-          `content/games/`,
-          this.authToken
+    if (this.characterSummariesRequest === gameCode) return;
+    const token: string | undefined = get(this.accessToken);
+    this.characterSummaries.set([]);
+    getAPI<ContentItemSummary[]>(`content/games/${gameCode}/characters`, token)
+      .then((characters: ContentItemSummary[]) => {
+        this.characterSummaries.set(characters);
+      })
+      .catch((err: unknown) => {
+        GlobalError.showErrorMessage(
+          `Failed to get Character Summary Listing. ${JSON.stringify(err)}`
         );
-        if (result) {
-          this.availableGames = result;
-        }
-      } catch (err: unknown) {
-        GlobalError.showErrorMessage("Failed to get Scenario Listing");
-      }
-      return this.availableGames;
-    });
+      });
   };
 
-  private getScenariosQueue = new AsyncQueue<ScenarioSummary[]>();
-  public GetScenariosForGame = async (
-    gameCode: string
-  ): Promise<ScenarioSummary[]> => {
-    return this.getScenariosQueue.enqueue(async () => {
-      let gameScenarios = this.getScenarioSummaries(gameCode);
-      if (gameScenarios.length > 0) return gameScenarios;
-
-      let result: ScenarioSummary[] = [];
-      try {
-        result = await getAPI<ScenarioSummary[]>(
-          `content/games/${gameCode}/scenarios`,
-          this.authToken
+  private characterDefaultRequest: {
+    gameCode: string | undefined;
+    characterCode: string | undefined;
+  } = { gameCode: undefined, characterCode: undefined };
+  private getCharacterDefault = (gameCode: string, characterCode: string) => {
+    if (
+      this.characterDefaultRequest.gameCode === gameCode &&
+      this.characterDefaultRequest.characterCode === characterCode
+    )
+      return;
+    const token: string | undefined = get(this.accessToken);
+    this.characterDefault.set(undefined);
+    getAPI<Character>(
+      `content/games/${gameCode}/characters/${characterCode}`,
+      token
+    )
+      .then((character: Character) => {
+        this.characterDefault.set(character);
+      })
+      .catch((err: unknown) => {
+        GlobalError.showErrorMessage(
+          `Failed to get Character Default Values. ${JSON.stringify(err)}`
         );
-        if (result) {
-          this.setScenarioSummaries(gameCode, result);
-          gameScenarios = this.getScenarioSummaries(gameCode);
-        }
-      } catch (err: unknown) {
-        GlobalError.showErrorMessage("Failed to get Scenario Listing");
-      }
-      return gameScenarios;
-    });
+      });
   };
 
-  private getScenarioQueue = new AsyncQueue<Scenario | undefined>();
-  public GetScenarioDefault = async (
-    gameCode: string,
-    contentCode: string
-  ): Promise<Scenario | undefined> => {
-    return this.getScenarioQueue.enqueue(async () => {
-      let gameScenarios = this.getScenarioDefaults(gameCode);
-      let scenarioDefault: Scenario | undefined = gameScenarios.find(
-        (scn) => scn.contentCode === contentCode
-      );
-      if (scenarioDefault) return scenarioDefault;
-      let result: Scenario | undefined = undefined;
-      try {
-        result = await getAPI<Scenario>(
-          `content/games/${gameCode}/scenarios/${contentCode}`,
-          this.authToken
-        );
-        if (result) {
-          gameScenarios = this.addScenarioDefault(gameCode, result);
-          scenarioDefault = gameScenarios.find(
-            (scn) => scn.contentCode === contentCode
-          );
-        }
-      } catch (err: unknown) {
-        GlobalError.showErrorMessage("Failed to get Scenario Listing");
-      }
-      return scenarioDefault;
-    });
-  };
-
-  private getCharactersQueue = new AsyncQueue<ContentItemSummary[]>();
-  public GetCharactersForGame = async (
-    gameCode: string
-  ): Promise<ContentItemSummary[]> => {
-    return this.getCharactersQueue.enqueue(async () => {
-      let gameCharacters = this.getCharacterSummaries(gameCode);
-      if (gameCharacters.length > 0) return gameCharacters;
-
-      let result: ContentItemSummary[] = [];
-      try {
-        result = await getAPI<ContentItemSummary[]>(
-          `content/games/${gameCode}/characters`,
-          this.authToken
-        );
-        if (result) {
-          this.setCharacterSummaries(gameCode, result);
-          gameCharacters = this.getCharacterSummaries(gameCode);
-        }
-      } catch (err: unknown) {
-        GlobalError.showErrorMessage("Failed to get Scenario Listing");
-      }
-      return gameCharacters;
-    });
-  };
-
-  private getCharacterQueue = new AsyncQueue<Character | undefined>();
-  public GetCharacterDefault = async (
-    gameCode: string,
-    contentCode: string
-  ): Promise<Character | undefined> => {
-    return this.getCharacterQueue.enqueue(async () => {
-      let gameCharacters = this.getCharacterDefaults(gameCode);
-      let characterDefault: Character | undefined = gameCharacters.find(
-        (chr) => chr.contentCode === contentCode
-      );
-      if (characterDefault) return characterDefault;
-      let result: Character | undefined = undefined;
-      try {
-        result = await getAPI<Character>(
-          `content/games/${gameCode}/characters/${contentCode}`,
-          this.authToken
-        );
-        if (result) {
-          gameCharacters = this.addCharacterDefault(gameCode, result);
-          characterDefault = gameCharacters.find(
-            (chr) => chr.contentCode === contentCode
-          );
-        }
-      } catch (err: unknown) {
-        GlobalError.showErrorMessage("Failed to get Scenario Listing");
-      }
-      return characterDefault;
-    });
+  public actions: ContentActions = {
+    getAvailableGames: this.getAvailableGames,
+    getScenarioSummaries: this.getScenarioSummaries,
+    getScenarioDefault: this.getScenarioDefault,
+    getCharacterSummaries: this.getCharacterSummaries,
+    getCharacterDefault: this.getCharacterDefault,
   };
 }
 
-let contentService: ContentServiceImplementation | undefined = undefined;
-const useContentService = (
-  authTokenStore: Readable<string | undefined>
-): ContentServiceImplementation => {
-  if (!contentService)
-    contentService = new ContentServiceImplementation(authTokenStore);
-  return contentService;
+export const defineContentService = (
+  accessToken: Readable<string | undefined>,
+  stateKey: string = ENV_VARS.CONTEXT.ContentService.State,
+  actionKey: string = ENV_VARS.CONTEXT.ContentService.Actions
+): ContentService => {
+  const service = new ContentService(stateKey, accessToken);
+  setContext<ContentActions>(actionKey, service.actions);
+  return service;
 };
 
-export { useContentService };
+const useContentService = (
+  actionKey: string = ENV_VARS.CONTEXT.ContentService.Actions,
+  stateKey: string = ENV_VARS.CONTEXT.ContentService.State
+) => {
+  return {
+    actions: useContentServiceActions(actionKey),
+    state: useContentServiceState(stateKey),
+  };
+};
+
+export default useContentService;

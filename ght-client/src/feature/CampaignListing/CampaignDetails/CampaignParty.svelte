@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { writable } from "svelte/store";
+  import { writable, type Unsubscriber } from "svelte/store";
 
   import { AddContainedIcon } from "../../../common/Components";
   import type { DropDownOption } from "../../../common/Components";
@@ -8,17 +8,21 @@
   import type { ContentItemSummary } from "../../../models/Content";
   import { useCampaignService } from "../../../Service/CampaignService";
   import CampaignCharacterEditor from "./CampaignCharacterEditor.svelte";
-  import { useContentService } from "../../../Service/ContentService";
+  import useContentService from "../../../Service/ContentService/index";
   import { accessToken } from "@ci-lab/svelte-oidc-context";
   import { deepClone } from "fast-json-patch";
+  import { onDestroy, onMount } from "svelte";
   export let campaign: Campaign;
 
-  const { GetCharactersForGame } = useContentService(accessToken);
+  const { actions: contentActions, state: contentState } = useContentService();
+  const { getCharacterSummaries } = contentActions;
+  const { characterSummaries } = contentState;
+
   const { addPartyMember, updatePartyMember, getPartyMemberDetails } =
     useCampaignService(accessToken);
 
   const getContentSummary = (contentCode: string) => {
-    return $characterListing.find((character) => {
+    return $characterSummaries.find((character) => {
       return character.contentCode === contentCode;
     });
   };
@@ -46,11 +50,6 @@
         appliedPerks: [],
       };
     }
-    // if (!character) {
-    //   isNewCharacter = true;
-    // } else {
-    //   isNewCharacter = false;
-    // }
     showPlayerDialog = true;
   };
   const handleCloseDialog = () => {
@@ -79,40 +78,45 @@
     }
   };
 
-  const characterListing = writable<ContentItemSummary[]>([]);
   const characterListingProcessed = writable<boolean>(false);
 
-  const handleGetCharacters = async (gameCode: string) => {
-    if ($characterListing.length === 0) {
-      const listing = await GetCharactersForGame(gameCode);
-      characterListing.set(listing);
-    }
+  const handleGetCharacters = (gameCode: string) => {
+   if ($characterSummaries.length <= 0) getCharacterSummaries(gameCode);
   };
 
   // let availableCharacterOptions: DropDownOption[] = [];
   let fullListOfPossibleCharacterOptions: DropDownOption[] = [];
   let usedCharacters: string[] = [];
-  // const determineUsedCharacters = (campaignCharacters: Character[]) => {
-  //   usedCharacters = campaignCharacters.map((c) => c.characterContentCode);
-  // };
-
-  characterListing.subscribe((characterContentList) => {
-    if (characterContentList && characterContentList.length > 0) {
-      fullListOfPossibleCharacterOptions = characterContentList.map(
-        (charCont) => {
-          return {
-            label: charCont.name,
-            value: charCont.contentCode,
-          };
-        }
-      );
-      characterListingProcessed.set(true);
-    }
-  });
+  const determineUsedCharacters = (campaignCharacters: Character[]) => {
+    usedCharacters = campaignCharacters.map((c) => c.characterContentCode);
+  };
 
   $: if (campaign?.game) void handleGetCharacters(campaign.game);
   $: if (campaign?.party) checkSaving();
-  // $: determineUsedCharacters(campaign.party.characters);
+  $: if (campaign?.party) determineUsedCharacters(campaign.party);
+
+  let characterSummariesUnsubscribe: Unsubscriber;
+  onMount(() => {
+    characterSummariesUnsubscribe = characterSummaries.subscribe(
+      (characterContentList) => {
+        if (characterContentList && characterContentList.length > 0) {
+          fullListOfPossibleCharacterOptions = characterContentList.map(
+            (charCont) => {
+              return {
+                label: charCont.name,
+                value: charCont.contentCode,
+              };
+            }
+          );
+          characterListingProcessed.set(true);
+        }
+      }
+    );
+  });
+
+  onDestroy(() => {
+    characterSummariesUnsubscribe();
+  });
 </script>
 
 <div
