@@ -13,7 +13,7 @@
   } from "../../../common/Components";
 
   import type { DropDownOption } from "../../../common/Components";
-  import useContentService from "../../../Service/ContentService/index";
+  import useContentService from "../../../Service/ContentService";
   import type { Campaign } from "../../../models/Campaign";
   import type { ContentItemSummary } from "../../../models/Content";
   import { useCampaignService } from "../../../Service/CampaignService";

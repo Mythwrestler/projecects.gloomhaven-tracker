@@ -17,7 +17,7 @@
   import type { RadioOption, DropDownOption } from "../../../common/Components";
   import type { Campaign, Scenario } from "../../../models/Campaign";
   import type { ScenarioSummary } from "../../../models/Content";
-  import useContentService from "../../../Service/ContentService/index";
+  import useContentService from "../../../Service/ContentService";
   import { useCampaignService } from "../../../Service/CampaignService";
   import { accessToken } from "@ci-lab/svelte-oidc-context";
   import { useCombatService } from "../../../Service/CombatService";

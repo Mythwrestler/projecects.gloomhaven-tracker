@@ -10,7 +10,7 @@
   } from "../../../common/Components";
   import type { DropDownOption } from "../../../common/Components";
   import type { Character } from "../../../models/Campaign";
-  import useContentService from "../../../Service/ContentService/index";
+  import useContentService from "../../../Service/ContentService";
 
   export let gameCode = "";
   export let showCampaignCharacterDialog = false;

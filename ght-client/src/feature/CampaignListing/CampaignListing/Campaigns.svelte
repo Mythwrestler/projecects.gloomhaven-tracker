@@ -11,7 +11,7 @@
   import CampaignLink from "./CampaignLink.svelte";
   import CampaignNewDialog from "./CampaignNewDialog.svelte";
   import { useCampaignService } from "../../../Service/CampaignService";
-  import useContentService from "../../../Service/ContentService/index";
+  import useContentService from "../../../Service/ContentService";
 
   import clsx from "clsx";
   import type { ContentItemSummary } from "../../../models/Content";

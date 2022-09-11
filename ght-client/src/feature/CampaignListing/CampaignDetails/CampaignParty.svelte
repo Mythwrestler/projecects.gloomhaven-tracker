@@ -8,7 +8,7 @@
   import type { ContentItemSummary } from "../../../models/Content";
   import { useCampaignService } from "../../../Service/CampaignService";
   import CampaignCharacterEditor from "./CampaignCharacterEditor.svelte";
-  import useContentService from "../../../Service/ContentService/index";
+  import useContentService from "../../../Service/ContentService";
   import { accessToken } from "@ci-lab/svelte-oidc-context";
   import { deepClone } from "fast-json-patch";
   import { onDestroy, onMount } from "svelte";
@@ -81,7 +81,7 @@
   const characterListingProcessed = writable<boolean>(false);
 
   const handleGetCharacters = (gameCode: string) => {
-   if ($characterSummaries.length <= 0) getCharacterSummaries(gameCode);
+    if ($characterSummaries.length <= 0) getCharacterSummaries(gameCode);
   };
 
   // let availableCharacterOptions: DropDownOption[] = [];
