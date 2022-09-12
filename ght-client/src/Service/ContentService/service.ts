@@ -20,14 +20,14 @@ export class ContentService {
   private characterSummaries: Writable<ContentItemSummary[]>;
   private characterDefault: Writable<Character | undefined>;
 
-  constructor(contextKey: string, accessToken: Readable<string | undefined>) {
+  constructor(accessToken: Readable<string | undefined>, stateKey: string) {
     const {
       availableGames,
       scenarioSummaries,
       scenarioDefault,
       characterSummaries,
       characterDefault,
-    } = getContentState(contextKey);
+    } = getContentState(stateKey);
     this.accessToken = accessToken;
     this.availableGames = availableGames;
     this.scenarioSummaries = scenarioSummaries;
@@ -149,7 +149,7 @@ export const defineContentService = (
   stateKey: string = ENV_VARS.CONTEXT.ContentService.State,
   actionKey: string = ENV_VARS.CONTEXT.ContentService.Actions
 ): ContentService => {
-  const service = new ContentService(stateKey, accessToken);
+  const service = new ContentService(accessToken, stateKey);
   setContext<ContentActions>(actionKey, service.actions);
   return service;
 };
