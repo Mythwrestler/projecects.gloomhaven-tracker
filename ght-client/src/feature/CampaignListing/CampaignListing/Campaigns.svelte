@@ -2,7 +2,6 @@
   import { onDestroy, onMount } from "svelte";
   import type { CampaignSummary } from "../../../models/Campaign";
   import { AddContainedIcon, Table } from "../../../common/Components";
-  import { accessToken } from "@ci-lab/svelte-oidc-context";
   import type {
     ColumnDefinition,
     RowData,
@@ -10,17 +9,17 @@
   } from "../../../common/Components";
   import CampaignLink from "./CampaignLink.svelte";
   import CampaignNewDialog from "./CampaignNewDialog.svelte";
-  import { useCampaignService } from "../../../Service/CampaignService";
   import useContentService from "../../../Service/ContentService";
+  import useCampaignService from "../../../Service/CampaignService";
 
   import clsx from "clsx";
   import type { ContentItemSummary } from "../../../models/Content";
   import { writable, type Unsubscriber } from "svelte/store";
-  import ENV_VARS from "../../../common/Environment";
+  const { actions: campaignActions, state: campaignState } =
+    useCampaignService();
+  const { getCampaignSummaries } = campaignActions;
+  const { campaignSummaries } = campaignState;
 
-  const { State: campaignState, getCampaignListing } =
-    useCampaignService(accessToken);
-  const { campaignListing } = campaignState;
   const { actions: contentActions, state: contentState } = useContentService();
   const { getAvailableGames } = contentActions;
   const { availableGames } = contentState;
@@ -79,40 +78,27 @@
     newDialogOpen = false;
   };
 
-  const handleGetCampaigns = async (
-    token: string | undefined
-  ): Promise<void> => {
-    if (token == undefined || token.trim() == "") return;
+  const handleGetCampaigns = async () => {
     if ($refreshListing) {
-      await getCampaignListing();
+      await getCampaignSummaries();
       getAvailableGames();
       refreshListing.set(false);
     }
   };
 
   refreshListing.subscribe(() => {
-    let token = "";
-    if (ENV_VARS.AUTH.Enabled() && $accessToken !== null)
-      token = $accessToken ?? "";
-    void handleGetCampaigns(token);
-  });
-
-  accessToken.subscribe((tokenFromStore) => {
-    let token = "";
-    if (ENV_VARS.AUTH.Enabled() && tokenFromStore !== null)
-      token = tokenFromStore ?? "";
-    void handleGetCampaigns(token);
+    void handleGetCampaigns();
   });
 
   let availableGamesUnsubscribe: Unsubscriber;
   let campaignListingUnsubscribe: Unsubscriber;
   onMount(() => {
     availableGamesUnsubscribe = availableGames.subscribe((games) => {
-      if ($campaignListing.length > 0 && games.length > 0)
-        calculateCampagignRows($campaignListing, games);
+      if ($campaignSummaries.length > 0 && games.length > 0)
+        calculateCampagignRows($campaignSummaries, games);
     });
 
-    campaignListingUnsubscribe = campaignListing.subscribe((campaigns) => {
+    campaignListingUnsubscribe = campaignSummaries.subscribe((campaigns) => {
       if (campaigns.length > 0 && $availableGames.length > 0)
         calculateCampagignRows(campaigns, $availableGames);
     });

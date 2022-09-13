@@ -5,11 +5,9 @@
   import type { DropDownOption } from "../../../common/Components";
 
   import type { Campaign, Character } from "../../../models/Campaign";
-  import type { ContentItemSummary } from "../../../models/Content";
-  import { useCampaignService } from "../../../Service/CampaignService";
   import CampaignCharacterEditor from "./CampaignCharacterEditor.svelte";
   import useContentService from "../../../Service/ContentService";
-  import { accessToken } from "@ci-lab/svelte-oidc-context";
+  import useCampaignService from "../../../Service/CampaignService";
   import { deepClone } from "fast-json-patch";
   import { onDestroy, onMount } from "svelte";
   export let campaign: Campaign;
@@ -18,8 +16,9 @@
   const { getCharacterSummaries } = contentActions;
   const { characterSummaries } = contentState;
 
+  const { actions: campaignActions } = useCampaignService();
   const { addPartyMember, updatePartyMember, getPartyMemberDetails } =
-    useCampaignService(accessToken);
+    campaignActions;
 
   const getContentSummary = (contentCode: string) => {
     return $characterSummaries.find((character) => {
@@ -39,6 +38,7 @@
           (chr) => chr.characterContentCode === characterContentCode
         )
       ) as Character;
+      console.log(JSON.stringify(selectedCharacter));
     } else {
       selectedCharacter = {
         name: "",
@@ -58,11 +58,14 @@
   };
 
   let saving = false;
-  const handleSaveCharacter = async (): Promise<void> => {
+  const handleSaveCharacter = async () => {
     // Do Stuff
     saving = true;
-    if (isNewCharacter) await addPartyMember(campaign.id, selectedCharacter);
-    else await updatePartyMember(campaign.id, selectedCharacter);
+    if (isNewCharacter) {
+      await addPartyMember(campaign.id, selectedCharacter);
+    } else {
+      await updatePartyMember(campaign.id, selectedCharacter);
+    }
     saving = false;
     handleCloseDialog();
   };

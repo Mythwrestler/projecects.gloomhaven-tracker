@@ -14,11 +14,12 @@
 
   import type { DropDownOption } from "../../../common/Components";
   import useContentService from "../../../Service/ContentService";
+  import useCampaignService from "../../../Service/CampaignService";
   import type { Campaign } from "../../../models/Campaign";
   import type { ContentItemSummary } from "../../../models/Content";
-  import { useCampaignService } from "../../../Service/CampaignService";
+  // import { useCampaignService } from "../../../Service/CampaignService/index-old";
   import { v4 as uuid } from "uuid";
-  import { accessToken } from "@ci-lab/svelte-oidc-context";
+  // import { accessToken } from "@ci-lab/svelte-oidc-context";
   import type { Unsubscriber } from "svelte/store";
   const navigate = useNavigate();
 
@@ -26,8 +27,12 @@
   const { getAvailableGames } = contentActions;
   const { availableGames } = contentState;
 
-  const { State: campaignState, createNewCampaign } =
-    useCampaignService(accessToken);
+  // const { State: campaignState, createNewCampaign } =
+  //   useCampaignService(accessToken);
+  const { actions: campaignActions, state: campaignState } =
+    useCampaignService();
+  const { createCampaign, clearCampaign } = campaignActions;
+  const { campaignDetail } = campaignState;
 
   export let newDialogOpen = false;
   export let handleCloseDialog: () => void;
@@ -49,15 +54,13 @@
   };
 
   const handleNewCampaign = async () => {
-    await createNewCampaign(newCampaign);
+    await createCampaign(newCampaign);
   };
 
-  campaignState.campaign.subscribe((campaign) => {
-    if (campaign) navigate(`/campaigns/${campaign.id}`);
-  });
-
   let availableGamesUnsubscribe: Unsubscriber;
+  let campaignDetailUnsubscribe: Unsubscriber;
   onMount(() => {
+    clearCampaign();
     availableGamesUnsubscribe = availableGames.subscribe(
       (gamesFromState: ContentItemSummary[]) => {
         if (gamesFromState) {
@@ -72,11 +75,16 @@
       }
     );
 
+    campaignDetailUnsubscribe = campaignDetail.subscribe((campaign) => {
+      if (campaign) navigate(`/campaigns/${campaign.id}`);
+    });
+
     void handleLoadGames();
   });
 
   onDestroy(() => {
     availableGamesUnsubscribe();
+    campaignDetailUnsubscribe();
   });
 </script>
 

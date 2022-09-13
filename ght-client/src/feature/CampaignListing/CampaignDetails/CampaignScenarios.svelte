@@ -18,11 +18,10 @@
   import type { Campaign, Scenario } from "../../../models/Campaign";
   import type { ScenarioSummary } from "../../../models/Content";
   import useContentService from "../../../Service/ContentService";
-  import { useCampaignService } from "../../../Service/CampaignService";
+  import useCampaignService from "../../../Service/CampaignService";
   import { accessToken } from "@ci-lab/svelte-oidc-context";
   import { useCombatService } from "../../../Service/CombatService";
   import { useNavigate } from "svelte-navigator";
-  const { addScenario, updateScenario } = useCampaignService(accessToken);
   const { createNewCombat, State: combatState } = useCombatService(accessToken);
   const { combat } = combatState;
   const navigate = useNavigate();
@@ -32,6 +31,9 @@
   const { actions: contentActions, state: contentState } = useContentService();
   const { getScenarioSummaries, getScenarioDefault } = contentActions;
   const { scenarioSummaries, scenarioDefault } = contentState;
+
+  const { actions: campaignActions } = useCampaignService();
+  const { addScenario, updateScenario } = campaignActions;
 
   const scenarioStatusOptions: RadioOption[] = [
     { label: "Completed", value: "completed" },
