@@ -19,6 +19,7 @@ interface ServiceContext {
 
 interface ContextEnvVars {
   ContentService: ServiceContext;
+  CampaignService: ServiceContext;
   ActiveCombat: string;
   CombatHub: string;
 }
@@ -47,6 +48,10 @@ const CONTEXT: ContextEnvVars = {
   ContentService: {
     Actions: "0fe59005-768d-4e9c-850f-54179004e63a",
     State: "6ef3b50a-6143-46c5-8f7f-33b621c1efad",
+  },
+  CampaignService: {
+    Actions: "da85000a-cb93-4175-803b-69e0e53dd08b",
+    State: "68ec1e97-5f6a-42d5-950a-78cf30bd810b",
   },
   ActiveCombat: "41d944b7-4bab-492b-bb89-71a73bfe8b8d",
   CombatHub: "a67532f7-3434-4652-86d6-585a9ede30d6",
