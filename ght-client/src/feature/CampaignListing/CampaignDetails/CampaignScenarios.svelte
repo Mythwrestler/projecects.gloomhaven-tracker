@@ -14,19 +14,23 @@
     DialogFooter,
     Button,
   } from "../../../common/Components";
+
   import type { RadioOption, DropDownOption } from "../../../common/Components";
   import type { Campaign, Scenario } from "../../../models/Campaign";
   import type { ScenarioSummary } from "../../../models/Content";
+
   import useContentService from "../../../Service/ContentService";
   import useCampaignService from "../../../Service/CampaignService";
-  import { accessToken } from "@ci-lab/svelte-oidc-context";
-  import { useCombatService } from "../../../Service/CombatService";
+  import useCombatService from "../../../Service/CombatService";
+
   import { useNavigate } from "svelte-navigator";
-  const { createNewCombat, State: combatState } = useCombatService(accessToken);
-  const { combat } = combatState;
   const navigate = useNavigate();
 
   export let campaign: Campaign | undefined;
+
+  const { actions: combatActions, state: combatState } = useCombatService();
+  const { createCombat } = combatActions;
+  const { combatDetail } = combatState;
 
   const { actions: contentActions, state: contentState } = useContentService();
   const { getScenarioSummaries, getScenarioDefault } = contentActions;
@@ -173,10 +177,10 @@
   const handleCreateCombat = async () => {
     if (campaign && selectedScenario && selectedScenario.trim() != "") {
       redirectOnCombatCreate = true;
-      await createNewCombat(campaign?.id, selectedScenario);
+      await createCombat(campaign?.id, selectedScenario);
     }
   };
-  combat.subscribe((combat) => {
+  combatDetail.subscribe((combat) => {
     if (combat && redirectOnCombatCreate) navigate(`/combats/${combat.id}`);
   });
 

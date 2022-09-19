@@ -4,7 +4,7 @@
 
   import { accessToken } from "@ci-lab/svelte-oidc-context";
   import { useCombatHubService } from "../../Service/CombatHubService";
-  import { useCombatService } from "../../Service/CombatService";
+  import useCombatService from "../../Service/CombatService";
 
   const {
     State: combatHubState,
