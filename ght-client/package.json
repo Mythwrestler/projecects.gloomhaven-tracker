@@ -13,7 +13,6 @@
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
   "devDependencies": {
-    "@ci-lab/async-queue": "^0.0.1",
     "@ci-lab/svelte-oidc-context": "^0.0.1",
     "@ci-lab/svelte-signalr-context": "^0.0.1",
     "@microsoft/signalr": "^6.0.1",

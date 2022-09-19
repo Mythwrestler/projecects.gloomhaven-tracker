@@ -1,4 +1,3 @@
-import { AsyncQueue } from "@ci-lab/async-queue";
 import { setContext } from "svelte";
 import { get, type Readable, type Writable } from "svelte/store";
 import { compare as patchCompare, deepClone } from "fast-json-patch";
@@ -18,8 +17,6 @@ class CampaignService {
   private authToken: Readable<string | undefined>;
   private campaignSummaries: Writable<CampaignSummary[]>;
   private campaignDetail: Writable<Campaign | undefined>;
-
-  private requestQueue: AsyncQueue<void> = new AsyncQueue<void>();
 
   constructor(authToken: Readable<string | undefined>, stateKey: string) {
     const { campaignDetail, campaignSummaries } = getCampaignState(stateKey);
@@ -65,21 +62,19 @@ class CampaignService {
 
   private createCampaign = async (campaign: Campaign): Promise<void> => {
     const token = get(this.authToken);
-    return this.requestQueue.enqueue(async () => {
-      let result: Campaign;
-      try {
-        result = await postAPI<Campaign>("campaigns", token, {
-          id: campaign.id,
-          name: campaign.name,
-          game: campaign.game,
-        });
-        if (result) this.campaignDetail.set(result);
-      } catch (err: unknown) {
-        GlobalError.showErrorMessage(
-          `Failed To Create a New Campaign ${JSON.stringify(err)}`
-        );
-      }
-    });
+    let result: Campaign;
+    try {
+      result = await postAPI<Campaign>("campaigns", token, {
+        id: campaign.id,
+        name: campaign.name,
+        game: campaign.game,
+      });
+      if (result) this.campaignDetail.set(result);
+    } catch (err: unknown) {
+      GlobalError.showErrorMessage(
+        `Failed To Create a New Campaign ${JSON.stringify(err)}`
+      );
+    }
   };
 
   public updateCampaign = async (
@@ -101,33 +96,31 @@ class CampaignService {
       campaignSummaryToReview
     );
     if (patchUpdatesToApply.length == 0) return;
-    return this.requestQueue.enqueue(async () => {
-      try {
-        const result = await patchAPI<CampaignSummary>(
-          `campaigns/${currentCampaign.id}`,
-          token,
-          patchUpdatesToApply
-        );
-        if (result) {
-          this.campaignDetail.update((campaign) => {
-            if (
-              campaign == undefined ||
-              campaign.id !== campaignSummaryToReview.id
-            )
-              return campaign;
-            const updatedCampaign = { ...campaign };
-            updatedCampaign.name = result.name;
-            updatedCampaign.description = result.description;
-            return updatedCampaign;
-          });
-        }
-      } catch (err: unknown) {
-        this.campaignDetail.set(currentCampaign);
-        GlobalError.showErrorMessage(
-          `Failed to update Campaign Summary ${JSON.stringify(err)}`
-        );
+    try {
+      const result = await patchAPI<CampaignSummary>(
+        `campaigns/${currentCampaign.id}`,
+        token,
+        patchUpdatesToApply
+      );
+      if (result) {
+        this.campaignDetail.update((campaign) => {
+          if (
+            campaign == undefined ||
+            campaign.id !== campaignSummaryToReview.id
+          )
+            return campaign;
+          const updatedCampaign = { ...campaign };
+          updatedCampaign.name = result.name;
+          updatedCampaign.description = result.description;
+          return updatedCampaign;
+        });
       }
-    });
+    } catch (err: unknown) {
+      this.campaignDetail.set(currentCampaign);
+      GlobalError.showErrorMessage(
+        `Failed to update Campaign Summary ${JSON.stringify(err)}`
+      );
+    }
   };
 
   public clearCampaign = () => {
@@ -140,26 +133,24 @@ class CampaignService {
     character: Character
   ): Promise<void> => {
     const token = get(this.authToken);
-    return this.requestQueue.enqueue(async () => {
-      try {
-        const result = await postAPI<Character>(
-          `campaigns/${campaignId}/characters`,
-          token,
-          character
-        );
-        if (result) {
-          this.campaignDetail.update((campaign) => {
-            if (campaign === undefined || campaign.id != campaignId)
-              return campaign;
-            const updatedCampaign = deepClone(campaign) as Campaign;
-            updatedCampaign.party.push(result);
-            return updatedCampaign;
-          });
-        }
-      } catch (err: unknown) {
-        GlobalError.showErrorMessage("Failed to update Campaign Summary");
+    try {
+      const result = await postAPI<Character>(
+        `campaigns/${campaignId}/characters`,
+        token,
+        character
+      );
+      if (result) {
+        this.campaignDetail.update((campaign) => {
+          if (campaign === undefined || campaign.id != campaignId)
+            return campaign;
+          const updatedCampaign = deepClone(campaign) as Campaign;
+          updatedCampaign.party.push(result);
+          return updatedCampaign;
+        });
       }
-    });
+    } catch (err: unknown) {
+      GlobalError.showErrorMessage("Failed to update Campaign Summary");
+    }
   };
 
   public updatePartyMember = async (
@@ -178,33 +169,30 @@ class CampaignService {
     const patchUpdatesToApply = patchCompare(currentCharacter, character);
     if (patchUpdatesToApply.length == 0) return;
 
-    return this.requestQueue.enqueue(async () => {
-      try {
-        const result = await patchAPI<Character>(
-          `campaigns/${campaignId}/characters/${character.characterContentCode}`,
-          token,
-          patchUpdatesToApply
-        );
-        if (result) {
-          this.campaignDetail.update((campaign) => {
-            if (campaign === undefined || campaign.id != campaignId)
-              return campaign;
-            const updatedCampaign = deepClone(campaign) as Campaign;
-            updatedCampaign.party.splice(
-              campaign.party.findIndex(
-                (chr) =>
-                  chr.characterContentCode === result.characterContentCode
-              ),
-              1,
-              result
-            );
-            return updatedCampaign;
-          });
-        }
-      } catch (err: unknown) {
-        GlobalError.showErrorMessage("Failed to update Campaign Summary");
+    try {
+      const result = await patchAPI<Character>(
+        `campaigns/${campaignId}/characters/${character.characterContentCode}`,
+        token,
+        patchUpdatesToApply
+      );
+      if (result) {
+        this.campaignDetail.update((campaign) => {
+          if (campaign === undefined || campaign.id != campaignId)
+            return campaign;
+          const updatedCampaign = deepClone(campaign) as Campaign;
+          updatedCampaign.party.splice(
+            campaign.party.findIndex(
+              (chr) => chr.characterContentCode === result.characterContentCode
+            ),
+            1,
+            result
+          );
+          return updatedCampaign;
+        });
       }
-    });
+    } catch (err: unknown) {
+      GlobalError.showErrorMessage("Failed to update Campaign Summary");
+    }
   };
 
   public getPartyMemberDetails = async (
@@ -212,62 +200,57 @@ class CampaignService {
     characterContentCode: string
   ): Promise<void> => {
     const token = get(this.authToken);
-    return this.requestQueue.enqueue(async () => {
-      try {
-        const result = await getAPI<Character>(
-          `campaigns/${campaignId}/characters/${characterContentCode}`,
-          token
-        );
-        if (result) {
-          this.campaignDetail.update((campaign) => {
-            if (campaign === undefined || campaign.id != campaignId)
-              return campaign;
-            const updatedCampaign = deepClone(campaign) as Campaign;
-            updatedCampaign.party.splice(
-              campaign.party.findIndex(
-                (chr) =>
-                  chr.characterContentCode === result.characterContentCode
-              ),
-              1,
-              result
-            );
-            return updatedCampaign;
-          });
-        }
-      } catch (err: unknown) {
-        GlobalError.showErrorMessage("Failed to retrieve character details");
+    try {
+      const result = await getAPI<Character>(
+        `campaigns/${campaignId}/characters/${characterContentCode}`,
+        token
+      );
+      if (result) {
+        this.campaignDetail.update((campaign) => {
+          if (campaign === undefined || campaign.id != campaignId)
+            return campaign;
+          const updatedCampaign = deepClone(campaign) as Campaign;
+          updatedCampaign.party.splice(
+            campaign.party.findIndex(
+              (chr) => chr.characterContentCode === result.characterContentCode
+            ),
+            1,
+            result
+          );
+          return updatedCampaign;
+        });
       }
-    });
+    } catch (err: unknown) {
+      GlobalError.showErrorMessage("Failed to retrieve character details");
+    }
   };
 
   //#endregion
 
   //#region Campaign Scenarios
-  public addScenario = (
+  public addScenario = async (
     campaignId: string,
     scenario: Scenario
   ): Promise<void> => {
     const token = get(this.authToken);
-    return this.requestQueue.enqueue(async () => {
-      try {
-        const result = await postAPI<Scenario>(
-          `campaigns/${campaignId}/scenarios`,
-          token,
-          scenario
-        );
-        if (result) {
-          this.campaignDetail.update((campaign) => {
-            if (campaign === undefined || campaign.id !== campaignId)
-              return campaign;
-            const updatedCampaign = deepClone(campaign) as Campaign;
-            updatedCampaign.scenarios.push(result);
-            return updatedCampaign;
-          });
-        }
-      } catch (err: unknown) {
-        GlobalError.showErrorMessage("Failed to add scenario to campaign");
+    try {
+      const result = await postAPI<Scenario>(
+        `campaigns/${campaignId}/scenarios`,
+        token,
+        scenario
+      );
+      if (result) {
+        this.campaignDetail.update((campaign) => {
+          if (campaign === undefined || campaign.id !== campaignId)
+            return campaign;
+          const updatedCampaign = deepClone(campaign) as Campaign;
+          updatedCampaign.scenarios.push(result);
+          return updatedCampaign;
+        });
       }
-    });
+    } catch (err: unknown) {
+      GlobalError.showErrorMessage("Failed to add scenario to campaign");
+    }
   };
 
   public updateScenario = async (
@@ -275,32 +258,30 @@ class CampaignService {
     scenario: Scenario
   ): Promise<void> => {
     const token = get(this.authToken);
-    return this.requestQueue.enqueue(async () => {
-      try {
-        const result = await putAPI<Scenario>(
-          `campaigns/${campaignId}/scenarios/${scenario.scenarioContentCode}`,
-          token,
-          scenario
-        );
-        if (result) {
-          this.campaignDetail.update((campaign) => {
-            if (campaign === undefined || campaign.id !== campaignId)
-              return campaign;
-            const updatedCampaign = deepClone(campaign) as Campaign;
-            updatedCampaign.scenarios.splice(
-              campaign.scenarios.findIndex(
-                (scn) => scn.scenarioContentCode === result.scenarioContentCode
-              ),
-              1,
-              result
-            );
-            return updatedCampaign;
-          });
-        }
-      } catch (err: unknown) {
-        GlobalError.showErrorMessage("Failed to update scenario for campaign");
+    try {
+      const result = await putAPI<Scenario>(
+        `campaigns/${campaignId}/scenarios/${scenario.scenarioContentCode}`,
+        token,
+        scenario
+      );
+      if (result) {
+        this.campaignDetail.update((campaign) => {
+          if (campaign === undefined || campaign.id !== campaignId)
+            return campaign;
+          const updatedCampaign = deepClone(campaign) as Campaign;
+          updatedCampaign.scenarios.splice(
+            campaign.scenarios.findIndex(
+              (scn) => scn.scenarioContentCode === result.scenarioContentCode
+            ),
+            1,
+            result
+          );
+          return updatedCampaign;
+        });
       }
-    });
+    } catch (err: unknown) {
+      GlobalError.showErrorMessage("Failed to update scenario for campaign");
+    }
   };
 
   //#endregion
