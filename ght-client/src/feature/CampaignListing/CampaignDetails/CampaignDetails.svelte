@@ -2,24 +2,21 @@
   import { Button, TextField } from "../../../common/Components";
   import type { Campaign, CampaignSummary } from "../../../models/Campaign";
   import * as GlobalError from "../../../Service/Error";
-
-  import { useCampaignService } from "../../../Service/CampaignService";
+  import useCampaignService from "../../../Service/CampaignService";
   import CampaignParty from "./CampaignParty.svelte";
   import { useLocation } from "svelte-navigator";
   import CampaignScenarios from "./CampaignScenarios.svelte";
   import { onDestroy, onMount } from "svelte";
   import { accessToken } from "@ci-lab/svelte-oidc-context";
-  import { writable } from "svelte/store";
-
-  // your script goes here
+  import { writable, type Unsubscriber } from "svelte/store";
+  import { deepClone } from "fast-json-patch";
   export let campaignId = "";
   const location = useLocation();
-  const {
-    State: campaignState,
-    getCampaign,
-    updateCampaign,
-    clearCampaign,
-  } = useCampaignService(accessToken);
+
+  const { actions: campaignActions, state: campaignState } =
+    useCampaignService();
+  const { getCampaignDetail, updateCampaign, clearCampaign } = campaignActions;
+  const { campaignDetail } = campaignState;
 
   let newGameCode = "";
   const getNewGameCode = () => {
@@ -29,18 +26,13 @@
   let campaign: Campaign | undefined;
   let campaignName = "";
   let campaignDescription = "";
-  campaignState.campaign.subscribe((campaignFromStore) => {
-    campaign = campaignFromStore;
-    campaignName = campaignFromStore?.name ?? "";
-    campaignDescription = campaignFromStore?.description ?? "";
-  });
 
   const requestCampaign = writable<boolean>(false);
   const handleGetCampaign = async (campaignId: string) => {
     if ($accessToken == undefined || $accessToken.trim() == "") return;
     campaign = undefined;
     try {
-      await getCampaign(campaignId);
+      await getCampaignDetail(campaignId);
     } catch {
       GlobalError.showErrorMessage("Failed to get campaign");
     }
@@ -75,12 +67,21 @@
   $: if ($location.search) getNewGameCode();
   $: if (campaignId !== campaign?.id) requestCampaign.set(true);
 
+  let campaignDetailUnsubscribe: Unsubscriber;
   onMount(() => {
     clearCampaign();
+    campaignDetailUnsubscribe = campaignDetail.subscribe(
+      (campaignFromStore) => {
+        campaign = deepClone(campaignFromStore) as Campaign | undefined;
+        campaignName = campaignFromStore?.name ?? "";
+        campaignDescription = campaignFromStore?.description ?? "";
+      }
+    );
     requestCampaign.set(true);
   });
 
   onDestroy(() => {
+    campaignDetailUnsubscribe();
     clearCampaign();
   });
 </script>

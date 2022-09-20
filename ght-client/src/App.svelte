@@ -4,6 +4,7 @@
   import { OidcContext } from "@ci-lab/svelte-oidc-context";
 
   import ENV_VARS from "./common/Environment";
+  import ServiceContext from "./Service/ServiceContext.svelte";
 
   const post_logout_redirect_uri = `${ENV_VARS.CLIENT.BaseURL()}logout`;
   const scope = "openid gloomhaven-tracker-user gloomhaven-tracker-api";
@@ -19,7 +20,9 @@
   {post_logout_redirect_uri}
   {scope}
 >
-  <Display />
+  <ServiceContext>
+    <Display />
+  </ServiceContext>
 </OidcContext>
 
 <!-- </Auth0Context> -->

@@ -7,6 +7,7 @@
   import CombatDetails from "../../CombatListing/CombatDetails.svelte";
 
   import {
+    accessToken,
     isAuthenticated,
     isLoading,
     login,
@@ -56,17 +57,19 @@
 <main class="w-full h-full">
   <Route path="/"><Login /></Route>
   <Route path="/login"><Login /></Route>
-  <Route path="/logout"><Logout /></Route>
-  <Route path="/campaigns"><Campaigns /></Route>
-  <Route path="/campaigns/:id" let:params>
-    <CampaignDetails campaignId={params.id} />
-  </Route>
-  <Route path="/combats"><CombatListing /></Route>
-  <Route path="/combats/:id" let:params>
-    <CombatDetails combatId={params.id} />
-  </Route>
-  <Route path="/combats/fight" let:params>
-    <ActiveCombat />
-  </Route>
   <Route path="/sampler"><Sampler /></Route>
+  <Route path="/logout"><Logout /></Route>
+  {#if $accessToken}
+    <Route path="/campaigns"><Campaigns /></Route>
+    <Route path="/campaigns/:id" let:params>
+      <CampaignDetails campaignId={params.id} />
+    </Route>
+    <Route path="/combats"><CombatListing /></Route>
+    <Route path="/combats/:id" let:params>
+      <CombatDetails combatId={params.id} />
+    </Route>
+    <Route path="/combats/fight" let:params>
+      <ActiveCombat />
+    </Route>
+  {/if}
 </main>

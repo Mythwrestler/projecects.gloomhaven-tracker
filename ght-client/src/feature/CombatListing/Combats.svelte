@@ -11,11 +11,16 @@
   import CombatLink from "./CombatLink.svelte";
   import clsx from "clsx";
   import { accessToken } from "@ci-lab/svelte-oidc-context";
-  import { useCombatService } from "../../Service/CombatService";
+  // import { useCombatService } from "../../Service/CombatService";
+  import useCombatService from "../../Service/CombatService";
   import ENV_VARS from "../../common/Environment";
 
-  const { State, getCombatListing } = useCombatService(accessToken);
-  const { combatListing } = State;
+  // const { State, getCombatListing } = useCombatService(accessToken);
+  // const { combatListing } = State;
+
+  const { actions: combatActions, state: combatState } = useCombatService();
+  const { getCombatSummaries } = combatActions;
+  const { combatSummaries } = combatState;
 
   const refreshListing = writable<boolean>(false);
   const combatListingLoaded = writable<boolean>(false);
@@ -42,7 +47,7 @@
   };
   let combatsRowData: RowData[] = [];
 
-  combatListing.subscribe((combats) => {
+  combatSummaries.subscribe((combats) => {
     combatsRowData = combats.map((combat) => {
       return {
         description: {
@@ -55,28 +60,15 @@
     if (combats.length > 0) combatListingLoaded.set(true);
   });
 
-  const handleGetCampaigns = async (
-    token: string | undefined
-  ): Promise<void> => {
-    if (token == undefined || token.trim() == "") return;
+  const handleGetCampaigns = async (): Promise<void> => {
     if ($refreshListing) {
-      await getCombatListing();
+      await getCombatSummaries();
       refreshListing.set(false);
     }
   };
 
   refreshListing.subscribe(() => {
-    let token = "";
-    if (ENV_VARS.AUTH.Enabled() && $accessToken !== null)
-      token = $accessToken ?? "";
-    void handleGetCampaigns(token);
-  });
-
-  accessToken.subscribe((tokenFromStore) => {
-    let token = "";
-    if (ENV_VARS.AUTH.Enabled() && tokenFromStore !== null)
-      token = tokenFromStore ?? "";
-    void handleGetCampaigns(token);
+    void handleGetCampaigns();
   });
 
   onMount(() => {

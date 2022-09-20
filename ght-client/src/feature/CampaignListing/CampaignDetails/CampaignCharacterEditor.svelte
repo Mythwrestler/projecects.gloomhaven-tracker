@@ -10,10 +10,7 @@
   } from "../../../common/Components";
   import type { DropDownOption } from "../../../common/Components";
   import type { Character } from "../../../models/Campaign";
-  import * as ContentModel from "../../../models/Content";
-
-  import { accessToken } from "@ci-lab/svelte-oidc-context";
-  import { useContentService } from "../../../Service/ContentService";
+  import useContentService from "../../../Service/ContentService";
 
   export let gameCode = "";
   export let showCampaignCharacterDialog = false;
@@ -24,33 +21,54 @@
   export let handleCloseDialog: () => void;
   export let handleSave: () => void;
 
-  const contentService = useContentService(accessToken);
+  const { actions: contentActions, state: contentState } = useContentService();
+  const { getCharacterDefault } = contentActions;
+  const { characterDefault } = contentState;
 
-  let characterDetails: ContentModel.Character | undefined;
-
-  const handleCharacterSelection = async (characterCode: string) => {
-    characterDetails = await contentService.GetCharacterDefault(
-      gameCode,
-      characterCode
-    );
+  const handleCharacterSelection = (characterCode: string) => {
+    getCharacterDefault(gameCode, characterCode);
   };
-  $: if (selectedCharacter?.characterContentCode)
-    void handleCharacterSelection(selectedCharacter.characterContentCode);
+
+  let characterContentCode: string;
+  let experience: number;
+  let gold: number;
+  let name: string;
+  let perkPoints: number;
+
+  // Spread Selection
+  const handleSpreadSelection = (character: Character) => {
+    console.log(JSON.stringify(character));
+    const {
+      characterContentCode: ccc,
+      experience: exp,
+      gold: gld,
+      name: nme,
+      perkPoints: pkp,
+    } = character;
+
+    characterContentCode = ccc;
+    experience = exp;
+    gold = gld;
+    name = nme;
+    perkPoints = pkp;
+  };
+
+  $: handleSpreadSelection(selectedCharacter);
+  $: if (characterContentCode) handleCharacterSelection(characterContentCode);
 
   let characterLevel = 0;
   let characterHealth = 0;
   const calculateChracterLevel = () => {
     characterLevel =
-      characterDetails?.baseStats.levels
+      $characterDefault?.baseStats.levels
         .sort((a, b) => (a.level < b.level ? 1 : -1))
-        .find((lvl) => lvl.experience <= selectedCharacter.experience)?.level ??
-      0;
+        .find((lvl) => lvl.experience <= experience)?.level ?? 0;
     characterHealth =
-      characterDetails?.baseStats.health.find((h) => h.level === characterLevel)
-        ?.health ?? 0;
+      $characterDefault?.baseStats.health.find(
+        (h) => h.level === characterLevel
+      )?.health ?? 0;
   };
-  $: if (characterDetails && selectedCharacter.experience)
-    calculateChracterLevel();
+  $: if ($characterDefault && experience) calculateChracterLevel();
 
   let availableCharacterOptions: DropDownOption[] = [];
   const determineAvailableCharacterOptions = (
@@ -60,6 +78,18 @@
     availableCharacterOptions = fullOptions.filter(
       (charOpt) => !usedOptions.includes(charOpt.value as string)
     );
+  };
+
+  const handleSaveClick = () => {
+    selectedCharacter = {
+      ...selectedCharacter,
+      characterContentCode,
+      gold,
+      name,
+      perkPoints,
+      experience,
+    };
+    handleSave();
   };
 
   $: determineAvailableCharacterOptions(
@@ -79,7 +109,7 @@
     <div class="pt-3">
       <TextField
         type="text"
-        bind:value={selectedCharacter.name}
+        bind:value={name}
         displayLabel="Character Name"
         placeholderText=""
         border
@@ -88,7 +118,7 @@
     <div class="pt-3">
       <DropDown
         label="Character Class"
-        bind:selected={selectedCharacter.characterContentCode}
+        bind:selected={characterContentCode}
         placeHolder={isNewCharacter ? "Select a Chararter Class" : ""}
         options={isNewCharacter
           ? availableCharacterOptions
@@ -96,11 +126,11 @@
         disabled={!isNewCharacter}
       />
     </div>
-    {#if characterDetails}
+    {#if $characterDefault}
       <div class="flex flex-col pt-3">
         <TextField
           type="number"
-          bind:value={selectedCharacter.experience}
+          bind:value={experience}
           placeholderText=""
           displayLabel="Experience"
           border
@@ -119,14 +149,14 @@
       <div class="flex flex-row pt-3">
         <TextField
           type="number"
-          bind:value={selectedCharacter.gold}
+          bind:value={gold}
           placeholderText=""
           displayLabel="Gold"
           border
         />
         <TextField
           type="number"
-          bind:value={selectedCharacter.perkPoints}
+          bind:value={perkPoints}
           placeholderText=""
           displayLabel="Perk Points"
           border
@@ -140,7 +170,7 @@
   </DialogBody>
   <DialogFooter slot="DialogFooter">
     <div class="bg-white dark:bg-gray-700 w-full py-3 pl-3">
-      <Button variant="filled" onClick={handleSave}
+      <Button variant="filled" onClick={handleSaveClick}
         >{isNewCharacter ? "Add" : "Update"}</Button
       >
     </div>

@@ -1,8 +1,7 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { onDestroy, onMount } from "svelte";
   import type { CampaignSummary } from "../../../models/Campaign";
   import { AddContainedIcon, Table } from "../../../common/Components";
-  import { accessToken } from "@ci-lab/svelte-oidc-context";
   import type {
     ColumnDefinition,
     RowData,
@@ -10,18 +9,20 @@
   } from "../../../common/Components";
   import CampaignLink from "./CampaignLink.svelte";
   import CampaignNewDialog from "./CampaignNewDialog.svelte";
-  import { useCampaignService } from "../../../Service/CampaignService";
-  import { useContentService } from "../../../Service/ContentService";
+  import useContentService from "../../../Service/ContentService";
+  import useCampaignService from "../../../Service/CampaignService";
+
   import clsx from "clsx";
   import type { ContentItemSummary } from "../../../models/Content";
-  import { writable } from "svelte/store";
-  import type { Writable } from "svelte/store";
-  import ENV_VARS from "../../../common/Environment";
+  import { writable, type Unsubscriber } from "svelte/store";
+  const { actions: campaignActions, state: campaignState } =
+    useCampaignService();
+  const { getCampaignSummaries } = campaignActions;
+  const { campaignSummaries } = campaignState;
 
-  const { State: campaignState, getCampaignListing } =
-    useCampaignService(accessToken);
-  const { campaignListing } = campaignState;
-  const { GetAvailableGames } = useContentService(accessToken);
+  const { actions: contentActions, state: contentState } = useContentService();
+  const { getAvailableGames } = contentActions;
+  const { availableGames } = contentState;
 
   const refreshListing = writable<boolean>(false);
 
@@ -48,20 +49,6 @@
   let campaignsRowData: RowData[] = [];
 
   let campaignListingLoaded = false;
-
-  const availableGames: Writable<ContentItemSummary[]> = writable<
-    ContentItemSummary[]
-  >([]);
-
-  availableGames.subscribe((games) => {
-    if ($campaignListing.length > 0 && games.length > 0)
-      calculateCampagignRows($campaignListing, games);
-  });
-
-  campaignListing.subscribe((campaigns) => {
-    if (campaigns.length > 0 && $availableGames.length > 0)
-      calculateCampagignRows(campaigns, $availableGames);
-  });
 
   const calculateCampagignRows = (
     campaigns: CampaignSummary[],
@@ -91,33 +78,37 @@
     newDialogOpen = false;
   };
 
-  const handleGetCampaigns = async (
-    token: string | undefined
-  ): Promise<void> => {
-    if (token == undefined || token.trim() == "") return;
+  const handleGetCampaigns = async () => {
     if ($refreshListing) {
-      await getCampaignListing();
-      availableGames.set(await GetAvailableGames());
+      await getCampaignSummaries();
+      getAvailableGames();
       refreshListing.set(false);
     }
   };
 
   refreshListing.subscribe(() => {
-    let token = "";
-    if (ENV_VARS.AUTH.Enabled() && $accessToken !== null)
-      token = $accessToken ?? "";
-    void handleGetCampaigns(token);
+    void handleGetCampaigns();
   });
 
-  accessToken.subscribe((tokenFromStore) => {
-    let token = "";
-    if (ENV_VARS.AUTH.Enabled() && tokenFromStore !== null)
-      token = tokenFromStore ?? "";
-    void handleGetCampaigns(token);
-  });
-
+  let availableGamesUnsubscribe: Unsubscriber;
+  let campaignListingUnsubscribe: Unsubscriber;
   onMount(() => {
+    availableGamesUnsubscribe = availableGames.subscribe((games) => {
+      if ($campaignSummaries.length > 0 && games.length > 0)
+        calculateCampagignRows($campaignSummaries, games);
+    });
+
+    campaignListingUnsubscribe = campaignSummaries.subscribe((campaigns) => {
+      if (campaigns.length > 0 && $availableGames.length > 0)
+        calculateCampagignRows(campaigns, $availableGames);
+    });
+
     refreshListing.set(true);
+  });
+
+  onDestroy(() => {
+    availableGamesUnsubscribe();
+    campaignListingUnsubscribe();
   });
 </script>
 

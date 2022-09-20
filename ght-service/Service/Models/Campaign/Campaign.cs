@@ -47,10 +47,10 @@ public class CampaignSummary
     public Guid Id { get; }
 
     [JsonPropertyName("name")]
-    public string Name { get; }
+    public string Name { get; set; }
 
     [JsonPropertyName("description")]
-    public string Description { get; }
+    public string Description { get; set; }
 
     [JsonPropertyName("game")]
     public string GameContentCode { get; }

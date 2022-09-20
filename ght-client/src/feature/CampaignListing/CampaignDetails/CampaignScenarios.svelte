@@ -14,27 +14,30 @@
     DialogFooter,
     Button,
   } from "../../../common/Components";
+
   import type { RadioOption, DropDownOption } from "../../../common/Components";
   import type { Campaign, Scenario } from "../../../models/Campaign";
-  import type {
-    ContentItemSummary,
-    Scenario as ScenarioContent,
-    ScenarioSummary,
-  } from "../../../models/Content";
-  import { useContentService } from "../../../Service/ContentService";
-  import { useCampaignService } from "../../../Service/CampaignService";
-  import { accessToken } from "@ci-lab/svelte-oidc-context";
-  import { useCombatService } from "../../../Service/CombatService";
+  import type { ScenarioSummary } from "../../../models/Content";
+
+  import useContentService from "../../../Service/ContentService";
+  import useCampaignService from "../../../Service/CampaignService";
+  import useCombatService from "../../../Service/CombatService";
+
   import { useNavigate } from "svelte-navigator";
-  const { addScenario, updateScenario } = useCampaignService(accessToken);
-  const { createNewCombat, State: combatState } = useCombatService(accessToken);
-  const { combat } = combatState;
   const navigate = useNavigate();
 
   export let campaign: Campaign | undefined;
 
-  const { GetScenariosForGame, GetScenarioDefault } =
-    useContentService(accessToken);
+  const { actions: combatActions, state: combatState } = useCombatService();
+  const { createCombat } = combatActions;
+  const { combatDetail } = combatState;
+
+  const { actions: contentActions, state: contentState } = useContentService();
+  const { getScenarioSummaries, getScenarioDefault } = contentActions;
+  const { scenarioSummaries, scenarioDefault } = contentState;
+
+  const { actions: campaignActions } = useCampaignService();
+  const { addScenario, updateScenario } = campaignActions;
 
   const scenarioStatusOptions: RadioOption[] = [
     { label: "Completed", value: "completed" },
@@ -44,22 +47,19 @@
 
   let campaignScenarios: Scenario[] = [];
 
-  const scenarioListing = writable<ScenarioSummary[]>([]);
-  const scenarioListingProcessed = writable<boolean>(false);
-  const handleGetScenarios = async (gameCode: string) => {
-    if ($scenarioListing.length === 0) {
-      const listing = await GetScenariosForGame(gameCode);
-      scenarioListing.set(listing);
-    }
+  const scenarioSummaryProcessed = writable<boolean>(false);
+  const handleGetScenarios = (gameCode: string) => {
+    const summaries = $scenarioSummaries;
+    if (!summaries || summaries.length === 0) getScenarioSummaries(gameCode);
   };
 
   let fullScenarioListOptions: DropDownOption[] = [];
   let unusedScenarioOptions: DropDownOption[] = [];
-  const handleProcessScenarios = () => {
+  const handleProcessScenarioSummaries = () => {
     if (campaign) {
       campaignScenarios = (campaign.scenarios ?? [])
         .map((cs) => {
-          let scenarioForLoad = $scenarioListing.find(
+          let scenarioForLoad = $scenarioSummaries.find(
             (ss) => ss.contentCode === cs.scenarioContentCode
           ) as ScenarioSummary;
           return {
@@ -75,7 +75,7 @@
         .sort((a: Scenario, b: Scenario) =>
           a.scenarioNumber > b.scenarioNumber ? 1 : -1
         );
-      fullScenarioListOptions = $scenarioListing.map((scenario) => {
+      fullScenarioListOptions = $scenarioSummaries.map((scenario) => {
         return { label: scenario.name, value: scenario.contentCode };
       });
       unusedScenarioOptions = fullScenarioListOptions.filter(
@@ -84,7 +84,7 @@
             (s) => s.scenarioContentCode === scenario.value
           ) === -1
       );
-      scenarioListingProcessed.set(true);
+      scenarioSummaryProcessed.set(true);
     }
   };
 
@@ -92,7 +92,6 @@
   let existingScenario = false;
   let selectedScenario = "";
   let selectedScenarioStatus = "";
-  let selectedScenarioDetail: ScenarioContent | undefined = undefined;
   const handleAddNewScenarioClick = () => {
     existingScenario = false;
     selectedScenario = "";
@@ -128,17 +127,15 @@
     const scenarioToSave: Scenario = {
       scenarioContentCode: selectedScenario,
       description:
-        ($scenarioListing as ContentItemSummary[]).find(
-          (li) => li.contentCode === selectedScenario
-        )?.description ?? "",
+        $scenarioSummaries.find((li) => li.contentCode === selectedScenario)
+          ?.description ?? "",
       name:
-        ($scenarioListing as ContentItemSummary[]).find(
-          (li) => li.contentCode === selectedScenario
-        )?.name ?? "",
+        $scenarioSummaries.find((li) => li.contentCode === selectedScenario)
+          ?.name ?? "",
       isClosed: selectedScenarioStatus === "closed",
       isCompleted: selectedScenarioStatus === "completed",
       scenarioNumber:
-        $scenarioListing.find((ss) => ss.contentCode === selectedScenario)
+        $scenarioSummaries.find((ss) => ss.contentCode === selectedScenario)
           ?.scenarioNumber ?? 0,
     };
 
@@ -156,7 +153,7 @@
   };
   const scenarioName = (scenario: Scenario): string => {
     return (
-      ($scenarioListing as ContentItemSummary[]).find(
+      $scenarioSummaries.find(
         (item) => item.contentCode === scenario.scenarioContentCode
       )?.name ?? scenario.scenarioContentCode
     );
@@ -171,25 +168,19 @@
     return true;
   };
 
-  const handleScenarioSelected = async (contentCode: string): Promise<void> => {
-    if (contentCode != "") {
-      selectedScenarioDetail = await GetScenarioDefault(
-        campaign?.game ?? "",
-        contentCode
-      );
-    } else {
-      selectedScenarioDetail = undefined;
-    }
+  const handleScenarioSelected = (contentCode: string): void => {
+    if (contentCode != "")
+      getScenarioDefault(campaign?.game ?? "", contentCode);
   };
 
   let redirectOnCombatCreate = false;
   const handleCreateCombat = async () => {
     if (campaign && selectedScenario && selectedScenario.trim() != "") {
       redirectOnCombatCreate = true;
-      await createNewCombat(campaign?.id, selectedScenario);
+      await createCombat(campaign?.id, selectedScenario);
     }
   };
-  combat.subscribe((combat) => {
+  combatDetail.subscribe((combat) => {
     if (combat && redirectOnCombatCreate) navigate(`/combats/${combat.id}`);
   });
 
@@ -198,8 +189,8 @@
   $: disableSave = shouldDisableSave(selectedScenario, selectedScenarioStatus);
 
   $: if (campaign?.game) void handleGetScenarios(campaign.game);
-  $: if ($scenarioListing.length !== 0 && campaign?.scenarios)
-    handleProcessScenarios();
+  $: if ($scenarioSummaries.length !== 0 && campaign?.scenarios)
+    handleProcessScenarioSummaries();
 </script>
 
 {#if campaign}
@@ -210,7 +201,7 @@
       Scenarios
     </div>
     <div class="border-b-2 border-solid" />
-    {#if $scenarioListingProcessed}
+    {#if $scenarioSummaryProcessed}
       <div class="absolute top-1 right-1">
         <button
           aria-label="Add New Scenario"
@@ -281,7 +272,7 @@
       bind:value={selectedScenarioStatus}
       options={scenarioStatusOptions}
     />
-    {#if selectedScenarioDetail}
+    {#if $scenarioDefault}
       <div
         class="relative mt-2 px-3 py-1 items-center max-w-md mx-auto bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-md backdrop-blur-sm"
       >
@@ -290,7 +281,7 @@
         </div>
         <div class="border-b-2 border-solid" />
         <ul>
-          {#each selectedScenarioDetail?.monsters ?? [] as monster}
+          {#each $scenarioDefault?.monsters ?? [] as monster}
             <li>
               <div class="flex flex-row">
                 <div class="mx-auto flex flex-row">{monster.name}</div>
