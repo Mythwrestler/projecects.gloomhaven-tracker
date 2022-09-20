@@ -40,7 +40,8 @@ export class ServiceActions extends ServiceBase {
       this.requestCombatDisconnect();
       await this.sendMessage("LeaveCombat", combatId);
       this.requestCombatDisconnectSuccess();
-    } catch {
+    } catch (err: unknown) {
+      console.log(JSON.stringify(err));
       this.requestCombatDisconnectFailure();
     }
   };
