@@ -1,85 +1,24 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import { useLocation } from "svelte-navigator";
-  import { onDestroy, onMount } from "svelte";
-
-  import { accessToken } from "@ci-lab/svelte-oidc-context";
-  import { useCombatHubService } from "../../Service/CombatHubService";
-  import useCombatService from "../../Service/CombatService";
-
-  const {
-    State: combatHubState,
-    connectToHub,
-    disconnectFromHub,
-    joinCombat,
-    leaveCombat,
-  } = useCombatHubService(accessToken);
-  const { combat: combatConnectionState, combatHub: hubConnectionState } =
-    combatHubState;
-  const { connecting: hubConnecting, connected: hubConnected } =
-    hubConnectionState;
-  const {
-    connected: combatConnected,
-    connecting: combatConnecting,
-    combatId: connectedCombatId,
-    connectedUsers: connectedCombatUsers,
-  } = combatConnectionState;
-  // const { State: combatState } = useCombatService(accessToken);
+  import ActiveCombatContext from "./ActiveCombatContext/ActiveCombatContext.svelte";
 
   const location = useLocation();
   const searchParams = new URLSearchParams($location.search);
-  const combatIdToLoad: string | null = searchParams.get("activeCombat");
+  let combatIdToLoad: string | null = null;
 
-  const handleCombatConnect = async (
-    hubConnected: boolean,
-    hubConnecting: boolean,
-    combatConnected: boolean,
-    combatConnecting: boolean
-  ) => {
-    console.log(
-      JSON.stringify({
-        hubConnected: hubConnected,
-        hubConnecting: hubConnecting,
-        combatConnected: combatConnected,
-        combatConnecting: combatConnecting,
-      })
-    );
-    if (!hubConnected && !hubConnecting) await connectToHub();
-    if (
-      hubConnected &&
-      !combatConnected &&
-      !combatConnecting &&
-      combatIdToLoad !== null
-    )
-      await joinCombat(combatIdToLoad);
-  };
-
-  connectedCombatUsers.subscribe((users) => {
-    console.log(`User Store was updated: ${JSON.stringify(users)}`);
-  });
-
-  $: void handleCombatConnect(
-    $hubConnected,
-    $hubConnecting,
-    $combatConnected,
-    $combatConnecting
-  );
-
-  onDestroy(async () => {
-    await leaveCombat();
-    await disconnectFromHub();
+  onMount(() => {
+    try {
+      combatIdToLoad = searchParams.get("activeCombat");
+      console.log(combatIdToLoad);
+    } catch (err: unknown) {
+      console.log(JSON.stringify(err));
+    }
   });
 </script>
 
-<h2>Active Combat</h2>
-<div>
-  <pre>Hub Connected: {$hubConnected}</pre>
-  <pre>Hub Connecting: {$hubConnecting}</pre>
-  <pre>Combat Connected: {$combatConnected}</pre>
-  <pre>Combat Connecting: {$combatConnecting}</pre>
-</div>
-<div>Hub Connection Status:</div>
-<div>Combat Id: {$connectedCombatId}</div>
-<div>Connected Users</div>
-{#each $connectedCombatUsers as user}
-  <div>username: {user.userName} userId: {user.userId}</div>
-{/each}
+{#if combatIdToLoad !== null}
+  <ActiveCombatContext combatId={combatIdToLoad} />
+{:else}
+  <span>Capturing Combat Id</span>
+{/if}

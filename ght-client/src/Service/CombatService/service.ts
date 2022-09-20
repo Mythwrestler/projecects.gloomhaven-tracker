@@ -6,14 +6,11 @@ import * as GlobalError from "../Error";
 import type { Combat, CombatSummary } from "../../models/Combat";
 import { useCombatServiceActions, type CombatActions } from "./actions";
 import { getCombatState, useCombatServiceState } from "./state";
-import { AsyncQueue } from "@ci-lab/async-queue";
 
 class CombatService {
   private accessToken: Readable<string | undefined>;
   private combatSummaries: Writable<CombatSummary[]>;
   private combatDetail: Writable<Combat | undefined>;
-
-  private requestQueue: AsyncQueue<void> = new AsyncQueue<void>();
 
   constructor(accessToken: Readable<string | undefined>, stateKey: string) {
     const { combatSummaries, combatDetail } = getCombatState(stateKey);
