@@ -26,6 +26,10 @@
     }
     console.log(JSON.stringify(singalRHubRequest));
   };
+
+  const handleHubClose = () => {
+    void actionsService.actions.leaveCombat();
+  };
 </script>
 
 {#if $accessToken && listenerService}
@@ -35,6 +39,7 @@
     actionKey={ENV_VARS.CONTEXT.ActiveCombatHubService.HubActions}
     stateKey={ENV_VARS.CONTEXT.ActiveCombatHubService.HubState}
     onConnected={handleHubConnected}
+    beforeDestroy={handleHubClose}
     listeners={listenerService.listeners}
   >
     {#if $hubConnected && actionsService}
