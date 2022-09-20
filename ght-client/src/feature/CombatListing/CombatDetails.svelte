@@ -2,25 +2,15 @@
   import { onDestroy, onMount } from "svelte";
   import { writable, type Unsubscriber } from "svelte/store";
   import { accessToken } from "@ci-lab/svelte-oidc-context";
-  // import { useCombatService } from "../../Service/CombatService";
-  import { useCombatHubService } from "../../Service/CombatHubService";
   import * as GlobalError from "../../Service/Error";
   import type { Combat } from "../../models/Combat";
   import { Button } from "../../common/Components";
   import { useNavigate } from "svelte-navigator";
   import useCombatService from "../../Service/CombatService";
 
-  // const {
-  //   getCombat,
-  //   clearCombat,
-  //   State: combatState,
-  // } = useCombatService(accessToken);
-
   const { actions: combatActions, state: combatState } = useCombatService();
   const { getCombatDetail, clearCombatDetail } = combatActions;
   const { combatDetail } = combatState;
-
-  const { State: hubState } = useCombatHubService(accessToken);
 
   const navigate = useNavigate();
 
