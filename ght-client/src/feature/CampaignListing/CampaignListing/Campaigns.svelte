@@ -148,24 +148,17 @@
             {/each}
           </List>
         </CardContent>
-        <Actions>
-          <ActionButtons>
-            <Button
-              variant="raised"
-              color="secondary"
-              on:click={handleOpenNewDialog}
-            >
-              New
-            </Button>
-          </ActionButtons>
-        </Actions>
       </Card>
+      <div class="mt-3">
+        <Button
+          variant="raised"
+          color="secondary"
+          on:click={handleOpenNewDialog}
+        >
+          New
+        </Button>
+      </div>
     {/if}
   </PaperContent>
 </GhtPanel>
-{#if newDialogOpen}
-  <CampaignNewDialog {newDialogOpen} handleCloseDialog={handleCloseNewDialog} />
-{/if}
-
-<style lang="scss">
-</style>
+<CampaignNewDialog bind:open={newDialogOpen} />
