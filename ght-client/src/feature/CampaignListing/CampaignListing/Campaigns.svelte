@@ -15,10 +15,21 @@
   import clsx from "clsx";
   import type { ContentItemSummary } from "../../../models/Content";
   import { writable, type Unsubscriber } from "svelte/store";
+  import GhtPanel from "../../../common/Components/GHTPanel/GHTPanel.svelte";
+  import { Title, Content as PaperContent } from "@smui/paper";
+  import List, { Item, Text, PrimaryText, SecondaryText } from "@smui/list";
+  import Card, {
+    Content as CardContent,
+    Actions,
+    ActionButtons,
+  } from "@smui/card";
+  import Button, { Label as ButtonLabel } from "@smui/button";
+  import { useNavigate } from "svelte-navigator";
   const { actions: campaignActions, state: campaignState } =
     useCampaignService();
   const { getCampaignSummaries } = campaignActions;
   const { campaignSummaries } = campaignState;
+  const navigate = useNavigate();
 
   const { actions: contentActions, state: contentState } = useContentService();
   const { getAvailableGames } = contentActions;
@@ -49,6 +60,7 @@
   let campaignsRowData: RowData[] = [];
 
   let campaignListingLoaded = false;
+  let selectedCampaign = "";
 
   const calculateCampagignRows = (
     campaigns: CampaignSummary[],
@@ -112,29 +124,48 @@
   });
 </script>
 
-<section class="text-center lg:text-left lg:pl-3 ">
-  <div
-    class={clsx(
-      "relative mt-2 px-3 py-1 items-center max-w-md mx-auto rounded-md backdrop-blur-sm",
-      "bg-gray-50 dark:bg-gray-700"
-    )}
-  >
-    <div aria-label="Current Campaigns" class="text-center text-xl">
-      Campaigns
-    </div>
-    <div class="absolute top-1 right-1">
-      <button aria-label="Add New Campaign" on:click={handleOpenNewDialog}>
-        <AddContainedIcon />
-      </button>
-    </div>
+<GhtPanel color="ght-panel">
+  <Title aria-label="Current Campaigns" class="text-center text-xl">
+    Campaigns
+  </Title>
+  <PaperContent>
     {#if campaignListingLoaded}
-      <Table {config} rowData={campaignsRowData} />
+      <Card variant="outlined">
+        <CardContent>
+          <List twoLine singleSelection>
+            {#each campaignsRowData as campaignData}
+              <Item
+                on:SMUI:action={() => {
+                  console.log(campaignData.description.path);
+                  navigate(campaignData.description.path);
+                }}
+              >
+                <Text>
+                  <PrimaryText>{campaignData?.description?.label}</PrimaryText>
+                  <SecondaryText>{campaignData?.game}</SecondaryText>
+                </Text>
+              </Item>
+            {/each}
+          </List>
+        </CardContent>
+        <Actions>
+          <ActionButtons>
+            <Button
+              variant="raised"
+              color="secondary"
+              on:click={handleOpenNewDialog}
+            >
+              New
+            </Button>
+          </ActionButtons>
+        </Actions>
+      </Card>
     {/if}
-  </div>
-  {#if newDialogOpen}
-    <CampaignNewDialog
-      {newDialogOpen}
-      handleCloseDialog={handleCloseNewDialog}
-    />
-  {/if}
-</section>
+  </PaperContent>
+</GhtPanel>
+{#if newDialogOpen}
+  <CampaignNewDialog {newDialogOpen} handleCloseDialog={handleCloseNewDialog} />
+{/if}
+
+<style lang="scss">
+</style>

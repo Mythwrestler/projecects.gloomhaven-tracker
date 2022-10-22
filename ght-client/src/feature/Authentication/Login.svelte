@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { UserManager, type Profile } from "oidc-client";
+  import { Title, Content } from "@smui/paper";
+  import { UserManager } from "oidc-client";
 
   import { getContext } from "svelte";
   import Button from "../../common/Components/Button/Button.svelte";
@@ -14,6 +15,8 @@
     login,
     OIDC_CONTEXT_CLIENT_PROMISE,
   } from "@ci-lab/svelte-oidc-context";
+  import GhtPanel from "../../common/Components/GHTPanel/GHTPanel.svelte";
+  import { stubString, uniqueId } from "lodash";
 
   const oidcPromise = getContext<Promise<UserManager>>(
     OIDC_CONTEXT_CLIENT_PROMISE
@@ -26,39 +29,43 @@
   };
 
   let userFullName: string | undefined = undefined;
+  let email: string | undefined = undefined;
   userInfo.subscribe((userFromStore) => {
-    userFullName = userFromStore?.name;
+    email = userFromStore?.email;
   });
+
+  const shortString = (text: string | undefined): string => {
+    if (text === undefined) return "";
+    if (text.length < 15) return text;
+    return `${text.substring(0, 15)}...`;
+  };
 </script>
 
-<div
-  class="relative mt-2 px-3 py-1 items-center max-w-md mx-auto bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-md backdrop-blur-sm"
->
-  <div aria-label="Available Scenarios" class="text-center text-xl">
-    {$isAuthenticated
-      ? `Welcom ${userFullName ?? "Player"}!`
-      : "Login to Play!"}
-  </div>
-  <div class="border-b-2 border-solid" />
-  {#if !$isAuthenticated}
-    <div aria-label="Available Scenarios" class="text-center my-5">
-      <Button
-        variant="outlined"
-        color="gray"
-        disabled={$isAuthenticated}
-        onClick={handleLoginClick}
-      >
-        Login with Keycloack
-      </Button>
+<GhtPanel color="ght-panel">
+  <Title class="w-auto text-center">
+    {$isAuthenticated ? `Welcome "Player"!` : "Login to Play!"}
+  </Title>
+  <Content
+    >{#if !$isAuthenticated}
+      <div aria-label="Available Scenarios" class="text-center my-5">
+        <Button
+          variant="outlined"
+          color="gray"
+          disabled={$isAuthenticated}
+          onClick={handleLoginClick}
+        >
+          Login with Keycloack
+        </Button>
+      </div>
+      <div class="border-b-2 border-solid" />
+    {/if}
+    <div>
+      <pre>isLoading: {$isLoading}</pre>
+      <pre>isAuthenticated: {$isAuthenticated}</pre>
+      <pre>accessToken: {shortString($accessToken)}</pre>
+      <pre>idToken: {shortString($idToken)}</pre>
+      <pre>userInfo.email: {shortString($userInfo?.email)}</pre>
+      <pre>authError: {$authError}</pre>
     </div>
-    <div class="border-b-2 border-solid" />
-  {/if}
-  <div>
-    <pre>isLoading: {$isLoading}</pre>
-    <pre>isAuthenticated: {$isAuthenticated}</pre>
-    <pre>accessToken: {`${$accessToken?.substring(1, 30) ?? ""}...`}</pre>
-    <pre>idToken: {`${$idToken?.substring(1, 30) ?? ""}...`}</pre>
-    <pre>userInfo: {JSON.stringify($userInfo, null, 2)}</pre>
-    <pre>authError: {$authError}</pre>
-  </div>
-</div>
+  </Content>
+</GhtPanel>
