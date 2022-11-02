@@ -11,4 +11,5 @@ export interface Scenario extends ContentItemSummary {
   scenarioBook: number[];
   supplementalBook: number[];
   monsters?: ContentItemSummary[];
+  objectives?: ContentItemSummary[];
 }

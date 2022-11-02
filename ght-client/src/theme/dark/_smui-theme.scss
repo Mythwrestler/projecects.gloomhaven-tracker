@@ -4,8 +4,8 @@
 
 // Svelte Colors! (Dark Theme)
 @use "@material/theme/index" as theme with (
-  $primary: #b0ad94,
-  $secondary: #fcf6c7,
+  $primary: #cfc7be,
+  $secondary: #a7bc8c,
   $surface: #464a4f,
   $background: #000,
   $error: color-palette.$red-700
@@ -35,7 +35,6 @@ a:visited {
   theme.accessible-ink-color(theme.$grey-800)
 );
 
-// #region Typography
 html {
   @include typography.typography("body1");
 }

@@ -1,6 +1,14 @@
 <script lang="ts">
   import { writable, type Unsubscriber } from "svelte/store";
 
+  import Card, {
+    Content as CardContent,
+    Actions as CardActions,
+    ActionIcons as CardActionIcons,
+  } from "@smui/card";
+  import List, { Item, Text, PrimaryText, SecondaryText } from "@smui/list";
+  import IconButton, { Icon } from "@smui/icon-button";
+
   import { AddContainedIcon } from "../../../common/Components";
   import type { DropDownOption } from "../../../common/Components";
 
@@ -10,6 +18,7 @@
   import useCampaignService from "../../../Service/CampaignService";
   import { deepClone } from "fast-json-patch";
   import { onDestroy, onMount } from "svelte";
+  //import Item from "@smui/list/src/Item.svelte";
   export let campaign: Campaign;
 
   const { actions: contentActions, state: contentState } = useContentService();
@@ -122,7 +131,42 @@
   });
 </script>
 
-<div
+<Card variant="outlined">
+  <CardContent class="max-h-56">
+    <div class="mdc-typography--headline5 text-center">Party</div>
+    <hr class="my-1" />
+    <List twoLine singleSelection>
+      {#each campaign.party as character}
+        <Item>
+          <Text>
+            <PrimaryText>{character.name}</PrimaryText>
+            <SecondaryText>
+              {`${
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+                getContentSummary(character.characterContentCode)?.name ?? ""
+              }`}
+            </SecondaryText>
+          </Text>
+        </Item>
+      {/each}
+    </List>
+  </CardContent>
+  <CardActions>
+    {#if $characterListingProcessed}
+      <CardActionIcons>
+        <IconButton
+          class="material-icons"
+          aria-label="Add Party Member"
+          title="Add Party Member"
+        >
+          add_circle
+        </IconButton>
+      </CardActionIcons>
+    {/if}
+  </CardActions>
+</Card>
+
+<!-- <div
   class="relative mt-2 px-3 py-1 items-center max-w-md mx-auto bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-md backdrop-blur-sm"
 >
   <div aria-label="Party Members" class="text-center text-xl">Party</div>
@@ -164,7 +208,7 @@
   {:else}
     <div class="mx-auto">Loading...</div>
   {/if}
-</div>
+</div> -->
 {#if showPlayerDialog}
   <CampaignCharacterEditor
     gameCode={campaign.game ?? ""}

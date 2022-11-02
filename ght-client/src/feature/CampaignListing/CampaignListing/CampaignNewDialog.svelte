@@ -96,6 +96,15 @@
   <DialogActions>
     <Button
       variant="raised"
+      color="secondary"
+      on:click={() => {
+        open = closed;
+      }}
+    >
+      Close
+    </Button>
+    <Button
+      variant="raised"
       color="primary"
       disabled={newCampaign.game === "" || newCampaign.name === ""}
       on:click={handleNewCampaign}

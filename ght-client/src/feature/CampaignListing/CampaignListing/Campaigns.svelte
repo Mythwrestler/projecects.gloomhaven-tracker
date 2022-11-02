@@ -136,7 +136,6 @@
             {#each campaignsRowData as campaignData}
               <Item
                 on:SMUI:action={() => {
-                  console.log(campaignData.description.path);
                   navigate(campaignData.description.path);
                 }}
               >
@@ -150,11 +149,7 @@
         </CardContent>
       </Card>
       <div class="mt-3">
-        <Button
-          variant="raised"
-          color="secondary"
-          on:click={handleOpenNewDialog}
-        >
+        <Button variant="raised" color="primary" on:click={handleOpenNewDialog}>
           New
         </Button>
       </div>

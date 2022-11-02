@@ -2,50 +2,70 @@
   import { writable } from "svelte/store";
 
   /** eslint-disable @typescript-eslint/restrict-template-expressions */
-  import {
-    CheckMarkIcon,
-    CloseIconOpen,
-    AddContainedIcon,
-    RadioGroup,
-    DropDown,
-    Dialog,
-    DialogBody,
-    DialogHeader,
-    DialogFooter,
-    Button,
-  } from "../../../common/Components";
+  // import {
+  //   CheckMarkIcon,
+  //   CloseIconOpen,
+  //   AddContainedIcon,
+  //   RadioGroup,
+  //   DropDown,
+  //   Dialog,
+  //   DialogBody,
+  //   DialogHeader,
+  //   DialogFooter,
+  //   Button,
+  // } from "../../../common/Components";
 
-  import type { RadioOption, DropDownOption } from "../../../common/Components";
-  import type { Campaign, Scenario } from "../../../models/Campaign";
+  // import {
+  //   CheckMarkIcon,
+  //   CloseIconOpen,
+  //   AddContainedIcon,
+  //   Dialog,
+  //   DialogBody,
+  //   DialogFooter,
+  //   DialogHeader,
+  //   Button,
+  //   RadioGroup,
+  //   DropDown,
+  //   type RadioOption,
+  //   type DropDownOption,
+  // } from "../../../common/Components";
+
+  import Card, {
+    Content as CardContent,
+    Actions as CardActions,
+    ActionIcons as CardActionIcons,
+  } from "@smui/card";
+  import List, { Item, Text, Graphic } from "@smui/list";
+  import IconButton from "@smui/icon-button";
+
+  // import type { RadioOption, DropDownOption } from "../../../common/Components";
+  import type {
+    Campaign,
+    Scenario as CampaignScenario,
+  } from "../../../models/Campaign";
   import type { ScenarioSummary } from "../../../models/Content";
 
   import useContentService from "../../../Service/ContentService";
-  import useCampaignService from "../../../Service/CampaignService";
-  import useCombatService from "../../../Service/CombatService";
 
-  import { useNavigate } from "svelte-navigator";
-  const navigate = useNavigate();
+  import CampaignScenarioEditor from "./CampaignScenarioEditor.svelte";
+  //const navigate = useNavigate();
 
   export let campaign: Campaign | undefined;
 
-  const { actions: combatActions, state: combatState } = useCombatService();
-  const { createCombat } = combatActions;
-  const { combatDetail } = combatState;
-
   const { actions: contentActions, state: contentState } = useContentService();
-  const { getScenarioSummaries, getScenarioDefault } = contentActions;
-  const { scenarioSummaries, scenarioDefault } = contentState;
+  const { getScenarioSummaries } = contentActions;
+  const { scenarioSummaries } = contentState;
 
-  const { actions: campaignActions } = useCampaignService();
-  const { addScenario, updateScenario } = campaignActions;
+  // const { actions: campaignActions } = useCampaignService();
+  // const { addScenario, updateScenario } = campaignActions;
 
-  const scenarioStatusOptions: RadioOption[] = [
-    { label: "Completed", value: "completed" },
-    { label: "Closed", value: "closed" },
-    { label: "Available", value: "available" },
-  ];
+  // const scenarioStatusOptions: RadioOption[] = [
+  //   { label: "Completed", value: "completed" },
+  //   { label: "Closed", value: "closed" },
+  //   { label: "Available", value: "available" },
+  // ];
 
-  let campaignScenarios: Scenario[] = [];
+  let campaignScenarios: CampaignScenario[] = [];
 
   const scenarioSummaryProcessed = writable<boolean>(false);
   const handleGetScenarios = (gameCode: string) => {
@@ -53,8 +73,8 @@
     if (!summaries || summaries.length === 0) getScenarioSummaries(gameCode);
   };
 
-  let fullScenarioListOptions: DropDownOption[] = [];
-  let unusedScenarioOptions: DropDownOption[] = [];
+  // let fullScenarioListOptions: DropDownOption[] = [];
+  // let unusedScenarioOptions: DropDownOption[] = [];
   const handleProcessScenarioSummaries = () => {
     if (campaign) {
       campaignScenarios = (campaign.scenarios ?? [])
@@ -72,121 +92,141 @@
           };
         })
         .filter((cs) => cs !== undefined)
-        .sort((a: Scenario, b: Scenario) =>
+        .sort((a: CampaignScenario, b: CampaignScenario) =>
           a.scenarioNumber > b.scenarioNumber ? 1 : -1
         );
-      fullScenarioListOptions = $scenarioSummaries.map((scenario) => {
-        return { label: scenario.name, value: scenario.contentCode };
-      });
-      unusedScenarioOptions = fullScenarioListOptions.filter(
-        (scenario) =>
-          campaign?.scenarios.findIndex(
-            (s) => s.scenarioContentCode === scenario.value
-          ) === -1
-      );
+      // fullScenarioListOptions = $scenarioSummaries.map((scenario) => {
+      //   return { label: scenario.name, value: scenario.contentCode };
+      // });
+      // unusedScenarioOptions = fullScenarioListOptions.filter(
+      //   (scenario) =>
+      //     campaign?.scenarios.findIndex(
+      //       (s) => s.scenarioContentCode === scenario.value
+      //     ) === -1
+      // );
       scenarioSummaryProcessed.set(true);
     }
   };
 
-  let displayNewScenarioSelection = false;
-  let existingScenario = false;
-  let selectedScenario = "";
-  let selectedScenarioStatus = "";
-  const handleAddNewScenarioClick = () => {
-    existingScenario = false;
-    selectedScenario = "";
-    selectedScenarioStatus = "";
-    displayNewScenarioSelection = true;
-  };
-  const handleScenarioClick = (contentCode: string) => {
-    existingScenario = true;
-    const scenario = campaign?.scenarios.find(
-      (s) => s.scenarioContentCode === contentCode
-    );
-    selectedScenario = contentCode;
-    if (scenario?.isCompleted) {
-      selectedScenarioStatus = "completed";
-    } else if (scenario?.isClosed) {
-      selectedScenarioStatus = "closed";
-    } else if (scenario) {
-      selectedScenarioStatus = "available";
-    } else {
-      selectedScenarioStatus = "";
-    }
-    displayNewScenarioSelection = true;
-  };
-  const handleCloseScenarioEdit = () => {
-    existingScenario = false;
-    selectedScenario = "";
-    selectedScenarioStatus = "";
-    displayNewScenarioSelection = false;
-  };
-  const handleSaveScenario = async () => {
-    if (!campaign) return;
+  // let displayNewScenarioSelection = false;
+  // let existingScenario = false;
+  // let selectedScenario = "";
+  // let selectedScenarioStatus = "";
+  // const handleAddNewScenarioClick = () => {
+  //   existingScenario = false;
+  //   selectedScenario = "";
+  //   selectedScenarioStatus = "";
+  //   displayNewScenarioSelection = true;
+  // };
+  // const handleScenarioClick = (contentCode: string) => {
+  //   existingScenario = true;
+  //   const scenario = campaign?.scenarios.find(
+  //     (s) => s.scenarioContentCode === contentCode
+  //   );
+  //   selectedScenario = contentCode;
+  //   if (scenario?.isCompleted) {
+  //     selectedScenarioStatus = "completed";
+  //   } else if (scenario?.isClosed) {
+  //     selectedScenarioStatus = "closed";
+  //   } else if (scenario) {
+  //     selectedScenarioStatus = "available";
+  //   } else {
+  //     selectedScenarioStatus = "";
+  //   }
+  //   displayNewScenarioSelection = true;
+  // };
+  // const handleCloseScenarioEdit = () => {
+  //   existingScenario = false;
+  //   selectedScenario = "";
+  //   selectedScenarioStatus = "";
+  //   displayNewScenarioSelection = false;
+  // };
+  // const handleSaveScenario = async () => {
+  //   if (!campaign) return;
 
-    const scenarioToSave: Scenario = {
-      scenarioContentCode: selectedScenario,
-      description:
-        $scenarioSummaries.find((li) => li.contentCode === selectedScenario)
-          ?.description ?? "",
-      name:
-        $scenarioSummaries.find((li) => li.contentCode === selectedScenario)
-          ?.name ?? "",
-      isClosed: selectedScenarioStatus === "closed",
-      isCompleted: selectedScenarioStatus === "completed",
-      scenarioNumber:
-        $scenarioSummaries.find((ss) => ss.contentCode === selectedScenario)
-          ?.scenarioNumber ?? 0,
-    };
+  //   const scenarioToSave: Scenario = {
+  //     scenarioContentCode: selectedScenario,
+  //     description:
+  //       $scenarioSummaries.find((li) => li.contentCode === selectedScenario)
+  //         ?.description ?? "",
+  //     name:
+  //       $scenarioSummaries.find((li) => li.contentCode === selectedScenario)
+  //         ?.name ?? "",
+  //     isClosed: selectedScenarioStatus === "closed",
+  //     isCompleted: selectedScenarioStatus === "completed",
+  //     scenarioNumber:
+  //       $scenarioSummaries.find((ss) => ss.contentCode === selectedScenario)
+  //         ?.scenarioNumber ?? 0,
+  //   };
 
-    if (!existingScenario) await addScenario(campaign.id, scenarioToSave);
-    else await updateScenario(campaign.id, scenarioToSave);
+  //   if (!existingScenario) await addScenario(campaign.id, scenarioToSave);
+  //   else await updateScenario(campaign.id, scenarioToSave);
 
-    handleCloseScenarioEdit();
+  //   handleCloseScenarioEdit();
+  // };
+
+  // const scenarioCompleted = (scenario: Scenario): string => {
+  //   return `${scenarioName(scenario)} Completed`;
+  // };
+  // const scenarioClosed = (scenario: Scenario): string => {
+  //   return `${scenarioName(scenario)} Closed`;
+  // };
+  // const scenarioName = (scenario: Scenario): string => {
+  //   return (
+  //     $scenarioSummaries.find(
+  //       (item) => item.contentCode === scenario.scenarioContentCode
+  //     )?.name ?? scenario.scenarioContentCode
+  //   );
+  // };
+
+  // let disableSave = true;
+  // const shouldDisableSave = (
+  //   selectedScenario: string,
+  //   selectedScenarioStatus: string
+  // ): boolean => {
+  //   if (selectedScenario !== "" && selectedScenarioStatus !== "") return false;
+  //   return true;
+  // };
+
+  // const handleScenarioSelected = (contentCode: string): void => {
+  //   if (contentCode != "")
+  //     getScenarioDefault(campaign?.game ?? "", contentCode);
+  // };
+
+  // let redirectOnCombatCreate = false;
+  // const handleCreateCombat = async () => {
+  //   if (campaign && selectedScenario && selectedScenario.trim() != "") {
+  //     redirectOnCombatCreate = true;
+  //     await createCombat(campaign?.id, selectedScenario);
+  //   }
+  // };
+  // combatDetail.subscribe((combat) => {
+  //   if (combat && redirectOnCombatCreate) navigate(`/combats/${combat.id}`);
+  // });
+
+  let scenarioToEdit: CampaignScenario | undefined;
+  let isNewScenario = false;
+  let displayEditScenario = false;
+  // const newScenario: CampaignScenario = {
+  //   name: "",
+  //   description: "",
+  //   scenarioContentCode: "",
+  //   scenarioNumber: -1,
+  //   isClosed: false,
+  //   isCompleted: false,
+  // };
+
+  const getIconForScenarioState = (
+    scenario: CampaignScenario
+  ): string | undefined => {
+    if (scenario.isCompleted) return "done_outline";
+    if (scenario.isClosed) return "close";
+    return undefined;
   };
 
-  const scenarioCompleted = (scenario: Scenario): string => {
-    return `${scenarioName(scenario)} Completed`;
-  };
-  const scenarioClosed = (scenario: Scenario): string => {
-    return `${scenarioName(scenario)} Closed`;
-  };
-  const scenarioName = (scenario: Scenario): string => {
-    return (
-      $scenarioSummaries.find(
-        (item) => item.contentCode === scenario.scenarioContentCode
-      )?.name ?? scenario.scenarioContentCode
-    );
-  };
+  // $: void handleScenarioSelected(selectedScenario);
 
-  let disableSave = true;
-  const shouldDisableSave = (
-    selectedScenario: string,
-    selectedScenarioStatus: string
-  ): boolean => {
-    if (selectedScenario !== "" && selectedScenarioStatus !== "") return false;
-    return true;
-  };
-
-  const handleScenarioSelected = (contentCode: string): void => {
-    if (contentCode != "")
-      getScenarioDefault(campaign?.game ?? "", contentCode);
-  };
-
-  let redirectOnCombatCreate = false;
-  const handleCreateCombat = async () => {
-    if (campaign && selectedScenario && selectedScenario.trim() != "") {
-      redirectOnCombatCreate = true;
-      await createCombat(campaign?.id, selectedScenario);
-    }
-  };
-  combatDetail.subscribe((combat) => {
-    if (combat && redirectOnCombatCreate) navigate(`/combats/${combat.id}`);
-  });
-
-  $: void handleScenarioSelected(selectedScenario);
-
-  $: disableSave = shouldDisableSave(selectedScenario, selectedScenarioStatus);
+  // $: disableSave = shouldDisableSave(selectedScenario, selectedScenarioStatus);
 
   $: if (campaign?.game) void handleGetScenarios(campaign.game);
   $: if ($scenarioSummaries.length !== 0 && campaign?.scenarios)
@@ -194,7 +234,59 @@
 </script>
 
 {#if campaign}
-  <div
+  <Card>
+    <CardContent>
+      <div class="mdc-typography--headline5 text-center">Scenarios</div>
+      <hr class="my-1" />
+      <List singleSelection>
+        {#each campaignScenarios as scenario}
+          <Item
+            on:SMUI:action={() => {
+              scenarioToEdit = scenario;
+              isNewScenario = false;
+              displayEditScenario = true;
+            }}
+          >
+            <Graphic class="material-icons"
+              >{getIconForScenarioState(scenario)}</Graphic
+            >
+            <Text>
+              {scenario.name}
+            </Text>
+          </Item>
+        {/each}
+      </List>
+    </CardContent>
+    <CardActions>
+      {#if $scenarioSummaryProcessed}
+        <CardActionIcons>
+          <IconButton
+            class="material-icons"
+            aria-label="Add Scenario"
+            title="Add Scenario"
+            on:click={() => {
+              scenarioToEdit = undefined;
+              isNewScenario = true;
+              displayEditScenario = true;
+            }}
+          >
+            add_circle
+          </IconButton>
+        </CardActionIcons>
+      {/if}
+    </CardActions>
+  </Card>
+
+  <CampaignScenarioEditor
+    bind:open={displayEditScenario}
+    gameCode={campaign.game}
+    campaignId={campaign.id}
+    campaignScenarios={campaign.scenarios}
+    scenario={scenarioToEdit}
+  />
+{/if}
+
+<!-- <div
     class="relative mt-2 px-3 py-1 items-center max-w-md mx-auto bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-md backdrop-blur-sm"
   >
     <div aria-label="Available Scenarios" class="text-center text-xl">
@@ -243,9 +335,9 @@
     {:else}
       <div class="mx-auto">Loading...</div>
     {/if}
-  </div>
-{/if}
-<Dialog
+  </div> -->
+
+<!-- <Dialog
   offClick
   open={displayNewScenarioSelection}
   onClose={handleCloseScenarioEdit}
@@ -305,4 +397,4 @@
       >Join Combat</Button
     >
   </DialogFooter>
-</Dialog>
+</Dialog> -->
