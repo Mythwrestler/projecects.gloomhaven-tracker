@@ -3,7 +3,8 @@
   import { UserManager } from "oidc-client";
 
   import { getContext } from "svelte";
-  import Button from "../../common/Components/Button/Button.svelte";
+
+  import Button from "@smui/button";
 
   import {
     isAuthenticated,
@@ -16,7 +17,6 @@
     OIDC_CONTEXT_CLIENT_PROMISE,
   } from "@ci-lab/svelte-oidc-context";
   import GhtPanel from "../../common/Components/GHTPanel/GHTPanel.svelte";
-  import { stubString, uniqueId } from "lodash";
 
   const oidcPromise = getContext<Promise<UserManager>>(
     OIDC_CONTEXT_CLIENT_PROMISE
@@ -28,7 +28,6 @@
     await login(oidcPromise, true, redirect_uri);
   };
 
-  let userFullName: string | undefined = undefined;
   let email: string | undefined = undefined;
   userInfo.subscribe((userFromStore) => {
     email = userFromStore?.email;
@@ -49,10 +48,10 @@
     >{#if !$isAuthenticated}
       <div aria-label="Available Scenarios" class="text-center my-5">
         <Button
-          variant="outlined"
-          color="gray"
+          variant="raised"
+          color="primary"
           disabled={$isAuthenticated}
-          onClick={handleLoginClick}
+          on:click={handleLoginClick}
         >
           Login with Keycloack
         </Button>

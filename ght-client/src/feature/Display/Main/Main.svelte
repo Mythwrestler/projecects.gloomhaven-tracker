@@ -1,7 +1,6 @@
 <script lang="ts">
   import { Route, useLocation, type NavigatorLocation } from "svelte-navigator";
   import Campaigns from "../../CampaignListing/CampaignListing/Campaigns.svelte";
-  import Sampler from "../../Sampler/Sampler.svelte";
   import CampaignDetails from "../../CampaignListing/CampaignDetails/CampaignDetails.svelte";
   import CombatListing from "../../CombatListing/Combats.svelte";
   import CombatDetails from "../../CombatListing/CombatDetails.svelte";
@@ -56,7 +55,6 @@
 <main class="w-full h-full overflow-auto">
   <Route path="/"><Login /></Route>
   <Route path="/login"><Login /></Route>
-  <Route path="/sampler"><Sampler /></Route>
   <Route path="/logout"><Logout /></Route>
   {#if $accessToken}
     <Route path="/campaigns"><Campaigns /></Route>

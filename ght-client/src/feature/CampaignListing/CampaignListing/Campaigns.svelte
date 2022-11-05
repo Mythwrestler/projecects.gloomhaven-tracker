@@ -1,29 +1,17 @@
 <script lang="ts">
   import { onDestroy, onMount } from "svelte";
   import type { CampaignSummary } from "../../../models/Campaign";
-  import { AddContainedIcon, Table } from "../../../common/Components";
-  import type {
-    ColumnDefinition,
-    RowData,
-    TableConfiguration,
-  } from "../../../common/Components";
-  import CampaignLink from "./CampaignLink.svelte";
   import CampaignNewDialog from "./CampaignNewDialog.svelte";
   import useContentService from "../../../Service/ContentService";
   import useCampaignService from "../../../Service/CampaignService";
 
-  import clsx from "clsx";
   import type { ContentItemSummary } from "../../../models/Content";
   import { writable, type Unsubscriber } from "svelte/store";
   import GhtPanel from "../../../common/Components/GHTPanel/GHTPanel.svelte";
   import { Title, Content as PaperContent } from "@smui/paper";
   import List, { Item, Text, PrimaryText, SecondaryText } from "@smui/list";
-  import Card, {
-    Content as CardContent,
-    Actions,
-    ActionButtons,
-  } from "@smui/card";
-  import Button, { Label as ButtonLabel } from "@smui/button";
+  import Card, { Content as CardContent } from "@smui/card";
+  import Button from "@smui/button";
   import { useNavigate } from "svelte-navigator";
   const { actions: campaignActions, state: campaignState } =
     useCampaignService();
@@ -37,36 +25,23 @@
 
   const refreshListing = writable<boolean>(false);
 
-  const columns: ColumnDefinition[] = [
-    {
-      position: 1,
-      header: {
-        header: "Description",
-      },
-      property: "description",
-      valueDisplayComponent: CampaignLink,
-    },
-    {
-      position: 2,
-      header: {
-        header: "Game",
-      },
-      property: "game",
-    },
-  ];
-  const config: TableConfiguration = {
-    columns,
-  };
-  let campaignsRowData: RowData[] = [];
-
   let campaignListingLoaded = false;
   let selectedCampaign = "";
+
+  interface CampaignListItem {
+    description: {
+      label: string;
+      path: string;
+    };
+    game: string;
+  }
+  let campaignListing: CampaignListItem[] = [];
 
   const calculateCampagignRows = (
     campaigns: CampaignSummary[],
     availableGames: ContentItemSummary[]
   ) => {
-    campaignsRowData = campaigns.map((campaign) => {
+    campaignListing = campaigns.map((campaign) => {
       const translateGame = (game: string) => {
         return availableGames.find((g) => g.contentCode === game)?.name ?? "";
       };
@@ -133,15 +108,15 @@
       <Card variant="outlined">
         <CardContent>
           <List twoLine singleSelection>
-            {#each campaignsRowData as campaignData}
+            {#each campaignListing as campaign}
               <Item
                 on:SMUI:action={() => {
-                  navigate(campaignData.description.path);
+                  navigate(campaign.description.path);
                 }}
               >
                 <Text>
-                  <PrimaryText>{campaignData?.description?.label}</PrimaryText>
-                  <SecondaryText>{campaignData?.game}</SecondaryText>
+                  <PrimaryText>{campaign.description.label}</PrimaryText>
+                  <SecondaryText>{campaign.game}</SecondaryText>
                 </Text>
               </Item>
             {/each}
