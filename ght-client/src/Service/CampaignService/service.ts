@@ -40,15 +40,6 @@ class CampaignService {
 
   private getCampaignDetail = async (campaignId: string): Promise<void> => {
     const token = get(this.authToken);
-    getAPI<Campaign>(`campaigns/${campaignId}`, token)
-      .then((campaign: Campaign) => {
-        this.campaignDetail.set(campaign);
-      })
-      .catch((err: unknown) => {
-        GlobalError.showErrorMessage(
-          `Failed To Retrieve Campaign ${JSON.stringify(err)}`
-        );
-      });
     try {
       const result = await getAPI<Campaign>(`campaigns/${campaignId}`, token);
       if (result) this.campaignDetail.set(result);
