@@ -24,6 +24,8 @@ COPY ./.env.* ./
 # Copy Over Source Code
 COPY ./src ./src
 
+RUN npm run prepare
+
 ARG BUILD_ENV=local
 
 RUN echo "Build Env is $BUILD_ENV"
