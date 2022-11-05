@@ -9,10 +9,9 @@
   import Radio from "@smui/radio";
   import FormField from "@smui/form-field";
   import Button from "@smui/button";
-  import Paper from "@smui/paper";
-
+  import GhtPanel from "../../../common/Components/GHTPanel/GHTPanel.svelte";
   import Card, { Content as CardContent } from "@smui/card";
-  import List, { Item, Text } from "@smui/list";
+  import List, { Item, Text, PrimaryText, SecondaryText } from "@smui/list";
 
   import { writable, type Writable } from "svelte/store";
 
@@ -118,6 +117,7 @@
     ScenarioSummary[]
   >([]);
   const handleProcessScenarios = (
+    isNewScenario: boolean,
     campaignScenarios: CampaignScenario[],
     scenarioSummaries: ScenarioSummary[]
   ) => {
@@ -138,16 +138,21 @@
   $: open && handleOpen(scenario);
   $: open && handleGetScenarioDefault(scenarioContentCode, $scenarioDefault);
   $: open && handleGetGetGameScenarios(gameCode, $scenarioSummaries);
-  $: open && handleProcessScenarios(campaignScenarios, $scenarioSummaries);
+  $: open &&
+    handleProcessScenarios(
+      isNewScenario,
+      campaignScenarios,
+      $scenarioSummaries
+    );
   $: open && calcSaveDisable(scenarioContentCode, $scenarioDefault);
 </script>
 
-<Dialog bind:open surface$class="min-h-1/2">
+<Dialog bind:open fullscreen surface$class="min-h-1/2">
   <DialogHeader>
     <DialogTitle>{`${!isNewScenario ? "Edit" : "Add"} Scenario`}</DialogTitle>
   </DialogHeader>
   <DialogContent>
-    <Paper color="ght-panel">
+    <GhtPanel color="ght-panel">
       {#if open && $selectableScenarios.length > 0}
         <div class="mt-2">
           <Card>
@@ -203,27 +208,77 @@
             </CardContent>
           </Card>
         </div>
+        {#if ($scenarioDefault?.objectives ?? []).length > 0}
+          <div class="mt-2">
+            <Card>
+              <CardContent>
+                <div class="mdc-typography--headline5 text-center">
+                  Objectives
+                </div>
+                <hr class="my-1" />
+                <List nonInteractive>
+                  {#each $scenarioDefault?.objectives ?? [] as objective}
+                    <Item>
+                      <Text>
+                        {objective.name}
+                      </Text>
+                    </Item>
+                  {/each}
+                </List>
+              </CardContent>
+            </Card>
+          </div>
+        {/if}
         <div class="mt-2">
           <Card>
             <CardContent>
               <div class="mdc-typography--headline5 text-center">
-                Objectives
+                Information
               </div>
               <hr class="my-1" />
-              <List nonInteractive>
-                {#each $scenarioDefault?.objectives ?? [] as objective}
+              <List nonInteractive twoLine>
+                <Item>
+                  <Text>
+                    <PrimaryText>{$scenarioDefault?.goal ?? ""}</PrimaryText>
+                    <SecondaryText>Goal</SecondaryText>
+                  </Text>
+                </Item>
+                <Item>
+                  <Text>
+                    <PrimaryText
+                      >{$scenarioDefault?.cityMapLocation ?? ""}</PrimaryText
+                    >
+                    <SecondaryText>City Map Location</SecondaryText>
+                  </Text>
+                </Item>
+                <Item>
+                  <Text>
+                    <PrimaryText
+                      >{($scenarioDefault?.scenarioBook ?? []).join(
+                        ", "
+                      )}</PrimaryText
+                    >
+                    <SecondaryText>Scenario Book Pages</SecondaryText>
+                  </Text>
+                </Item>
+                {#if ($scenarioDefault?.supplementalBook ?? []).length > 0}
                   <Item>
                     <Text>
-                      {objective.name}
+                      <PrimaryText
+                        >{($scenarioDefault?.supplementalBook ?? []).join(
+                          ", "
+                        )}</PrimaryText
+                      >
+                      <SecondaryText>Supplemental Book Pages</SecondaryText>
                     </Text>
                   </Item>
-                {/each}
+                {/if}
               </List>
             </CardContent>
           </Card>
         </div>
       {/if}
-    </Paper>
+    </GhtPanel>
   </DialogContent>
   <DialogActions>
     <Button

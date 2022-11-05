@@ -31,11 +31,20 @@
   let campaignDescription = "";
 
   const requestCampaign = writable<boolean>(false);
+  let requestingCampaign = false;
   const handleGetCampaign = async (campaignId: string) => {
-    if ($accessToken == undefined || $accessToken.trim() == "") return;
+    if ($campaignDetail?.id === campaignId) return;
+    if (
+      requestingCampaign ||
+      $accessToken == undefined ||
+      $accessToken.trim() == ""
+    )
+      return;
+    requestingCampaign = true;
     campaign = undefined;
     try {
       await getCampaignDetail(campaignId);
+      requestingCampaign = false;
     } catch {
       GlobalError.showErrorMessage("Failed to get campaign");
     }
