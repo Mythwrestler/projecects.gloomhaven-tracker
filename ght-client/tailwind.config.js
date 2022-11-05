@@ -11,6 +11,11 @@ module.exports = {
   },
   darkMode: "media", // or 'media' or 'class'
   theme: {
+    minHeight: {
+      '1/2': '50%',
+      '2/3': '66%',
+      '3/4': '75%',
+    },
     extend: {},
   },
   variants: {

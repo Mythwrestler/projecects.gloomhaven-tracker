@@ -24,7 +24,6 @@
     if (singalRHubRequest) {
       actionsService.setSendMessage(singalRHubRequest);
     }
-    console.log(JSON.stringify(singalRHubRequest));
   };
 
   const handleHubClose = () => {

@@ -1,9 +1,8 @@
-<script lang="ts"></script>
+<script lang="ts">
+  import { Title } from "@smui/paper";
+  import GhtPanel from "../../common/Components/GHTPanel/GHTPanel.svelte";
+</script>
 
-<div
-  class="relative mt-2 px-3 py-1 items-center max-w-md mx-auto bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-md backdrop-blur-sm"
->
-  <div aria-label="Available Scenarios" class="text-center text-xl">
-    You've been logged out!
-  </div>
-</div>
+<GhtPanel color="ght-panel">
+  <Title class="text-center">You've been logged out!</Title>
+</GhtPanel>

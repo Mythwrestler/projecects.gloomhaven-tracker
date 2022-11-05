@@ -17,12 +17,15 @@ COPY ./tailwind.config.js ./
 
 # Copy Over Static Content
 COPY ./public ./public
+RUN mkdir ./public/build
 # Copy Over Types
 COPY ./types ./types
 # Copy Over .env files
 COPY ./.env.* ./
 # Copy Over Source Code
 COPY ./src ./src
+
+RUN npm run prepare
 
 ARG BUILD_ENV=local
 

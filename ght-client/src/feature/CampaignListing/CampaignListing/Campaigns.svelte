@@ -1,24 +1,23 @@
 <script lang="ts">
   import { onDestroy, onMount } from "svelte";
   import type { CampaignSummary } from "../../../models/Campaign";
-  import { AddContainedIcon, Table } from "../../../common/Components";
-  import type {
-    ColumnDefinition,
-    RowData,
-    TableConfiguration,
-  } from "../../../common/Components";
-  import CampaignLink from "./CampaignLink.svelte";
   import CampaignNewDialog from "./CampaignNewDialog.svelte";
   import useContentService from "../../../Service/ContentService";
   import useCampaignService from "../../../Service/CampaignService";
 
-  import clsx from "clsx";
   import type { ContentItemSummary } from "../../../models/Content";
   import { writable, type Unsubscriber } from "svelte/store";
+  import GhtPanel from "../../../common/Components/GHTPanel/GHTPanel.svelte";
+  import { Title, Content as PaperContent } from "@smui/paper";
+  import List, { Item, Text, PrimaryText, SecondaryText } from "@smui/list";
+  import Card, { Content as CardContent } from "@smui/card";
+  import Button from "@smui/button";
+  import { useNavigate } from "svelte-navigator";
   const { actions: campaignActions, state: campaignState } =
     useCampaignService();
   const { getCampaignSummaries } = campaignActions;
   const { campaignSummaries } = campaignState;
+  const navigate = useNavigate();
 
   const { actions: contentActions, state: contentState } = useContentService();
   const { getAvailableGames } = contentActions;
@@ -26,35 +25,23 @@
 
   const refreshListing = writable<boolean>(false);
 
-  const columns: ColumnDefinition[] = [
-    {
-      position: 1,
-      header: {
-        header: "Description",
-      },
-      property: "description",
-      valueDisplayComponent: CampaignLink,
-    },
-    {
-      position: 2,
-      header: {
-        header: "Game",
-      },
-      property: "game",
-    },
-  ];
-  const config: TableConfiguration = {
-    columns,
-  };
-  let campaignsRowData: RowData[] = [];
-
   let campaignListingLoaded = false;
+  let selectedCampaign = "";
+
+  interface CampaignListItem {
+    description: {
+      label: string;
+      path: string;
+    };
+    game: string;
+  }
+  let campaignListing: CampaignListItem[] = [];
 
   const calculateCampagignRows = (
     campaigns: CampaignSummary[],
     availableGames: ContentItemSummary[]
   ) => {
-    campaignsRowData = campaigns.map((campaign) => {
+    campaignListing = campaigns.map((campaign) => {
       const translateGame = (game: string) => {
         return availableGames.find((g) => g.contentCode === game)?.name ?? "";
       };
@@ -112,29 +99,36 @@
   });
 </script>
 
-<section class="text-center lg:text-left lg:pl-3 ">
-  <div
-    class={clsx(
-      "relative mt-2 px-3 py-1 items-center max-w-md mx-auto rounded-md backdrop-blur-sm",
-      "bg-gray-50 dark:bg-gray-700"
-    )}
-  >
-    <div aria-label="Current Campaigns" class="text-center text-xl">
-      Campaigns
-    </div>
-    <div class="absolute top-1 right-1">
-      <button aria-label="Add New Campaign" on:click={handleOpenNewDialog}>
-        <AddContainedIcon />
-      </button>
-    </div>
+<GhtPanel color="ght-panel">
+  <Title aria-label="Current Campaigns" class="text-center text-xl">
+    Campaigns
+  </Title>
+  <PaperContent>
     {#if campaignListingLoaded}
-      <Table {config} rowData={campaignsRowData} />
+      <Card variant="outlined">
+        <CardContent>
+          <List twoLine singleSelection>
+            {#each campaignListing as campaign}
+              <Item
+                on:SMUI:action={() => {
+                  navigate(campaign.description.path);
+                }}
+              >
+                <Text>
+                  <PrimaryText>{campaign.description.label}</PrimaryText>
+                  <SecondaryText>{campaign.game}</SecondaryText>
+                </Text>
+              </Item>
+            {/each}
+          </List>
+        </CardContent>
+      </Card>
+      <div class="mt-3">
+        <Button variant="raised" color="primary" on:click={handleOpenNewDialog}>
+          New
+        </Button>
+      </div>
     {/if}
-  </div>
-  {#if newDialogOpen}
-    <CampaignNewDialog
-      {newDialogOpen}
-      handleCloseDialog={handleCloseNewDialog}
-    />
-  {/if}
-</section>
+  </PaperContent>
+</GhtPanel>
+<CampaignNewDialog bind:open={newDialogOpen} />

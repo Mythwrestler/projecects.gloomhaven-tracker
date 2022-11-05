@@ -4,9 +4,12 @@
   import { accessToken } from "@ci-lab/svelte-oidc-context";
   import * as GlobalError from "../../Service/Error";
   import type { Combat } from "../../models/Combat";
-  import { Button } from "../../common/Components";
+  // import { Button } from "../../common/Components";
   import { useNavigate } from "svelte-navigator";
   import useCombatService from "../../Service/CombatService";
+  import GhtPanel from "../../common/Components/GHTPanel/GHTPanel.svelte";
+  import Card, { Content, Actions, ActionButtons } from "@smui/card";
+  import Button from "@smui/button";
 
   const { actions: combatActions, state: combatState } = useCombatService();
   const { getCombatDetail, clearCombatDetail } = combatActions;
@@ -65,15 +68,27 @@
   });
 </script>
 
-{#if !combat}
-  <div>Loading Combat</div>
-{:else}
-  <div>Combat Description: {combat?.description}</div>
-  <Button
-    variant="filled"
-    color="red"
-    onClick={() => {
-      handleStartCombat(combat?.id ?? "");
-    }}>Fight!</Button
-  >
-{/if}
+<GhtPanel color="ght-panel">
+  {#if !combat}
+    <div>Loading Combat</div>
+  {:else}
+    <Card>
+      <Content>
+        <div>Combat Description: {combat?.description}</div>
+      </Content>
+      <Actions>
+        <ActionButtons>
+          <Button
+            color="primary"
+            variant="raised"
+            on:click={() => {
+              handleStartCombat(combat?.id ?? "");
+            }}
+          >
+            Fight!
+          </Button>
+        </ActionButtons>
+      </Actions>
+    </Card>
+  {/if}
+</GhtPanel>

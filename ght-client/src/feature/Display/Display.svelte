@@ -1,49 +1,116 @@
 <script lang="ts">
   import Main from "./Main/Main.svelte";
-  import { Router } from "svelte-navigator";
-  import Navigation from "./Navigation/Navigation.svelte";
-  import { CloseIconOpen, MenuIcon } from "../../common/Components";
-  import clsx from "clsx";
+  import TopAppBar, {
+    Row,
+    Section,
+    Title as AppBarTitle,
+    AutoAdjust,
+  } from "@smui/top-app-bar";
 
-  let showNavMenu = false;
-  const onNavOpen = () => {
-    showNavMenu = true;
+  import Drawer, { AppContent, Content, Scrim } from "@smui/drawer";
+
+  import List, { Item, Text, Graphic, Separator } from "@smui/list";
+
+  import IconButton from "@smui/icon-button";
+
+  import {
+    isAuthenticated,
+    logout,
+    OIDC_CONTEXT_CLIENT_PROMISE,
+    OIDC_CONTEXT_POST_LOGOUT_REDIRECT_URI,
+  } from "@ci-lab/svelte-oidc-context";
+
+  import { getContext } from "svelte";
+  import { UserManager } from "oidc-client";
+
+  import { useNavigate } from "svelte-navigator";
+  const navigate = useNavigate();
+
+  const oidcPromise = getContext<Promise<UserManager>>(
+    OIDC_CONTEXT_CLIENT_PROMISE
+  );
+
+  let logout_url: string = getContext<string>(
+    OIDC_CONTEXT_POST_LOGOUT_REDIRECT_URI
+  );
+
+  const handleLogoutClick = async () => {
+    await logout(oidcPromise, logout_url);
   };
-  const onNavClose = () => {
-    showNavMenu = false;
+
+  const handleSigninClick = () => {
+    navigate("/", { replace: true });
   };
+
+  let topAppBar: TopAppBar;
+  let open = false;
 </script>
 
-<div class="h-screen w-screen flex flex-col relative">
-  <header
-    class={clsx(
-      "text-center top-0 left-0 sticky",
-      "bg-gray-300 dark:bg-gray-800",
-      "lg:hidden"
-    )}
-  >
-    <h6 class="p-2 text-gray-800 dark:text-gray-300">Gloom Haven Tracker</h6>
-    <button
-      class={"absolute top-1 left-1 text-gray-900 flex w-8 h-8 items-center justify-center"}
-      on:click={() => (showNavMenu ? onNavClose() : onNavOpen())}
-    >
-      {#if showNavMenu}
-        <CloseIconOpen iconClassOverride="h-5 w-5 dark:text-gray-100" />
-      {:else}
-        <MenuIcon iconClassOverride="h-5 w-5 dark:text-gray-100" />
-      {/if}
-    </button>
-  </header>
-  <Router primary={false}>
-    <content
-      class={clsx(
-        "overflow-y-auto w-full h-full relative bg-gray-200",
-        "dark:bg-gray-800 dark:text-gray-100",
-        "lg:pt-0 lg:flex lg:flex-row"
-      )}
-    >
-      <Navigation bind:showNavMenu />
-      <Main />
-    </content>
-  </Router>
-</div>
+<Drawer variant="modal" fixed bind:open class="h-screen">
+  <Content>
+    <List>
+      <Item
+        on:SMUI:action={() => {
+          console.log($isAuthenticated);
+          if ($isAuthenticated) {
+            void handleLogoutClick();
+          } else {
+            handleSigninClick();
+          }
+        }}
+      >
+        <Graphic class="material-icons" aria-hidden="true">person</Graphic>
+        <Text>{$isAuthenticated ? `Logout` : `Sign in`}</Text>
+      </Item>
+      <Separator />
+      <Item
+        on:SMUI:action={() => {
+          navigate("/campaigns", { replace: true });
+        }}
+      >
+        <Graphic class="material-icons" aria-hidden="true">castle</Graphic>
+        <Text>Campaigns</Text>
+      </Item>
+      <Item
+        on:SMUI:action={() => {
+          navigate("/combats", { replace: true });
+        }}
+      >
+        <Graphic class="material-icons" aria-hidden="true">
+          military_tech
+        </Graphic>
+        <Text>Combats</Text>
+      </Item>
+    </List>
+  </Content>
+</Drawer>
+<Scrim fixed />
+<AppContent class="app-content overflow-auto h-max">
+  <TopAppBar bind:this={topAppBar} variant="fixed" dense color="secondary">
+    <Row>
+      <Section>
+        <IconButton
+          class="material-icons"
+          on:click={() => {
+            open = !open;
+          }}
+        >
+          menu
+        </IconButton>
+        <AppBarTitle class="mx-auto">Gloomhaven Tracker</AppBarTitle>
+      </Section>
+    </Row>
+  </TopAppBar>
+  <AutoAdjust {topAppBar}>
+    <Main />
+  </AutoAdjust>
+</AppContent>
+
+<style>
+  * :global(.app-content) {
+    flex: auto;
+    overflow: auto;
+    position: relative;
+    flex-grow: 1;
+  }
+</style>

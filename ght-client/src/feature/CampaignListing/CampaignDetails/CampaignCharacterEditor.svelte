@@ -1,178 +1,294 @@
 <script lang="ts">
-  import {
-    Button,
-    Dialog,
-    DialogBody,
-    DialogFooter,
-    DialogHeader,
-    DropDown,
-    TextField,
-  } from "../../../common/Components";
-  import type { DropDownOption } from "../../../common/Components";
-  import type { Character } from "../../../models/Campaign";
+  import { writable, type Writable } from "svelte/store";
+
+  import Dialog, {
+    Header as DialogHeader,
+    Title as DialogTitle,
+    Content as DialogContent,
+    Actions as DialogActions,
+  } from "@smui/dialog";
+  import GhtPanel from "../../../common/Components/GHTPanel/GHTPanel.svelte";
+  import Card, { Content as CardContent } from "@smui/card";
+  import Button from "@smui/button";
+  import Select, { Option } from "@smui/select";
+  import Textfield from "@smui/textfield";
+  import List, { Item, Text } from "@smui/list";
+
+  import type { Character as CampaignCharacter } from "../../../models/Campaign";
+  import type {
+    Character as ContentCharacter,
+    ContentItemSummary,
+  } from "../../../models/Content";
+
   import useContentService from "../../../Service/ContentService";
-
-  export let gameCode = "";
-  export let showCampaignCharacterDialog = false;
-  export let isNewCharacter = false;
-  export let selectedCharacter: Character;
-  export let fullCharcterOptionList: DropDownOption[] = [];
-  export let characterOptionsAlreadyUsed: string[] = [];
-  export let handleCloseDialog: () => void;
-  export let handleSave: () => void;
-
+  import useCampaignService from "../../../Service/CampaignService";
   const { actions: contentActions, state: contentState } = useContentService();
   const { getCharacterDefault } = contentActions;
-  const { characterDefault } = contentState;
+  const { characterSummaries, characterDefault } = contentState;
 
-  const handleCharacterSelection = (characterCode: string) => {
-    getCharacterDefault(gameCode, characterCode);
-  };
+  const { actions: campaignActions } =
+    useCampaignService();
+  const { addPartyMember, updatePartyMember } =
+    campaignActions;
 
+  export let open: boolean;
+  export let gameCode: string;
+  export let campaignId: string;
+  export let campaignParty: CampaignCharacter[];
+  export let campaignCharacter: CampaignCharacter | undefined;
+
+  let name: string;
   let characterContentCode: string;
   let experience: number;
   let gold: number;
-  let name: string;
+  let items: string[];
+  let appliedPerks: string[];
   let perkPoints: number;
 
-  // Spread Selection
-  const handleSpreadSelection = (character: Character) => {
-    console.log(JSON.stringify(character));
-    const {
-      characterContentCode: ccc,
-      experience: exp,
-      gold: gld,
-      name: nme,
-      perkPoints: pkp,
-    } = character;
-
-    characterContentCode = ccc;
-    experience = exp;
-    gold = gld;
-    name = nme;
-    perkPoints = pkp;
-  };
-
-  $: handleSpreadSelection(selectedCharacter);
-  $: if (characterContentCode) handleCharacterSelection(characterContentCode);
+  let isNewCharacter = false;
+  let selectedContentCode: string;
 
   let characterLevel = 0;
   let characterHealth = 0;
-  const calculateChracterLevel = () => {
-    characterLevel =
-      $characterDefault?.baseStats.levels
-        .sort((a, b) => (a.level < b.level ? 1 : -1))
-        .find((lvl) => lvl.experience <= experience)?.level ?? 0;
-    characterHealth =
-      $characterDefault?.baseStats.health.find(
-        (h) => h.level === characterLevel
-      )?.health ?? 0;
-  };
-  $: if ($characterDefault && experience) calculateChracterLevel();
 
-  let availableCharacterOptions: DropDownOption[] = [];
-  const determineAvailableCharacterOptions = (
-    fullOptions: DropDownOption[],
-    usedOptions: string[]
-  ) => {
-    availableCharacterOptions = fullOptions.filter(
-      (charOpt) => !usedOptions.includes(charOpt.value as string)
+  const newCharacter: CampaignCharacter = {
+    name: "",
+    experience: 0,
+    gold: 0,
+    items: [],
+    appliedPerks: [],
+    perkPoints: 0,
+    characterContentCode: "",
+  };
+
+  const handleOpen = (
+    campaignCharacter: CampaignCharacter | undefined
+  ): void => {
+    const characterToLoad = campaignCharacter ?? newCharacter;
+    isNewCharacter = !campaignCharacter;
+
+    name = characterToLoad.name ?? "";
+    experience = characterToLoad.experience ?? 0;
+    gold = characterToLoad.gold ?? 0;
+    items = characterToLoad.items ?? [];
+    appliedPerks = characterToLoad.appliedPerks ?? [];
+    perkPoints = characterToLoad.perkPoints ?? 0;
+    characterContentCode = characterToLoad.characterContentCode;
+    selectedContentCode = characterToLoad.characterContentCode;
+  };
+
+  const handleSave = () => {
+    const characterToSave: CampaignCharacter = {
+      name,
+      experience,
+      gold,
+      items,
+      appliedPerks: undefined,
+      perkPoints,
+      characterContentCode,
+    };
+    if (isNewCharacter) {
+      void addPartyMember(campaignId, characterToSave);
+    } else {
+      void updatePartyMember(campaignId, characterToSave);
+    }
+    open = false;
+  };
+
+  const handleGetCharacterDefaults = (characterContentCode: string): void => {
+    if (
+      characterContentCode !== "" &&
+      characterContentCode !== $characterDefault?.contentCode
+    )
+      getCharacterDefault(gameCode, characterContentCode);
+  };
+
+  const selectableCharacters: Writable<ContentItemSummary[]> = writable<
+    ContentItemSummary[]
+  >([]);
+  const handleProcessCharacters = (
+    isNewCharacter: boolean,
+    party: CampaignCharacter[],
+    characterSummaries: ContentItemSummary[] | undefined
+  ): void => {
+    const usedContentCodes: string[] = party.map(
+      (pc) => pc.characterContentCode
+    );
+    if (characterSummaries === undefined) return;
+    selectableCharacters.set(
+      isNewCharacter
+        ? characterSummaries.filter(
+            (cs) => !usedContentCodes.includes(cs.contentCode)
+          )
+        : characterSummaries.filter(
+            (cs) => cs.contentCode === characterContentCode
+          )
     );
   };
+  const characterSelectKey = (contentCode: string | undefined) =>
+    `${contentCode ?? ""}`;
 
-  const handleSaveClick = () => {
-    selectedCharacter = {
-      ...selectedCharacter,
-      characterContentCode,
-      gold,
-      name,
-      perkPoints,
-      experience,
-    };
-    handleSave();
+  const calculateCharacterLevel = (
+    contentCode: string,
+    character: ContentCharacter | undefined,
+    experience: number
+  ) => {
+    characterLevel =
+      contentCode === character?.contentCode
+        ? character?.baseStats.levels
+            .sort((a, b) => (a.level < b.level ? 1 : -1))
+            .find((lvl) => lvl.experience <= experience)?.level ?? 0
+        : 0;
+  };
+  const calculateCharacterHealth = (
+    contentCode: string,
+    character: ContentCharacter | undefined,
+    characterLevel: number
+  ) => {
+    characterHealth =
+      contentCode === character?.contentCode
+        ? character?.baseStats.health.find((h) => h.level === characterLevel)
+            ?.health ?? 0
+        : 0;
   };
 
-  $: determineAvailableCharacterOptions(
-    fullCharcterOptionList,
-    characterOptionsAlreadyUsed
-  );
+  const handleClose = () => {
+    selectableCharacters.set([]);
+    handleOpen(undefined);
+  };
+
+  $: open && handleOpen(campaignCharacter);
+  $: open && handleGetCharacterDefaults(characterContentCode);
+  $: open &&
+    handleProcessCharacters(isNewCharacter, campaignParty, $characterSummaries);
+
+  $: open &&
+    calculateCharacterLevel(
+      characterContentCode,
+      $characterDefault,
+      experience
+    );
+  $: open &&
+    calculateCharacterHealth(
+      characterContentCode,
+      $characterDefault,
+      characterLevel
+    );
+
+  $: !open && handleClose();
 </script>
 
-<Dialog offClick open={showCampaignCharacterDialog} onClose={handleCloseDialog}>
-  <DialogHeader slot="DialogHeader">
-    <div class="mx-full text-center text-2xl mb-3">
-      {`${isNewCharacter ? "Add" : "Edit"} Character`}
-    </div>
-    <div class="border-b-2 border-solid" />
+<Dialog bind:open fullscreen surface$class="min-h-1/2">
+  <DialogHeader>
+    <DialogTitle>
+      {`${isNewCharacter ? "Add" : "Update"} Character`}
+    </DialogTitle>
   </DialogHeader>
-  <DialogBody slot="DialogBody">
-    <div class="pt-3">
-      <TextField
-        type="text"
-        bind:value={name}
-        displayLabel="Character Name"
-        placeholderText=""
-        border
-      />
-    </div>
-    <div class="pt-3">
-      <DropDown
-        label="Character Class"
-        bind:selected={characterContentCode}
-        placeHolder={isNewCharacter ? "Select a Chararter Class" : ""}
-        options={isNewCharacter
-          ? availableCharacterOptions
-          : fullCharcterOptionList}
-        disabled={!isNewCharacter}
-      />
-    </div>
-    {#if $characterDefault}
-      <div class="flex flex-col pt-3">
-        <TextField
-          type="number"
-          bind:value={experience}
-          placeholderText=""
-          displayLabel="Experience"
-          border
-        />
-        <div class="max-w-md mx-auto">
-          Character Level: {characterLevel}
-        </div>
-        <div class="max-w-md mx-auto">
-          Character Health: {characterHealth}
-        </div>
-      </div>
-      <div class="pt-3">
-        <div class="mx-full text-center text-l mb-3">Items</div>
-        <div class="border-b-2 border-solid" />
-      </div>
-      <div class="flex flex-row pt-3">
-        <TextField
-          type="number"
-          bind:value={gold}
-          placeholderText=""
-          displayLabel="Gold"
-          border
-        />
-        <TextField
-          type="number"
-          bind:value={perkPoints}
-          placeholderText=""
-          displayLabel="Perk Points"
-          border
-        />
-      </div>
-      <div class="pt-3">
-        <div class="mx-full text-center text-l mb-3">Applied Perks</div>
-        <div class="border-b-2 border-solid" />
-      </div>
-    {/if}
-  </DialogBody>
-  <DialogFooter slot="DialogFooter">
-    <div class="bg-white dark:bg-gray-700 w-full py-3 pl-3">
-      <Button variant="filled" onClick={handleSaveClick}
-        >{isNewCharacter ? "Add" : "Update"}</Button
-      >
-    </div>
-  </DialogFooter>
+  <DialogContent>
+    <GhtPanel color="ght-panel">
+      {#if open && $selectableCharacters.length > 0}
+        <Card class="mt-2">
+          <CardContent>
+            <Textfield style="width: 100%;" label="Name" bind:value={name} />
+            <Select
+              key={characterSelectKey}
+              bind:value={characterContentCode}
+              label="Character"
+              disabled={!isNewCharacter}
+              menu$fixed
+              menu$class="sm:max-w-lg max-w-xs"
+            >
+              {#if isNewCharacter}
+                <Option value={""} />
+              {/if}
+              {#each $selectableCharacters as character}
+                <Option value={character.contentCode}>{character.name}</Option>
+              {/each}
+            </Select>
+          </CardContent>
+        </Card>
+        {#if characterContentCode !== "" && $characterDefault?.contentCode === characterContentCode}
+          <Card class="mt-2">
+            <CardContent>
+              <div class="mdc-typography--heading5 text-center">Character</div>
+              <hr class="my-1" />
+              <Textfield
+                type="number"
+                style="width: 100%;"
+                label="Experience"
+                bind:value={experience}
+              />
+              <div class="mdc-typography--subtitle2 text-center">
+                {`Level: ${characterLevel}`}
+              </div>
+              <div class="mdc-typography--subtitle2 text-center">
+                {`Health: ${characterHealth}`}
+              </div>
+            </CardContent>
+          </Card>
+          <Card class="mt-2">
+            <CardContent>
+              <div class="mdc-typography--heading5 text-center">Inventory</div>
+              <hr class="my-1" />
+              <Textfield
+                type="number"
+                style="width: 100%;"
+                label="Gold"
+                bind:value={gold}
+              />
+              <div class="mdc-typography--subtitle2 text-center">
+                {`Items: ${items.length}`}
+              </div>
+              <List nonInteractive>
+                {#each items as item}
+                  <Item>
+                    <Text>
+                      {item}
+                    </Text>
+                  </Item>
+                {/each}
+              </List>
+            </CardContent>
+          </Card>
+          <Card class="mt-2">
+            <CardContent>
+              <div class="mdc-typography--heading5 text-center">Perks</div>
+              <hr class="my-1" />
+              <Textfield
+                type="number"
+                style="width: 100%;"
+                label="Perk Points"
+                bind:value={perkPoints}
+              />
+              <div class="mdc-typography--subtitle2 text-center">
+                {`Applied Perks: ${appliedPerks.length}`}
+              </div>
+              <List nonInteractive>
+                {#each appliedPerks as perk}
+                  <Item>
+                    <Text>
+                      {perk}
+                    </Text>
+                  </Item>
+                {/each}
+              </List>
+            </CardContent>
+          </Card>
+        {/if}
+      {/if}
+    </GhtPanel>
+  </DialogContent>
+  <DialogActions>
+    <Button
+      on:click={() => {
+        open = false;
+      }}
+      color="secondary"
+    >
+      Cancel
+    </Button>
+    <Button on:click={handleSave} color="primary">
+      {isNewCharacter ? "Add" : "Update"}
+    </Button>
+  </DialogActions>
 </Dialog>

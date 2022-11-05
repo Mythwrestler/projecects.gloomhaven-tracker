@@ -2,43 +2,38 @@
   import { onDestroy, onMount } from "svelte";
   import { useNavigate } from "svelte-navigator";
 
-  import {
-    Dialog,
-    DialogHeader,
-    DialogBody,
-    DialogFooter,
-    Button,
-    DropDown,
-    TextField,
-  } from "../../../common/Components";
+  import Dialog, {
+    Header as DialogHeader,
+    Title as DialogTitle,
+    Content as DialogContent,
+    Actions as DialogActions,
+  } from "@smui/dialog";
+  import Textfield from "@smui/textfield";
+  import Select, { Option } from "@smui/select";
+  import Button from "@smui/button";
 
-  import type { DropDownOption } from "../../../common/Components";
-  import useContentService from "../../../Service/ContentService";
-  import useCampaignService from "../../../Service/CampaignService";
   import type { Campaign } from "../../../models/Campaign";
   import type { ContentItemSummary } from "../../../models/Content";
-  // import { useCampaignService } from "../../../Service/CampaignService/index-old";
   import { v4 as uuid } from "uuid";
-  // import { accessToken } from "@ci-lab/svelte-oidc-context";
   import type { Unsubscriber } from "svelte/store";
-  const navigate = useNavigate();
+
+  import useContentService from "../../../Service/ContentService";
+  import useCampaignService from "../../../Service/CampaignService";
 
   const { actions: contentActions, state: contentState } = useContentService();
   const { getAvailableGames } = contentActions;
   const { availableGames } = contentState;
 
-  // const { State: campaignState, createNewCampaign } =
-  //   useCampaignService(accessToken);
   const { actions: campaignActions, state: campaignState } =
     useCampaignService();
   const { createCampaign, clearCampaign } = campaignActions;
   const { campaignDetail } = campaignState;
 
-  export let newDialogOpen = false;
-  export let handleCloseDialog: () => void;
+  const navigate = useNavigate();
+
+  export let open = false;
 
   let games: ContentItemSummary[] = [];
-  let gameOptions: DropDownOption[] = [];
   const handleLoadGames = () => {
     getAvailableGames();
   };
@@ -57,24 +52,9 @@
     await createCampaign(newCampaign);
   };
 
-  let availableGamesUnsubscribe: Unsubscriber;
   let campaignDetailUnsubscribe: Unsubscriber;
   onMount(() => {
     clearCampaign();
-    availableGamesUnsubscribe = availableGames.subscribe(
-      (gamesFromState: ContentItemSummary[]) => {
-        if (gamesFromState) {
-          games = gamesFromState;
-          gameOptions = gamesFromState.map((game) => {
-            return {
-              label: game.name,
-              value: game.contentCode,
-            };
-          });
-        }
-      }
-    );
-
     campaignDetailUnsubscribe = campaignDetail.subscribe((campaign) => {
       if (campaign) navigate(`/campaigns/${campaign.id}`);
     });
@@ -82,46 +62,54 @@
     void handleLoadGames();
   });
 
+  const gameSelectKey = (contentCode: string | undefined) =>
+    `${contentCode ?? ""}`;
+
   onDestroy(() => {
-    availableGamesUnsubscribe();
     campaignDetailUnsubscribe();
   });
 </script>
 
-<Dialog offClick open={newDialogOpen} onClose={handleCloseDialog}>
-  <DialogHeader slot="DialogHeader">
-    <div class="mx-full text-center text-2xl mb-3">Select You Game...</div>
-    <div class="border-b-2 border-solid" />
+<Dialog
+  fullscreen
+  bind:open
+  surface$style="width: calc(100vw - 50vw); min-width: 150px; height: calc(100vw - 32px); min-height: 150px"
+>
+  <DialogHeader>
+    <DialogTitle>New Campaign</DialogTitle>
   </DialogHeader>
-  <DialogBody slot="DialogBody">
+  <DialogContent class="flex flex-col">
     {#if games}
-      <div class="mt-2">
-        <TextField
-          border
-          variant="square"
-          bind:value={newCampaign.name}
-          placeholderText="Campaign Name"
-          displayLabel="Name"
-        />
-      </div>
-      <DropDown
-        variant="square"
-        label="Character Class"
-        bind:selected={newCampaign.game}
-        placeHolder={"Select a Game"}
-        options={gameOptions}
+      <Textfield
+        class="w-80"
+        bind:value={newCampaign.name}
+        label="Campaign Name"
       />
+      <Select key={gameSelectKey} bind:value={newCampaign.game} label="Game">
+        <Option value={null} />
+        {#each $availableGames as game}
+          <Option value={game.contentCode}>{game.name}</Option>
+        {/each}
+      </Select>
     {/if}
-  </DialogBody>
-  <DialogFooter slot="DialogFooter">
-    <div class="bg-white dark:bg-gray-700 w-full py-3 pl-3">
-      <Button
-        disabled={newCampaign.game === "" && newCampaign.name !== ""}
-        variant="filled"
-        onClick={() => void handleNewCampaign()}
-      >
-        New Campaign
-      </Button>
-    </div>
-  </DialogFooter>
+  </DialogContent>
+  <DialogActions>
+    <Button
+      variant="raised"
+      color="secondary"
+      on:click={() => {
+        open = closed;
+      }}
+    >
+      Close
+    </Button>
+    <Button
+      variant="raised"
+      color="primary"
+      disabled={newCampaign.game === "" || newCampaign.name === ""}
+      on:click={handleNewCampaign}
+    >
+      New Campaign
+    </Button>
+  </DialogActions>
 </Dialog>

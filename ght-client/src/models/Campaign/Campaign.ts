@@ -22,7 +22,7 @@ export interface Character {
   experience: number;
   gold: number;
   items: string[];
-  appliedPerks: string[];
+  appliedPerks: string[] | undefined;
   perkPoints: number;
 }
 

@@ -2,6 +2,7 @@
   import Display from "./feature/Display/Display.svelte";
 
   import { OidcContext } from "@ci-lab/svelte-oidc-context";
+  import { Router } from "svelte-navigator";
 
   import ENV_VARS from "./common/Environment";
   import ServiceContext from "./Service/ServiceContext.svelte";
@@ -21,7 +22,9 @@
   {scope}
 >
   <ServiceContext>
-    <Display />
+    <Router primary={false}>
+      <Display />
+    </Router>
   </ServiceContext>
 </OidcContext>
 

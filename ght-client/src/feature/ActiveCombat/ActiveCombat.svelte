@@ -10,7 +10,6 @@
   onMount(() => {
     try {
       combatIdToLoad = searchParams.get("activeCombat");
-      console.log(combatIdToLoad);
     } catch (err: unknown) {
       console.log(JSON.stringify(err));
     }

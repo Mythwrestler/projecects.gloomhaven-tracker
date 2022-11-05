@@ -1,5 +1,7 @@
 <script lang="ts">
-  import { Button, TextField } from "../../../common/Components";
+  // import { Button, TextField } from "../../../common/Components";
+  import TextField from "@smui/textfield";
+
   import type { Campaign, CampaignSummary } from "../../../models/Campaign";
   import * as GlobalError from "../../../Service/Error";
   import useCampaignService from "../../../Service/CampaignService";
@@ -10,6 +12,7 @@
   import { accessToken } from "@ci-lab/svelte-oidc-context";
   import { writable, type Unsubscriber } from "svelte/store";
   import { deepClone } from "fast-json-patch";
+  import GhtPanel from "../../../common/Components/GHTPanel/GHTPanel.svelte";
   export let campaignId = "";
   const location = useLocation();
 
@@ -28,11 +31,20 @@
   let campaignDescription = "";
 
   const requestCampaign = writable<boolean>(false);
+  let requestingCampaign = false;
   const handleGetCampaign = async (campaignId: string) => {
-    if ($accessToken == undefined || $accessToken.trim() == "") return;
+    if ($campaignDetail?.id === campaignId) return;
+    if (
+      requestingCampaign ||
+      $accessToken == undefined ||
+      $accessToken.trim() == ""
+    )
+      return;
+    requestingCampaign = true;
     campaign = undefined;
     try {
       await getCampaignDetail(campaignId);
+      requestingCampaign = false;
     } catch {
       GlobalError.showErrorMessage("Failed to get campaign");
     }
@@ -86,37 +98,30 @@
   });
 </script>
 
-<section>
+<GhtPanel color="ght-panel">
   {#if !campaign}
     <div>Getting Campaign Details</div>
   {:else}
-    <div class="mt-2">
-      <TextField
-        bind:value={campaignName}
-        onBlur={handleUpdateCampaignName}
-        placeholderText="Campaign Name"
-        displayLabel="Name"
-      />
-    </div>
+    <TextField
+      bind:value={campaignName}
+      style="width: 100%;"
+      on:blur={handleUpdateCampaignName}
+      label="Name"
+    />
     <div class="mt-2">
       <TextField
         bind:value={campaignDescription}
-        onBlur={handleUpdateCampaignDescription}
-        placeholderText="Campaign Description"
-        displayLabel="Description"
+        style="width: 100%;"
+        on:blur={handleUpdateCampaignDescription}
+        label="Description"
       />
     </div>
-    <CampaignParty bind:campaign />
-    <CampaignScenarios bind:campaign />
-    <!-- <div class="flex max-w-md h-12 mx-auto mt-2">
-      <Button
-        variant="outlined"
-        disabled={!$campaignNotSaved}
-        onClick={handleSaveCampaign}
-        color={$campaignNotSaved ? "blue" : "gray"}
-      >
-        Save Campaign
-      </Button>
-    </div> -->
+    <div class="mt-2">
+      <CampaignParty bind:campaign />
+    </div>
+
+    <div class="mt-2">
+      <CampaignScenarios bind:campaign />
+    </div>
   {/if}
-</section>
+</GhtPanel>

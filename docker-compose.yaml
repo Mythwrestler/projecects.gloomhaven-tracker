@@ -9,25 +9,24 @@ services:
     ports:
       - "5025:80"
   ght-service:
-    build:
-      context: ./ght-service
-    image: ght-service:latest
+    image: harbor.casperinc.net/library/ght/ght-service:dev-latest
     ports:
-      - "5020:80"
+      - "5020:5020"
     environment:
-    - ASPNETCORE_URLS=http://+:80
-    - ASPNETCORE_ENVIRONMENT=Development
-    - AUTH_ENABLED=false
-    - AUTH_AUTHORITY=http://fake-authority/
-    - AUTH_AUDIENCE=fake-audience
-    - HTTP_LOGGING_ENABLED=false
-    - DB_SERVER=dbpostgres
-    - DB_PORT=5432
-    - DB_DATABASE=ght-db
-    - DB_USER=pguser
-    - DB_PASSWORD=pguser
-    - DB_SEED_DATA=false
-  dbpostgres:
+      ASPNETCORE_URLS: http://+:5020
+      ASPNETCORE_ENVIRONMENT: Development
+      CORS_ALLOWED_ORIGINS: http://localhost:5025,http://localhost.fiddler:5025
+      AUTH_ENABLED: "true"
+      AUTH_AUTHORITY: https://iam.casperinc.net/realms/nprd
+      AUTH_AUDIENCE: gloomhaven-tracker-api
+      HTTP_LOGGING_ENABLED: "true"
+      DB_SERVER: host.docker.internal
+      DB_PORT: 5432
+      DB_DATABASE: ght-db
+      DB_USER: pguser
+      DB_PASSWORD: pguser
+      DB_SEED_DATA: "true"
+  ght-database:
     image: postgres:14-alpine3.14
     volumes:
       - db-data:/var/lib/postgresql/data
