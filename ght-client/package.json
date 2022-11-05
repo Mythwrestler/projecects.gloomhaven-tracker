@@ -33,6 +33,7 @@
     "@smui/radio": "^7.0.0-beta.0",
     "@smui/select": "^7.0.0-beta.0",
     "@smui/textfield": "^7.0.0-beta.0",
+    "@smui/top-app-bar": "^7.0.0-beta.0",
     "@tsconfig/svelte": "^3.0.0",
     "@types/lodash": "^4.14.178",
     "@types/node": "^17.0.14",
@@ -71,6 +72,7 @@
   },
   "dependencies": {
     "@smui/button": "^6.1.4",
-    "@smui/card": "^6.1.4"
+    "@smui/card": "^6.1.4",
+    "@smui/drawer": "^7.0.0-beta.0"
   }
 }

@@ -12,7 +12,6 @@
     isLoading,
     login,
     OIDC_CONTEXT_CLIENT_PROMISE,
-    OIDC_CONTEXT_POST_LOGOUT_REDIRECT_URI,
   } from "@ci-lab/svelte-oidc-context";
   import type { UserManager } from "oidc-client";
 
@@ -54,7 +53,7 @@
   });
 </script>
 
-<main class="w-full h-full">
+<main class="w-full h-full overflow-auto">
   <Route path="/"><Login /></Route>
   <Route path="/login"><Login /></Route>
   <Route path="/sampler"><Sampler /></Route>
