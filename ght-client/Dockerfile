@@ -17,6 +17,7 @@ COPY ./tailwind.config.js ./
 
 # Copy Over Static Content
 COPY ./public ./public
+RUN mkdir ./public/build
 # Copy Over Types
 COPY ./types ./types
 # Copy Over .env files
