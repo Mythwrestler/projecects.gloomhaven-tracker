@@ -4,10 +4,10 @@ export interface CombatSummary {
   id: string;
   scenarioContentCode: string;
   scenarioLevel: number;
-  campaign: string;
+  campaignId: string;
   description: string;
 }
 
 export interface Combat extends CombatSummary {
-  monsterModifierDeck: AttackModifierDeck
+  monsterModifierDeck: AttackModifierDeck;
 }
