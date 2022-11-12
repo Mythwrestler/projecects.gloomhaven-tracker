@@ -93,6 +93,8 @@
     refreshListing.set(true);
   });
 
+  const getDescription = (campaign: CampaignListItem) => campaign.description;
+
   onDestroy(() => {
     availableGamesUnsubscribe();
     campaignListingUnsubscribe();
@@ -109,13 +111,15 @@
         <CardContent>
           <List twoLine singleSelection>
             {#each campaignListing as campaign}
+              {@const description = getDescription(campaign)}
               <Item
                 on:SMUI:action={() => {
-                  navigate(campaign.description.path);
+                  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+                  navigate(description.path);
                 }}
               >
                 <Text>
-                  <PrimaryText>{campaign.description.label}</PrimaryText>
+                  <PrimaryText>{description.label}</PrimaryText>
                   <SecondaryText>{campaign.game}</SecondaryText>
                 </Text>
               </Item>

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import MediaQuery from "svelte-media-queries";
   import Main from "./Main/Main.svelte";
   import TopAppBar, {
     Row,
@@ -35,6 +36,7 @@
   );
 
   const handleLogoutClick = async () => {
+    navigate("/", { replace: true });
     await logout(oidcPromise, logout_url);
   };
 
@@ -42,21 +44,57 @@
     navigate("/", { replace: true });
   };
 
+  let isMobile: boolean;
+  const changeToFromMobile = (isMobile: boolean) => {
+    if (!isMobile) {
+      open = true;
+    } else {
+      open = false;
+    }
+  };
+
+  $: changeToFromMobile(isMobile);
+
   let topAppBar: TopAppBar;
   let open = false;
 </script>
 
-<Drawer variant="modal" fixed bind:open class="h-screen">
+<MediaQuery query="(max-width: 480px)" bind:matches={isMobile} />
+
+<TopAppBar
+  bind:this={topAppBar}
+  variant="fixed"
+  dense
+  color="secondary"
+  class="z-10"
+>
+  <Row>
+    <Section>
+      {#if isMobile}
+        <IconButton
+          class="material-icons"
+          on:click={() => {
+            open = !open;
+          }}
+        >
+          menu
+        </IconButton>
+      {/if}
+      <AppBarTitle class="mx-auto">Gloomhaven Tracker</AppBarTitle>
+    </Section>
+  </Row>
+</TopAppBar>
+<Drawer variant="modal" fixed={false} bind:open class="h-screen pt-11">
   <Content>
     <List>
       <Item
         on:SMUI:action={() => {
-          console.log($isAuthenticated);
           if ($isAuthenticated) {
             void handleLogoutClick();
           } else {
             handleSigninClick();
           }
+          if (isMobile) open = false;
         }}
       >
         <Graphic class="material-icons" aria-hidden="true">person</Graphic>
@@ -66,7 +104,9 @@
       <Item
         on:SMUI:action={() => {
           navigate("/campaigns", { replace: true });
+          if (isMobile) open = false;
         }}
+        disabled={!$isAuthenticated}
       >
         <Graphic class="material-icons" aria-hidden="true">castle</Graphic>
         <Text>Campaigns</Text>
@@ -74,9 +114,17 @@
       <Item
         on:SMUI:action={() => {
           navigate("/combats", { replace: true });
+          if (isMobile) open = false;
         }}
+        disabled={!$isAuthenticated}
       >
-        <Graphic class="material-icons" aria-hidden="true">
+        <Graphic
+          class="material-icons"
+          aria-hidden="true"
+          on:SMUI:action={() => {
+            if (isMobile) open = false;
+          }}
+        >
           military_tech
         </Graphic>
         <Text>Combats</Text>
@@ -84,23 +132,10 @@
     </List>
   </Content>
 </Drawer>
-<Scrim fixed />
-<AppContent class="app-content overflow-auto h-max">
-  <TopAppBar bind:this={topAppBar} variant="fixed" dense color="secondary">
-    <Row>
-      <Section>
-        <IconButton
-          class="material-icons"
-          on:click={() => {
-            open = !open;
-          }}
-        >
-          menu
-        </IconButton>
-        <AppBarTitle class="mx-auto">Gloomhaven Tracker</AppBarTitle>
-      </Section>
-    </Row>
-  </TopAppBar>
+{#if isMobile}
+  <Scrim fixed={false} />
+{/if}
+<AppContent class={"app-content overflow-auto h-max"}>
   <AutoAdjust {topAppBar}>
     <Main />
   </AutoAdjust>
