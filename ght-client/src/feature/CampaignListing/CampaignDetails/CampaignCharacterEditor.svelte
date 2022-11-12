@@ -26,10 +26,8 @@
   const { getCharacterDefault } = contentActions;
   const { characterSummaries, characterDefault } = contentState;
 
-  const { actions: campaignActions } =
-    useCampaignService();
-  const { addPartyMember, updatePartyMember } =
-    campaignActions;
+  const { actions: campaignActions } = useCampaignService();
+  const { addPartyMember, updatePartyMember } = campaignActions;
 
   export let open: boolean;
   export let gameCode: string;
@@ -197,6 +195,7 @@
               disabled={!isNewCharacter}
               menu$fixed
               menu$class="sm:max-w-lg max-w-xs"
+              style="width: 100%;"
             >
               {#if isNewCharacter}
                 <Option value={""} />
