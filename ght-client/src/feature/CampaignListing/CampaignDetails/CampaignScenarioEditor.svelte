@@ -165,6 +165,7 @@
                   disabled={!isNewScenario}
                   menu$fixed
                   menu$class="sm:max-w-lg max-w-xs"
+                  style="width: 100%;"
                 >
                   {#if isNewScenario}
                     <Option value={""} />
