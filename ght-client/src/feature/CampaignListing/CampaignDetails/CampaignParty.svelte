@@ -11,7 +11,7 @@
 
   import type { Campaign, Character } from "../../../models/Campaign";
   import CampaignCharacterEditor from "./CampaignCharacterEditor.svelte";
-  import useContentService from "../../../Service/ContentServiceThick";
+  import useContentService from "../../../Service/ContentService";
   import useCampaignService from "../../../Service/CampaignService";
   import { onMount } from "svelte";
   import type { ContentItemSummary } from "../../../models/Content";

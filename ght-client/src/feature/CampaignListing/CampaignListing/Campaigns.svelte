@@ -3,7 +3,7 @@
   import type { CampaignSummary } from "../../../models/Campaign";
   import CampaignNewDialog from "./CampaignNewDialog.svelte";
   // import useContentService from "../../../Service/ContentService";
-  import useContentServiceThick from "../../../Service/ContentServiceThick";
+  import useContentServiceThick from "../../../Service/ContentService";
   import useCampaignService from "../../../Service/CampaignService";
 
   import type { ContentItemSummary } from "../../../models/Content";

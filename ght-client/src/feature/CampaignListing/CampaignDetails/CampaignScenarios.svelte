@@ -15,7 +15,7 @@
   } from "../../../models/Campaign";
   import type { ScenarioSummary } from "../../../models/Content";
 
-  import useContentService from "../../../Service/ContentServiceThick";
+  import useContentService from "../../../Service/ContentService";
 
   import CampaignScenarioEditor from "./CampaignScenarioEditor.svelte";
 

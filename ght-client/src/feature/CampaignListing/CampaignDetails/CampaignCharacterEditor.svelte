@@ -20,7 +20,7 @@
     ContentItemSummary,
   } from "../../../models/Content";
 
-  import useContentService from "../../../Service/ContentServiceThick";
+  import useContentService from "../../../Service/ContentService";
   import useCampaignService from "../../../Service/CampaignService";
 
   const { actions: contentActionsThick } = useContentService();

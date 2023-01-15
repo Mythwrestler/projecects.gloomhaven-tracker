@@ -1,12 +1,24 @@
 import { getContext } from "svelte";
 import ENV_VARS from "../../common/Environment";
+import type {
+  ContentItemSummary,
+  Scenario,
+  Character,
+  ScenarioSummary,
+} from "../../models/Content";
 
 export interface ContentActions {
-  getAvailableGames: () => void;
-  getScenarioSummaries: (gameCode: string) => void;
-  getScenarioDefault: (gameCode: string, scenarioCode: string) => void;
-  getCharacterSummaries: (gameCode: string) => void;
-  getCharacterDefault: (gameCode: string, characterCode: string) => void;
+  getAvailableGames: () => Promise<ContentItemSummary[]>;
+  getScenarioSummaries: (gameCode: string) => Promise<ScenarioSummary[]>;
+  getScenarioDefault: (
+    gameCode: string,
+    scenarioCode: string
+  ) => Promise<Scenario | undefined>;
+  getCharacterSummaries: (gameCode: string) => Promise<ContentItemSummary[]>;
+  getCharacterDefault: (
+    gameCode: string,
+    characterCode: string
+  ) => Promise<Character | undefined>;
 }
 
 export const useContentServiceActions = (

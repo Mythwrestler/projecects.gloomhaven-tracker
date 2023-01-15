@@ -21,7 +21,7 @@
     ScenarioSummary,
   } from "../../../models/Content";
 
-  import useContentService from "../../../Service/ContentServiceThick";
+  import useContentService from "../../../Service/ContentService";
   import useCampaignService from "../../../Service/CampaignService";
   import { lowerCase } from "lodash";
   const { actions: campaignActions } = useCampaignService();

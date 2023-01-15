@@ -17,7 +17,7 @@
   import { v4 as uuid } from "uuid";
   import { writable, type Unsubscriber } from "svelte/store";
 
-  import useContentServiceThick from "../../../Service/ContentServiceThick";
+  import useContentServiceThick from "../../../Service/ContentService";
   import useCampaignService from "../../../Service/CampaignService";
 
   const { actions: contentThickActions } = useContentServiceThick();
