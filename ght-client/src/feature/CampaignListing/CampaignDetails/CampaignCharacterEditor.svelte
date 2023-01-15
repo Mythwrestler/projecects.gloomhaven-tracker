@@ -22,9 +22,12 @@
 
   import useContentService from "../../../Service/ContentService";
   import useCampaignService from "../../../Service/CampaignService";
-  const { actions: contentActions, state: contentState } = useContentService();
-  const { getCharacterDefault } = contentActions;
-  const { characterSummaries, characterDefault } = contentState;
+
+  const { actions: contentActionsThick } = useContentService();
+  const {
+    getCharacterDefault: getCharacterDefaultThick,
+    getCharacterSummaries: getCharacterSummariesThick,
+  } = contentActionsThick;
 
   const { actions: campaignActions } = useCampaignService();
   const { addPartyMember, updatePartyMember } = campaignActions;
@@ -48,6 +51,20 @@
 
   let characterLevel = 0;
   let characterHealth = 0;
+
+  const characterSummaries = writable<ContentItemSummary[]>([]);
+  const characterDefault = writable<ContentCharacter | undefined>(undefined);
+  const handleGetContent = async (gameCode: string, characterCode: string) => {
+    try {
+      const character = await getCharacterDefaultThick(gameCode, characterCode);
+      const summaries = await getCharacterSummariesThick(gameCode);
+      characterDefault.set(character);
+      characterSummaries.set(summaries);
+    } catch {
+      characterDefault.set(undefined);
+      characterSummaries.set([]);
+    }
+  };
 
   const newCharacter: CampaignCharacter = {
     name: "",
@@ -91,14 +108,6 @@
       void updatePartyMember(campaignId, characterToSave);
     }
     open = false;
-  };
-
-  const handleGetCharacterDefaults = (characterContentCode: string): void => {
-    if (
-      characterContentCode !== "" &&
-      characterContentCode !== $characterDefault?.contentCode
-    )
-      getCharacterDefault(gameCode, characterContentCode);
   };
 
   const selectableCharacters: Writable<ContentItemSummary[]> = writable<
@@ -156,7 +165,7 @@
   };
 
   $: open && handleOpen(campaignCharacter);
-  $: open && handleGetCharacterDefaults(characterContentCode);
+  $: open && handleGetContent(gameCode, characterContentCode);
   $: open &&
     handleProcessCharacters(isNewCharacter, campaignParty, $characterSummaries);
 
@@ -176,7 +185,12 @@
   $: !open && handleClose();
 </script>
 
-<Dialog bind:open fullscreen surface$class="min-h-1/2">
+<Dialog
+  bind:open
+  fullscreen
+  surface$class="mt-12"
+  surface$style="max-height: calc(100vh - 40px);"
+>
   <DialogHeader>
     <DialogTitle>
       {`${isNewCharacter ? "Add" : "Update"} Character`}

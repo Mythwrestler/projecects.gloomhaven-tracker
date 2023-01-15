@@ -21,22 +21,22 @@
 
   export let campaign: Campaign | undefined;
 
-  const { actions: contentActions, state: contentState } = useContentService();
+  const { actions: contentActions } = useContentService();
   const { getScenarioSummaries } = contentActions;
-  const { scenarioSummaries } = contentState;
+
+  const scenarioSummaries = writable<ScenarioSummary[]>([]);
+  const handleGetScenarioSummaries = async (gameCode: string) => {
+    try {
+      const summaries = await getScenarioSummaries(gameCode);
+      scenarioSummaries.set(summaries);
+    } catch {
+      scenarioSummaries.set([]);
+    }
+  };
 
   let campaignScenarios: CampaignScenario[] = [];
 
   const scenarioSummaryProcessed = writable<boolean>(false);
-  let gettingScenarios = false;
-  const handleGetScenarios = (gameCode: string) => {
-    const summaries = $scenarioSummaries;
-    if (!summaries || (summaries.length === 0 && !gettingScenarios)) {
-      gettingScenarios = true;
-      getScenarioSummaries(gameCode);
-    }
-  };
-
   const handleProcessScenarioSummaries = () => {
     if (campaign) {
       campaignScenarios = (campaign.scenarios ?? [])
@@ -58,7 +58,6 @@
           a.scenarioNumber > b.scenarioNumber ? 1 : -1
         );
       scenarioSummaryProcessed.set(true);
-      gettingScenarios = false;
     }
   };
 
@@ -74,12 +73,12 @@
     return undefined;
   };
 
-  $: if (campaign?.game) void handleGetScenarios(campaign.game);
+  $: if (campaign?.game) void handleGetScenarioSummaries(campaign.game);
   $: if ($scenarioSummaries.length !== 0 && campaign?.scenarios)
     handleProcessScenarioSummaries();
 </script>
 
-{#if campaign}
+{#if campaign && $scenarioSummaries.length > 0}
   <Card>
     <CardContent>
       <div class="mdc-typography--headline5 text-center">Scenarios</div>

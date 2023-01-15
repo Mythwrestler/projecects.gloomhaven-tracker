@@ -2,7 +2,8 @@
   import { onDestroy, onMount } from "svelte";
   import type { CampaignSummary } from "../../../models/Campaign";
   import CampaignNewDialog from "./CampaignNewDialog.svelte";
-  import useContentService from "../../../Service/ContentService";
+  // import useContentService from "../../../Service/ContentService";
+  import useContentServiceThick from "../../../Service/ContentService";
   import useCampaignService from "../../../Service/CampaignService";
 
   import type { ContentItemSummary } from "../../../models/Content";
@@ -19,9 +20,12 @@
   const { campaignSummaries } = campaignState;
   const navigate = useNavigate();
 
-  const { actions: contentActions, state: contentState } = useContentService();
-  const { getAvailableGames } = contentActions;
-  const { availableGames } = contentState;
+  // const { actions: contentActions, state: contentState } = useContentService();
+  // const { getAvailableGames } = contentActions;
+  // const { availableGames } = contentState;
+
+  const { actions: contentThickActions } = useContentServiceThick();
+  const { getAvailableGames: getAvailableGamesThick } = contentThickActions;
 
   const refreshListing = writable<boolean>(false);
 
@@ -68,8 +72,18 @@
   const handleGetCampaigns = async () => {
     if ($refreshListing) {
       await getCampaignSummaries();
-      getAvailableGames();
+      await handleGetGames();
       refreshListing.set(false);
+    }
+  };
+
+  const availableGames = writable<ContentItemSummary[]>([]);
+  const handleGetGames = async () => {
+    try {
+      const games = await getAvailableGamesThick();
+      availableGames.set(games);
+    } catch {
+      availableGames.set([]);
     }
   };
 

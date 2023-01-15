@@ -14,20 +14,14 @@
   import useContentService from "../../../Service/ContentService";
   import useCampaignService from "../../../Service/CampaignService";
   import { onMount } from "svelte";
+  import type { ContentItemSummary } from "../../../models/Content";
   export let campaign: Campaign;
 
-  const { actions: contentActions, state: contentState } = useContentService();
+  const { actions: contentActions } = useContentService();
   const { getCharacterSummaries } = contentActions;
-  const { characterSummaries } = contentState;
 
   const { actions: campaignActions } = useCampaignService();
   const { getPartyMemberDetails } = campaignActions;
-
-  const getContentSummary = (contentCode: string) => {
-    return $characterSummaries.find((character) => {
-      return character.contentCode === contentCode;
-    });
-  };
 
   let showPlayerDialog = false;
   let selectedCharacter: Character | undefined;
@@ -45,12 +39,20 @@
 
   const characterListingProcessed = writable<boolean>(false);
 
-  let retrievingCharacters = false;
-  const handleGetCharacters = (gameCode: string) => {
-    if ($characterSummaries.length === 0 && !retrievingCharacters) {
-      retrievingCharacters = true;
-      getCharacterSummaries(gameCode);
+  const characterSummaries2 = writable<ContentItemSummary[]>([]);
+  const handleGetCharacterSummaries = async (gameCode: string) => {
+    try {
+      const summaries = await getCharacterSummaries(gameCode);
+      characterSummaries2.set(summaries);
+    } catch {
+      characterSummaries2.set([]);
     }
+  };
+
+  const getContentSummary = (contentCode: string) => {
+    return $characterSummaries2.find((character) => {
+      return character.contentCode === contentCode;
+    });
   };
 
   let usedCharacters: string[] = [];
@@ -58,7 +60,7 @@
     usedCharacters = campaignCharacters.map((c) => c.characterContentCode);
   };
 
-  $: if (campaign?.game) void handleGetCharacters(campaign.game);
+  $: if (campaign?.game) void handleGetCharacterSummaries(campaign.game);
   $: if (campaign?.party) determineUsedCharacters(campaign.party);
 
   onMount(() => {
