@@ -21,14 +21,13 @@
     ScenarioSummary,
   } from "../../../models/Content";
 
-  import useContentService from "../../../Service/ContentService";
+  import useContentService from "../../../Service/ContentServiceThick";
   import useCampaignService from "../../../Service/CampaignService";
   import { lowerCase } from "lodash";
   const { actions: campaignActions } = useCampaignService();
   const { addScenario, updateScenario } = campaignActions;
-  const { state: contentState, actions: contentActions } = useContentService();
+  const { actions: contentActions } = useContentService();
   const { getScenarioDefault, getScenarioSummaries } = contentActions;
-  const { scenarioDefault, scenarioSummaries } = contentState;
 
   export let open = false;
   export let gameCode: string;
@@ -36,12 +35,29 @@
   export let campaignScenarios: CampaignScenario[];
   export let scenario: CampaignScenario | undefined;
 
-  const handleGetGetGameScenarios = (
+  const scenarioSummaries = writable<ScenarioSummary[]>([]);
+  const handleGetScenarioSummaries = async (gameCode: string) => {
+    try {
+      const summaries = await getScenarioSummaries(gameCode);
+      scenarioSummaries.set(summaries);
+    } catch {
+      scenarioSummaries.set([]);
+    }
+  };
+
+  const scenarioDefault = writable<ContentScenario | undefined>(undefined);
+  const handleGetScenarioDefault = async (
     gameCode: string,
-    scenarioSummaries: ScenarioSummary[]
+    scenarioCode: string
   ) => {
-    if (scenarioSummaries.length === 0 && gameCode !== "")
-      getScenarioSummaries(gameCode);
+    if (scenarioCode !== "" && scenarioCode !== $scenarioDefault?.contentCode) {
+      try {
+        const scenario = await getScenarioDefault(gameCode, scenarioCode);
+        scenarioDefault.set(scenario);
+      } catch {
+        scenarioDefault.set(undefined);
+      }
+    }
   };
 
   const scenarioSelectKey = (contentCode: string | undefined) =>
@@ -69,15 +85,6 @@
     if (scenario.isClosed) return "closed";
     else if (scenario.isCompleted) return "completed";
     else return "available";
-  };
-
-  const handleGetScenarioDefault = (
-    contentCode: string,
-    scenarioDefault: ContentScenario | undefined
-  ) => {
-    if (contentCode !== "" && contentCode !== scenarioDefault?.contentCode) {
-      getScenarioDefault(gameCode, contentCode);
-    }
   };
 
   let disableSave = true;
@@ -136,8 +143,8 @@
   };
 
   $: open && handleOpen(scenario);
-  $: open && handleGetScenarioDefault(scenarioContentCode, $scenarioDefault);
-  $: open && handleGetGetGameScenarios(gameCode, $scenarioSummaries);
+  $: open && handleGetScenarioDefault(gameCode, scenarioContentCode);
+  $: open && handleGetScenarioSummaries(gameCode);
   $: open &&
     handleProcessScenarios(
       isNewScenario,
@@ -147,7 +154,12 @@
   $: open && calcSaveDisable(scenarioContentCode, $scenarioDefault);
 </script>
 
-<Dialog bind:open fullscreen surface$class="min-h-1/2">
+<Dialog
+  bind:open
+  fullscreen
+  surface$class="mt-12"
+  surface$style="max-height: calc(100vh - 40px);"
+>
   <DialogHeader>
     <DialogTitle>{`${!isNewScenario ? "Edit" : "Add"} Scenario`}</DialogTitle>
   </DialogHeader>

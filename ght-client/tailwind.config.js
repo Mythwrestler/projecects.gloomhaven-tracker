@@ -16,6 +16,9 @@ module.exports = {
       '2/3': '66%',
       '3/4': '75%',
     },
+    height: {
+      'calc-12': 'calc(100vw - 6rem)'
+    },
     extend: {},
   },
   variants: {

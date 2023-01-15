@@ -15,14 +15,13 @@
   import type { Campaign } from "../../../models/Campaign";
   import type { ContentItemSummary } from "../../../models/Content";
   import { v4 as uuid } from "uuid";
-  import type { Unsubscriber } from "svelte/store";
+  import { writable, type Unsubscriber } from "svelte/store";
 
-  import useContentService from "../../../Service/ContentService";
+  import useContentServiceThick from "../../../Service/ContentServiceThick";
   import useCampaignService from "../../../Service/CampaignService";
 
-  const { actions: contentActions, state: contentState } = useContentService();
-  const { getAvailableGames } = contentActions;
-  const { availableGames } = contentState;
+  const { actions: contentThickActions } = useContentServiceThick();
+  const { getAvailableGames: getAvailableGamesThick } = contentThickActions;
 
   const { actions: campaignActions, state: campaignState } =
     useCampaignService();
@@ -33,23 +32,32 @@
 
   export let open = false;
 
-  let games: ContentItemSummary[] = [];
-  const handleLoadGames = () => {
-    getAvailableGames();
+  const availableGames = writable<ContentItemSummary[]>([]);
+  const handleGetGames = async () => {
+    try {
+      const games = await getAvailableGamesThick();
+      availableGames.set(games);
+    } catch {
+      availableGames.set([]);
+    }
   };
 
-  const newCampaign: Campaign = {
-    id: uuid(),
-    description: "",
-    name: "",
-    game: "",
-    scenarios: [],
-    party: [],
-    editable: true,
+  const defaultNewCampaign = (): Campaign => {
+    return {
+      id: uuid(),
+      description: "",
+      name: "",
+      game: "",
+      scenarios: [],
+      party: [],
+      editable: true,
+    };
   };
+  let newCampaign: Campaign = { ...defaultNewCampaign() };
 
   const handleNewCampaign = async () => {
-    await createCampaign(newCampaign);
+    await createCampaign({ ...newCampaign });
+    newCampaign = { ...defaultNewCampaign() };
   };
 
   let campaignDetailUnsubscribe: Unsubscriber;
@@ -58,8 +66,7 @@
     campaignDetailUnsubscribe = campaignDetail.subscribe((campaign) => {
       if (campaign) navigate(`/campaigns/${campaign.id}`);
     });
-
-    void handleLoadGames();
+    void handleGetGames();
   });
 
   const gameSelectKey = (contentCode: string | undefined) =>
@@ -71,15 +78,16 @@
 </script>
 
 <Dialog
-  fullscreen
   bind:open
-  surface$style="width: calc(100vw - 50vw); min-width: 150px; height: calc(100vw - 32px); min-height: 150px"
+  fullscreen
+  surface$class="mt-12"
+  surface$style="max-height: calc(100vh - 40px);"
 >
   <DialogHeader>
     <DialogTitle>New Campaign</DialogTitle>
   </DialogHeader>
   <DialogContent class="flex flex-col">
-    {#if games}
+    {#if $availableGames.length > 0}
       <Textfield
         class="w-80"
         bind:value={newCampaign.name}
@@ -98,6 +106,7 @@
       variant="raised"
       color="secondary"
       on:click={() => {
+        newCampaign = { ...defaultNewCampaign() };
         open = closed;
       }}
     >
