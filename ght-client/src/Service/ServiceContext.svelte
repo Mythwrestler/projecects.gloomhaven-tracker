@@ -1,19 +1,19 @@
 <script lang="ts">
   import { defineContentService } from "./ContentService";
+  import { defineContentService as defineContentServiceThick } from "./ContentServiceThick";
   import { defineCampaignService } from "./CampaignService";
   import { accessToken } from "@ci-lab/svelte-oidc-context";
   import { defineCombatService } from "./CombatService";
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const contentService = defineContentService(accessToken);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const contentServiceThick = defineContentServiceThick(accessToken);
+
   const campaignService = defineCampaignService(accessToken);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const combatService = defineCombatService(accessToken);
 </script>
 
-{#if contentService && campaignService && combatService}
+{#if contentService && contentServiceThick && campaignService && combatService}
   <slot />
 {/if}
