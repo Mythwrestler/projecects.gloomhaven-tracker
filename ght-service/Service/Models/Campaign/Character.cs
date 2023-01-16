@@ -70,11 +70,10 @@ public class CharacterDTO
 [Serializable]
 public struct CharacterSummary
 {
-    public CharacterSummary(string name, string characterContentCode, int level)
+    public CharacterSummary(string name, string characterContentCode)
     {
         Name = name;
         CharacterContentCode = characterContentCode;
-        Level = level;
     }
 
     [JsonPropertyName("name")]
@@ -82,9 +81,6 @@ public struct CharacterSummary
 
     [JsonPropertyName("characterContentCode")]
     public string CharacterContentCode { get; }
-
-    [JsonPropertyName("level")]
-    public int Level { get; }
 }
 
 
