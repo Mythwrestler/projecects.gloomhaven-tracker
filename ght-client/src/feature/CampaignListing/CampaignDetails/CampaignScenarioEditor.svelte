@@ -22,18 +22,16 @@
   } from "../../../models/Content";
 
   import useContentService from "../../../Service/ContentService";
-  import useCampaignService from "../../../Service/CampaignService";
   import { lowerCase } from "lodash";
-  const { actions: campaignActions } = useCampaignService();
-  const { addScenario, updateScenario } = campaignActions;
   const { actions: contentActions } = useContentService();
   const { getScenarioDefault, getScenarioSummaries } = contentActions;
 
   export let open = false;
   export let gameCode: string;
-  export let campaignId: string;
   export let campaignScenarios: CampaignScenario[];
   export let scenario: CampaignScenario | undefined;
+  export let addScenario: (scenario: CampaignScenario) => Promise<void>;
+  export let updateScenario: (scenario: CampaignScenario) => Promise<void>;
 
   const scenarioSummaries = writable<ScenarioSummary[]>([]);
   const handleGetScenarioSummaries = async (gameCode: string) => {
@@ -115,8 +113,8 @@
         scenarioNumber: $scenarioDefault.sortOrder,
       };
 
-      if (isNewScenario) void addScenario(campaignId, editedScenario);
-      else void updateScenario(campaignId, editedScenario);
+      if (isNewScenario) void addScenario(editedScenario);
+      else void updateScenario(editedScenario);
     }
   };
 

@@ -1,80 +1,39 @@
 <script lang="ts">
-  import { onDestroy, onMount } from "svelte";
-  import { writable, type Unsubscriber } from "svelte/store";
-  import { accessToken } from "@ci-lab/svelte-oidc-context";
-  import * as GlobalError from "../../Service/Error";
+  import { writable } from "svelte/store";
   import type { Combat } from "../../models/Combat";
-  // import { Button } from "../../common/Components";
   import { useNavigate } from "svelte-navigator";
   import useCombatService from "../../Service/CombatService";
   import GhtPanel from "../../common/Components/GHTPanel/GHTPanel.svelte";
   import Card, { Content, Actions, ActionButtons } from "@smui/card";
   import Button from "@smui/button";
 
-  const { actions: combatActions, state: combatState } = useCombatService();
-  const { getCombatDetail, clearCombatDetail } = combatActions;
-  const { combatDetail } = combatState;
+  const { actions: combatActionsThin } = useCombatService();
+  const { getCombatDetail } = combatActionsThin;
 
   const navigate = useNavigate();
 
   export let combatId = "";
 
-  let combat: Combat | undefined;
-  combatDetail.subscribe((combatFromState) => {
-    combat = combatFromState;
-  });
-
-  const requestCombat = writable<boolean>(false);
+  const combat = writable<Combat | undefined>(undefined);
   const handleGetCombat = async (combatId: string) => {
-    if ($accessToken == undefined) return;
-    try {
-      await getCombatDetail(combatId);
-    } catch {
-      GlobalError.showErrorMessage("Failed to get campaign");
-    }
+    const combatForLoad = await getCombatDetail(combatId);
+    combat.set(combatForLoad);
   };
-  requestCombat.subscribe((requesting) => {
-    if (requesting && $accessToken) {
-      void handleGetCombat(combatId);
-      requestCombat.set(false);
-    }
-  });
-  accessToken.subscribe((accessToken) => {
-    if ($requestCombat && accessToken) {
-      void handleGetCombat(combatId);
-      requestCombat.set(false);
-    }
-  });
 
   const handleStartCombat = (combatId: string) => {
     navigate(`/combats/fight/?activeCombat=${combatId}`);
   };
 
-  $: if (combatId !== combat?.id) requestCombat.set(true);
-
-  let combatDetailUnsubscribe: Unsubscriber;
-  onMount(() => {
-    combatDetailUnsubscribe = combatDetail.subscribe((combatFromState) => {
-      combat = combatFromState;
-    });
-
-    clearCombatDetail();
-    requestCombat.set(true);
-  });
-
-  onDestroy(() => {
-    combatDetailUnsubscribe();
-    clearCombatDetail();
-  });
+  $: void handleGetCombat(combatId);
 </script>
 
 <GhtPanel color="ght-panel">
-  {#if !combat}
+  {#if !$combat}
     <div>Loading Combat</div>
   {:else}
     <Card>
       <Content>
-        <div>Combat Description: {combat?.description}</div>
+        <div>Combat Description: {$combat?.description}</div>
       </Content>
       <Actions>
         <ActionButtons>
@@ -82,7 +41,7 @@
             color="primary"
             variant="raised"
             on:click={() => {
-              handleStartCombat(combat?.id ?? "");
+              handleStartCombat($combat?.id ?? "");
             }}
           >
             Fight!

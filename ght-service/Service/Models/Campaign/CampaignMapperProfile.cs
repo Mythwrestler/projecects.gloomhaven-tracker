@@ -61,8 +61,7 @@ public class CampaignMapperProfile : Profile
 
         CreateMap<CampaignCharacter, CharacterSummary>().ConvertUsing((src, dst, ctx) => new CharacterSummary(
             name: src.Name,
-            characterContentCode: src.CharacterContent.ContentCode,
-            level: GameUtils.GetPlayerLevel(src.CharacterContent, src.Experience)
+            characterContentCode: src.CharacterContent.ContentCode
         ));
 
         CreateMap<CampaignCharacter, CharacterDTO>().ConvertUsing((src, dst, ctx) => new CharacterDTO(

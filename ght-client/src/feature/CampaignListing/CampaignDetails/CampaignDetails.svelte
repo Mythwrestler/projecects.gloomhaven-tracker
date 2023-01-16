@@ -1,101 +1,59 @@
 <script lang="ts">
-  // import { Button, TextField } from "../../../common/Components";
   import TextField from "@smui/textfield";
 
   import type { Campaign, CampaignSummary } from "../../../models/Campaign";
-  import * as GlobalError from "../../../Service/Error";
   import useCampaignService from "../../../Service/CampaignService";
   import CampaignParty from "./CampaignParty.svelte";
-  import { useLocation } from "svelte-navigator";
   import CampaignScenarios from "./CampaignScenarios.svelte";
-  import { onDestroy, onMount } from "svelte";
-  import { accessToken } from "@ci-lab/svelte-oidc-context";
-  import { writable, type Unsubscriber } from "svelte/store";
-  import { deepClone } from "fast-json-patch";
   import GhtPanel from "../../../common/Components/GHTPanel/GHTPanel.svelte";
+
+  // #region Props
+
   export let campaignId = "";
-  const location = useLocation();
 
-  const { actions: campaignActions, state: campaignState } =
-    useCampaignService();
-  const { getCampaignDetail, updateCampaign, clearCampaign } = campaignActions;
-  const { campaignDetail } = campaignState;
+  // #endregion
 
-  let newGameCode = "";
-  const getNewGameCode = () => {
-    newGameCode = $location.search.replace("?selectedGame=", "");
-  };
+  const { actions: campaignActions } = useCampaignService();
+  const { getCampaignDetail, updateCampaign } = campaignActions;
 
   let campaign: Campaign | undefined;
   let campaignName = "";
   let campaignDescription = "";
-
-  const requestCampaign = writable<boolean>(false);
-  let requestingCampaign = false;
   const handleGetCampaign = async (campaignId: string) => {
-    if ($campaignDetail?.id === campaignId) return;
-    if (
-      requestingCampaign ||
-      $accessToken == undefined ||
-      $accessToken.trim() == ""
-    )
-      return;
-    requestingCampaign = true;
-    campaign = undefined;
     try {
-      await getCampaignDetail(campaignId);
-      requestingCampaign = false;
+      campaign = await getCampaignDetail(campaignId);
+      campaignName = campaign?.name ?? "";
+      campaignDescription = campaign?.description ?? "";
     } catch {
-      GlobalError.showErrorMessage("Failed to get campaign");
+      campaign = undefined;
     }
   };
 
-  requestCampaign.subscribe(() => {
-    void handleGetCampaign(campaignId);
-  });
-
-  accessToken.subscribe(() => {
-    void handleGetCampaign(campaignId);
-  });
-
   const handleUpdateCampaignDescription = async () => {
-    await updateCampaign({
-      ...campaign,
-      description: campaignDescription,
-      scenarios: undefined,
-      party: undefined,
-    } as CampaignSummary);
+    if (campaign) {
+      const updatedCampaign = await updateCampaign(campaign, {
+        ...campaign,
+        description: campaignDescription,
+        scenarios: undefined,
+        party: undefined,
+      } as CampaignSummary);
+      campaign.description = updatedCampaign.description;
+    }
   };
 
   const handleUpdateCampaignName = async () => {
-    await updateCampaign({
-      ...campaign,
-      name: campaignName,
-      scenarios: undefined,
-      party: undefined,
-    } as CampaignSummary);
+    if (campaign) {
+      const updatedCampaign = await updateCampaign(campaign, {
+        ...campaign,
+        name: campaignName,
+        scenarios: undefined,
+        party: undefined,
+      } as CampaignSummary);
+      campaign.name = updatedCampaign.name;
+    }
   };
 
-  $: if ($location.search) getNewGameCode();
-  $: if (campaignId !== campaign?.id) requestCampaign.set(true);
-
-  let campaignDetailUnsubscribe: Unsubscriber;
-  onMount(() => {
-    clearCampaign();
-    campaignDetailUnsubscribe = campaignDetail.subscribe(
-      (campaignFromStore) => {
-        campaign = deepClone(campaignFromStore) as Campaign | undefined;
-        campaignName = campaignFromStore?.name ?? "";
-        campaignDescription = campaignFromStore?.description ?? "";
-      }
-    );
-    requestCampaign.set(true);
-  });
-
-  onDestroy(() => {
-    campaignDetailUnsubscribe();
-    clearCampaign();
-  });
+  $: void handleGetCampaign(campaignId);
 </script>
 
 <GhtPanel color="ght-panel">
@@ -117,11 +75,19 @@
       />
     </div>
     <div class="mt-2">
-      <CampaignParty bind:campaign />
+      <CampaignParty
+        campaignId={campaign.id}
+        gameCode={campaign.game}
+        party={campaign.party}
+      />
     </div>
 
     <div class="mt-2">
-      <CampaignScenarios bind:campaign />
+      <CampaignScenarios
+        campaignId={campaign.id}
+        gameCode={campaign.game}
+        campaignScenarios={campaign.scenarios}
+      />
     </div>
   {/if}
 </GhtPanel>

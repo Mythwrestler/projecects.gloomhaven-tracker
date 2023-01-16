@@ -9,20 +9,24 @@
   import List, { Item, Text, Graphic } from "@smui/list";
   import IconButton from "@smui/icon-button";
 
-  import type {
-    Campaign,
-    Scenario as CampaignScenario,
-  } from "../../../models/Campaign";
+  import type { Scenario as CampaignScenario } from "../../../models/Campaign";
   import type { ScenarioSummary } from "../../../models/Content";
 
   import useContentService from "../../../Service/ContentService";
+  import useCampaignService from "../../../Service/CampaignService";
 
   import CampaignScenarioEditor from "./CampaignScenarioEditor.svelte";
+  import { deepClone } from "fast-json-patch";
 
-  export let campaign: Campaign | undefined;
+  export let campaignId: string;
+  export let gameCode: string;
+  export let campaignScenarios: CampaignScenario[];
 
   const { actions: contentActions } = useContentService();
   const { getScenarioSummaries } = contentActions;
+
+  const { actions: campaignActions } = useCampaignService();
+  const { addScenario, updateScenario } = campaignActions;
 
   const scenarioSummaries = writable<ScenarioSummary[]>([]);
   const handleGetScenarioSummaries = async (gameCode: string) => {
@@ -34,35 +38,73 @@
     }
   };
 
-  let campaignScenarios: CampaignScenario[] = [];
+  const buildCampaignScenario = (
+    fromCampaign: CampaignScenario,
+    fromSummary: ScenarioSummary
+  ) => {
+    return {
+      scenarioContentCode: fromSummary.contentCode,
+      description: fromSummary.description,
+      scenarioNumber: fromSummary.sortOrder,
+      name: fromSummary.name,
+      isClosed: fromCampaign.isClosed,
+      isCompleted: fromCampaign.isCompleted,
+    };
+  };
 
+  const scenarioListing = writable<CampaignScenario[]>([]);
   const scenarioSummaryProcessed = writable<boolean>(false);
-  const handleProcessScenarioSummaries = () => {
-    if (campaign) {
-      campaignScenarios = (campaign.scenarios ?? [])
-        .map((cs) => {
-          let scenarioForLoad = $scenarioSummaries.find(
-            (ss) => ss.contentCode === cs.scenarioContentCode
-          ) as ScenarioSummary;
-          return {
-            scenarioContentCode: scenarioForLoad.contentCode,
-            description: scenarioForLoad.description,
-            scenarioNumber: scenarioForLoad.sortOrder,
-            name: scenarioForLoad.name,
-            isClosed: cs.isClosed,
-            isCompleted: cs.isCompleted,
-          };
-        })
+  const handleProcessScenarioSummaries = (
+    scenarioSummaries: ScenarioSummary[],
+    campaignScenarios: CampaignScenario[]
+  ) => {
+    const listing = campaignScenarios
+      .map((cs) => {
+        let scenarioSummary = scenarioSummaries.find(
+          (ss) => ss.contentCode === cs.scenarioContentCode
+        ) as ScenarioSummary;
+        return buildCampaignScenario(cs, scenarioSummary);
+      })
+      .filter((cs) => cs !== undefined)
+      .sort((a: CampaignScenario, b: CampaignScenario) =>
+        a.scenarioNumber > b.scenarioNumber ? 1 : -1
+      );
+    scenarioListing.set(listing);
+    scenarioSummaryProcessed.set(true);
+  };
+
+  const handleAddScenario = async (scenarioToAdd: CampaignScenario) => {
+    const scenario = await addScenario(campaignId, scenarioToAdd);
+    if (scenario) updateScenarioListing(scenario);
+  };
+
+  const handleUpdateScenario = async (scenarioToUpdate: CampaignScenario) => {
+    const scenario = await updateScenario(campaignId, scenarioToUpdate);
+    updateScenarioListing(scenario);
+  };
+
+  const updateScenarioListing = (scenario: CampaignScenario) => {
+    let scenarioSummary = $scenarioSummaries.find(
+      (ss) => ss.contentCode === scenario.scenarioContentCode
+    ) as ScenarioSummary;
+    const scenarioForUpdate = buildCampaignScenario(scenario, scenarioSummary);
+    scenarioListing.update((currentListing) => {
+      const listing = deepClone(currentListing) as CampaignScenario[];
+      const location = listing.findIndex(
+        (scn) =>
+          scn.scenarioContentCode === scenarioForUpdate.scenarioContentCode
+      );
+      if (location === -1) listing.push(scenarioForUpdate);
+      else listing.splice(location, 1, scenarioForUpdate);
+      return listing
         .filter((cs) => cs !== undefined)
         .sort((a: CampaignScenario, b: CampaignScenario) =>
           a.scenarioNumber > b.scenarioNumber ? 1 : -1
         );
-      scenarioSummaryProcessed.set(true);
-    }
+    });
   };
 
   let scenarioToEdit: CampaignScenario | undefined;
-  let isNewScenario = false;
   let displayEditScenario = false;
 
   const getIconForScenarioState = (
@@ -73,22 +115,23 @@
     return undefined;
   };
 
-  $: if (campaign?.game) void handleGetScenarioSummaries(campaign.game);
-  $: if ($scenarioSummaries.length !== 0 && campaign?.scenarios)
-    handleProcessScenarioSummaries();
+  $: void handleGetScenarioSummaries(gameCode);
+  $: if ($scenarioSummaries.length !== 0)
+    handleProcessScenarioSummaries($scenarioSummaries, campaignScenarios);
 </script>
 
-{#if campaign && $scenarioSummaries.length > 0}
-  <Card>
-    <CardContent>
-      <div class="mdc-typography--headline5 text-center">Scenarios</div>
-      <hr class="my-1" />
+<Card>
+  <CardContent>
+    <div class="mdc-typography--headline5 text-center">Scenarios</div>
+    <hr class="my-1" />
+    {#if !$scenarioSummaryProcessed}
+      <div>...Loading</div>
+    {:else}
       <List singleSelection>
-        {#each campaignScenarios as scenario}
+        {#each $scenarioListing as scenario}
           <Item
             on:SMUI:action={() => {
               scenarioToEdit = scenario;
-              isNewScenario = false;
               displayEditScenario = true;
             }}
           >
@@ -101,32 +144,32 @@
           </Item>
         {/each}
       </List>
-    </CardContent>
-    <CardActions>
-      {#if $scenarioSummaryProcessed}
-        <CardActionIcons>
-          <IconButton
-            class="material-icons"
-            aria-label="Add Scenario"
-            title="Add Scenario"
-            on:click={() => {
-              scenarioToEdit = undefined;
-              isNewScenario = true;
-              displayEditScenario = true;
-            }}
-          >
-            add_circle
-          </IconButton>
-        </CardActionIcons>
-      {/if}
-    </CardActions>
-  </Card>
+    {/if}
+  </CardContent>
+  <CardActions>
+    {#if $scenarioSummaryProcessed}
+      <CardActionIcons>
+        <IconButton
+          class="material-icons"
+          aria-label="Add Scenario"
+          title="Add Scenario"
+          on:click={() => {
+            scenarioToEdit = undefined;
+            displayEditScenario = true;
+          }}
+        >
+          add_circle
+        </IconButton>
+      </CardActionIcons>
+    {/if}
+  </CardActions>
+</Card>
 
-  <CampaignScenarioEditor
-    bind:open={displayEditScenario}
-    gameCode={campaign.game}
-    campaignId={campaign.id}
-    campaignScenarios={campaign.scenarios}
-    scenario={scenarioToEdit}
-  />
-{/if}
+<CampaignScenarioEditor
+  bind:open={displayEditScenario}
+  {gameCode}
+  campaignScenarios={$scenarioListing}
+  scenario={scenarioToEdit}
+  addScenario={handleAddScenario}
+  updateScenario={handleUpdateScenario}
+/>

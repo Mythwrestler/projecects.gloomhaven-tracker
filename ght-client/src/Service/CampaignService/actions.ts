@@ -8,22 +8,31 @@ import type {
 } from "../../models/Campaign";
 
 export interface CampaignActions {
-  getCampaignSummaries: () => Promise<void>;
-  getCampaignDetail: (campaignId: string) => Promise<void>;
-  createCampaign: (campaign: Campaign) => Promise<void>;
-  updateCampaign: (campaign: CampaignSummary) => Promise<void>;
-  clearCampaign: () => void;
-  addPartyMember: (campaignId: string, character: Character) => Promise<void>;
-  updatePartyMember: (
-    campaignId: string,
-    character: Character
-  ) => Promise<void>;
+  getCampaignSummaries: () => Promise<CampaignSummary[]>;
+  getCampaignDetail: (campaignId: string) => Promise<Campaign | undefined>;
+  createCampaign: (campaign: Campaign) => Promise<Campaign | undefined>;
+  updateCampaign: (
+    originalCampaign: Campaign,
+    updatedCampaignSummary: CampaignSummary
+  ) => Promise<Campaign>;
   getPartyMemberDetails: (
     campaignId: string,
     characterContentCode: string
-  ) => Promise<void>;
-  addScenario: (campaignId: string, scenario: Scenario) => Promise<void>;
-  updateScenario: (campaignId: string, scenario: Scenario) => Promise<void>;
+  ) => Promise<Character | undefined>;
+  addPartyMember: (
+    campaignId: string,
+    character: Character
+  ) => Promise<Character | undefined>;
+  updatePartyMember: (
+    campaignId: string,
+    originalCharacter: Character,
+    updatedCharacter: Character
+  ) => Promise<Character>;
+  addScenario: (
+    campaignId: string,
+    scenario: Scenario
+  ) => Promise<Scenario | undefined>;
+  updateScenario: (campaignId: string, scenario: Scenario) => Promise<Scenario>;
 }
 
 export const useCampaignServiceActions = (
@@ -37,10 +46,9 @@ export const useCampaignServiceActions = (
       properties.includes("getCampaignDetail") &&
       properties.includes("createCampaign") &&
       properties.includes("updateCampaign") &&
-      properties.includes("clearCampaign") &&
+      properties.includes("getPartyMemberDetails") &&
       properties.includes("addPartyMember") &&
       properties.includes("updatePartyMember") &&
-      properties.includes("getPartyMemberDetails") &&
       properties.includes("addScenario") &&
       properties.includes("updateScenario")
     )
@@ -55,7 +63,6 @@ export const useCampaignServiceActions = (
     getCampaignDetail: notImplemented,
     createCampaign: notImplemented,
     updateCampaign: notImplemented,
-    clearCampaign: notImplemented,
     addPartyMember: notImplemented,
     updatePartyMember: notImplemented,
     getPartyMemberDetails: notImplemented,
