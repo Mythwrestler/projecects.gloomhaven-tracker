@@ -1,14 +1,14 @@
 import { getContext } from "svelte";
 import ENV_VARS from "../../common/Environment";
+import type { Combat, CombatSummary } from "../../models/Combat";
 
 export interface CombatActions {
-  getCombatSummaries: () => Promise<void>;
-  getCombatDetail: (combatId: string) => Promise<void>;
-  clearCombatDetail: () => void;
+  getCombatSummaries: () => Promise<CombatSummary[]>;
+  getCombatDetail: (combatId: string) => Promise<Combat | undefined>;
   createCombat: (
     campaignId: string,
     scenarioContentCode: string
-  ) => Promise<void>;
+  ) => Promise<Combat | undefined>;
 }
 
 export const useCombatServiceActions = (
@@ -20,7 +20,6 @@ export const useCombatServiceActions = (
     if (
       properties.includes("getCombatSummaries") &&
       properties.includes("getCombatDetail") &&
-      properties.includes("clearCombatDetail") &&
       properties.includes("createCombat")
     )
       return actions;
@@ -32,7 +31,6 @@ export const useCombatServiceActions = (
   return {
     getCombatSummaries: notImplemented,
     getCombatDetail: notImplemented,
-    clearCombatDetail: notImplemented,
     createCombat: notImplemented,
   };
 };
