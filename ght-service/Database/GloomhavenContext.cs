@@ -48,6 +48,7 @@ public partial class GloomhavenContext : DbContext
     public DbSet<MonsterActiveEffectDAO> CombatMonsterActiveEffects => Set<MonsterActiveEffectDAO>();
     public DbSet<Models.Combat.CharacterDAO> CombatCharacters => Set<Models.Combat.CharacterDAO>();
     public DbSet<CharacterActiveEffectDAO> CombatCharacterActiveEffects => Set<CharacterActiveEffectDAO>();
+    public DbSet<CharacterCombatHubClientDAO> CombatCharacterCombatHubClients => Set<CharacterCombatHubClientDAO>();
     public DbSet<Models.Combat.ObjectiveDAO> CombatObjectives => Set<Models.Combat.ObjectiveDAO>();
     public DbSet<ObjectiveActiveEffectDAO> CombatObjectiveActiveEffects => Set<ObjectiveActiveEffectDAO>();
     public DbSet<Models.Combat.ElementDAO> CombatElements => Set<Models.Combat.ElementDAO>();

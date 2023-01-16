@@ -1,6 +1,6 @@
 using GloomhavenTracker.Service.Services;
 using Microsoft.AspNetCore.SignalR;
-using GloomhavenTracker.Service.Models.Hub;
+using GloomhavenTracker.Service.Models.Combat.Hub;
 
 namespace GloomhavenTracker.Service.Hubs;
 

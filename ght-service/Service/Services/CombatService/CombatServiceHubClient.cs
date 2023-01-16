@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using GloomhavenTracker.Service.Models;
-using GloomhavenTracker.Service.Models.Hub;
+using GloomhavenTracker.Service.Models.Combat.Hub;
 
 namespace GloomhavenTracker.Service.Services;
 

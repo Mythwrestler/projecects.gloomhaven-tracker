@@ -6,8 +6,8 @@ using AutoMapper;
 using GloomhavenTracker.Service.Models;
 using GloomhavenTracker.Service.Models.Campaign;
 using GloomhavenTracker.Service.Models.Combat;
+using GloomhavenTracker.Service.Models.Combat.Hub;
 using GloomhavenTracker.Service.Models.Content;
-using GloomhavenTracker.Service.Models.Hub;
 using GloomhavenTracker.Service.Repos;
 using Microsoft.Extensions.Logging;
 
@@ -82,7 +82,8 @@ public partial class CombatServiceImplantation : CombatService
             scenario: scenario,
             scenarioLevel: scenarioLevel,
             monsterModifierDeck: new AttackModifierDeck(game.BaseModifierDeck),
-            new List<HubClient>()
+            new List<HubClient>(),
+            new List<Models.Combat.Combatant.Character>()
         );
 
         combatRepo.CreateCombat(newCombat);

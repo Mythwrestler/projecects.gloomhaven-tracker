@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using GloomhavenTracker.Database.Models;
-using GloomhavenTracker.Service.Models.Hub;
+using GloomhavenTracker.Service.Models.Combat.Hub;
 using Microsoft.EntityFrameworkCore;
 
 namespace GloomhavenTracker.Service.Repos;

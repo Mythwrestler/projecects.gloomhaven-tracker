@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using GloomhavenTracker.Database;
-using GloomhavenTracker.Service.Models.Hub;
+using GloomhavenTracker.Service.Models.Combat.Hub;
 
 namespace GloomhavenTracker.Service.Repos;
 

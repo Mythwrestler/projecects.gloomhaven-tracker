@@ -24,7 +24,7 @@ using GloomhavenTracker.Service.Models;
 using GloomhavenTracker.Service.Helpers;
 using GloomhavenTracker.Service.Models.Campaign;
 using GloomhavenTracker.Service.Models.Combat;
-using GloomhavenTracker.Service.Models.Hub;
+using GloomhavenTracker.Service.Models.Combat.Hub;
 
 var builder = WebApplication.CreateBuilder(args);
 

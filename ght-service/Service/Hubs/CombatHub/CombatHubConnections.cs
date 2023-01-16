@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GloomhavenTracker.Service.Models;
-using GloomhavenTracker.Service.Models.Hub;
+using GloomhavenTracker.Service.Models.Combat.Hub;
+using GloomhavenTracker.Service.Models.Combat;
 using Microsoft.AspNetCore.Connections.Features;
 using Microsoft.AspNetCore.SignalR;
 
@@ -12,9 +13,9 @@ namespace GloomhavenTracker.Service.Hubs;
 //[Authorize(Roles="user,superuser")]
 public partial class CombatHub : Hub
 {
-    public async Task JoinCombat(Guid combatId)
+    public async Task JoinCombat(CombatRequestDTO combatRequest)
     {
-        if (combatService.CombatExists(combatId))
+        if (combatService.CombatExists(combatRequest.CombatId))
         {
             if (Context.UserIdentifier != null)
             {
@@ -22,7 +23,7 @@ public partial class CombatHub : Hub
                 User user = userService.GetUserById(userId);
 
                 string clientId = Context.ConnectionId;
-                string groupId = combatId.ToString();
+                string groupId = combatRequest.CombatId.ToString();
 
                 await Groups.AddToGroupAsync(clientId, groupId);
                 hubClientTracker.RegisterClient(groupId, clientId, user);
@@ -43,13 +44,13 @@ public partial class CombatHub : Hub
                     "JoinCombatResult",
                     new HubRequestResult()
                     {
-                        data = combatId.ToString()
+                        data = combatRequest.CombatId.ToString()
                     }
                 );
 
-                List<HubClient> registeredClients = hubClientTracker.GetClientsForGroup(combatId.ToString());
+                List<HubClient> registeredClients = hubClientTracker.GetClientsForGroup(combatRequest.CombatId.ToString());
 
-                await Clients.Group(combatId.ToString()).SendAsync(
+                await Clients.Group(combatRequest.CombatId.ToString()).SendAsync(
                     "ActiveUsers",
                     new HubRequestResult()
                     {
@@ -64,7 +65,7 @@ public partial class CombatHub : Hub
                 "JoinCombatResult",
                 new HubRequestResult()
                 {
-                    errorMessage = $"Could Not Find Combat Id {combatId.ToString()}"
+                    errorMessage = $"Could Not Find Combat Id {combatRequest.CombatId.ToString()}"
                 }
             );
         }
