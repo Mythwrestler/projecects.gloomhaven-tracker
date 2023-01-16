@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onDestroy, onMount } from "svelte";
   import { useNavigate } from "svelte-navigator";
 
   import Dialog, {
@@ -15,18 +14,16 @@
   import type { Campaign } from "../../../models/Campaign";
   import type { ContentItemSummary } from "../../../models/Content";
   import { v4 as uuid } from "uuid";
-  import { writable, type Unsubscriber } from "svelte/store";
+  import { writable } from "svelte/store";
 
-  import useContentServiceThick from "../../../Service/ContentService";
+  import useContentService from "../../../Service/ContentService";
   import useCampaignService from "../../../Service/CampaignService";
 
-  const { actions: contentThickActions } = useContentServiceThick();
-  const { getAvailableGames: getAvailableGamesThick } = contentThickActions;
+  const { actions: contentActions } = useContentService();
+  const { getAvailableGames } = contentActions;
 
-  const { actions: campaignActions, state: campaignState } =
-    useCampaignService();
-  const { createCampaign, clearCampaign } = campaignActions;
-  const { campaignDetail } = campaignState;
+  const { actions: campaignActions } = useCampaignService();
+  const { createCampaign: createCampaign } = campaignActions;
 
   const navigate = useNavigate();
 
@@ -35,7 +32,7 @@
   const availableGames = writable<ContentItemSummary[]>([]);
   const handleGetGames = async () => {
     try {
-      const games = await getAvailableGamesThick();
+      const games = await getAvailableGames();
       availableGames.set(games);
     } catch {
       availableGames.set([]);
@@ -56,25 +53,15 @@
   let newCampaign: Campaign = { ...defaultNewCampaign() };
 
   const handleNewCampaign = async () => {
-    await createCampaign({ ...newCampaign });
+    const campaign = await createCampaign(newCampaign);
     newCampaign = { ...defaultNewCampaign() };
+    if (campaign) navigate(`/campaigns/${campaign.id}`);
   };
-
-  let campaignDetailUnsubscribe: Unsubscriber;
-  onMount(() => {
-    clearCampaign();
-    campaignDetailUnsubscribe = campaignDetail.subscribe((campaign) => {
-      if (campaign) navigate(`/campaigns/${campaign.id}`);
-    });
-    void handleGetGames();
-  });
 
   const gameSelectKey = (contentCode: string | undefined) =>
     `${contentCode ?? ""}`;
 
-  onDestroy(() => {
-    campaignDetailUnsubscribe();
-  });
+  $: open && void handleGetGames();
 </script>
 
 <Dialog

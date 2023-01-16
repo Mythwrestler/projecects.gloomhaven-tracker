@@ -21,22 +21,24 @@
   } from "../../../models/Content";
 
   import useContentService from "../../../Service/ContentService";
-  import useCampaignService from "../../../Service/CampaignService";
 
-  const { actions: contentActionsThick } = useContentService();
-  const {
-    getCharacterDefault: getCharacterDefaultThick,
-    getCharacterSummaries: getCharacterSummariesThick,
-  } = contentActionsThick;
+  const { actions: contentActions } = useContentService();
+  const { getCharacterDefault, getCharacterSummaries } = contentActions;
 
-  const { actions: campaignActions } = useCampaignService();
-  const { addPartyMember, updatePartyMember } = campaignActions;
+  // #region Props
 
   export let open: boolean;
   export let gameCode: string;
-  export let campaignId: string;
   export let campaignParty: CampaignCharacter[];
   export let campaignCharacter: CampaignCharacter | undefined;
+  export let addPartyMember: (
+    characterToAdd: CampaignCharacter
+  ) => Promise<void>;
+  export let updatePartyMember: (
+    characterToAdd: CampaignCharacter
+  ) => Promise<void>;
+
+  // #endregion
 
   let name: string;
   let characterContentCode: string;
@@ -56,8 +58,8 @@
   const characterDefault = writable<ContentCharacter | undefined>(undefined);
   const handleGetContent = async (gameCode: string, characterCode: string) => {
     try {
-      const character = await getCharacterDefaultThick(gameCode, characterCode);
-      const summaries = await getCharacterSummariesThick(gameCode);
+      const character = await getCharacterDefault(gameCode, characterCode);
+      const summaries = await getCharacterSummaries(gameCode);
       characterDefault.set(character);
       characterSummaries.set(summaries);
     } catch {
@@ -103,9 +105,9 @@
       characterContentCode,
     };
     if (isNewCharacter) {
-      void addPartyMember(campaignId, characterToSave);
+      void addPartyMember(characterToSave);
     } else {
-      void updatePartyMember(campaignId, characterToSave);
+      void updatePartyMember(characterToSave);
     }
     open = false;
   };

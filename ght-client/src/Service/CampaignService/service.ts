@@ -1,8 +1,6 @@
 import { setContext } from "svelte";
-import { get, type Readable, type Writable } from "svelte/store";
-import { compare as patchCompare, deepClone } from "fast-json-patch";
+import { get, type Readable } from "svelte/store";
 import ENV_VARS from "../../common/Environment";
-import * as GlobalError from "../Error";
 import { getAPI, patchAPI, postAPI, putAPI } from "../../common/Utils/API";
 import type {
   Campaign,
@@ -11,281 +9,212 @@ import type {
   Scenario,
 } from "../../models/Campaign";
 import { useCampaignServiceActions, type CampaignActions } from "./actions";
-import { getCampaignState, useCampaignServiceState } from "./state";
+import * as GlobalError from "../Error";
+import { compare as patchCompare, deepClone } from "fast-json-patch";
 
 class CampaignService {
-  private authToken: Readable<string | undefined>;
-  private campaignSummaries: Writable<CampaignSummary[]>;
-  private campaignDetail: Writable<Campaign | undefined>;
+  private accessToken: Readable<string | undefined>;
 
-  constructor(authToken: Readable<string | undefined>, stateKey: string) {
-    const { campaignDetail, campaignSummaries } = getCampaignState(stateKey);
-    this.authToken = authToken;
-    this.campaignSummaries = campaignSummaries;
-    this.campaignDetail = campaignDetail;
+  constructor(accessToken: Readable<string | undefined>) {
+    this.accessToken = accessToken;
   }
 
-  private getCampaignListing = async (): Promise<void> => {
-    const token = get(this.authToken);
+  private getCampaignSummaries = async (): Promise<CampaignSummary[]> => {
     try {
-      const result = await getAPI<CampaignSummary[]>(`campaigns`, token);
-      if (result && Array.isArray(result)) this.campaignSummaries.set(result);
-      else throw new Error("Invalid response.");
-    } catch (err: unknown) {
-      GlobalError.showErrorMessage(
-        `Failed to get Campaign Listing ${JSON.stringify(err)}`
-      );
-    }
-  };
-
-  private getCampaignDetail = async (campaignId: string): Promise<void> => {
-    const token = get(this.authToken);
-    try {
-      const result = await getAPI<Campaign>(`campaigns/${campaignId}`, token);
-      if (result) this.campaignDetail.set(result);
-      else throw new Error("Invalid response.");
+      const token: string | undefined = get(this.accessToken);
+      return await getAPI<CampaignSummary[]>(`campaigns`, token);
     } catch (err: unknown) {
       GlobalError.showErrorMessage(
         `Failed To Retrieve Campaign ${JSON.stringify(err)}`
       );
+      return [];
     }
   };
 
-  private createCampaign = async (campaign: Campaign): Promise<void> => {
-    const token = get(this.authToken);
-    let result: Campaign;
+  private getCampaignDetail = async (
+    campaignId: string
+  ): Promise<Campaign | undefined> => {
     try {
-      result = await postAPI<Campaign>("campaigns", token, {
+      const token: string | undefined = get(this.accessToken);
+      return await getAPI<Campaign>(`campaigns/${campaignId}`, token);
+    } catch (err: unknown) {
+      GlobalError.showErrorMessage(
+        `Failed To Retrieve Campaign ${JSON.stringify(err)}`
+      );
+      return undefined;
+    }
+  };
+
+  private createCampaign = async (
+    campaign: Campaign
+  ): Promise<Campaign | undefined> => {
+    try {
+      const token: string | undefined = get(this.accessToken);
+      return await postAPI<Campaign>("campaigns", token, {
         id: campaign.id,
         name: campaign.name,
         game: campaign.game,
       });
-      if (result) this.campaignDetail.set(result);
     } catch (err: unknown) {
       GlobalError.showErrorMessage(
-        `Failed To Create a New Campaign ${JSON.stringify(err)}`
+        `Failed to create Campaign ${JSON.stringify(err)}`
       );
+      return undefined;
     }
   };
 
-  public updateCampaign = async (
-    campaignSummaryToReview: CampaignSummary
-  ): Promise<void> => {
-    const token = get(this.authToken);
-    const currentCampaign = get(this.campaignDetail);
-    if (currentCampaign == undefined) return;
-    if (campaignSummaryToReview.id !== currentCampaign.id) return;
-    const currentCampaignSummary: CampaignSummary = {
-      id: currentCampaign.id,
-      game: currentCampaign.game,
-      editable: currentCampaign.editable,
-      name: currentCampaign.name,
-      description: currentCampaign.description,
-    };
-    const patchUpdatesToApply = patchCompare(
-      currentCampaignSummary,
-      campaignSummaryToReview
-    );
-    if (patchUpdatesToApply.length == 0) return;
+  private updateCampaign = async (
+    originalCampaign: Campaign,
+    updatedCampaignSummary: CampaignSummary
+  ): Promise<Campaign> => {
     try {
-      const result = await patchAPI<CampaignSummary>(
-        `campaigns/${currentCampaign.id}`,
-        token,
-        patchUpdatesToApply
+      const token: string | undefined = get(this.accessToken);
+      const currentCampaign = deepClone(originalCampaign) as Campaign;
+      const currentCampaignSummary: CampaignSummary = {
+        id: currentCampaign.id,
+        game: currentCampaign.game,
+        editable: currentCampaign.editable,
+        name: currentCampaign.name,
+        description: currentCampaign.description,
+      };
+      const patchUpdatesToApply = patchCompare(
+        currentCampaignSummary,
+        updatedCampaignSummary
       );
-      if (result) {
-        this.campaignDetail.update((campaign) => {
-          if (
-            campaign == undefined ||
-            campaign.id !== campaignSummaryToReview.id
-          )
-            return campaign;
-          const updatedCampaign = { ...campaign };
-          updatedCampaign.name = result.name;
-          updatedCampaign.description = result.description;
-          return updatedCampaign;
-        });
+      if (patchUpdatesToApply.length == 0) {
+        return currentCampaign;
+      } else {
+        const result = await patchAPI<CampaignSummary>(
+          `campaigns/${currentCampaign.id}`,
+          token,
+          patchUpdatesToApply
+        );
+        if (result) {
+          currentCampaign.name = result.name;
+          currentCampaign.description = result.description;
+        }
       }
+      return currentCampaign;
     } catch (err: unknown) {
-      this.campaignDetail.set(currentCampaign);
       GlobalError.showErrorMessage(
-        `Failed to update Campaign Summary ${JSON.stringify(err)}`
+        `Failed to update Campaign ${JSON.stringify(err)}`
       );
+      return originalCampaign;
     }
   };
 
-  public clearCampaign = () => {
-    this.campaignDetail.set(undefined);
+  private getPartyMemberDetails = async (
+    campaignId: string,
+    characterContentCode: string
+  ): Promise<Character | undefined> => {
+    try {
+      const token: string | undefined = get(this.accessToken);
+      return await getAPI<Character>(
+        `campaigns/${campaignId}/characters/${characterContentCode}`,
+        token
+      );
+    } catch (err: unknown) {
+      GlobalError.showErrorMessage(
+        `Failed to retrieve campaign character ${JSON.stringify(err)}`
+      );
+      return undefined;
+    }
   };
 
-  //#region Campaign Party
-  public addPartyMember = async (
+  private addPartyMember = async (
     campaignId: string,
     character: Character
-  ): Promise<void> => {
-    const token = get(this.authToken);
+  ): Promise<Character | undefined> => {
     try {
-      const result = await postAPI<Character>(
+      const token: string | undefined = get(this.accessToken);
+      return await postAPI<Character>(
         `campaigns/${campaignId}/characters`,
         token,
         character
       );
-      if (result) {
-        this.campaignDetail.update((campaign) => {
-          if (campaign === undefined || campaign.id != campaignId)
-            return campaign;
-          const updatedCampaign = deepClone(campaign) as Campaign;
-          updatedCampaign.party.push(result);
-          return updatedCampaign;
-        });
-      }
     } catch (err: unknown) {
-      GlobalError.showErrorMessage("Failed to update Campaign Summary");
+      GlobalError.showErrorMessage(
+        `Failed to add campaign character ${JSON.stringify(err)}`
+      );
+      return undefined;
     }
   };
 
-  public updatePartyMember = async (
+  private updatePartyMember = async (
     campaignId: string,
-    character: Character
-  ): Promise<void> => {
-    const token = get(this.authToken);
-    const campaign = get(this.campaignDetail);
-    if (!campaign) return;
-    const { party } = campaign;
-    const currentCharacter = party.find(
-      (chr) => (chr.characterContentCode = character.characterContentCode)
-    );
-    if (!currentCharacter) return;
-
-    const patchUpdatesToApply = patchCompare(currentCharacter, character);
-    if (patchUpdatesToApply.length == 0) return;
+    originalCharacter: Character,
+    updatedCharacter: Character
+  ): Promise<Character> => {
+    const currentCharacter = deepClone(originalCharacter) as Character;
 
     try {
-      const result = await patchAPI<Character>(
-        `campaigns/${campaignId}/characters/${character.characterContentCode}`,
-        token,
-        patchUpdatesToApply
+      const token: string | undefined = get(this.accessToken);
+      const patchUpdatesToApply = patchCompare(
+        currentCharacter,
+        updatedCharacter
       );
-      if (result) {
-        this.campaignDetail.update((campaign) => {
-          if (campaign === undefined || campaign.id != campaignId)
-            return campaign;
-          const updatedCampaign = deepClone(campaign) as Campaign;
-          updatedCampaign.party.splice(
-            campaign.party.findIndex(
-              (chr) => chr.characterContentCode === result.characterContentCode
-            ),
-            1,
-            result
-          );
-          return updatedCampaign;
-        });
+
+      if (patchUpdatesToApply.length == 0) {
+        return currentCharacter;
+      } else {
+        const result = await patchAPI<Character>(
+          `campaigns/${campaignId}/characters/${currentCharacter.characterContentCode}`,
+          token,
+          patchUpdatesToApply
+        );
+        return result;
       }
     } catch (err: unknown) {
-      GlobalError.showErrorMessage("Failed to update Campaign Summary");
+      GlobalError.showErrorMessage(
+        `Failed to update campaign character ${JSON.stringify(err)}`
+      );
+      return currentCharacter;
     }
   };
 
-  public getPartyMemberDetails = async (
-    campaignId: string,
-    characterContentCode: string
-  ): Promise<void> => {
-    const token = get(this.authToken);
-    try {
-      const result = await getAPI<Character>(
-        `campaigns/${campaignId}/characters/${characterContentCode}`,
-        token
-      );
-      if (result) {
-        this.campaignDetail.update((campaign) => {
-          if (campaign === undefined || campaign.id != campaignId)
-            return campaign;
-          const updatedCampaign = deepClone(campaign) as Campaign;
-          updatedCampaign.party.splice(
-            campaign.party.findIndex(
-              (chr) => chr.characterContentCode === result.characterContentCode
-            ),
-            1,
-            result
-          );
-          return updatedCampaign;
-        });
-      }
-    } catch (err: unknown) {
-      GlobalError.showErrorMessage("Failed to retrieve character details");
-    }
-  };
-
-  //#endregion
-
-  //#region Campaign Scenarios
-  public addScenario = async (
+  private addScenario = async (
     campaignId: string,
     scenario: Scenario
-  ): Promise<void> => {
-    const token = get(this.authToken);
+  ): Promise<Scenario | undefined> => {
     try {
-      const result = await postAPI<Scenario>(
+      const token: string | undefined = get(this.accessToken);
+      return await postAPI<Scenario>(
         `campaigns/${campaignId}/scenarios`,
         token,
         scenario
       );
-      if (result) {
-        this.campaignDetail.update((campaign) => {
-          if (campaign === undefined || campaign.id !== campaignId)
-            return campaign;
-          const updatedCampaign = deepClone(campaign) as Campaign;
-          updatedCampaign.scenarios.push(result);
-          return updatedCampaign;
-        });
-      }
     } catch (err: unknown) {
-      GlobalError.showErrorMessage("Failed to add scenario to campaign");
+      GlobalError.showErrorMessage(
+        `Failed to add campaign scenario ${JSON.stringify(err)}`
+      );
+      return undefined;
     }
   };
 
-  public updateScenario = async (
+  private updateScenario = async (
     campaignId: string,
     scenario: Scenario
-  ): Promise<void> => {
-    const token = get(this.authToken);
+  ): Promise<Scenario> => {
     try {
-      const result = await putAPI<Scenario>(
+      const token: string | undefined = get(this.accessToken);
+      return await putAPI<Scenario>(
         `campaigns/${campaignId}/scenarios/${scenario.scenarioContentCode}`,
         token,
         scenario
       );
-      if (result) {
-        this.campaignDetail.update((campaign) => {
-          if (campaign === undefined || campaign.id !== campaignId)
-            return campaign;
-          const updatedCampaign = deepClone(campaign) as Campaign;
-          updatedCampaign.scenarios.splice(
-            campaign.scenarios.findIndex(
-              (scn) => scn.scenarioContentCode === result.scenarioContentCode
-            ),
-            1,
-            result
-          );
-          return updatedCampaign;
-        });
-      }
     } catch (err: unknown) {
-      GlobalError.showErrorMessage("Failed to update scenario for campaign");
+      throw err as Error;
     }
   };
 
-  //#endregion
-
   public actions: CampaignActions = {
-    getCampaignSummaries: this.getCampaignListing,
+    getCampaignSummaries: this.getCampaignSummaries,
     getCampaignDetail: this.getCampaignDetail,
     createCampaign: this.createCampaign,
     updateCampaign: this.updateCampaign,
-    clearCampaign: this.clearCampaign,
+    getPartyMemberDetails: this.getPartyMemberDetails,
     addPartyMember: this.addPartyMember,
     updatePartyMember: this.updatePartyMember,
-    getPartyMemberDetails: this.getPartyMemberDetails,
     addScenario: this.addScenario,
     updateScenario: this.updateScenario,
   };
@@ -293,21 +222,18 @@ class CampaignService {
 
 export const defineCampaignService = (
   accessToken: Readable<string | undefined>,
-  stateKey: string = ENV_VARS.CONTEXT.CampaignService.State,
   actionKey: string = ENV_VARS.CONTEXT.CampaignService.Actions
 ): CampaignService => {
-  const service = new CampaignService(accessToken, stateKey);
+  const service = new CampaignService(accessToken);
   setContext<CampaignActions>(actionKey, service.actions);
   return service;
 };
 
 export const useCampaignService = (
-  actionKey: string = ENV_VARS.CONTEXT.CampaignService.Actions,
-  stateKey: string = ENV_VARS.CONTEXT.CampaignService.State
+  actionKey: string = ENV_VARS.CONTEXT.CampaignService.Actions
 ) => {
   return {
     actions: useCampaignServiceActions(actionKey),
-    state: useCampaignServiceState(stateKey),
   };
 };
 

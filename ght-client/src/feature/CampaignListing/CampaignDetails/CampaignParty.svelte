@@ -9,26 +9,85 @@
   import List, { Item, Text, PrimaryText, SecondaryText } from "@smui/list";
   import IconButton from "@smui/icon-button";
 
-  import type { Campaign, Character } from "../../../models/Campaign";
+  import type { Character } from "../../../models/Campaign";
   import CampaignCharacterEditor from "./CampaignCharacterEditor.svelte";
   import useContentService from "../../../Service/ContentService";
   import useCampaignService from "../../../Service/CampaignService";
-  import { onMount } from "svelte";
   import type { ContentItemSummary } from "../../../models/Content";
-  export let campaign: Campaign;
+  import { onMount } from "svelte";
+  import { deepClone } from "fast-json-patch";
+
+  // #region Props
+  export let gameCode: string;
+  export let campaignId: string;
+  export let party: Character[];
+  // #endregion
 
   const { actions: contentActions } = useContentService();
   const { getCharacterSummaries } = contentActions;
 
   const { actions: campaignActions } = useCampaignService();
-  const { getPartyMemberDetails } = campaignActions;
+  const { getPartyMemberDetails, addPartyMember, updatePartyMember } =
+    campaignActions;
+
+  const characterSummaries = writable<ContentItemSummary[]>([]);
+  const handleGetCharacterSummaries = async (gameCode: string) => {
+    try {
+      const summaries = await getCharacterSummaries(gameCode);
+      characterSummaries.set(summaries);
+    } catch {
+      characterSummaries.set([]);
+    }
+  };
+
+  const usedCharacters = writable<string[]>([]);
+  const characterListing = writable<Character[]>([]);
+  const characterListingProcessed = writable<boolean>(false);
+  const processPartyCharacters = async (party: Character[]) => {
+    const partyMembers = deepClone(party) as Character[];
+    partyMembers.forEach((char) => {
+      if (!$usedCharacters.includes(char.characterContentCode))
+        usedCharacters.update((usedCharacters) => [
+          ...usedCharacters,
+          char.characterContentCode,
+        ]);
+    });
+    const detailRequests = partyMembers.map((char) =>
+      getPartyMemberDetails(campaignId, char.characterContentCode)
+    );
+    try {
+      const results = await Promise.all(detailRequests);
+      results
+        .filter((result) => result !== undefined)
+        .forEach((result) => {
+          const characterToSet = partyMembers.find(
+            (char) => char.characterContentCode === result?.characterContentCode
+          );
+          if (characterToSet) {
+            characterToSet.experience = (result as Character).experience;
+            characterToSet.gold = (result as Character).gold;
+            characterToSet.items = (result as Character).items;
+            characterToSet.perkPoints = (result as Character).perkPoints;
+            characterToSet.appliedPerks = (result as Character).appliedPerks;
+          }
+        });
+      characterListing.set(partyMembers);
+      characterListingProcessed.set(true);
+    } catch {
+      usedCharacters.set([]);
+    }
+  };
+
+  const getContentSummary = (contentCode: string) =>
+    $characterSummaries.find(
+      (character) => character.contentCode === contentCode
+    );
 
   let showPlayerDialog = false;
   let selectedCharacter: Character | undefined;
   const handleOpenDialog = (contentCode: string | undefined): void => {
     if (contentCode !== undefined) {
-      void getPartyMemberDetails(campaign.id, contentCode);
-      selectedCharacter = campaign.party.find(
+      selectedCharacter = $characterListing.find(
         (chr) => chr.characterContentCode === contentCode
       );
     } else {
@@ -37,45 +96,41 @@
     showPlayerDialog = true;
   };
 
-  const characterListingProcessed = writable<boolean>(false);
+  const handleAddPartyMember = async (characterToAdd: Character) => {
+    const addedCharacter = await addPartyMember(campaignId, characterToAdd);
+    if (addedCharacter) updateCharacterListing(addedCharacter);
+  };
 
-  const characterSummaries2 = writable<ContentItemSummary[]>([]);
-  const handleGetCharacterSummaries = async (gameCode: string) => {
-    try {
-      const summaries = await getCharacterSummaries(gameCode);
-      characterSummaries2.set(summaries);
-    } catch {
-      characterSummaries2.set([]);
+  const handleUpdatePartyMember = async (characterToUpdate: Character) => {
+    const currentCharacter = $characterListing.find(
+      (char) =>
+        char.characterContentCode === characterToUpdate.characterContentCode
+    );
+    if (currentCharacter) {
+      const updatedCharacter = await updatePartyMember(
+        campaignId,
+        currentCharacter,
+        characterToUpdate
+      );
+      updateCharacterListing(updatedCharacter);
     }
   };
 
-  const getContentSummary = (contentCode: string) => {
-    return $characterSummaries2.find((character) => {
-      return character.contentCode === contentCode;
+  const updateCharacterListing = (partyMember: Character) => {
+    characterListing.update((currentListing) => {
+      const partyToUpdate = [...currentListing];
+      const location = partyToUpdate.findIndex(
+        (char) => char.characterContentCode === partyMember.characterContentCode
+      );
+      if (location === -1) partyToUpdate.push(partyMember);
+      else partyToUpdate.splice(location, 1, partyMember);
+      return partyToUpdate;
     });
   };
 
-  let usedCharacters: string[] = [];
-  const determineUsedCharacters = (campaignCharacters: Character[]) => {
-    usedCharacters = campaignCharacters.map((c) => c.characterContentCode);
-  };
-
-  $: if (campaign?.game) void handleGetCharacterSummaries(campaign.game);
-  $: if (campaign?.party) determineUsedCharacters(campaign.party);
-
   onMount(() => {
-    if (campaign.party.length > 0) {
-      const charDetails = campaign.party.map(async (chr) => {
-        await getPartyMemberDetails(campaign.id, chr.characterContentCode);
-      });
-      Promise.all(charDetails)
-        .then(() => {
-          characterListingProcessed.set(true);
-        })
-        .catch((err) => console.log(JSON.stringify(err)));
-    } else {
-      characterListingProcessed.set(true);
-    }
+    void handleGetCharacterSummaries(gameCode);
+    void processPartyCharacters(party);
   });
 </script>
 
@@ -87,7 +142,7 @@
       <div>...Loading</div>
     {:else}
       <List twoLine singleSelection>
-        {#each campaign.party as character}
+        {#each $characterListing as character}
           <Item
             on:SMUI:action={() => {
               // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
@@ -127,8 +182,9 @@
 </Card>
 <CampaignCharacterEditor
   bind:open={showPlayerDialog}
-  gameCode={campaign.game}
-  campaignId={campaign.id}
-  campaignParty={campaign.party}
+  {gameCode}
+  campaignParty={$characterListing}
   campaignCharacter={selectedCharacter}
+  addPartyMember={handleAddPartyMember}
+  updatePartyMember={handleUpdatePartyMember}
 />

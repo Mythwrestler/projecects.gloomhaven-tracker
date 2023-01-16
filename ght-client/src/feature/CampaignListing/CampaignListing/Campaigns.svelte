@@ -2,8 +2,7 @@
   import { onDestroy, onMount } from "svelte";
   import type { CampaignSummary } from "../../../models/Campaign";
   import CampaignNewDialog from "./CampaignNewDialog.svelte";
-  // import useContentService from "../../../Service/ContentService";
-  import useContentServiceThick from "../../../Service/ContentService";
+  import useContentService from "../../../Service/ContentService";
   import useCampaignService from "../../../Service/CampaignService";
 
   import type { ContentItemSummary } from "../../../models/Content";
@@ -14,18 +13,13 @@
   import Card, { Content as CardContent } from "@smui/card";
   import Button from "@smui/button";
   import { useNavigate } from "svelte-navigator";
-  const { actions: campaignActions, state: campaignState } =
-    useCampaignService();
-  const { getCampaignSummaries } = campaignActions;
-  const { campaignSummaries } = campaignState;
   const navigate = useNavigate();
 
-  // const { actions: contentActions, state: contentState } = useContentService();
-  // const { getAvailableGames } = contentActions;
-  // const { availableGames } = contentState;
+  const { actions: contentActions } = useContentService();
+  const { getAvailableGames } = contentActions;
 
-  const { actions: contentThickActions } = useContentServiceThick();
-  const { getAvailableGames: getAvailableGamesThick } = contentThickActions;
+  const { actions: campaignActions } = useCampaignService();
+  const { getCampaignSummaries } = campaignActions;
 
   const refreshListing = writable<boolean>(false);
 
@@ -71,7 +65,7 @@
 
   const handleGetCampaigns = async () => {
     if ($refreshListing) {
-      await getCampaignSummaries();
+      await handleGetCampaignSummaries();
       await handleGetGames();
       refreshListing.set(false);
     }
@@ -80,10 +74,20 @@
   const availableGames = writable<ContentItemSummary[]>([]);
   const handleGetGames = async () => {
     try {
-      const games = await getAvailableGamesThick();
+      const games = await getAvailableGames();
       availableGames.set(games);
     } catch {
       availableGames.set([]);
+    }
+  };
+
+  const campaignSummaries = writable<CampaignSummary[]>([]);
+  const handleGetCampaignSummaries = async () => {
+    try {
+      const summaries = await getCampaignSummaries();
+      campaignSummaries.set(summaries);
+    } catch {
+      campaignSummaries.set([]);
     }
   };
 
