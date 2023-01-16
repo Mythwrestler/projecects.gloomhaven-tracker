@@ -2,7 +2,9 @@
   // import { useLocation } from "svelte-navigator";
   import { onDestroy, onMount } from "svelte";
 
-  import { useActiveCombatService } from "../ActiveCombatContext/ActiveCombatService";
+  import { type CombatRequest } from "../../../models/Combat";
+
+  import { useActiveCombatService } from "../../../Service/ActiveCombatService";
 
   const { actions, state } = useActiveCombatService();
   const { joinCombat, leaveCombat } = actions;
@@ -17,7 +19,11 @@
   export let combatId = "";
 
   onMount(async () => {
-    await joinCombat(combatId);
+    await joinCombat({
+      combatId,
+      combatantId: "",
+      isObserver: false,
+    });
   });
 
   onDestroy(async () => {

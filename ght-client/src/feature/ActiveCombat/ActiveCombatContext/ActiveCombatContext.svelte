@@ -10,7 +10,7 @@
   import {
     defineActiveCombatActions,
     defineActiveCombatListeners,
-  } from "./ActiveCombatService";
+  } from "../../../Service/ActiveCombatService";
 
   export let combatId: string;
 

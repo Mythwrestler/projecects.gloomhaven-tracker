@@ -1,6 +1,6 @@
 import { getContext, setContext } from "svelte";
 import { derived, writable, type Readable, type Writable } from "svelte/store";
-import type { User } from "../../../../models/Combat";
+import type { User } from "../../models/Combat";
 
 interface ActiveCombatStateWritable {
   combatId: Writable<string | undefined>;
