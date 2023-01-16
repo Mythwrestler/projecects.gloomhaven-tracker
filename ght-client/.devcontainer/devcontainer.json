@@ -40,6 +40,6 @@
       "**/Thumbs.db": true,
       "node_modules": true
     },
-    "cSpell.words": ["endregion"]
+    "cSpell.words": ["endregion", "Unsubscriber"]
   }
 }
