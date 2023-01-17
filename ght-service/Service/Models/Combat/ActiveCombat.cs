@@ -10,7 +10,7 @@ public class CombatRequestDTO
     public Guid CombatId { get; set; }
 
     [JsonPropertyName("combatantId")]
-    public Guid? CombatantId { get; set; }
+    public string? CombatantId { get; set; }
 
     [JsonPropertyName("isObserver")]
     public bool IsObserver { get; set; }

@@ -19,10 +19,10 @@
   const listenerService = defineActiveCombatListeners();
   const actionsService = defineActiveCombatActions();
 
-  const handleHubConnected = (singalRHubRequest: SignalRHubRequest) => {
+  const handleHubConnected = (signalRHubRequest: SignalRHubRequest) => {
     hubConnected.set(true);
-    if (singalRHubRequest) {
-      actionsService.setSendMessage(singalRHubRequest);
+    if (signalRHubRequest) {
+      actionsService.setSendMessage(signalRHubRequest);
     }
   };
 
