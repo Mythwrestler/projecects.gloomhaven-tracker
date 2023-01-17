@@ -1,7 +1,8 @@
 import { getContext } from "svelte";
+import type { CombatRequest } from "../../models/Combat";
 
 export interface ActiveCombatActions {
-  joinCombat: (combatId: string) => Promise<void>;
+  joinCombat: (combatId: CombatRequest) => Promise<void>;
   leaveCombat: () => Promise<void>;
 }
 

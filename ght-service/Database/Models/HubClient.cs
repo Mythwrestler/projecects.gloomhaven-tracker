@@ -12,6 +12,7 @@ public static partial class EntityDefinitions
         builder.Entity<CombatHubClientDAO>(combatHubTable => {
             combatHubTable.HasOne(hub => hub.User).WithMany(user => user.CombatHubClients).OnDelete(DeleteBehavior.Restrict);
             combatHubTable.HasOne(hub => hub.Combat).WithMany(combat => combat.HubClients).OnDelete(DeleteBehavior.Restrict);
+            combatHubTable.HasMany(hub => hub.Characters).WithOne(character => character.CombatHubClient);
             combatHubTable.HasIndex(hub => hub.ClientId).IsUnique();
         });
     }
@@ -35,4 +36,6 @@ public class CombatHubClientDAO : HubClientDAO
     [Required]
     public Guid CombatId { get; set; }
     public CombatDAO? Combat { get; set; }
+    public bool IsObserver { get; set; } = false;
+    public ICollection<CharacterCombatHubClientDAO> Characters { get; set; } = new HashSet<CharacterCombatHubClientDAO>();
 }

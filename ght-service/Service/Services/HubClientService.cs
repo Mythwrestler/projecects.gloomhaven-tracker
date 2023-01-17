@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using GloomhavenTracker.Service.Models;
-using GloomhavenTracker.Service.Models.Hub;
+
+namespace GloomhavenTracker.Service.Services;
 
 public interface HubClientService
 {

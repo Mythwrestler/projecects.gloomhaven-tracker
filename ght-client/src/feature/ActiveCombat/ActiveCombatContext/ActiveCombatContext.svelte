@@ -10,7 +10,7 @@
   import {
     defineActiveCombatActions,
     defineActiveCombatListeners,
-  } from "./ActiveCombatService";
+  } from "../../../Service/ActiveCombatService";
 
   export let combatId: string;
 
@@ -19,10 +19,10 @@
   const listenerService = defineActiveCombatListeners();
   const actionsService = defineActiveCombatActions();
 
-  const handleHubConnected = (singalRHubRequest: SignalRHubRequest) => {
+  const handleHubConnected = (signalRHubRequest: SignalRHubRequest) => {
     hubConnected.set(true);
-    if (singalRHubRequest) {
-      actionsService.setSendMessage(singalRHubRequest);
+    if (signalRHubRequest) {
+      actionsService.setSendMessage(signalRHubRequest);
     }
   };
 

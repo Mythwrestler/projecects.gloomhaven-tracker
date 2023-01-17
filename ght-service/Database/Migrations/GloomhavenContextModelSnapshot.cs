@@ -322,6 +322,24 @@ namespace GloomhavenTracker.Database.Migrations
                     b.ToTable("CombatCharacterActiveEffects");
                 });
 
+            modelBuilder.Entity("GloomhavenTracker.Database.Models.Combat.CharacterCombatHubClientDAO", b =>
+                {
+                    b.Property<Guid>("CharacterId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CombatHubClientId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("CharacterId", "CombatHubClientId");
+
+                    b.HasIndex("CharacterId")
+                        .IsUnique();
+
+                    b.HasIndex("CombatHubClientId");
+
+                    b.ToTable("CombatCharacterCombatHubClients");
+                });
+
             modelBuilder.Entity("GloomhavenTracker.Database.Models.Combat.CharacterDAO", b =>
                 {
                     b.Property<Guid>("Id")
@@ -567,6 +585,9 @@ namespace GloomhavenTracker.Database.Migrations
 
                     b.Property<Guid>("CombatId")
                         .HasColumnType("uuid");
+
+                    b.Property<bool>("IsObserver")
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime>("LastSeen")
                         .HasColumnType("timestamp with time zone");
@@ -1306,6 +1327,25 @@ namespace GloomhavenTracker.Database.Migrations
                     b.Navigation("Character");
                 });
 
+            modelBuilder.Entity("GloomhavenTracker.Database.Models.Combat.CharacterCombatHubClientDAO", b =>
+                {
+                    b.HasOne("GloomhavenTracker.Database.Models.Combat.CharacterDAO", "Character")
+                        .WithOne("CombatHubClient")
+                        .HasForeignKey("GloomhavenTracker.Database.Models.Combat.CharacterCombatHubClientDAO", "CharacterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GloomhavenTracker.Database.Models.CombatHubClientDAO", "CombatHubClient")
+                        .WithMany("Characters")
+                        .HasForeignKey("CombatHubClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Character");
+
+                    b.Navigation("CombatHubClient");
+                });
+
             modelBuilder.Entity("GloomhavenTracker.Database.Models.Combat.CharacterDAO", b =>
                 {
                     b.HasOne("GloomhavenTracker.Database.Models.Campaign.CharacterDAO", "CampaignCharacter")
@@ -1776,6 +1816,8 @@ namespace GloomhavenTracker.Database.Migrations
             modelBuilder.Entity("GloomhavenTracker.Database.Models.Combat.CharacterDAO", b =>
                 {
                     b.Navigation("ActiveEffects");
+
+                    b.Navigation("CombatHubClient");
                 });
 
             modelBuilder.Entity("GloomhavenTracker.Database.Models.Combat.CombatDAO", b =>
@@ -1799,6 +1841,11 @@ namespace GloomhavenTracker.Database.Migrations
             modelBuilder.Entity("GloomhavenTracker.Database.Models.Combat.ObjectiveDAO", b =>
                 {
                     b.Navigation("ActiveEffects");
+                });
+
+            modelBuilder.Entity("GloomhavenTracker.Database.Models.CombatHubClientDAO", b =>
+                {
+                    b.Navigation("Characters");
                 });
 
             modelBuilder.Entity("GloomhavenTracker.Database.Models.Content.AttackModifierDAO", b =>

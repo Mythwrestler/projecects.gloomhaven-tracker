@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using GloomhavenTracker.Service.Hubs;
 using GloomhavenTracker.Service.Models;
-using GloomhavenTracker.Service.Models.Hub;
+using GloomhavenTracker.Service.Models.Combat.Hub;
 using GloomhavenTracker.Service.Services;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;

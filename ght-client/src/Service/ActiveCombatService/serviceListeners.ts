@@ -1,7 +1,7 @@
 import { type SignalRHubListeners } from "@ci-lab/svelte-signalr-context";
 import { getContext, setContext } from "svelte";
-import ENV_VARS from "../../../../common/Environment";
-import type { User } from "../../../../models/Combat";
+import ENV_VARS from "../../common/Environment";
+import type { User } from "../../models/Combat";
 import { ServiceBase } from "./serviceBase";
 
 interface HubRequestResult<T> {

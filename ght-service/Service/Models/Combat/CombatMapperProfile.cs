@@ -4,7 +4,8 @@ using System.Linq;
 using AutoMapper;
 using GloomhavenTracker.Database.Models;
 using GloomhavenTracker.Database.Models.Combat;
-using GloomhavenTracker.Service.Models.Hub;
+using GloomhavenTracker.Service.Models.Combat.Combatant;
+using GloomhavenTracker.Service.Models.Combat.Hub;
 
 namespace GloomhavenTracker.Service.Models.Combat;
 
@@ -102,7 +103,8 @@ public class CombatMapperProfile : Profile
             ctx.Mapper.Map<Content.Scenario>(src.Scenario),
             src.ScenarioLevel,
             ctx.Mapper.Map<AttackModifierDeck>(src.MonsterModifierDeck),
-            ctx.Mapper.Map<List<HubClient>>(src.HubClients.ToList())
+            ctx.Mapper.Map<List<HubClient>>(src.HubClients.ToList()),
+            ctx.Mapper.Map<List<Character>>(src.Characters.ToList())
           );
         });
 

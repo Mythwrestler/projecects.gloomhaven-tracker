@@ -4,7 +4,8 @@ import { get } from "svelte/store";
 import { useActiveCombatActions, type ActiveCombatActions } from "./actions";
 import { ServiceBase } from "./serviceBase";
 import { setContext } from "svelte";
-import ENV_VARS from "../../../../common/Environment";
+import ENV_VARS from "../../common/Environment";
+import type { CombatRequest } from "../../models/Combat";
 
 export class ServiceActions extends ServiceBase {
   private sendMessage: SignalRHubRequest | undefined = undefined;
@@ -17,16 +18,16 @@ export class ServiceActions extends ServiceBase {
     this.sendMessage = sendMessage;
   };
 
-  private joinCombat = async (combatId: string) => {
+  private joinCombat = async (request: CombatRequest) => {
     if (!this.sendMessage) return;
     this.requestCombatConnection();
 
     const currentId = get(this.combatId);
-    if (currentId === combatId) return;
+    if (request && currentId === request.combatId) return;
 
     try {
       this.requestCombatConnection();
-      await this.sendMessage("JoinCombat", combatId);
+      await this.sendMessage("JoinCombat", request);
     } catch (error: unknown) {
       console.log(JSON.stringify(error));
       this.requestCombatConnectionFailure();

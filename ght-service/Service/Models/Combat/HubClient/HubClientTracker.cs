@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace GloomhavenTracker.Service.Models.Hub;
+namespace GloomhavenTracker.Service.Models.Combat.Hub;
 
 public class HubClientTracker
 {

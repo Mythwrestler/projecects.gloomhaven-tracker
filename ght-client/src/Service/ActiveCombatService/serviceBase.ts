@@ -1,5 +1,5 @@
 import type { Writable } from "svelte/store";
-import type { User } from "../../../../models/Combat";
+import type { User } from "../../models/Combat";
 import { getActiveCombatState } from "./state";
 
 export class ServiceBase {
