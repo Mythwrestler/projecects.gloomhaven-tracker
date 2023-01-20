@@ -21,7 +21,7 @@ public class ActiveEffectDAO : AuditableEntityBase
     public Guid Id { get; set; }
     [Required]
     public Guid EffectId { get; set; }
-    public Content.EffectDAO? Effect { get; set; }
+    public Content.EffectDAO Effect { get; set; } = null!;
     public int RoundsRemaining { get; set; }
     public ICollection<MonsterActiveEffectDAO> MonsterActiveEffects = new HashSet<MonsterActiveEffectDAO>();
     public ICollection<CharacterActiveEffectDAO> CharacterActiveEffectsDAOs = new HashSet<CharacterActiveEffectDAO>();

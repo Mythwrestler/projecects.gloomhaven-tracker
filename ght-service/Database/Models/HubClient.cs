@@ -35,7 +35,7 @@ public class CombatHubClientDAO : HubClientDAO
 {
     [Required]
     public Guid CombatId { get; set; }
-    public CombatDAO? Combat { get; set; }
+    public CombatDAO Combat { get; set; } = null!;
     public bool IsObserver { get; set; } = false;
     public ICollection<CharacterCombatHubClientDAO> Characters { get; set; } = new HashSet<CharacterCombatHubClientDAO>();
 }

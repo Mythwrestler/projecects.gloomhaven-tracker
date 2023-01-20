@@ -35,9 +35,9 @@ public class UserCampaignDAO
 {
     [Required]
     public Guid UserId { get; set; }
-    public UserDAO? User { get; set; }
+    public UserDAO User { get; set; } = null!;
     [Required]
     public Guid CampaignId { get; set; }
-    public Campaign.CampaignDAO? Campaign { get; set; }
+    public Campaign.CampaignDAO Campaign { get; set; } = null!;
     public bool IsOwner { get; set;}
 }

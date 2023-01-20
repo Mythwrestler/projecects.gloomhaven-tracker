@@ -3,3 +3,4 @@ export interface CombatRequest {
   combatantId: string | undefined;
   isObserver: boolean;
 }
+

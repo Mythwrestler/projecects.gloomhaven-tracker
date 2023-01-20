@@ -1,13 +1,13 @@
 import { getContext, setContext } from "svelte";
 import { derived, writable, type Readable, type Writable } from "svelte/store";
-import type { User } from "../../models/Combat";
+import type { Participants } from "../../models/Combat";
 
 interface ActiveCombatStateWritable {
   combatId: Writable<string | undefined>;
   combatConnecting: Writable<boolean>;
   combatConnected: Writable<boolean>;
   combatDisconnecting: Writable<boolean>;
-  userList: Writable<User[]>;
+  participants: Writable<Participants | undefined>;
 }
 
 export interface ActiveCombatState {
@@ -15,7 +15,7 @@ export interface ActiveCombatState {
   combatConnecting: Readable<boolean>;
   combatConnected: Readable<boolean>;
   combatDisconnecting: Readable<boolean>;
-  userList: Readable<User[]>;
+  participants: Readable<Participants | undefined>;
 }
 
 export const getActiveCombatState = (
@@ -29,7 +29,7 @@ export const getActiveCombatState = (
       stateProperties.includes("combatConnecting") &&
       stateProperties.includes("combatConnected") &&
       stateProperties.includes("combatDisconnecting") &&
-      stateProperties.includes("userList")
+      stateProperties.includes("participants")
     ) {
       return state;
     }
@@ -40,7 +40,7 @@ export const getActiveCombatState = (
     combatConnecting: writable<boolean>(false),
     combatConnected: writable<boolean>(false),
     combatDisconnecting: writable<boolean>(false),
-    userList: writable<User[]>([]),
+    participants: writable<Participants | undefined>(undefined),
   };
   setContext(stateKey, state);
   return state;
@@ -56,6 +56,6 @@ export const useActiveCombatState = (stateKey: string): ActiveCombatState => {
       writableState.combatDisconnecting,
       (store) => store
     ),
-    userList: derived(writableState.userList, (store) => store, []),
+    participants: derived(writableState.participants, (store) => store),
   };
 };

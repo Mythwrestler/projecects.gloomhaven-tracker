@@ -72,29 +72,96 @@ public class CombatMapperProfile : Profile
           };
         });
 
-        #endregion
+      #endregion
+
+      #region Combatants
+
+      CreateMap<CharacterDAO, Character>().ConvertUsing((src, dst, ctx) => {
+
+        return new Character(
+          src.Id,
+          src.Level,
+          src.Health,
+          0,
+          ctx.Mapper.Map<Campaign.Character>(src.CampaignCharacter)
+        );
+      });
+
+      CreateMap<Character, CharacterDAO>().ConvertUsing((src, dst, ctx) => {
+        return new CharacterDAO()
+        {
+          Id = src.Id,
+          ActiveEffects = new List<CharacterActiveEffectDAO>(),
+          CampaignCharacterId = src.CampaignCharacter.Id,
+          Health = src.Health,
+          Level = src.Level,
+        };
+      });
+
+      #endregion
 
 
-      #region Combat
+      #region Hub
+
+
+
         CreateMap<CombatHubClientDAO, HubClient>().ConvertUsing((src, dst, ctx) => {
+          List<Character> Characters = ctx.Mapper.Map<List<Character>>(
+            src.Characters
+            .Select(chrHub => chrHub.Character)
+            .Select(character => character as CharacterDAO)
+            .ToList()
+          );
+
           return new HubClient(
             id: src.Id,
             clientId: src.ClientId,
             groupId: src.CombatId.ToString(),
             user: ctx.Mapper.Map<User>(src.User),
-            lastSeen: src.LastSeen
+            lastSeen: src.LastSeen,
+            Characters,
+            src.IsObserver
           );
         });
 
         CreateMap<HubClient, CombatHubClientDAO>().ConvertUsing((src, dst, ctx) => {
-          return new CombatHubClientDAO()
+          List<CharacterDAO> characters =  ctx.Mapper.Map<List<CharacterDAO>>(src.Characters);
+
+          CombatHubClientDAO client = new CombatHubClientDAO()
           {
+            Id = src.Id,
             UserId = src.User.UserId,
             CombatId = Guid.Parse(src.GroupId),
             ClientId = src.ClientId,
-            LastSeen = src.LastSeen
+            LastSeen = src.LastSeen,
+            Characters = new List<CharacterCombatHubClientDAO>()
           };
+
+          List<CharacterCombatHubClientDAO> hubCharacters = src.Characters.Select(chr => {
+            CharacterDAO characterDAO = ctx.Mapper.Map<CharacterDAO>(chr);
+            return new CharacterCombatHubClientDAO()
+            {
+              CharacterId = chr.Id,
+              Character = characterDAO,
+              CombatHubClientId = src.Id,
+              CombatHubClient = client
+            };
+          }).ToList();
+
+          client.Characters = hubCharacters;
+
+          return client;
         });
+
+      #endregion
+
+
+
+
+      #region Combat
+
+
+
 
         CreateMap<CombatDAO, Combat>().ConvertUsing((src, dst, ctx) => {
           return new Combat(

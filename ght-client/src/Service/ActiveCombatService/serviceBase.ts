@@ -1,5 +1,5 @@
 import type { Writable } from "svelte/store";
-import type { User } from "../../models/Combat";
+import type { Participants } from "../../models/Combat";
 import { getActiveCombatState } from "./state";
 
 export class ServiceBase {
@@ -7,14 +7,14 @@ export class ServiceBase {
   protected combatConnecting: Writable<boolean>;
   protected combatConnected: Writable<boolean>;
   protected combatDisconnecting: Writable<boolean>;
-  protected userList: Writable<User[]>;
+  protected participants: Writable<Participants | undefined>;
   constructor(stateKey: string) {
     const state = getActiveCombatState(stateKey);
     this.combatId = state.combatId;
     this.combatConnecting = state.combatConnecting;
     this.combatConnected = state.combatConnected;
     this.combatDisconnecting = state.combatDisconnecting;
-    this.userList = state.userList;
+    this.participants = state.participants;
   }
   protected requestCombatConnection = (): void => {
     this.combatConnecting.set(true);
@@ -31,9 +31,10 @@ export class ServiceBase {
     this.combatDisconnecting.set(true);
   };
   protected requestCombatDisconnectSuccess = (): void => {
+    this.combatDisconnecting.set(false);
     this.combatConnected.set(false);
     this.combatId.set(undefined);
-    this.userList.set([]);
+    this.participants.set(undefined);
   };
   protected requestCombatDisconnectFailure = (): void => {
     this.combatDisconnecting.set(false);

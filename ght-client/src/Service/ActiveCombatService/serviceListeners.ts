@@ -1,7 +1,7 @@
 import { type SignalRHubListeners } from "@ci-lab/svelte-signalr-context";
 import { getContext, setContext } from "svelte";
 import ENV_VARS from "../../common/Environment";
-import type { User } from "../../models/Combat";
+import type { Participants } from "../../models/Combat";
 import { ServiceBase } from "./serviceBase";
 
 interface HubRequestResult<T> {
@@ -29,9 +29,12 @@ class ServiceListeners extends ServiceBase {
     this.requestCombatDisconnectSuccess();
   };
 
-  private handleActiveUsers = (result: HubRequestResult<User[]>): void => {
-    if (!result || !result.data || !Array.isArray(result.data)) return;
-    this.userList.set(result.data);
+  private handleActiveUsers = (
+    result: HubRequestResult<Participants>
+  ): void => {
+    console.log(JSON.stringify(result));
+    if (!result || !result.data) return;
+    this.participants.set(result.data);
   };
 
   public listeners: SignalRHubListeners[] = [

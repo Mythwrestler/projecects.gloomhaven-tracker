@@ -32,10 +32,10 @@ public class AttackModifierDeckCardDAO
 {
     [Required]
     public Guid DeckId { get; set; }
-    public AttackModifierDeckDAO? Deck { get; set; } 
+    public AttackModifierDeckDAO Deck { get; set; } = null!;
     [Required]
     public int position { get; set; }
     [Required]
     public Guid AttackModifierId { get; set; }
-    public AttackModifierDAO? AttackModifier { get; set; }
+    public AttackModifierDAO AttackModifier { get; set; } = null!;
 }

@@ -31,7 +31,7 @@ public class ElementDAO : AuditableEntityBase
     public Guid Id { get; set; }
     [Required]
     public Guid CombatId { get; set; }
-    public CombatDAO? Combat { get; set; }
+    public CombatDAO Combat { get; set; } = null!;
     public Content.ELEMENT_DAO Element { get; set; }
     public ELEMENT_STRENGTH_DAO Strength { get; set; }
     public Guid CreatedBy { get; set; }

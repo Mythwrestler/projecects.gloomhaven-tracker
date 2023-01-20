@@ -27,9 +27,10 @@ public class CharacterDAO : Combatant
 {
     [Required]
     public Guid CampaignCharacterId { get; set; }
-    public Campaign.CharacterDAO? CampaignCharacter { get; set; }
+    public Campaign.CharacterDAO CampaignCharacter { get; set; } = null!;
     public int Health { get; set; }
-    public CharacterCombatHubClientDAO? CombatHubClient { get; set; }
+    public int Level { get; set; }
+    public CharacterCombatHubClientDAO CombatHubClient { get; set; } = null!;
     public ICollection<CharacterActiveEffectDAO> ActiveEffects { get; set; } = new HashSet<CharacterActiveEffectDAO>();
 }
 
@@ -37,18 +38,18 @@ public class CharacterActiveEffectDAO
 {
     [Required]
     public Guid CharacterId { get; set; }
-    public CharacterDAO? Character { get; set; }
+    public CharacterDAO? Character { get; set; } = null!;
     [Required]
     public Guid ActiveEffectId { get; set; }
-    public ActiveEffectDAO? ActiveEffect { get; set; }
+    public ActiveEffectDAO? ActiveEffect { get; set; } = null!;
 }
 
 public class CharacterCombatHubClientDAO
 {
     [Required]
     public Guid CharacterId { get; set; }
-    public CharacterDAO? Character { get; set; }
+    public CharacterDAO Character { get; set; } = null!;
     [Required]
     public Guid CombatHubClientId { get; set; }
-    public CombatHubClientDAO? CombatHubClient { get; set; }
+    public CombatHubClientDAO CombatHubClient { get; set; } = null!;
 }

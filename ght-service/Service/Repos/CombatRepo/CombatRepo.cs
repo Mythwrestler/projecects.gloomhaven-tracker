@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using GloomhavenTracker.Database;
+using GloomhavenTracker.Database.Models;
 using GloomhavenTracker.Database.Models.Combat;
 using GloomhavenTracker.Service.Models.Combat;
 using Microsoft.EntityFrameworkCore;
@@ -72,7 +73,8 @@ public partial class CombatRepoImplementation : CombatRepo
             .Include(combat => combat.HubClients).ThenInclude(hubClient => hubClient.User)
 
             // Characters
-            //.Include(combat => combat.Characters).ThenInclude(character => character.ActiveEffects)
+            // .Include(combat => combat.Characters).ThenInclude(character => character.ActiveEffects)
+            // .Include(combat => combat.Characters).ThenInclude()
             .First();
         return combat;
     }

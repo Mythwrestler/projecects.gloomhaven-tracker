@@ -18,16 +18,16 @@ export class ServiceActions extends ServiceBase {
     this.sendMessage = sendMessage;
   };
 
-  private joinCombat = async (request: CombatRequest) => {
+  private joinCombat = async (combatId: string) => {
     if (!this.sendMessage) return;
     this.requestCombatConnection();
 
     const currentId = get(this.combatId);
-    if (request && currentId === request.combatId) return;
+    if (currentId === combatId) return;
 
     try {
       this.requestCombatConnection();
-      await this.sendMessage("JoinCombat", request);
+      await this.sendMessage("JoinCombat", combatId);
     } catch (error: unknown) {
       console.log(JSON.stringify(error));
       this.requestCombatConnectionFailure();

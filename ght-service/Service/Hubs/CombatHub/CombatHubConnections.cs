@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GloomhavenTracker.Service.Models;
-using GloomhavenTracker.Service.Models.Combat.Hub;
 using GloomhavenTracker.Service.Models.Combat;
-using Microsoft.AspNetCore.Connections.Features;
+using GloomhavenTracker.Service.Models.Combat.Hub;
 using Microsoft.AspNetCore.SignalR;
 
 namespace GloomhavenTracker.Service.Hubs;
@@ -13,74 +12,59 @@ namespace GloomhavenTracker.Service.Hubs;
 //[Authorize(Roles="user,superuser")]
 public partial class CombatHub : Hub
 {
-    public async Task JoinCombat(CombatRequestDTO combatRequest)
+    public async Task JoinCombat(Guid combatId)
     {
-        if (combatService.CombatExists(combatRequest.CombatId))
+
+        try
         {
-            if (Context.UserIdentifier != null)
-            {
-                Guid userId = Guid.Parse(Context.UserIdentifier);
-                User user = userService.GetUserById(userId);
+            combatService.RegisterClient(Context, combatId.ToString());
+            await Groups.AddToGroupAsync(Context.ConnectionId, combatId.ToString());
 
-                string clientId = Context.ConnectionId;
-                string groupId = combatRequest.CombatId.ToString();
-
-                await Groups.AddToGroupAsync(clientId, groupId);
-                hubClientTracker.RegisterClient(groupId, clientId, user);
-
-                var heartbeat = Context.Features.Get<IConnectionHeartbeatFeature>();
-                if (heartbeat is not null)
+            await Clients.Caller.SendAsync(
+                "JoinCombatResult",
+                new HubRequestResult()
                 {
-                    heartbeat.OnHeartbeat((state) =>
-                    {
-                        var clientIdForHeartbeat = (state as string);
-                        if (string.IsNullOrEmpty(clientIdForHeartbeat)) return;
-                        hubClientTracker.UpdateLastSeen(clientIdForHeartbeat as string);
-                    }, clientId);
+                    data = combatId.ToString()
                 }
+            );
 
+            ParticipantsDTO participants = combatService.GetCombatParticipants(combatId);
 
-                await Clients.Caller.SendAsync(
-                    "JoinCombatResult",
-                    new HubRequestResult()
-                    {
-                        data = combatRequest.CombatId.ToString()
-                    }
-                );
-
-                List<HubClient> registeredClients = hubClientTracker.GetClientsForGroup(combatRequest.CombatId.ToString());
-
-                await Clients.Group(combatRequest.CombatId.ToString()).SendAsync(
-                    "ActiveUsers",
-                    new HubRequestResult()
-                    {
-                        data = registeredClients.Select(client => client.User).ToList()
-                    }
+            if(participants.Participants.Count() > 0)
+            {
+                await Clients.Group(combatId.ToString()).SendAsync(
+                        "ActiveUsers",
+                        new HubRequestResult()
+                        {
+                            data = participants
+                        }
                 );
             }
         }
-        else
+        catch (Exception ex)
         {
             await Clients.Caller.SendAsync(
                 "JoinCombatResult",
                 new HubRequestResult()
                 {
-                    errorMessage = $"Could Not Find Combat Id {combatRequest.CombatId.ToString()}"
+                    errorMessage = $"Error Joining Combat: {ex.Message}"
                 }
             );
         }
+
     }
+
 
     public async Task LeaveCombat(Guid combatId)
     {
-        if (combatService.CombatExists(combatId))
+        try
         {
             string clientId = Context.ConnectionId;
             string groupId = combatId.ToString();
 
-            await Groups.RemoveFromGroupAsync(clientId, groupId);
-            hubClientTracker.UnregisterClient(clientId);
             combatService.UnregisterClient(clientId);
+            await Groups.RemoveFromGroupAsync(clientId, groupId);
+
             await Clients.Caller.SendAsync(
                 "LeaveCombatResult",
                 new HubRequestResult()
@@ -89,29 +73,30 @@ public partial class CombatHub : Hub
                 }
             );
 
-            var registeredClients = hubClientTracker.GetClientsForGroup(groupId);
-            if (registeredClients.Count > 0)
+            ParticipantsDTO participants = combatService.GetCombatParticipants(combatId);
+
+            if(participants.Participants.Count() > 0)
             {
                 await Clients.Group(combatId.ToString()).SendAsync(
-                     "ActiveUsers",
-                     new HubRequestResult()
-                     {
-                         data = registeredClients.Select(client => client.User).ToList()
-                     }
+                        "ActiveUsers",
+                        new HubRequestResult()
+                        {
+                            data = participants
+                        }
                 );
             }
         }
-        else
+
+        catch (Exception ex)
         {
             await Clients.Caller.SendAsync(
-                "LeaveCombatResult",
+                "JoinCombatResult",
                 new HubRequestResult()
                 {
-                    errorMessage = $"Could Not Find Combat Id {combatId.ToString()}"
+                    errorMessage = $"Error Joining Combat: {ex.Message}"
                 }
             );
         }
     }
-
 }
 

@@ -35,7 +35,7 @@
           <Item
             on:SMUI:action={() => {
               // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-              navigate(`/combats/${combatSummary.id}`);
+              navigate(`/combats/fight/?activeCombat=${combatSummary.id}`);
             }}
           >
             <Text>

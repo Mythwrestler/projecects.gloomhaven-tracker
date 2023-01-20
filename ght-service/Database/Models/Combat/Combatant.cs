@@ -8,7 +8,7 @@ public class Combatant : AuditableEntityBase
     public Guid Id { get; set; }
     [Required]
     public Guid CombatId { get; set; }
-    public CombatDAO? Combat { get; set; }
+    public CombatDAO Combat { get; set; } = null!;
     public Guid CreatedBy { get; set; }
     public Guid UpdatedBy { get; set; }
 }
