@@ -1,7 +1,7 @@
 import { type SignalRHubListeners } from "@ci-lab/svelte-signalr-context";
 import { getContext, setContext } from "svelte";
 import ENV_VARS from "../../common/Environment";
-import type { Participants } from "../../models/Combat";
+import type { Combat, Participants } from "../../models/Combat";
 import { ServiceBase } from "./serviceBase";
 
 interface HubRequestResult<T> {
@@ -14,11 +14,20 @@ class ServiceListeners extends ServiceBase {
     super(stateKey);
   }
 
-  private joinCombatResult = (result: HubRequestResult<string>): void => {
-    if (result.errorMessage || !result.data) {
+  private joinCombatResult = (result: HubRequestResult<Combat>): void => {
+    if (!result || result.errorMessage || !result.data) {
       this.requestCombatConnectionFailure();
     } else {
-      this.requestCombatConnectionSuccess(result.data);
+      const combat = result.data;
+      this.combatSummary.set({
+        id: combat.id,
+        campaignId: combat.campaignId,
+        description: combat.description,
+        scenarioContentCode: combat.scenarioContentCode,
+        scenarioLevel: combat.scenarioLevel,
+      });
+      this.combatCharacters.set(combat.characters);
+      this.requestCombatConnectionSuccess();
     }
   };
 
@@ -32,7 +41,6 @@ class ServiceListeners extends ServiceBase {
   private handleActiveUsers = (
     result: HubRequestResult<Participants>
   ): void => {
-    console.log(JSON.stringify(result));
     if (!result || !result.data) return;
     this.participants.set(result.data);
   };

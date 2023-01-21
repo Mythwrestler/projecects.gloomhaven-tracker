@@ -73,8 +73,8 @@ public partial class CombatRepoImplementation : CombatRepo
             .Include(combat => combat.HubClients).ThenInclude(hubClient => hubClient.User)
 
             // Characters
-            // .Include(combat => combat.Characters).ThenInclude(character => character.ActiveEffects)
-            // .Include(combat => combat.Characters).ThenInclude()
+            .Include(combat => combat.Characters).ThenInclude(cmbChr => cmbChr.CampaignCharacter).ThenInclude(cmpChr => cmpChr.CharacterContent)
+            
             .First();
         return combat;
     }

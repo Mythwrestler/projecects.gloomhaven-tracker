@@ -25,6 +25,6 @@ public class Character : Combatant
 
 public class CharacterDTO : CombatantDTO
 {
-    public Guid CampaignCharacterId { get; set; }
+    public string CharacterContentCode { get; set; }
     //public AttackModifierDeckDTO ModifierDeck { get; set; } = new AttackModifierDeckDTO();
 }

@@ -63,7 +63,8 @@ public partial class CombatServiceImplantation : CombatService
 
     public CombatDTO GetCombatDTO(Guid combatId)
     {
-        return mapper.Map<CombatDTO>(GetCombat(combatId));
+        Combat combat = GetCombat(combatId);
+        return mapper.Map<CombatDTO>(combat);
     }
 
     private Combat GetCombat(Guid combatId)
@@ -76,6 +77,17 @@ public partial class CombatServiceImplantation : CombatService
         Campaign campaign = campaignRepo.GetCampaign(campaignId);
         GAME_TYPE gameType = GameUtils.GameType(campaign.Game.ContentCode);
         Game game = contentRepo.GetGameDefaults(gameType);
+
+        List<Models.Combat.Combatant.Character> characters = campaign.Party.Select(chr => {
+            return new Combatant.Character(
+                Guid.NewGuid(),
+                chr.Value.Level,
+                chr.Value.Health,
+                null,
+                chr.Value
+            );
+        }).ToList();
+
         Models.Content.Scenario scenario = contentRepo.GetScenarioDefaults(gameType, scenarioContentCode);
         int scenarioLevel = (int)Math.Floor(campaign.Party.Select(kvp => kvp.Value.Level).Average());
         Combat newCombat = new Combat(
@@ -85,7 +97,7 @@ public partial class CombatServiceImplantation : CombatService
             scenarioLevel: scenarioLevel,
             monsterModifierDeck: new AttackModifierDeck(game.BaseModifierDeck),
             new List<HubClient>(),
-            new List<Models.Combat.Combatant.Character>()
+            characters
         );
 
         combatRepo.CreateCombat(newCombat);

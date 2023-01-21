@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using GloomhavenTracker.Service.Models;
 using GloomhavenTracker.Service.Models.Combat;
+using GloomhavenTracker.Service.Models.Combat.Combatant;
 using GloomhavenTracker.Service.Models.Combat.Hub;
 using Microsoft.AspNetCore.Connections.Features;
 using Microsoft.AspNetCore.SignalR;
@@ -12,6 +13,7 @@ namespace GloomhavenTracker.Service.Services;
 public partial interface CombatService : HubClientService {
     public ParticipantsDTO GetCombatParticipants(Guid combatId);
     public List<string> GetGroupIds();
+    // public ParticipantsDTO RegisterCharacterSelection(HubClient client, List<string> characterContentCodes);
 }
 
 public partial class CombatServiceImplantation : CombatService
@@ -43,6 +45,15 @@ public partial class CombatServiceImplantation : CombatService
         HubClient client = clientTracker.RegisterClient(groupId, clientId, user);
         combatRepo.AddClient(client);
 
+    }
+
+    public HubClient GetRegisteredClient(HubCallerContext context)
+    {
+        var client = clientTracker.AllClients.FirstOrDefault(client => client.ClientId == context.ConnectionId);
+        if(client is not null)
+            return client;
+        else
+            throw new ArgumentException("Client Not Connected");
     }
 
     public void SyncClients(int ageOutInSeconds)
@@ -88,6 +99,28 @@ public partial class CombatServiceImplantation : CombatService
     {
         return clientTracker.GetClientsForGroup(groupId);
     }
+
+    // public List<HubClient> RegisterCharacterSelections(HubClient client, List<string> characterContentCodes)
+    // {
+    //     Guid combatId = new Guid(client.GroupId);
+    //     Combat combat = GetCombat(combatId);
+
+    //     List<string> validCodes = combat.Characters.Select(chr => chr.CampaignCharacter.CharacterContent.ContentCode).ToList();
+
+    //     characterContentCodes.ForEach(chrCode => {
+    //         if(!validCodes.Contains(chrCode))
+    //             throw new ArgumentException("Character Code is not valid for game.");
+    //     });
+
+    //     client.Characters.AddRange(
+    //         characterContentCodes.Select(chrCode => {
+    //         var combatCharacter = combat.Characters.FirstOrDefault(chr => chr.CampaignCharacter.CharacterContent.ContentCode == chrCode);
+    //         if(combatCharacter is null)
+    //             throw new ArgumentException("Character Code is not valid for game.");
+    //         })
+    //     )
+
+    // }
 
 
     public ParticipantsDTO GetCombatParticipants(Guid combatId)

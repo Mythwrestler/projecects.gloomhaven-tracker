@@ -30,6 +30,16 @@ public class Character
                 .Select(lv => lv.Level).Max();
         }
     }
+    public int Health
+    {
+        get
+        {
+            return CharacterContent.BaseStats.Health
+                .Where(h => h.Level == this.Level)
+                .Select(h => h.Health)
+                .FirstOrDefault(0);
+        }
+    }
     public int Gold { get; set; }
     public int PerkPoints { get; set; }
 }

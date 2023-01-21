@@ -54,6 +54,12 @@ INSERT INTO public."CombatAttackModifierDeckCards" ("DeckId","AttackModifierId",
 INSERT INTO public."CombatCombat" ("Id","CampaignId","ScenarioId","CreatedBy","UpdatedBy","CreatedOnUTC","UpdatedOnUTC","MonsterModifierDeckId","ScenarioLevel") VALUES
  ('6235d6b1-38dc-4f9d-81cd-7b97b02fd7dd','5459c417-c100-407e-b402-e2c087493ec5','5d0c2238-19de-7aeb-f8db-971289354a38','00000000-0000-0000-0000-000000000000','00000000-0000-0000-0000-000000000000','2022-08-02 22:42:28.200','2022-08-02 22:42:28.200','360b783c-c83d-4b8f-9aa1-e3ea9d4096bd', 2);
 
+-- Test Combat 01 - Characters
+INSERT INTO public."CombatCharacters" ("Id", "CombatId", "CampaignCharacterId", "Level", "Health", "CreatedBy", "UpdatedBy", "CreatedOnUTC", "UpdatedOnUTC") VALUES
+ ('3edff481-8c35-4493-9703-7fb98cad2eec', '6235d6b1-38dc-4f9d-81cd-7b97b02fd7dd', '2341ff54-1d05-4bf2-ac78-9bc5465b039d', 2, 12, '00000000-0000-0000-0000-000000000000','00000000-0000-0000-0000-000000000000','2022-08-02 22:42:28.200','2022-08-02 22:42:28.200')
+,('9b6c6ae3-0e87-438a-a695-02ba20443b20', '6235d6b1-38dc-4f9d-81cd-7b97b02fd7dd', '0760555c-a240-46a2-a672-99d93957b77f', 3, 10, '00000000-0000-0000-0000-000000000000','00000000-0000-0000-0000-000000000000','2022-08-02 22:42:28.200','2022-08-02 22:42:28.200');
+
 -- Test Combat Hub Client
 INSERT INTO public."HubCombatClient" ("Id", "CombatId", "UserId", "ClientId", "LastSeen") VALUES
  ('cc06d62b-8a07-4c6d-bbed-0dca175e6303', '6235d6b1-38dc-4f9d-81cd-7b97b02fd7dd', 'a335dbb1-84d6-487f-896a-2555c76c8799', 'z5Lli8nWedtRvOrtyNMXug', Current_timestamp);
+

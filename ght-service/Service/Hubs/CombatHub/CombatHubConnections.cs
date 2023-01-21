@@ -1,10 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using GloomhavenTracker.Service.Models;
 using GloomhavenTracker.Service.Models.Combat;
-using GloomhavenTracker.Service.Models.Combat.Hub;
 using Microsoft.AspNetCore.SignalR;
 
 namespace GloomhavenTracker.Service.Hubs;
@@ -20,11 +15,13 @@ public partial class CombatHub : Hub
             combatService.RegisterClient(Context, combatId.ToString());
             await Groups.AddToGroupAsync(Context.ConnectionId, combatId.ToString());
 
+            CombatDTO combat = combatService.GetCombatDTO(combatId);
+
             await Clients.Caller.SendAsync(
                 "JoinCombatResult",
                 new HubRequestResult()
                 {
-                    data = combatId.ToString()
+                    data = combat
                 }
             );
 

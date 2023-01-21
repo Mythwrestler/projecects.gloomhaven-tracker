@@ -361,6 +361,9 @@ namespace GloomhavenTracker.Database.Migrations
                     b.Property<int>("Health")
                         .HasColumnType("integer");
 
+                    b.Property<int>("Level")
+                        .HasColumnType("integer");
+
                     b.Property<Guid>("UpdatedBy")
                         .HasColumnType("uuid");
 
@@ -497,7 +500,7 @@ namespace GloomhavenTracker.Database.Migrations
                     b.Property<bool>("IsElite")
                         .HasColumnType("boolean");
 
-                    b.Property<Guid?>("MonsterContentId")
+                    b.Property<Guid>("MonsterContentId")
                         .HasColumnType("uuid");
 
                     b.Property<int>("MonsterNumber")
@@ -555,7 +558,7 @@ namespace GloomhavenTracker.Database.Migrations
                     b.Property<int>("Health")
                         .HasColumnType("integer");
 
-                    b.Property<Guid?>("ObjectiveId")
+                    b.Property<Guid>("ObjectiveId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("UpdatedBy")
@@ -1432,7 +1435,9 @@ namespace GloomhavenTracker.Database.Migrations
 
                     b.HasOne("GloomhavenTracker.Database.Models.Content.MonsterDAO", "MonsterContent")
                         .WithMany()
-                        .HasForeignKey("MonsterContentId");
+                        .HasForeignKey("MonsterContentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Combat");
 
@@ -1468,7 +1473,9 @@ namespace GloomhavenTracker.Database.Migrations
 
                     b.HasOne("GloomhavenTracker.Database.Models.Content.ObjectiveDAO", "Objective")
                         .WithMany()
-                        .HasForeignKey("ObjectiveId");
+                        .HasForeignKey("ObjectiveId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Combat");
 
@@ -1817,7 +1824,8 @@ namespace GloomhavenTracker.Database.Migrations
                 {
                     b.Navigation("ActiveEffects");
 
-                    b.Navigation("CombatHubClient");
+                    b.Navigation("CombatHubClient")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("GloomhavenTracker.Database.Models.Combat.CombatDAO", b =>

@@ -10,4 +10,16 @@ export interface CombatSummary {
 
 export interface Combat extends CombatSummary {
   monsterModifierDeck: AttackModifierDeck;
+  characters: Character[];
+}
+
+export interface Combatant {
+  id: string;
+  level: number;
+  health: number;
+  initiative: number | undefined;
+}
+
+export interface Character extends Combatant {
+  characterContentCode: string;
 }

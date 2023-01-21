@@ -98,6 +98,17 @@ public class CombatMapperProfile : Profile
         };
       });
 
+      CreateMap<Character, CharacterDTO>().ConvertUsing((src, dst, ctx) => {
+        return new CharacterDTO()
+        {
+          Id = src.Id,
+          Level = src.Level,
+          Health = src.Health,
+          CharacterContentCode = src.CampaignCharacter.CharacterContent.ContentCode,
+          Initiative = src.Initiative
+        };
+      });
+
       #endregion
 
 
@@ -155,9 +166,6 @@ public class CombatMapperProfile : Profile
 
       #endregion
 
-
-
-
       #region Combat
 
 
@@ -198,7 +206,8 @@ public class CombatMapperProfile : Profile
             ScenarioContentCode = src.Scenario.ContentCode,
             Id = src.Id,
             ScenarioLevel = src.ScenarioLevel,
-            MonsterModifierDeck = ctx.Mapper.Map<AttackModifierDeckDTO>(src.MonsterModifierDeck)
+            MonsterModifierDeck = ctx.Mapper.Map<AttackModifierDeckDTO>(src.MonsterModifierDeck),
+            Characters = ctx.Mapper.Map<List<CharacterDTO>>(src.Characters)
           };
         });
 

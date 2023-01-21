@@ -12,5 +12,6 @@ public interface HubClientService
     public void SyncClients(int ageOutInSeconds);
     public void UnregisterClient(string clientId);
     public List<HubClient> GetRegisteredClientsForGroup(string groupId);
+    public HubClient GetRegisteredClient(HubCallerContext context);
 
 }
