@@ -1,0 +1,77 @@
+{
+    "image": "harbor.casperinc.net/library/devcontainer/dotnetnode:dotnet6-node16",
+    "remoteUser": "dev",
+    "forwardPorts": [
+        5020,
+        5025
+    ],
+    "postStartCommand": "dotnet restore ./ght-service/ght-utility.sln",
+    "extensions": [
+        "streetsidesoftware.code-spell-checker",
+        "eamodio.gitlens",
+        "codezombiech.gitignore",
+        "heaths.vscode-guid",
+        "visualstudioexptteam.vscodeintellicode",
+        "dbaeumer.vscode-eslint",
+        "eg2.vscode-npm-script",
+        "christian-kohler.npm-intellisense",
+        "svelte.svelte-vscode",
+        "spmeesseman.vscode-taskexplorer",
+        "bradlc.vscode-tailwindcss",
+        "esbenp.prettier-vscode",
+        "ms-dotnettools.csharp",
+        "patcx.vscode-nuget-gallery",
+        "leo-labs.dotnet",
+    ],
+    "settings": {
+        "[svelte]": {
+            "editor.defaultFormatter": "svelte.svelte-vscode"
+        },
+        "[javascript]": {
+            "editor.defaultFormatter": "svelte.svelte-vscode"
+        },
+        "[typescript]": {
+            "editor.defaultFormatter": "svelte.svelte-vscode"
+        },
+        "eslint.validate": [
+            "javascript",
+            "typescript",
+            "javascriptreact",
+            "svelte"
+        ],
+        "editor.formatOnSave": true,
+        "editor.formatOnPaste": true,
+        "files.autoSave": "afterDelay",
+        "files.autoSaveDelay": 5000,
+        "files.exclude": {
+            "**/.git": true,
+            "**/.svn": true,
+            "**/.hg": true,
+            "**/CVS": true,
+            "**/.DS_Store": true,
+            "**/Thumbs.db": true,
+            "node_modules": true
+        },
+        "cSpell.words": [
+            "endregion",
+            "Unsubscriber",
+            "smui",
+            "oidc",
+            "Npgsql",
+            "Unprocessable"
+        ],
+        "cSpell.ignorePaths": [
+            "package-lock.json",
+            "node_modules",
+            "vscode-extension",
+            ".git/objects",
+            ".vscode",
+            ".vscode-insiders",
+            ".devcontainer",
+            "Gloomhaven"
+        ],
+        "git.openRepositoryInParentFolders": "always",
+        "editor.semanticHighlighting.enabled": true,
+        "csharp.semanticHighlighting.enabled": true,
+    }
+}
