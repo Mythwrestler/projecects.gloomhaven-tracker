@@ -1,0 +1,144 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "GTH Service",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/ght-service/Service/bin/Debug/net6.0/ght-service.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/ght-service/Service",
+            "stopAtEntry": false,
+            "env": {
+                "ASPNETCORE_URLS": "http://localhost:5020",
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "CORS_ALLOWED_ORIGINS": "http://localhost:5025,http://localhost.fiddler:5025",
+                "AUTH_ENABLED": "false",
+                "AUTH_AUTHORITY": "http://fake-authority/",
+                "AUTH_AUDIENCE": "fake-audience",
+                "HTTP_LOGGING_ENABLED": "true",
+                "DB_SERVER": "host.docker.internal",
+                "DB_PORT": "5432",
+                "DB_DATABASE": "ght-db",
+                "DB_USER": "pguser",
+                "DB_PASSWORD": "pguser",
+                "DB_SEED_DATA": "false"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceFolder}/ght-service/Service/Views"
+            },
+            "justMyCode": true
+        },
+        {
+            "name": "GTH Service - Data",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/ght-service/Service/bin/Debug/net6.0/ght-service.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/ght-service/Service",
+            "stopAtEntry": false,
+            "env": {
+                "ASPNETCORE_URLS": "http://localhost:5020",
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "CORS_ALLOWED_ORIGINS": "http://localhost:5025,http://localhost.fiddler:5025",
+                "AUTH_ENABLED": "false",
+                "AUTH_AUTHORITY": "http://fake-authority/",
+                "AUTH_AUDIENCE": "fake-audience",
+                "HTTP_LOGGING_ENABLED": "true",
+                "DB_SERVER": "host.docker.internal",
+                "DB_PORT": "5432",
+                "DB_DATABASE": "ght-db",
+                "DB_USER": "pguser",
+                "DB_PASSWORD": "pguser",
+                "DB_SEED_DATA": "true"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceFolder}/ght-service/Service/Views"
+            },
+            "justMyCode": true
+        },
+        {
+            "name": "GTH Service - Auth",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/ght-service/Service/bin/Debug/net6.0/ght-service.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/ght-service/Service",
+            "stopAtEntry": false,
+            "env": {
+                "ASPNETCORE_URLS": "http://localhost:5020",
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "CORS_ALLOWED_ORIGINS": "http://localhost:5025,http://localhost.fiddler:5025",
+                "AUTH_ENABLED": "true",
+                "AUTH_AUTHORITY": "https://iam.casperinc.net/realms/nprd",
+                "AUTH_AUDIENCE": "gloomhaven-tracker-api",
+                "HTTP_LOGGING_ENABLED": "true",
+                "DB_SERVER": "host.docker.internal",
+                "DB_PORT": "5432",
+                "DB_DATABASE": "ght-db",
+                "DB_USER": "pguser",
+                "DB_PASSWORD": "pguser",
+                "DB_SEED_DATA": "false"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceFolder}/ght-service/Service/Views"
+            },
+            "justMyCode": true
+        },
+        {
+            "name": "GTH Service - Auth - Data",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/ght-service/Service/bin/Debug/net6.0/ght-service.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/ght-service/Service",
+            "stopAtEntry": false,
+            "env": {
+                "ASPNETCORE_URLS": "http://localhost:5020",
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "CORS_ALLOWED_ORIGINS": "http://localhost:5025,http://localhost.fiddler:5025",
+                "AUTH_ENABLED": "true",
+                "AUTH_AUTHORITY": "https://iam.casperinc.net/realms/nprd",
+                "AUTH_AUDIENCE": "gloomhaven-tracker-api",
+                "HTTP_LOGGING_ENABLED": "true",
+                "DB_SERVER": "host.docker.internal",
+                "DB_PORT": "5432",
+                "DB_DATABASE": "ght-db",
+                "DB_USER": "pguser",
+                "DB_PASSWORD": "pguser",
+                "DB_SEED_DATA": "true"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceFolder}/ght-service/Service/Views"
+            },
+            "justMyCode": true
+        },
+        {
+            "type": "firefox",
+            "request": "attach",
+            "name": "Attach Firefox",
+            "url": "http://localhost:5025",
+            "webRoot": "${workspaceFolder}/ght-client",
+            "pathMappings": [
+                {
+                    "url": "http://localhost:5025/src/common/Environment",
+                    "path": "${workspaceFolder}/ght-client/src/Service/CampaignService"
+                }
+            ]
+        },
+        {
+            "type": "firefox",
+            "request": "launch",
+            "name": "Launch & Attach Firefox",
+            "url": "http://localhost:5025",
+            "webRoot": "${workspaceFolder}/ght-client"
+        }
+    ]
+}
