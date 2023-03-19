@@ -1,12 +1,11 @@
 {
-    "image": "harbor.casperinc.net/library/devcontainer/dotnetnode:dotnet6-node16",
-    "remoteUser": "dev",
-    "forwardPorts": [
-        5020,
-        5025
-    ],
-    "postStartCommand": "dotnet restore ./ght-service/ght-utility.sln",
-    "extensions": [
+  "image": "harbor.casperinc.net/library/devcontainer/dotnetnode:dotnet6-node16",
+  "remoteUser": "dev",
+  "forwardPorts": [5020, 5025],
+  "postStartCommand": "dotnet restore ./ght-service/ght-utility.sln",
+  "customizations": {
+    "vscode": {
+      "extensions": [
         "streetsidesoftware.code-spell-checker",
         "eamodio.gitlens",
         "codezombiech.gitignore",
@@ -21,57 +20,66 @@
         "esbenp.prettier-vscode",
         "ms-dotnettools.csharp",
         "patcx.vscode-nuget-gallery",
-        "leo-labs.dotnet",
-    ],
-    "settings": {
+        "leo-labs.dotnet"
+      ],
+      "settings": {
         "[svelte]": {
-            "editor.defaultFormatter": "svelte.svelte-vscode"
+          "editor.defaultFormatter": "svelte.svelte-vscode"
         },
         "[javascript]": {
-            "editor.defaultFormatter": "svelte.svelte-vscode"
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
         },
         "[typescript]": {
-            "editor.defaultFormatter": "svelte.svelte-vscode"
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[json]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[jsonc]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
         },
         "eslint.validate": [
-            "javascript",
-            "typescript",
-            "javascriptreact",
-            "svelte"
+          "javascript",
+          "typescript",
+          "javascriptreact",
+          "svelte"
         ],
         "editor.formatOnSave": true,
         "editor.formatOnPaste": true,
         "files.autoSave": "afterDelay",
         "files.autoSaveDelay": 5000,
         "files.exclude": {
-            "**/.git": true,
-            "**/.svn": true,
-            "**/.hg": true,
-            "**/CVS": true,
-            "**/.DS_Store": true,
-            "**/Thumbs.db": true,
-            "node_modules": true
+          "**/.git": true,
+          "**/.svn": true,
+          "**/.hg": true,
+          "**/CVS": true,
+          "**/.DS_Store": true,
+          "**/Thumbs.db": true,
+          "node_modules": true,
+          ".docker": true
         },
         "cSpell.words": [
-            "endregion",
-            "Unsubscriber",
-            "smui",
-            "oidc",
-            "Npgsql",
-            "Unprocessable"
+          "endregion",
+          "Unsubscriber",
+          "smui",
+          "oidc",
+          "Npgsql",
+          "Unprocessable"
         ],
         "cSpell.ignorePaths": [
-            "package-lock.json",
-            "node_modules",
-            "vscode-extension",
-            ".git/objects",
-            ".vscode",
-            ".vscode-insiders",
-            ".devcontainer",
-            "Gloomhaven"
+          "package-lock.json",
+          "node_modules",
+          "vscode-extension",
+          ".git/objects",
+          ".vscode",
+          ".vscode-insiders",
+          ".devcontainer",
+          "Gloomhaven"
         ],
         "git.openRepositoryInParentFolders": "always",
         "editor.semanticHighlighting.enabled": true,
-        "csharp.semanticHighlighting.enabled": true,
+        "csharp.semanticHighlighting.enabled": true
+      }
     }
+  }
 }
