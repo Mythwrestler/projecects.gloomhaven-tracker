@@ -15,6 +15,7 @@
         "leo-labs.dotnet",
     ],
     "settings": {
+        "git.openRepositoryInParentFolders": "always",
         "editor.semanticHighlighting.enabled": true,
         "csharp.semanticHighlighting.enabled": true,
         "cSpell.words": [
@@ -29,6 +30,6 @@
             ".vscode",
             ".vscode-insiders",
             ".devcontainer"
-        ]
+        ],
     }
 }

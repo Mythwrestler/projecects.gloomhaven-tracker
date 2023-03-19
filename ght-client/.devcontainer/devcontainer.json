@@ -40,6 +40,7 @@
       "**/Thumbs.db": true,
       "node_modules": true
     },
-    "cSpell.words": ["endregion", "Unsubscriber", "smui", "oidc"]
+    "cSpell.words": ["endregion", "Unsubscriber", "smui", "oidc"],
+    "git.openRepositoryInParentFolders": "always"
   }
 }
