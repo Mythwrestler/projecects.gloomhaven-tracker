@@ -1,4 +1,5 @@
--- Clear Hub Clients
+-- Clear Hub 
+DELETE FROM public."CombatCharacterCombatHubClients";
 DELETE FROM public."HubCombatClient";
 
 -- Clear Audit
