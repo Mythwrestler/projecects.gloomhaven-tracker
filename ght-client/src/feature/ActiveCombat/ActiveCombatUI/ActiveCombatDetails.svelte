@@ -19,12 +19,20 @@
     Campaign,
     Character as CampaignCharacter,
   } from "../../../models/Campaign";
-  import List, { Item, Label, Meta, Text } from "@smui/list";
+  import List, {
+    Item,
+    Label,
+    Meta,
+    PrimaryText,
+    SecondaryText,
+    Text,
+  } from "@smui/list";
   import Checkbox from "@smui/checkbox";
   import type { Character } from "../../../models/Combat";
 
   const { actions, state } = useActiveCombatService();
-  const { joinCombat, leaveCombat } = actions;
+  const { joinCombat, leaveCombat, registerCharacters, registerObserver } =
+    actions;
   const {
     combatConnected,
     combatConnecting,
@@ -113,7 +121,6 @@
   const characterDetail = (
     character: Character
   ): ContentCharacter | undefined => {
-    console.log(JSON.stringify(character));
     return $characters.find(
       (cntChr) => cntChr.contentCode === character.characterContentCode
     );
@@ -143,7 +150,7 @@
                 <Meta>
                   <Checkbox
                     bind:group={selectedCharacters}
-                    value={character.id}
+                    value={character.characterContentCode}
                   />
                 </Meta>
               </Item>
@@ -153,7 +160,15 @@
       </Content>
       <Actions>
         <ActionButtons>
-          <Button variant="outlined" color="primary">
+          <Button
+            variant="outlined"
+            color="primary"
+            on:click={() => {
+              selectedCharacters.length > 0
+                ? void registerCharacters(selectedCharacters)
+                : void registerObserver();
+            }}
+          >
             {selectedCharacters.length > 0
               ? "Select Characters"
               : "Observe Game"}
@@ -170,10 +185,20 @@
         </div>
         <hr class="my-1" />
         {#if $participants}
-          <List nonInteractive>
+          <List nonInteractive twoLine>
             {#each $participants.participants as participant}
               <Item>
-                <Text>{participant.username}</Text>
+                <Text>
+                  <PrimaryText>{participant.username}</PrimaryText>
+                  {#if participant.isObserver}
+                    <SecondaryText>Is Observer</SecondaryText>
+                  {/if}
+                  {#if participant.characterCodes}
+                    {#each participant.characterCodes as contentCode}
+                      <SecondaryText>{contentCode}</SecondaryText>
+                    {/each}
+                  {/if}
+                </Text>
               </Item>
             {/each}
           </List>

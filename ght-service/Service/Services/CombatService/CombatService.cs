@@ -19,6 +19,7 @@ public partial interface CombatService
     public List<CombatDTO> GetCombatListing();
     public CombatDTO NewCombat(Guid campaignId, string scenarioContentCode);
     public CombatDTO GetCombatDTO(Guid combatId);
+    public CombatDTO UpdateCombat(Combat combat);
 }
 
 public partial class CombatServiceImplantation : CombatService
@@ -105,6 +106,11 @@ public partial class CombatServiceImplantation : CombatService
         combats.Add(newCombat.Id, newCombat);
 
         return mapper.Map<CombatDTO>(newCombat);
+    }
+
+    public CombatDTO UpdateCombat(Combat combat)
+    {
+        return mapper.Map<CombatDTO>(combatRepo.UpdateCombat(combat));
     }
 
 }

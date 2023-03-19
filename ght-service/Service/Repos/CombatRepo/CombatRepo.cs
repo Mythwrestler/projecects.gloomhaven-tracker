@@ -7,6 +7,7 @@ using GloomhavenTracker.Database;
 using GloomhavenTracker.Database.Models;
 using GloomhavenTracker.Database.Models.Combat;
 using GloomhavenTracker.Service.Models.Combat;
+using GloomhavenTracker.Service.Models.Combat.Hub;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -18,6 +19,8 @@ public partial interface CombatRepo
     public void CreateCombat(Combat combatToSave);
     public Combat GetCombatById(Guid combatId);
     public List<Combat> GetCombatListing();
+    public Combat UpdateCombat(Combat combat);
+    public Combat UpdateCombat(Combat combat, List<HubClient> clients);
 }
 
 public partial class CombatRepoImplementation : CombatRepo
@@ -74,7 +77,8 @@ public partial class CombatRepoImplementation : CombatRepo
 
             // Characters
             .Include(combat => combat.Characters).ThenInclude(cmbChr => cmbChr.CampaignCharacter).ThenInclude(cmpChr => cmpChr.CharacterContent)
-            
+            .Include(combat => combat.Characters).ThenInclude(cmbChr => cmbChr.CombatHubClient)
+
             .First();
         return combat;
     }
@@ -83,9 +87,50 @@ public partial class CombatRepoImplementation : CombatRepo
     {
         CombatDAO combatDAO = mapper.Map<CombatDAO>(combatToSave);
         context.CombatCombat.Add(combatDAO);
-        if(combatDAO.MonsterModifierDeck != null)
+        if (combatDAO.MonsterModifierDeck != null)
             CreateModDeck(combatDAO.MonsterModifierDeck);
-        
+
         context.SaveChanges();
+    }
+
+    public Combat UpdateCombat(Combat combat)
+    {
+        CombatDAO combatSaving = mapper.Map<CombatDAO>(combat);
+
+        return mapper.Map<Combat>(UpdateCombat(combatSaving));
+    }
+
+
+    public Combat UpdateCombat(Combat combat, List<HubClient> clients)
+    {
+        CombatDAO combatSaving = mapper.Map<CombatDAO>(combat);
+
+        List<CombatHubClientDAO> clientDAOs = mapper.Map<List<CombatHubClientDAO>>(clients);
+
+        clientDAOs.Where(client => client.CombatId == combatSaving.Id)
+            .ToList().ForEach(client => client.Characters.ToList().ForEach(character =>
+            {
+                var combatCharacter = combatSaving.Characters.FirstOrDefault(chr => chr.Id == character.CharacterId);
+                if (combatCharacter is not null) combatCharacter.CombatHubClient = character;
+            }));
+        return mapper.Map<Combat>(UpdateCombat(combatSaving));
+    }
+
+    
+    private CombatDAO UpdateCombat(CombatDAO combatSaving)
+    {
+
+        CombatDAO combatToUpdate = GetCombatDAOById(combatSaving.Id);
+
+        combatToUpdate.HubClients = combatSaving.HubClients;
+
+        combatToUpdate.Characters.ToList().ForEach(upd => {
+            var updateCharacterHub = combatSaving.Characters.FirstOrDefault(chr => chr.Id == upd.Id);
+            if (updateCharacterHub is not null) updateCharacterHub.CombatHubClient = upd.CombatHubClient;
+        });
+
+        context.SaveChanges();
+
+        return combatToUpdate;
     }
 }

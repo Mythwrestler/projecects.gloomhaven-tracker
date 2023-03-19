@@ -42,6 +42,7 @@ class ServiceListeners extends ServiceBase {
     result: HubRequestResult<Participants>
   ): void => {
     if (!result || !result.data) return;
+    console.log(JSON.stringify(result.data));
     this.participants.set(result.data);
   };
 

@@ -10,20 +10,22 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace GloomhavenTracker.Service.Services;
 
-public partial interface CombatService : HubClientService {
+public partial interface CombatService : HubClientService
+{
     public ParticipantsDTO GetCombatParticipants(Guid combatId);
     public List<string> GetGroupIds();
-    // public ParticipantsDTO RegisterCharacterSelection(HubClient client, List<string> characterContentCodes);
+    public ParticipantsDTO RegisterCharacterSelections(string clientId, List<string> characterContentCodes);
+    public ParticipantsDTO RegisterAsObserver(string clientId);
 }
 
 public partial class CombatServiceImplantation : CombatService
 {
     public void RegisterClient(HubCallerContext context, string groupId)
     {
-        if(!CombatExists(new Guid(groupId)))
+        if (!CombatExists(new Guid(groupId)))
             throw new ArgumentException("Combat Not Found");
 
-        if(String.IsNullOrWhiteSpace(context.UserIdentifier))
+        if (String.IsNullOrWhiteSpace(context.UserIdentifier))
             throw new ArgumentException("Could not get user from context");
 
         Guid userId = Guid.Parse(context.UserIdentifier ?? string.Empty);
@@ -41,7 +43,7 @@ public partial class CombatServiceImplantation : CombatService
                 clientTracker.UpdateLastSeen(clientIdForHeartbeat as string);
             }, clientId);
         }
-        
+
         HubClient client = clientTracker.RegisterClient(groupId, clientId, user);
         combatRepo.AddClient(client);
 
@@ -50,7 +52,7 @@ public partial class CombatServiceImplantation : CombatService
     public HubClient GetRegisteredClient(HubCallerContext context)
     {
         var client = clientTracker.AllClients.FirstOrDefault(client => client.ClientId == context.ConnectionId);
-        if(client is not null)
+        if (client is not null)
             return client;
         else
             throw new ArgumentException("Client Not Connected");
@@ -73,18 +75,21 @@ public partial class CombatServiceImplantation : CombatService
         List<string> currentIds = currentClients.Select(client => client.ClientId).ToList();
 
         // Add Clients To Tracker That Only exist in DB.
-        syncedClients.Where(client => !currentIds.Contains(client.ClientId)).ToList().ForEach(client => {
+        syncedClients.Where(client => !currentIds.Contains(client.ClientId)).ToList().ForEach(client =>
+        {
             clientTracker.RegisterClient(client.GroupId, client.ClientId, client.User);
         });
 
         // Update Clients In Tracker That Appeared In DB
-        currentClients.Where(client => syncedIds.Contains(client.ClientId)).ToList().ForEach(client => {
+        currentClients.Where(client => syncedIds.Contains(client.ClientId)).ToList().ForEach(client =>
+        {
             client = syncedClients.First(sc => sc.ClientId == client.ClientId);
             clientTracker.SyncClient(client);
         });
 
         // Remove Clients From Tracker That Did not exist in DB
-        currentIds.Where(clientId => !syncedIds.Contains(clientId)).ToList().ForEach(clientId => {
+        currentIds.Where(clientId => !syncedIds.Contains(clientId)).ToList().ForEach(clientId =>
+        {
             clientTracker.UnregisterClient(clientId);
         });
     }
@@ -100,27 +105,47 @@ public partial class CombatServiceImplantation : CombatService
         return clientTracker.GetClientsForGroup(groupId);
     }
 
-    // public List<HubClient> RegisterCharacterSelections(HubClient client, List<string> characterContentCodes)
-    // {
-    //     Guid combatId = new Guid(client.GroupId);
-    //     Combat combat = GetCombat(combatId);
+    public ParticipantsDTO RegisterCharacterSelections(string clientId, List<string> characterContentCodes)
+    {
+        var client = clientTracker.AllClients.FirstOrDefault(clt => clt.ClientId == clientId);
+        if (client is null) throw new ArgumentException("client not found");
 
-    //     List<string> validCodes = combat.Characters.Select(chr => chr.CampaignCharacter.CharacterContent.ContentCode).ToList();
+        Guid combatId = new Guid(client.GroupId);
+        Combat combat = GetCombat(combatId);
 
-    //     characterContentCodes.ForEach(chrCode => {
-    //         if(!validCodes.Contains(chrCode))
-    //             throw new ArgumentException("Character Code is not valid for game.");
-    //     });
+        List<string> validCodes = combat.Characters.Select(chr => chr.CampaignCharacter.CharacterContent.ContentCode).ToList();
 
-    //     client.Characters.AddRange(
-    //         characterContentCodes.Select(chrCode => {
-    //         var combatCharacter = combat.Characters.FirstOrDefault(chr => chr.CampaignCharacter.CharacterContent.ContentCode == chrCode);
-    //         if(combatCharacter is null)
-    //             throw new ArgumentException("Character Code is not valid for game.");
-    //         })
-    //     )
+        characterContentCodes.ForEach(chrCode =>
+        {
+            if (!validCodes.Contains(chrCode))
+                throw new ArgumentException("Character Code is not valid for game.");
+        });
 
-    // }
+        combat.Characters
+            .Where(cmbChr => characterContentCodes.Contains(cmbChr.CampaignCharacter.CharacterContent.ContentCode)).ToList()
+            .ForEach(cmbChr =>
+            {
+                client.Characters.Add(cmbChr);
+            });
+
+        combat.RegisteredClients.Add(client);
+
+        combatRepo.UpdateClients(new List<HubClient>() { client });
+
+        // combatRepo.UpdateCombat(combat, new List<HubClient>(){client});
+
+        return GetCombatParticipants(combatId);
+    }
+
+    public ParticipantsDTO RegisterAsObserver(string clientId)
+    {
+        var client = clientTracker.AllClients.FirstOrDefault(clt => clt.ClientId == clientId);
+        if (client is null) throw new ArgumentException("client not found");
+        client.IsObserver = true;
+        Guid combatId = new Guid(client.GroupId);
+        combatRepo.UpdateClients(new List<HubClient>() { client });
+        return GetCombatParticipants(combatId);
+    }
 
 
     public ParticipantsDTO GetCombatParticipants(Guid combatId)
@@ -152,5 +177,5 @@ public partial class CombatServiceImplantation : CombatService
     {
         return clientTracker.HubGroups;
     }
-    
+
 }

@@ -22,8 +22,8 @@ export class ServiceActions extends ServiceBase {
     if (!this.sendMessage) return;
     this.requestCombatConnection();
 
-    const currentId = get(this.combatId);
-    if (currentId === combatId) return;
+    const currentCombat = get(this.combatSummary);
+    if (currentCombat?.id === combatId) return;
 
     try {
       this.requestCombatConnection();
@@ -36,10 +36,10 @@ export class ServiceActions extends ServiceBase {
 
   private leaveCombat = async (): Promise<void> => {
     if (!this.sendMessage) return;
-    const combatId = get(this.combatId);
+    const currentCombat = get(this.combatSummary);
     try {
       this.requestCombatDisconnect();
-      await this.sendMessage("LeaveCombat", combatId);
+      await this.sendMessage("LeaveCombat", currentCombat?.id);
       this.requestCombatDisconnectSuccess();
     } catch (err: unknown) {
       console.log(JSON.stringify(err));
@@ -47,9 +47,31 @@ export class ServiceActions extends ServiceBase {
     }
   };
 
+  private registerCharacters = async (
+    characterCodes: string[]
+  ): Promise<void> => {
+    if (!this.sendMessage) return;
+    try {
+      await this.sendMessage("RegisterCharacters", characterCodes);
+    } catch (err: unknown) {
+      console.log(JSON.stringify(err));
+    }
+  };
+
+  private registerObserver = async (): Promise<void> => {
+    if (!this.sendMessage) return;
+    try {
+      await this.sendMessage("RegisterObserver");
+    } catch (err: unknown) {
+      console.log(JSON.stringify(err));
+    }
+  };
+
   public actions: ActiveCombatActions = {
     joinCombat: this.joinCombat,
     leaveCombat: this.leaveCombat,
+    registerCharacters: this.registerCharacters,
+    registerObserver: this.registerObserver,
   };
 }
 

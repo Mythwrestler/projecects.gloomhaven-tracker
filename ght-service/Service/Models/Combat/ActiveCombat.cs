@@ -38,6 +38,6 @@ public class ParticipantDTO
     [JsonPropertyName("isObserver")]
     public bool IsObserver { get; set; } = false;
 
-    [JsonPropertyName("characterCode")]
+    [JsonPropertyName("characterCodes")]
     public List<string> CharacterCodes { get; set; } = new List<string>();
 }

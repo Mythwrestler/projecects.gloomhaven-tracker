@@ -3,6 +3,8 @@ import { getContext } from "svelte";
 export interface ActiveCombatActions {
   joinCombat: (combatId: string) => Promise<void>;
   leaveCombat: () => Promise<void>;
+  registerCharacters: (characterCodes: string[]) => Promise<void>;
+  registerObserver: () => Promise<void>;
 }
 
 export const useActiveCombatActions = (
@@ -11,7 +13,12 @@ export const useActiveCombatActions = (
   const actions = getContext<ActiveCombatActions | undefined>(actionKey);
   if (actions) {
     const properties = Object.keys(actions);
-    if (properties.includes("joinCombat") && properties.includes("leaveCombat"))
+    if (
+      properties.includes("joinCombat") &&
+      properties.includes("leaveCombat") &&
+      properties.includes("registerCharacters") &&
+      properties.includes("registerObserver")
+    )
       return actions;
   }
 
@@ -21,5 +28,7 @@ export const useActiveCombatActions = (
   return {
     joinCombat: notImplemented,
     leaveCombat: notImplemented,
+    registerCharacters: notImplemented,
+    registerObserver: notImplemented,
   };
 };

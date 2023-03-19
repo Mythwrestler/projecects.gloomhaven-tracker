@@ -25,6 +25,6 @@ public class Character : Combatant
 
 public class CharacterDTO : CombatantDTO
 {
-    public string CharacterContentCode { get; set; }
+    public string CharacterContentCode { get; set; } = string.Empty;
     //public AttackModifierDeckDTO ModifierDeck { get; set; } = new AttackModifierDeckDTO();
 }

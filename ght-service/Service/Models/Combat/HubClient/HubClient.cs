@@ -20,7 +20,7 @@ public class HubClient
     public string GroupId { get; }
     public User User { get; }
     public List<Character> Characters { get; }
-    public bool? IsObserver { get; }
+    public bool? IsObserver { get; set; }
     private DateTime lastSeen;
     public DateTime LastSeen => lastSeen;
     public void UpdateLastSeen()
