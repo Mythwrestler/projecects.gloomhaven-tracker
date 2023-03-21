@@ -28,8 +28,8 @@ export class ServiceActions extends ServiceBase {
     try {
       this.requestCombatConnection();
       await this.sendMessage("JoinCombat", combatId);
-    } catch (error: unknown) {
-      console.log(JSON.stringify(error));
+    } catch (err: unknown) {
+      console.log(JSON.stringify(err));
       this.requestCombatConnectionFailure();
     }
   };

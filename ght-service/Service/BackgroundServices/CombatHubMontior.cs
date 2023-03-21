@@ -18,7 +18,8 @@ namespace GloomhavenTracker.Service.BackgroundServices
     {
         private readonly IHubContext<CombatHub> combatHubContext;
         private readonly IServiceScopeFactory scopeFactory;
-        private const int SyncIntervalSeconds = 10;
+        private const int SyncIntervalSeconds = 5;
+        private const int ClientExpireSeconds = 10;
         private Timer? combatHubClientAuditTimer;
         private Boolean syncInProgress = false;
 
@@ -49,7 +50,7 @@ namespace GloomhavenTracker.Service.BackgroundServices
                 CombatService? service = scope.ServiceProvider.GetService<CombatService>();
                 if (service is null) return;
 
-                await Task.Run(() => service.SyncClients(SyncIntervalSeconds * 2));
+                await Task.Run(() => service.SyncClients(ClientExpireSeconds));
 
                 service.GetGroupIds().ForEach(async (group) =>
                 {

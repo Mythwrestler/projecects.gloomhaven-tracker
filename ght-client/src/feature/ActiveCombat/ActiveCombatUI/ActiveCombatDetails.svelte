@@ -28,7 +28,7 @@
     Text,
   } from "@smui/list";
   import Checkbox from "@smui/checkbox";
-  import type { Character } from "../../../models/Combat";
+  import type { Character, Participants } from "../../../models/Combat";
 
   const { actions, state } = useActiveCombatService();
   const { joinCombat, leaveCombat, registerCharacters, registerObserver } =
@@ -126,15 +126,24 @@
     );
   };
   let selectedCharacters: string[] = [];
+
+  let usedCharacters: string[] = [];
+  const calculateClaimedCharacters = (
+    participants: Participants | undefined
+  ) => {
+    const charCodeList: string[] = [];
+    participants?.participants.forEach((participant) => {
+      participant.characterCodes.forEach((charCode) => {
+        if (!charCodeList.includes(charCode)) charCodeList.push(charCode);
+      });
+    });
+    usedCharacters = charCodeList;
+  };
+
+  $: calculateClaimedCharacters($participants);
 </script>
 
 <GhtPanel color="ght-panel">
-  <Card>
-    <Content>
-      <div class="mdc-typography--headline5 text-center">Hub Connection</div>
-      <hr class="my-1" />
-    </Content>
-  </Card>
   <div class="mt-2">
     <Card>
       <Content>
@@ -145,10 +154,14 @@
         {#if $characters.length > 0 && $combatCharacters.length > 0}
           <List checkList>
             {#each $combatCharacters as character}
-              <Item>
+              {@const disableItem = usedCharacters.includes(
+                character.characterContentCode
+              )}
+              <Item disabled={disableItem}>
                 <Label>{characterDetail(character)?.name}</Label>
                 <Meta>
                   <Checkbox
+                    disabled={disableItem}
                     bind:group={selectedCharacters}
                     value={character.characterContentCode}
                   />
@@ -194,9 +207,11 @@
                     <SecondaryText>Is Observer</SecondaryText>
                   {/if}
                   {#if participant.characterCodes}
-                    {#each participant.characterCodes as contentCode}
-                      <SecondaryText>{contentCode}</SecondaryText>
-                    {/each}
+                    <SecondaryText>
+                      {#each participant.characterCodes as contentCode, idx}
+                        {#if idx > 0},&nbsp;{/if}{contentCode}
+                      {/each}
+                    </SecondaryText>
                   {/if}
                 </Text>
               </Item>

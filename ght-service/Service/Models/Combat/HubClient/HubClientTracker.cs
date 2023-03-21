@@ -12,7 +12,7 @@ public class HubClientTracker
     public List<HubClient> AllClients => hubClients.Select(kvp => kvp.Value).ToList();
     public List<string> HubGroups => groupClients.Select(kvp => kvp.Key).ToList();
 
-    public HubClient RegisterClient(string groupId, string clientId, User user)
+    public HubClient RegisterClient(string groupId, string clientId, User user, List<Combatant.Character>? characters = null, Boolean? isObserver = false)
     {
         HubClient client = new HubClient(
             Guid.NewGuid(),
@@ -20,8 +20,8 @@ public class HubClientTracker
             groupId,
             user,
             DateTime.UtcNow,
-            null,
-            null
+            characters,
+            isObserver
         );
 
         RemoveExistingClientForUser(groupId, user.UserId);

@@ -15,6 +15,7 @@ class ServiceListeners extends ServiceBase {
   }
 
   private joinCombatResult = (result: HubRequestResult<Combat>): void => {
+    console.log(JSON.stringify(result));
     if (!result || result.errorMessage || !result.data) {
       this.requestCombatConnectionFailure();
     } else {
@@ -32,6 +33,7 @@ class ServiceListeners extends ServiceBase {
   };
 
   private leaveCombatResult = (result: HubRequestResult<void>): void => {
+    console.log(JSON.stringify(result));
     if (result.errorMessage) {
       this.requestCombatDisconnectFailure();
     }
@@ -41,8 +43,8 @@ class ServiceListeners extends ServiceBase {
   private handleActiveUsers = (
     result: HubRequestResult<Participants>
   ): void => {
+    console.log(JSON.stringify(result));
     if (!result || !result.data) return;
-    console.log(JSON.stringify(result.data));
     this.participants.set(result.data);
   };
 

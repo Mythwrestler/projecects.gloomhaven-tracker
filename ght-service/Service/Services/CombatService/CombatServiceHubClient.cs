@@ -77,7 +77,7 @@ public partial class CombatServiceImplantation : CombatService
         // Add Clients To Tracker That Only exist in DB.
         syncedClients.Where(client => !currentIds.Contains(client.ClientId)).ToList().ForEach(client =>
         {
-            clientTracker.RegisterClient(client.GroupId, client.ClientId, client.User);
+            clientTracker.RegisterClient(client.GroupId, client.ClientId, client.User, client.Characters, client.IsObserver);
         });
 
         // Update Clients In Tracker That Appeared In DB

@@ -60,6 +60,10 @@ INSERT INTO public."CombatCharacters" ("Id", "CombatId", "CampaignCharacterId", 
 ,('9b6c6ae3-0e87-438a-a695-02ba20443b20', '6235d6b1-38dc-4f9d-81cd-7b97b02fd7dd', '0760555c-a240-46a2-a672-99d93957b77f', 3, 10, '00000000-0000-0000-0000-000000000000','00000000-0000-0000-0000-000000000000','2022-08-02 22:42:28.200','2022-08-02 22:42:28.200');
 
 -- Test Combat Hub Client
-INSERT INTO public."HubCombatClient" ("Id", "CombatId", "UserId", "ClientId", "LastSeen") VALUES
- ('cc06d62b-8a07-4c6d-bbed-0dca175e6303', '6235d6b1-38dc-4f9d-81cd-7b97b02fd7dd', 'a335dbb1-84d6-487f-896a-2555c76c8799', 'z5Lli8nWedtRvOrtyNMXug', Current_timestamp);
+INSERT INTO public."HubCombatClient" ("Id", "CombatId", "UserId", "ClientId", "LastSeen", "IsObserver") VALUES
+ ('cc06d62b-8a07-4c6d-bbed-0dca175e6303', '6235d6b1-38dc-4f9d-81cd-7b97b02fd7dd', 'a335dbb1-84d6-487f-896a-2555c76c8799', 'z5Lli8nWedtRvOrtyNMXug', Current_timestamp, FALSE);
+
+-- Test Combat Hub Client Character Assignment
+INSERT INTO public."CombatCharacterCombatHubClients" ("CharacterId", "CombatHubClientId") VALUES
+ ('3edff481-8c35-4493-9703-7fb98cad2eec', 'cc06d62b-8a07-4c6d-bbed-0dca175e6303');
 
