@@ -21,7 +21,7 @@ public class ObjectiveDAO : Combatant
 {
     [Required]
     public Guid ContentObjectiveId { get; set; }
-    public Content.ObjectiveDAO? Objective { get; set; }
+    public Content.ObjectiveDAO Objective { get; set; } = null!;
     public int Health { get; set; }
     public ICollection<ObjectiveActiveEffectDAO> ActiveEffects { get; set; } = new HashSet<ObjectiveActiveEffectDAO>();
 }
@@ -30,8 +30,8 @@ public class ObjectiveActiveEffectDAO
 {
     [Required]
     public Guid ObjectiveId { get; set; }
-    public ObjectiveDAO? Objective { get; set; }
+    public ObjectiveDAO Objective { get; set; } = null!;
     [Required]
     public Guid ActiveEffectId { get; set; }
-    public ActiveEffectDAO? ActiveEffect { get; set; }
+    public ActiveEffectDAO ActiveEffect { get; set; } = null!;
 }

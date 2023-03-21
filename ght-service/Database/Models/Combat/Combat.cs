@@ -24,13 +24,13 @@ public class CombatDAO : AuditableEntityBase
     public Guid Id { get; set; } = Guid.NewGuid();
     [Required]
     public Guid CampaignId { get; set; }
-    public CampaignDAO? Campaign { get; set; }
+    public CampaignDAO Campaign { get; set; } = null!;
     [Required]
     public Guid ScenarioId { get; set; }
-    public Content.ScenarioDAO? Scenario { get; set; }
+    public Content.ScenarioDAO Scenario { get; set; } = null!;
     public int ScenarioLevel { get; set; }
     public Guid MonsterModifierDeckId { get; set; }
-    public AttackModifierDeckDAO? MonsterModifierDeck { get; set; }
+    public AttackModifierDeckDAO MonsterModifierDeck { get; set; } = null!;
     public ICollection<CombatHubClientDAO> HubClients { get; set; } = new HashSet<CombatHubClientDAO>();
     public ICollection<Combat.MonsterDAO> Monsters { get; set; } = new HashSet<Combat.MonsterDAO>();
     public ICollection<Combat.CharacterDAO> Characters { get; set; } = new HashSet<Combat.CharacterDAO>();

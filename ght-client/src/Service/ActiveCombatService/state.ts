@@ -1,21 +1,27 @@
 import { getContext, setContext } from "svelte";
 import { derived, writable, type Readable, type Writable } from "svelte/store";
-import type { User } from "../../models/Combat";
+import type {
+  Character,
+  CombatSummary,
+  Participants,
+} from "../../models/Combat";
 
 interface ActiveCombatStateWritable {
-  combatId: Writable<string | undefined>;
+  combatSummary: Writable<CombatSummary | undefined>;
   combatConnecting: Writable<boolean>;
   combatConnected: Writable<boolean>;
   combatDisconnecting: Writable<boolean>;
-  userList: Writable<User[]>;
+  participants: Writable<Participants | undefined>;
+  combatCharacters: Writable<Character[]>;
 }
 
 export interface ActiveCombatState {
-  combatId: Readable<string | undefined>;
+  combatSummary: Readable<CombatSummary | undefined>;
   combatConnecting: Readable<boolean>;
   combatConnected: Readable<boolean>;
   combatDisconnecting: Readable<boolean>;
-  userList: Readable<User[]>;
+  participants: Readable<Participants | undefined>;
+  combatCharacters: Readable<Character[]>;
 }
 
 export const getActiveCombatState = (
@@ -25,22 +31,24 @@ export const getActiveCombatState = (
   if (state) {
     const stateProperties = Object.keys(state as object);
     if (
-      stateProperties.includes("combatId") &&
+      stateProperties.includes("combatSummary") &&
       stateProperties.includes("combatConnecting") &&
       stateProperties.includes("combatConnected") &&
       stateProperties.includes("combatDisconnecting") &&
-      stateProperties.includes("userList")
+      stateProperties.includes("participants") &&
+      stateProperties.includes("combatCharacters")
     ) {
       return state;
     }
   }
 
   state = {
-    combatId: writable<string | undefined>(undefined),
+    combatSummary: writable<CombatSummary | undefined>(undefined),
     combatConnecting: writable<boolean>(false),
     combatConnected: writable<boolean>(false),
     combatDisconnecting: writable<boolean>(false),
-    userList: writable<User[]>([]),
+    participants: writable<Participants | undefined>(undefined),
+    combatCharacters: writable<Character[]>([]),
   };
   setContext(stateKey, state);
   return state;
@@ -49,13 +57,18 @@ export const getActiveCombatState = (
 export const useActiveCombatState = (stateKey: string): ActiveCombatState => {
   const writableState = getActiveCombatState(stateKey);
   return {
-    combatId: derived(writableState.combatId, (store) => store),
+    combatSummary: derived(writableState.combatSummary, (store) => store),
     combatConnecting: derived(writableState.combatConnecting, (store) => store),
     combatConnected: derived(writableState.combatConnected, (store) => store),
     combatDisconnecting: derived(
       writableState.combatDisconnecting,
       (store) => store
     ),
-    userList: derived(writableState.userList, (store) => store, []),
+    participants: derived(writableState.participants, (store) => store),
+    combatCharacters: derived(
+      writableState.combatCharacters,
+      (store) => store,
+      []
+    ),
   };
 };

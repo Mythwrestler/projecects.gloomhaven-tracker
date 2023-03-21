@@ -211,6 +211,8 @@ var app = builder.Build();
 bool seedDefaultData = bool.Parse(Environment.GetEnvironmentVariable("DB_SEED_DATA") ?? "false");
 if(seedDefaultData) SeedData.LoadDefaultContent(dbConnectionString);
 
+InitializeProcesses.LoadCombatHubTracker(app.Services);
+
 if (httpLoggingEnabled)
 {
     app.UseHttpLogging();

@@ -10,6 +10,7 @@ using GloomhavenTracker.Service.Models.Combat.Hub;
 using GloomhavenTracker.Service.Models.Content;
 using GloomhavenTracker.Service.Repos;
 using Microsoft.Extensions.Logging;
+using Combatant = GloomhavenTracker.Service.Models.Combat.Combatant;
 
 namespace GloomhavenTracker.Service.Services;
 public partial interface CombatService
@@ -18,6 +19,7 @@ public partial interface CombatService
     public List<CombatDTO> GetCombatListing();
     public CombatDTO NewCombat(Guid campaignId, string scenarioContentCode);
     public CombatDTO GetCombatDTO(Guid combatId);
+    public CombatDTO UpdateCombat(Combat combat);
 }
 
 public partial class CombatServiceImplantation : CombatService
@@ -28,9 +30,10 @@ public partial class CombatServiceImplantation : CombatService
     private readonly UserService userService;
     private readonly CombatHubClientTracker clientTracker;
     private readonly IMapper mapper;
-    private readonly Dictionary<Guid, Combat> combats = new Dictionary<Guid, Combat>();
+    private readonly Dictionary<Guid, Combat> combats
+    = new Dictionary<Guid, Combat>();
 
-    public CombatServiceImplantation 
+    public CombatServiceImplantation
     (
         ContentRepo contentRepo,
         CampaignRepo campaignRepo,
@@ -54,17 +57,18 @@ public partial class CombatServiceImplantation : CombatService
         return mapper.Map<List<CombatDTO>>(listing);
     }
 
-    public bool CombatExists (Guid combatId)
+    public bool CombatExists(Guid combatId)
     {
         return combatRepo.CombatExists(combatId);
     }
 
     public CombatDTO GetCombatDTO(Guid combatId)
     {
-        return mapper.Map<CombatDTO>(GetCombat(combatId));
+        Combat combat = GetCombat(combatId);
+        return mapper.Map<CombatDTO>(combat);
     }
 
-    private Combat GetCombat(Guid combatId) 
+    private Combat GetCombat(Guid combatId)
     {
         return combatRepo.GetCombatById(combatId);
     }
@@ -74,8 +78,19 @@ public partial class CombatServiceImplantation : CombatService
         Campaign campaign = campaignRepo.GetCampaign(campaignId);
         GAME_TYPE gameType = GameUtils.GameType(campaign.Game.ContentCode);
         Game game = contentRepo.GetGameDefaults(gameType);
+
+        List<Models.Combat.Combatant.Character> characters = campaign.Party.Select(chr => {
+            return new Combatant.Character(
+                Guid.NewGuid(),
+                chr.Value.Level,
+                chr.Value.Health,
+                null,
+                chr.Value
+            );
+        }).ToList();
+
         Models.Content.Scenario scenario = contentRepo.GetScenarioDefaults(gameType, scenarioContentCode);
-        int scenarioLevel =  (int)Math.Floor(campaign.Party.Select(kvp => kvp.Value.Level).Average());
+        int scenarioLevel = (int)Math.Floor(campaign.Party.Select(kvp => kvp.Value.Level).Average());
         Combat newCombat = new Combat(
             id: Guid.NewGuid(),
             campaign: campaign,
@@ -83,7 +98,7 @@ public partial class CombatServiceImplantation : CombatService
             scenarioLevel: scenarioLevel,
             monsterModifierDeck: new AttackModifierDeck(game.BaseModifierDeck),
             new List<HubClient>(),
-            new List<Models.Combat.Combatant.Character>()
+            characters
         );
 
         combatRepo.CreateCombat(newCombat);
@@ -92,5 +107,10 @@ public partial class CombatServiceImplantation : CombatService
 
         return mapper.Map<CombatDTO>(newCombat);
     }
-    
+
+    public CombatDTO UpdateCombat(Combat combat)
+    {
+        return mapper.Map<CombatDTO>(combatRepo.UpdateCombat(combat));
+    }
+
 }

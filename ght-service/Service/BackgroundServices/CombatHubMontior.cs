@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using GloomhavenTracker.Service.Hubs;
 using GloomhavenTracker.Service.Models;
+using GloomhavenTracker.Service.Models.Combat;
 using GloomhavenTracker.Service.Models.Combat.Hub;
 using GloomhavenTracker.Service.Services;
 using Microsoft.AspNetCore.SignalR;
@@ -17,7 +18,8 @@ namespace GloomhavenTracker.Service.BackgroundServices
     {
         private readonly IHubContext<CombatHub> combatHubContext;
         private readonly IServiceScopeFactory scopeFactory;
-        private const int SyncIntervalSeconds = 30;
+        private const int SyncIntervalSeconds = 5;
+        private const int ClientExpireSeconds = 10;
         private Timer? combatHubClientAuditTimer;
         private Boolean syncInProgress = false;
 
@@ -46,27 +48,28 @@ namespace GloomhavenTracker.Service.BackgroundServices
             {
                 using var scope = scopeFactory.CreateScope();
                 CombatService? service = scope.ServiceProvider.GetService<CombatService>();
-                CombatHubClientTracker? clientTracker = scope.ServiceProvider.GetService<CombatHubClientTracker>();
-                if (service is null || clientTracker is null) return;
+                if (service is null) return;
 
-                await Task.Run(() => service.SyncClients(SyncIntervalSeconds*2));
+                await Task.Run(() => service.SyncClients(ClientExpireSeconds));
 
-                clientTracker.HubGroups.ForEach(async (group) =>
+                service.GetGroupIds().ForEach(async (group) =>
                 {
-                    await combatHubContext.Clients.Group(group).SendAsync(
-                        "ActiveUsers",
-                        new HubRequestResult()
-                        {
-                            data = clientTracker.GetClientsForGroup(group).Select(client => client.User)
-                        }
-                    );
+                    ParticipantsDTO participants = service.GetCombatParticipants(new Guid(group));
+                    if (participants.Participants.Count() > 0)
+                        await combatHubContext.Clients.Group(group).SendAsync(
+                            "ActiveUsers",
+                            new HubRequestResult()
+                            {
+                                data = participants
+                            }
+                        );
                 });
             }
             finally
             {
                 syncInProgress = false;
             }
-        } 
+        }
 
         public Task StopAsync(CancellationToken stoppingToken)
         {

@@ -12,15 +12,19 @@ public class HubClientTracker
     public List<HubClient> AllClients => hubClients.Select(kvp => kvp.Value).ToList();
     public List<string> HubGroups => groupClients.Select(kvp => kvp.Key).ToList();
 
-    public void RegisterClient(string groupId, string clientId, User user)
+    public HubClient RegisterClient(string groupId, string clientId, User user, List<Combatant.Character>? characters = null, Boolean? isObserver = false)
     {
         HubClient client = new HubClient(
             Guid.NewGuid(),
             clientId,
             groupId,
             user,
-            DateTime.UtcNow
+            DateTime.UtcNow,
+            characters,
+            isObserver
         );
+
+        RemoveExistingClientForUser(groupId, user.UserId);
 
         hubClients.AddOrUpdate(
             clientId,
@@ -37,7 +41,32 @@ public class HubClientTracker
                 return oldValue;
             }
         );
+
+        return client;
     }
+
+    private void RemoveExistingClientForUser(string groupId, Guid userId)
+    {
+        string? existingClientId = hubClients
+                    .Where(kvp => kvp.Value.User.UserId == userId)
+                    .Select(kvp => kvp.Value.ClientId)
+                    .FirstOrDefault();
+
+        if (existingClientId is not null)
+        {
+            HubClient? outHubClient = null;
+            List<string>? outGroupClients = null;
+
+            hubClients.TryRemove(existingClientId, out outHubClient);
+
+            groupClients.TryGetValue(groupId, out outGroupClients);
+            if (outGroupClients is not null)
+            {
+                outGroupClients.Remove(existingClientId);
+            }
+        }
+    }
+
 
     public void UpdateLastSeen(string clientId)
     {
@@ -52,7 +81,7 @@ public class HubClientTracker
         HubClient? client;
         hubClients.Remove(clientId, out client);
         if (client is null) return;
-        
+
         List<string>? groupClientList;
         groupClients.TryGetValue(client.GroupId, out groupClientList);
         if (groupClientList is null) return;
@@ -65,12 +94,13 @@ public class HubClientTracker
     {
         List<HubClient>? groupClientHubList = new List<HubClient>();
         List<string>? groupClientIdList;
-        if(!groupClients.TryGetValue(groupId, out groupClientIdList)) 
+        if (!groupClients.TryGetValue(groupId, out groupClientIdList))
             return groupClientHubList;
 
-        groupClientIdList.ForEach(clientId => {
+        groupClientIdList.ForEach(clientId =>
+        {
             HubClient? client;
-            if(hubClients.TryGetValue(clientId, out client))
+            if (hubClients.TryGetValue(clientId, out client))
                 groupClientHubList.Add(client);
         });
 
@@ -82,13 +112,13 @@ public class HubClientTracker
         hubClients.AddOrUpdate(
             client.ClientId,
             client,
-            (keyValue, oldValue) => 
+            (keyValue, oldValue) =>
             {
-                if(oldValue.GroupId != client.GroupId)
+                if (oldValue.GroupId != client.GroupId)
                 {
                     List<string>? groupClientIds;
                     groupClients.TryGetValue(oldValue.GroupId, out groupClientIds);
-                    if(groupClientIds is not null) groupClientIds.Remove(oldValue.ClientId);
+                    if (groupClientIds is not null) groupClientIds.Remove(oldValue.ClientId);
                     groupClients.AddOrUpdate(
                         client.GroupId,
                         new List<string>() { client.ClientId },
@@ -106,4 +136,4 @@ public class HubClientTracker
 
 }
 
-public class CombatHubClientTracker : HubClientTracker {}
+public class CombatHubClientTracker : HubClientTracker { }

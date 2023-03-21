@@ -25,7 +25,7 @@ public class MonsterDAO : Combatant
     public int Health { get; set; }
     [Required]
     public Guid ContentMonsterId { get; set; }
-    public Content.MonsterDAO? MonsterContent { get; set; }
+    public Content.MonsterDAO MonsterContent { get; set; } = null!;
     public ICollection<MonsterActiveEffectDAO> ActiveEffects { get; set; } = new HashSet<MonsterActiveEffectDAO>();
     public int InstanceId { get; set; }
     public bool IsElite { get; set; }
@@ -35,8 +35,8 @@ public class MonsterActiveEffectDAO
 {
     [Required]
     public Guid MonsterId { get; set; }
-    public MonsterDAO? Monster { get; set; }
+    public MonsterDAO Monster { get; set; } = null!;
     [Required]
     public Guid ActiveEffectId { get; set; }
-    public ActiveEffectDAO? ActiveEffect { get; set; }
+    public ActiveEffectDAO ActiveEffect { get; set; } = null!;
 }
